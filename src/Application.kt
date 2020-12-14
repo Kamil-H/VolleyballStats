@@ -1,5 +1,7 @@
 package com.kamilh
 
+import com.kamilh.authorization.SimpleValidator
+import com.kamilh.authorization.headers
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
@@ -16,6 +18,9 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     install(Authentication) {
+        headers(
+            credentialsValidator = SimpleValidator()
+        )
     }
 
     install(ContentNegotiation) {
@@ -28,8 +33,10 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        get("/") {
-            call.respond(User(12313, "Kamil"))
+        authenticate {
+            get("/") {
+                call.respond(User(12313, "Kamil"))
+            }
         }
 
         install(StatusPages) {
