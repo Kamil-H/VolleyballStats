@@ -2,6 +2,7 @@ plugins {
     application
     kotlin(Dependencies.Plugins.jvm) version Dependencies.kotlinVersion
     kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
+    id(Dependencies.Plugins.sqlDelight) version Dependencies.sqlDelightVersion
 }
 
 group = Constants.packageName
@@ -17,6 +18,22 @@ repositories {
     maven { url = uri("https://kotlin.bintray.com/ktor") }
 }
 
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath(Dependencies.SqlDelight.plugin)
+    }
+}
+
+sqldelight {
+    database(name = "Database") {
+        packageName = Constants.packageName
+    }
+}
+
 dependencies {
     implementation(Dependencies.Kotlin.stdlib)
     implementation(Dependencies.Coroutines.core)
@@ -30,6 +47,8 @@ dependencies {
     implementation(Dependencies.Kodein.server)
 
     implementation(Dependencies.Logback.classic)
+
+    implementation(Dependencies.SqlDelight.driver)
 
     testImplementation(Dependencies.Coroutines.Test.test)
     testImplementation(Dependencies.Ktor.Test.test)

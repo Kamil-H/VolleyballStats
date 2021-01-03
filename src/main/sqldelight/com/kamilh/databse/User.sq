@@ -1,0 +1,5 @@
+CREATE TABLE user (
+  id TEXT PRIMARY KEY,
+  device_id TEXT NOT NULL UNIQUE,
+  date TEXT NOT NULL
+);

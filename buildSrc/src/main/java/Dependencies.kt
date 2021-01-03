@@ -5,10 +5,12 @@ object Constants {
 
 object Dependencies {
     const val kotlinVersion = "1.4.20"
+    const val sqlDelightVersion = "1.4.3"
 
     object Plugins {
         const val jvm = "jvm"
         const val serialization = "plugin.serialization"
+        const val sqlDelight = "com.squareup.sqldelight"
     }
 
     object Kotlin {
@@ -45,5 +47,11 @@ object Dependencies {
     object Kodein {
         private const val version = "7.1.0"
         const val server = "org.kodein.di:kodein-di-framework-ktor-server-jvm:$version"
+    }
+
+    object SqlDelight {
+        private const val version = sqlDelightVersion
+        const val driver = "com.squareup.sqldelight:sqlite-driver:$version"
+        const val plugin = "com.squareup.sqldelight:gradle-plugin:$version"
     }
 }
