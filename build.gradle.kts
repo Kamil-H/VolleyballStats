@@ -31,6 +31,8 @@ dependencies {
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.1.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
@@ -43,4 +45,5 @@ sourceSets["test"].resources.srcDirs("testresources")
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
+    kotlinOptions.jvmTarget = "1.8"
 }

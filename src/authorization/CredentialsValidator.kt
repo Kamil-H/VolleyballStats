@@ -1,5 +1,8 @@
 package com.kamilh.authorization
 
+import storage.AccessTokenValidator
+import storage.SubscriptionKeyStorage
+
 interface CredentialsValidator {
 
     suspend fun isValid(subscriptionKey: SubscriptionKey): Boolean
@@ -7,16 +10,12 @@ interface CredentialsValidator {
     suspend fun isValid(accessToken: AccessToken): Boolean
 }
 
-class SimpleValidator: CredentialsValidator {
+class StorageBasedCredentialsValidator(
+    private val subscriptionKeyStorage: SubscriptionKeyStorage,
+    private val accessTokenValidator: AccessTokenValidator,
+) : CredentialsValidator {
 
-    private val correctAccessTokens = listOf("AndroidApp", "iOSApp")
-    private val correctSubscriptionKeys = mutableListOf("1902381293")
+    override suspend fun isValid(subscriptionKey: SubscriptionKey): Boolean = subscriptionKeyStorage.contains(subscriptionKey)
 
-    override suspend fun isValid(subscriptionKey: SubscriptionKey): Boolean = correctSubscriptionKeys.contains(subscriptionKey.value)
-
-    override suspend fun isValid(accessToken: AccessToken): Boolean = correctAccessTokens.contains(accessToken.value)
-
-    fun addSubscriptionKey(subscriptionKey: SubscriptionKey) {
-        correctSubscriptionKeys.add(subscriptionKey.value)
-    }
+    override suspend fun isValid(accessToken: AccessToken): Boolean = accessTokenValidator.isValid(accessToken)
 }
