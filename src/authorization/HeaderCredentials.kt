@@ -1,8 +1,9 @@
 package com.kamilh.authorization
 
 import io.ktor.auth.*
+import java.util.*
 
-inline class SubscriptionKey(val value: String)
+inline class SubscriptionKey(val value: UUID)
 inline class AccessToken(val value: String)
 
 data class HeaderCredentials(

@@ -10,11 +10,11 @@ interface SubscriptionKeyStorage {
 }
 
 class InMemorySubscriptionKeyStorage : SubscriptionKeyStorage {
-    private val subscriptionKeys = mutableListOf("1902381293")
+    private val subscriptionKeys = mutableListOf<SubscriptionKey>()
 
     override suspend fun insert(subscriptionKey: SubscriptionKey) {
-        subscriptionKeys.add(subscriptionKey.value)
+        subscriptionKeys.add(subscriptionKey)
     }
 
-    override suspend fun contains(subscriptionKey: SubscriptionKey): Boolean = subscriptionKeys.contains(subscriptionKey.value)
+    override suspend fun contains(subscriptionKey: SubscriptionKey): Boolean = subscriptionKeys.contains(subscriptionKey)
 }

@@ -1,5 +1,6 @@
 package com.kamilh.authorization
 
+import com.kamilh.storage.nullUUID
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -29,8 +30,8 @@ class HeadersAuthorizationTest {
             subscriptionKeyIsValid = subscriptionKeyIsValid,
             accessTokenIsValid = accessTokenIsValid,
         ).validate(
-            subscriptionKey = SubscriptionKey(""),
-            accessToken = AccessToken("")
+            subscriptionKeyString = "",
+            accessTokenString = ""
         )
 
         // THEN
@@ -48,8 +49,8 @@ class HeadersAuthorizationTest {
             subscriptionKeyIsValid = subscriptionKeyIsValid,
             accessTokenIsValid = accessTokenIsValid,
         ).validate(
-            subscriptionKey = SubscriptionKey(""),
-            accessToken = AccessToken("")
+            subscriptionKeyString = nullUUID().toString(),
+            accessTokenString = ""
         )
 
         // THEN
@@ -61,22 +62,22 @@ class HeadersAuthorizationTest {
         // GIVEN
         val subscriptionKeyIsValid = true
         val accessTokenIsValid = true
-        val subscriptionKey = SubscriptionKey("subscriptionKey")
-        val accessToken = AccessToken("accessToken")
+        val subscriptionKey = nullUUID().toString()
+        val accessToken = "accessToken"
 
         // WHEN
         val result = authorization(
             subscriptionKeyIsValid = subscriptionKeyIsValid,
             accessTokenIsValid = accessTokenIsValid,
         ).validate(
-            subscriptionKey = subscriptionKey,
-            accessToken = accessToken
+            subscriptionKeyString = subscriptionKey,
+            accessTokenString = accessToken
         )
 
         // THEN
         require(result is HeaderAuthorizationResult.Authorized)
-        assertEquals(subscriptionKey, result.headerCredentials.subscriptionKey)
-        assertEquals(accessToken, result.headerCredentials.accessToken)
+        assertEquals(subscriptionKey, result.headerCredentials.subscriptionKey.value.toString())
+        assertEquals(accessToken, result.headerCredentials.accessToken.value)
     }
 }
 

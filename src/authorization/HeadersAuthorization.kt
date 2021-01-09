@@ -1,5 +1,6 @@
 package com.kamilh.authorization
 
+import com.kamilh.utils.toUUID
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
@@ -18,7 +19,7 @@ fun Authentication.Configuration.headers(name: String? = null, credentialsValida
         val result = when {
             subscriptionKey == null -> HeaderAuthorizationResult.NoSubscriptionKey
             accessToken == null -> HeaderAuthorizationResult.NoAccessToken
-            else -> provider.validate(SubscriptionKey(subscriptionKey), AccessToken(accessToken))
+            else -> provider.validate(subscriptionKey, accessToken)
         }
 
         val cause = when(result) {
@@ -48,8 +49,11 @@ class HeadersAuthorization(
 
     class Configuration(name: String? = null): AuthenticationProvider.Configuration(name)
 
-    suspend fun validate(subscriptionKey: SubscriptionKey, accessToken: AccessToken): HeaderAuthorizationResult =
-        when {
+    suspend fun validate(subscriptionKeyString: String, accessTokenString: String): HeaderAuthorizationResult {
+        val subscriptionKey = subscriptionKeyString.toUUID()?.let(::SubscriptionKey)
+        val accessToken = AccessToken(accessTokenString)
+        return when {
+            subscriptionKey == null -> HeaderAuthorizationResult.InvalidSubscriptionKey
             !credentialsValidator.isValid(subscriptionKey) -> HeaderAuthorizationResult.InvalidSubscriptionKey
             !credentialsValidator.isValid(accessToken) -> HeaderAuthorizationResult.InvalidAccessToken
             else -> HeaderAuthorizationResult.Authorized(
@@ -59,6 +63,7 @@ class HeadersAuthorization(
                 )
             )
         }
+    }
 }
 
 private val headersAuthenticationChallengeKey: Any = "HeadersAuth"

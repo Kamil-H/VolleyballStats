@@ -1,5 +1,20 @@
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
 CREATE TABLE user (
-  id TEXT PRIMARY KEY,
-  device_id TEXT NOT NULL UNIQUE,
-  date TEXT NOT NULL
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  subscription_key TEXT as UUID NOT NULL UNIQUE,
+  device_id TEXT as UUID NOT NULL UNIQUE,
+  date TEXT as OffsetDateTime NOT NULL
 );
+
+insertUser:
+INSERT INTO user (subscription_key, device_id, date)
+VALUES (?, ?, ?);
+
+selectAllUsers:
+SELECT * FROM user;
+
+selectAllUsersBySubscriptionKey:
+SELECT * FROM user
+WHERE subscription_key = ?;
