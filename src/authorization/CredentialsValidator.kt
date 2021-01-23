@@ -1,7 +1,9 @@
 package com.kamilh.authorization
 
+import com.kamilh.interactors.SubscriptionKeyValidator
+import com.kamilh.interactors.SubscriptionKeyValidatorParams
+import com.kamilh.interactors.SubscriptionKeyValidatorResult
 import storage.AccessTokenValidator
-import storage.SubscriptionKeyStorage
 
 interface CredentialsValidator {
 
@@ -11,11 +13,12 @@ interface CredentialsValidator {
 }
 
 class StorageBasedCredentialsValidator(
-    private val subscriptionKeyStorage: SubscriptionKeyStorage,
+    private val subscriptionKeyValidator: SubscriptionKeyValidator,
     private val accessTokenValidator: AccessTokenValidator,
 ) : CredentialsValidator {
 
-    override suspend fun isValid(subscriptionKey: SubscriptionKey): Boolean = subscriptionKeyStorage.contains(subscriptionKey)
+    override suspend fun isValid(subscriptionKey: SubscriptionKey): Boolean =
+        subscriptionKeyValidator(SubscriptionKeyValidatorParams(subscriptionKey)) == SubscriptionKeyValidatorResult.Valid
 
     override suspend fun isValid(accessToken: AccessToken): Boolean = accessTokenValidator.isValid(accessToken)
 }

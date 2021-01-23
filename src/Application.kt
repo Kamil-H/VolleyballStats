@@ -1,7 +1,6 @@
 package com.kamilh
 
 import com.kamilh.authorization.CredentialsValidator
-import com.kamilh.authorization.applicationModule
 import com.kamilh.authorization.headers
 import io.ktor.application.*
 import io.ktor.auth.*

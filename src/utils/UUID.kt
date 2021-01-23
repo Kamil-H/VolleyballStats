@@ -8,3 +8,19 @@ fun String.toUUID(): UUID? =
     } catch (exception: IllegalArgumentException) {
         null
     }
+
+fun interface UuidCreator {
+    fun create(): UUID
+}
+
+class JavaUtilUuidCreator : UuidCreator {
+    override fun create(): UUID = UUID.randomUUID()
+}
+
+fun interface UuidValidator {
+    fun isValid(uuid: String): Boolean
+}
+
+class JavaUtilUuidValidator : UuidValidator {
+    override fun isValid(uuid: String): Boolean = uuid.toUUID() != null
+}

@@ -22,7 +22,6 @@ data class InsertUser(
 
 typealias InsertUserResult = Result<Unit, InsertUserError>
 
-sealed class InsertUserError(override val message: String? = null): Error {
-    object SubscriptionKeyAlreadyInUse: InsertUserError()
-    object DeviceIdAlreadyInUse: InsertUserError()
+enum class InsertUserError(override val message: String? = null): Error {
+    SubscriptionKeyAlreadyInUse, DeviceIdAlreadyInUse
 }
