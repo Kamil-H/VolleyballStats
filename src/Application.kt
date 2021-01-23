@@ -2,6 +2,8 @@ package com.kamilh
 
 import com.kamilh.authorization.CredentialsValidator
 import com.kamilh.authorization.headers
+import com.kamilh.routes.user.userRoutes
+import com.squareup.sqldelight.db.SqlDriver
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
@@ -11,6 +13,7 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.kodein.di.DI
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 
@@ -18,8 +21,10 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
-fun Application.module(testing: Boolean = false) {
-    di { import(applicationModule) }
+fun Application.module(appModule: DI.Module = applicationModule) {
+    di { import(appModule) }
+
+    initDatabase()
 
     install(Authentication) {
         val credentialsValidator by di().instance<CredentialsValidator>()
@@ -37,20 +42,19 @@ fun Application.module(testing: Boolean = false) {
         )
     }
 
-    routing {
-        authenticate {
-            get("/") {
-                call.respond(User(12313, "Kamil"))
-            }
+    install(StatusPages) {
+        exception<Throwable> { cause ->
+            cause.printStackTrace()
+            call.respond(HttpStatusCode.InternalServerError)
         }
+    }
 
-        install(StatusPages) {
-            exception<Throwable> { cause ->
-                call.respond(HttpStatusCode.InternalServerError)
-            }
-        }
+    install(Routing) {
+        userRoutes()
     }
 }
 
-@Serializable
-data class User(val id: Long, val name: String)
+private fun Application.initDatabase() {
+    val driver by di().instance<SqlDriver>()
+    Database.Schema.create(driver)
+}

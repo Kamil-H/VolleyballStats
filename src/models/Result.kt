@@ -48,6 +48,12 @@ inline fun <V, E : Error, T> Result<V, E>.map(f: (V) -> T): Result<T, E> =
         is Result.Failure -> this
     }
 
+inline fun <V, E : Error, T> Result<V, E>.flatMap(f: (V) -> Result<T, E>): Result<T, E> =
+    when (this) {
+        is Result.Success -> f(value)
+        is Result.Failure -> this
+    }
+
 inline fun <V, E1 : Error, E2 : Error> Result<V, E1>.mapError(f: (E1) -> E2): Result<V, E2> =
     when (this) {
         is Result.Success -> Result.success(value)
