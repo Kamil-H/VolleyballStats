@@ -16,4 +16,7 @@ val interactorModule = DI.Module(name = MODULE_NAME) {
     bind<SubscriptionKeyValidator>() with provider {
         SubscriptionKeyValidatorInteractor(instance(), instance())
     }
+    bind<GetAllSeason>() with provider {
+        GetAllSeasonInteractor(instance(), instance())
+    }
 }

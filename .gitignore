@@ -5,3 +5,6 @@ build/
 *.iml
 *.ipr
 *.iws
+/match_reports
+/exceptions
+.DS_Store

@@ -4,7 +4,7 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.4.20"
+    const val kotlinVersion = "1.4.30"
     const val sqlDelightVersion = "1.4.3"
 
     object Plugins {
@@ -24,6 +24,11 @@ object Dependencies {
         const val hostCommon = "io.ktor:ktor-server-host-common:$version"
         const val auth = "io.ktor:ktor-auth:$version"
         const val serialization = "io.ktor:ktor-serialization:$version"
+        const val clientSerialization = "io.ktor:ktor-client-serialization:$version"
+        const val json = "io.ktor:ktor-client-json:$version"
+        const val jvm = "io.ktor:ktor-client-apache:$version"
+        const val websockets = "io.ktor:ktor-client-websockets:$version"
+        const val cio = "io.ktor:ktor-client-cio:$version"
 
         object Test {
             const val test = "io.ktor:ktor-server-tests:$version"
@@ -45,7 +50,7 @@ object Dependencies {
     }
 
     object Kodein {
-        private const val version = "7.1.0"
+        private const val version = "7.5.0"
         const val server = "org.kodein.di:kodein-di-framework-ktor-server-jvm:$version"
     }
 
@@ -53,5 +58,15 @@ object Dependencies {
         private const val version = sqlDelightVersion
         const val driver = "com.squareup.sqldelight:sqlite-driver:$version"
         const val plugin = "com.squareup.sqldelight:gradle-plugin:$version"
+    }
+
+    object Jsoup {
+        private const val version = "1.13.1"
+        const val jsoup = "org.jsoup:jsoup:$version"
+    }
+
+    object DateTime {
+        private const val version = "0.1.1"
+        const val dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:$version"
     }
 }

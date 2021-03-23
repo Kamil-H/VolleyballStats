@@ -43,12 +43,19 @@ dependencies {
     implementation(Dependencies.Ktor.hostCommon)
     implementation(Dependencies.Ktor.auth)
     implementation(Dependencies.Ktor.serialization)
+    implementation(Dependencies.Ktor.clientSerialization)
+    implementation(Dependencies.Ktor.json)
+    implementation(Dependencies.Ktor.jvm)
+    implementation(Dependencies.Ktor.websockets)
+    implementation(Dependencies.Ktor.cio)
 
     implementation(Dependencies.Kodein.server)
 
     implementation(Dependencies.Logback.classic)
 
     implementation(Dependencies.SqlDelight.driver)
+
+    implementation(Dependencies.Jsoup.jsoup)
 
     testImplementation(Dependencies.Coroutines.Test.test)
     testImplementation(Dependencies.Ktor.Test.test)
@@ -61,6 +68,7 @@ sourceSets["main"].resources.srcDirs("resources")
 sourceSets["test"].resources.srcDirs("testresources")
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.time.ExperimentalTime"
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
     kotlinOptions.jvmTarget = "1.8"
 }

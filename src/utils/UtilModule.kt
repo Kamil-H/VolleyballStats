@@ -21,4 +21,7 @@ val utilsModule = DI.Module(name = MODULE_NAME) {
     bind<UuidValidator>() with provider {
         JavaUtilUuidValidator()
     }
+    bind<ExceptionLogger>() with provider {
+        ConsoleExceptionLogger()
+    }
 }

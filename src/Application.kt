@@ -11,7 +11,6 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -21,7 +20,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
-fun Application.module(appModule: DI.Module = applicationModule) {
+fun Application.module(appModule: DI.Module = applicationModule(this)) {
     di { import(appModule) }
 
     initDatabase()
@@ -34,11 +33,10 @@ fun Application.module(appModule: DI.Module = applicationModule) {
     }
 
     install(ContentNegotiation) {
+        val json by di().instance<Json>()
         json(
             contentType = ContentType.Application.Json,
-            json = Json {
-                prettyPrint = true
-            }
+            json = json
         )
     }
 

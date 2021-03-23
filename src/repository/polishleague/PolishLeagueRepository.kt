@@ -1,0 +1,67 @@
+package com.kamilh.repository.polishleague
+
+import com.kamilh.models.*
+import com.kamilh.repository.execute
+import com.kamilh.repository.models.mappers.*
+import com.kamilh.repository.parsing.ParseErrorHandler
+import io.ktor.client.*
+import repository.parsing.ParseResult
+
+interface PolishLeagueRepository {
+
+    suspend fun getAllTeams(tour: Tour): NetworkResult<List<Team>>
+
+    suspend fun getAllPlayers(tour: Tour): NetworkResult<List<Player>>
+
+    suspend fun getAllMatches(tour: Tour): NetworkResult<List<AllMatchesItem>>
+
+    suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId>
+
+    suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchReport>
+}
+
+class HttpPolishLeagueRepository(
+    private val httpClient: HttpClient,
+    private val polishLeagueApi: PolishLeagueApi,
+    private val htmlToTeamMapper: HtmlToTeamMapper,
+    private val htmlToPlayerMapper: HtmlToPlayerMapper,
+    private val htmlToAllMatchesItemMapper: HtmlToAllMatchesItemMapper,
+    private val htmlToMatchReportId: HtmlToMatchReportId,
+    private val matchReportEndpoint: MatchReportEndpoint,
+    private val parseErrorHandler: ParseErrorHandler,
+    private val matchResponseStorage: MatchResponseStorage,
+    private val matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper,
+) : PolishLeagueRepository {
+
+    override suspend fun getAllTeams(tour: Tour): NetworkResult<List<Team>> =
+        httpClient.execute<String>(polishLeagueApi.getTeams(tour)).parseHtml(htmlToTeamMapper::map)
+
+    override suspend fun getAllPlayers(tour: Tour): NetworkResult<List<Player>> =
+        httpClient.execute<String>(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToPlayerMapper::map)
+
+    override suspend fun getAllMatches(tour: Tour): NetworkResult<List<AllMatchesItem>> =
+        httpClient.execute<String>(polishLeagueApi.getAllMatches(tour)).parseHtml(htmlToAllMatchesItemMapper::map)
+
+    override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> =
+        httpClient.execute<String>(polishLeagueApi.getMatch(matchId)).parseHtml(htmlToMatchReportId::map)
+
+    override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchReport> =
+        matchResponseStorage.get(matchReportId, tour)
+            ?.let(matchResponseToMatchReportMapper::map)
+            ?.let(Result.Companion::success)
+            ?: matchReportEndpoint.getMatchReport(matchReportId, tour).onSuccess {
+                matchResponseStorage.save(it, tour)
+            }.map(matchResponseToMatchReportMapper::map)
+
+    private fun <T> NetworkResult<String>.parseHtml(parser: (String) -> ParseResult<T>): NetworkResult<T> =
+        when (this) {
+            is Result.Success -> when (val result = parser(value)) {
+                is Result.Success -> Result.success(result.value)
+                is Result.Failure -> {
+                    parseErrorHandler.handle(result.error)
+                    Result.failure(NetworkError.UnexpectedException(result.error.exception))
+                }
+            }
+            is Result.Failure -> this
+        }
+}
