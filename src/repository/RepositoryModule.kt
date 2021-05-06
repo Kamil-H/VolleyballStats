@@ -1,30 +1,30 @@
 package com.kamilh.repository
 
-import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
+import com.kamilh.repository.models.mappers.*
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import com.kamilh.repository.parsing.ParseErrorHandler
 import com.kamilh.repository.parsing.PrintingParseErrorHandler
 import com.kamilh.repository.polishleague.*
-import com.kamilh.repository.models.mappers.HtmlToAllMatchesItemMapper
-import com.kamilh.repository.models.mappers.HtmlToMatchReportId
-import com.kamilh.repository.models.mappers.HtmlToPlayerMapper
-import com.kamilh.repository.models.mappers.HtmlToTeamMapper
-import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.websocket.*
 import org.kodein.di.*
+import io.ktor.client.HttpClient as Ktor
 
 private const val MODULE_NAME = "DI_REPOSITORY_MODULE"
 val repositoryModule = DI.Module(name = MODULE_NAME) {
-    bind<HttpClient>() with provider {
-        HttpClient(CIO) {
+    bind<Ktor>() with provider {
+        Ktor(CIO) {
             install(JsonFeature) {
                 serializer = defaultSerializer()
             }
             install(WebSockets)
         }
+    }
+
+    bind<HttpClient>() with provider {
+        KtorHttpClient(instance(), instance())
     }
 
     bindProvider { PolishLeagueApi() }

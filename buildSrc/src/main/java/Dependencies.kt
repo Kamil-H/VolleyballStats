@@ -4,7 +4,7 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.4.30"
+    const val kotlinVersion = "1.5.0"
     const val sqlDelightVersion = "1.4.3"
 
     object Plugins {
@@ -18,7 +18,7 @@ object Dependencies {
     }
 
     object Ktor {
-        private const val version = "1.4.3"
+        private const val version = "1.5.3"
         const val netty = "io.ktor:ktor-server-netty:$version"
         const val core = "io.ktor:ktor-server-core:$version"
         const val hostCommon = "io.ktor:ktor-server-host-common:$version"
@@ -29,6 +29,7 @@ object Dependencies {
         const val jvm = "io.ktor:ktor-client-apache:$version"
         const val websockets = "io.ktor:ktor-client-websockets:$version"
         const val cio = "io.ktor:ktor-client-cio:$version"
+        const val logging = "io.ktor:ktor-client-logging:$version"
 
         object Test {
             const val test = "io.ktor:ktor-server-tests:$version"

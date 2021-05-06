@@ -1,10 +1,9 @@
 package com.kamilh.repository.polishleague
 
 import com.kamilh.models.*
-import com.kamilh.repository.execute
+import com.kamilh.repository.HttpClient
 import com.kamilh.repository.models.mappers.*
 import com.kamilh.repository.parsing.ParseErrorHandler
-import io.ktor.client.*
 import repository.parsing.ParseResult
 
 interface PolishLeagueRepository {
@@ -34,16 +33,16 @@ class HttpPolishLeagueRepository(
 ) : PolishLeagueRepository {
 
     override suspend fun getAllTeams(tour: Tour): NetworkResult<List<Team>> =
-        httpClient.execute<String>(polishLeagueApi.getTeams(tour)).parseHtml(htmlToTeamMapper::map)
+        httpClient.execute(polishLeagueApi.getTeams(tour)).parseHtml(htmlToTeamMapper::map)
 
     override suspend fun getAllPlayers(tour: Tour): NetworkResult<List<Player>> =
-        httpClient.execute<String>(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToPlayerMapper::map)
+        httpClient.execute(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToPlayerMapper::map)
 
     override suspend fun getAllMatches(tour: Tour): NetworkResult<List<AllMatchesItem>> =
-        httpClient.execute<String>(polishLeagueApi.getAllMatches(tour)).parseHtml(htmlToAllMatchesItemMapper::map)
+        httpClient.execute(polishLeagueApi.getAllMatches(tour)).parseHtml(htmlToAllMatchesItemMapper::map)
 
     override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> =
-        httpClient.execute<String>(polishLeagueApi.getMatch(matchId)).parseHtml(htmlToMatchReportId::map)
+        httpClient.execute(polishLeagueApi.getMatch(matchId)).parseHtml(htmlToMatchReportId::map)
 
     override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchReport> =
         matchResponseStorage.get(matchReportId, tour)

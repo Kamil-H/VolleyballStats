@@ -48,6 +48,7 @@ dependencies {
     implementation(Dependencies.Ktor.jvm)
     implementation(Dependencies.Ktor.websockets)
     implementation(Dependencies.Ktor.cio)
+    implementation(Dependencies.Ktor.logging)
 
     implementation(Dependencies.Kodein.server)
 

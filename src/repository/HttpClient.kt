@@ -1,21 +1,28 @@
 package com.kamilh.repository
 
-import com.kamilh.models.*
-import com.kamilh.models.HttpRequest
-import com.kamilh.models.Url
-import io.ktor.client.*
+import com.kamilh.models.NetworkError
+import com.kamilh.models.NetworkResult
+import com.kamilh.models.httprequest.HttpRequest
+import com.kamilh.utils.ExceptionLogger
 import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.statement.*
+import io.ktor.client.HttpClient as Ktor
 
-internal suspend inline fun <reified T> HttpClient.execute(httpRequest: HttpRequest): NetworkResult<T> =
-    when (httpRequest) {
-        is Endpoint -> wrapIntoResult { request(httpRequest.toHttpRequest()) }
-        is Url -> wrapIntoResult { request(URLBuilder(httpRequest.value).build()) }
-    }
+interface HttpClient {
+    suspend fun <T> execute(httpRequest: HttpRequest<T>): NetworkResult<T>
+}
 
-internal inline fun <reified T> wrapIntoResult(executor: () -> T): NetworkResult<T> =
-    try {
-        NetworkResult.success(executor())
-    } catch (exception: Exception) {
-        NetworkResult.failure(NetworkError.createFrom(exception))
-    }
+class KtorHttpClient(
+    private val ktor: Ktor,
+    private val exceptionLogger: ExceptionLogger,
+): HttpClient {
+
+    override suspend fun <T> execute(httpRequest: HttpRequest<T>): NetworkResult<T> =
+        try {
+            val response: T = ktor.request<HttpResponse>(httpRequest.toHttpRequest()).call.receive(httpRequest.responseType) as T
+            NetworkResult.success(response)
+        } catch (exception: Exception) {
+            exceptionLogger.log(exception)
+            NetworkResult.failure(NetworkError.createFrom(exception))
+        }
+}

@@ -1,6 +1,7 @@
 package com.kamilh.repository.polishleague
 
 import com.kamilh.models.*
+import com.kamilh.models.Url
 import com.kamilh.repository.models.MatchResponse
 import com.kamilh.repository.models.PlayByPlayResponse
 import com.kamilh.repository.parsing.ParseErrorHandler
