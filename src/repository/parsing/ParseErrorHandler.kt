@@ -11,7 +11,7 @@ fun interface ParseErrorHandler {
     fun handle(parseError: ParseError)
 }
 
-class PrintingParseErrorHandler(
+class SavableParseErrorHandler(
     private val scope: CoroutineScope,
     private val fileManager: FileManager,
 ) : ParseErrorHandler {
@@ -23,7 +23,7 @@ class PrintingParseErrorHandler(
                 content = parseError.content,
                 fileMetadata = FileMetadata(
                     name = now,
-                    directory = ExceptionsPath,
+                    directory = EXCEPTIONS_DIRECTORY_PATH,
                     extension = parseError.extension,
                 ),
             )
@@ -31,7 +31,7 @@ class PrintingParseErrorHandler(
                 content = parseError.exceptionContent(),
                 fileMetadata = FileMetadata(
                     name = now,
-                    directory = ExceptionsPath,
+                    directory = EXCEPTIONS_DIRECTORY_PATH,
                     extension = FileMetadata.Extension.Text,
                 ),
             )
@@ -47,6 +47,6 @@ class PrintingParseErrorHandler(
         }
 
     companion object {
-        private const val ExceptionsPath = "exceptions"
+        private const val EXCEPTIONS_DIRECTORY_PATH = "exceptions"
     }
 }

@@ -59,7 +59,8 @@ dependencies {
     implementation(Dependencies.Jsoup.jsoup)
 
     testImplementation(Dependencies.Coroutines.Test.test)
-    testImplementation(Dependencies.Ktor.Test.test)
+    testImplementation(Dependencies.Ktor.Test.server)
+    testImplementation(Dependencies.Ktor.Test.client)
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

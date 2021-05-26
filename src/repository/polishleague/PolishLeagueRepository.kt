@@ -2,7 +2,8 @@ package com.kamilh.repository.polishleague
 
 import com.kamilh.models.*
 import com.kamilh.repository.HttpClient
-import com.kamilh.repository.models.mappers.*
+import com.kamilh.repository.models.mappers.HtmlMapper
+import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.repository.parsing.ParseErrorHandler
 import repository.parsing.ParseResult
 
@@ -22,10 +23,10 @@ interface PolishLeagueRepository {
 class HttpPolishLeagueRepository(
     private val httpClient: HttpClient,
     private val polishLeagueApi: PolishLeagueApi,
-    private val htmlToTeamMapper: HtmlToTeamMapper,
-    private val htmlToPlayerMapper: HtmlToPlayerMapper,
-    private val htmlToAllMatchesItemMapper: HtmlToAllMatchesItemMapper,
-    private val htmlToMatchReportId: HtmlToMatchReportId,
+    private val htmlToTeamMapper: HtmlMapper<List<Team>>,
+    private val htmlToPlayerMapper: HtmlMapper<List<Player>>,
+    private val htmlToAllMatchesItemMapper: HtmlMapper<List<AllMatchesItem>>,
+    private val htmlToMatchReportId: HtmlMapper<MatchReportId>,
     private val matchReportEndpoint: MatchReportEndpoint,
     private val parseErrorHandler: ParseErrorHandler,
     private val matchResponseStorage: MatchResponseStorage,

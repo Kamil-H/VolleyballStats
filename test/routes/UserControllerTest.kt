@@ -128,7 +128,7 @@ class UserControllerTest {
 
         // THEN
         require(result is Result.Success)
-        assert(result.value.subscriptionKey == subscriptionKey.toString())
+        assert(result.value.subscriptionKey == subscriptionKey.value.toString())
     }
 }
 

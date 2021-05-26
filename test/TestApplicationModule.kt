@@ -1,14 +1,17 @@
 package com.kamilh
 
 import com.kamilh.authorization.CredentialsValidator
-import com.kamilh.authorization.StorageBasedCredentialsValidator
 import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.authorization.credentialsValidatorOf
 import com.kamilh.models.Result
 import com.kamilh.models.api.UserResponse
 import com.kamilh.routes.user.UserController
-import com.kamilh.routes.user.UserControllerImpl
-import org.kodein.di.*
+import com.squareup.sqldelight.db.SqlDriver
+import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
+import kotlinx.serialization.json.Json
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.provider
 import routes.CallResult
 
 private const val MODULE_NAME = "DI_TEST_APPLICATION_MODULE"
@@ -17,6 +20,8 @@ fun testApplicationModule(
     credentialsValidator: CredentialsValidator = credentialsValidatorOf(),
 ) = DI.Module(name = MODULE_NAME) {
 
+    bind<Json>() with provider { Json {  } }
+    bind<SqlDriver>() with provider { JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY) }
     bind<UserController>() with provider { userController }
     bind<CredentialsValidator>() with provider { credentialsValidator }
 }

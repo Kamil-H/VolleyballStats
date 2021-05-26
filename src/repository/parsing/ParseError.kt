@@ -14,3 +14,5 @@ sealed class ParseError : Error {
     class Html(override val content: String, override val exception: Exception): ParseError()
     class Json(override val content: String, override val exception: Exception): ParseError()
 }
+
+class EmptyResultException(override val message: String? = null): Exception(message)

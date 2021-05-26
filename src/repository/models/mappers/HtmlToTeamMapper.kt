@@ -3,7 +3,7 @@ package com.kamilh.repository.models.mappers
 import com.kamilh.models.Team
 import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
-import com.kamilh.scraping.extractTeamId
+import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
 
 /**
@@ -18,9 +18,9 @@ import repository.parsing.ParseResult
     </div>
 </div>
  */
-class HtmlToTeamMapper(private val htmlParser: HtmlParser) {
+class HtmlToTeamMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Team>> {
 
-    fun map(html: String): ParseResult<List<Team>> = htmlParser.parse(html) {
+    override fun map(html: String): ParseResult<List<Team>> = htmlParser.parse(html) {
         val teams = mutableListOf<Team>()
         getElementsByClass("thumbnail teamlist").forEach {
             val teamImageUrl = it.select("img").attr("src")
@@ -42,6 +42,9 @@ class HtmlToTeamMapper(private val htmlParser: HtmlParser) {
                     )
                 )
             }
+        }
+        if (teams.isEmpty()) {
+            throw EmptyResultException()
         }
         teams
     }

@@ -1,10 +1,14 @@
 package com.kamilh.repository
 
+import com.kamilh.models.AllMatchesItem
+import com.kamilh.models.MatchReportId
+import com.kamilh.models.Player
+import com.kamilh.models.Team
 import com.kamilh.repository.models.mappers.*
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import com.kamilh.repository.parsing.ParseErrorHandler
-import com.kamilh.repository.parsing.PrintingParseErrorHandler
+import com.kamilh.repository.parsing.SavableParseErrorHandler
 import com.kamilh.repository.polishleague.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
@@ -28,10 +32,10 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
     }
 
     bindProvider { PolishLeagueApi() }
-    bindProvider { HtmlToTeamMapper(instance()) }
-    bindProvider { HtmlToPlayerMapper(instance()) }
-    bindProvider { HtmlToMatchReportId() }
-    bindProvider { HtmlToAllMatchesItemMapper(instance()) }
+    bind<HtmlMapper<List<Team>>>() with provider { HtmlToTeamMapper(instance()) }
+    bind<HtmlMapper<List<Player>>>() with provider { HtmlToPlayerMapper(instance()) }
+    bind<HtmlMapper<MatchReportId>>() with provider { HtmlToMatchReportId() }
+    bind<HtmlMapper<List<AllMatchesItem>>>() with provider { HtmlToAllMatchesItemMapper(instance()) }
     bindProvider { MatchResponseToMatchReportMapper() }
 
     bind<HtmlParser>() with provider {
@@ -43,7 +47,7 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
     }
 
     bind<ParseErrorHandler>() with provider {
-        PrintingParseErrorHandler(instance(), instance())
+        SavableParseErrorHandler(instance(), instance())
     }
 
     bind<MatchReportEndpoint>() with provider {

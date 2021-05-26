@@ -32,7 +32,8 @@ object Dependencies {
         const val logging = "io.ktor:ktor-client-logging:$version"
 
         object Test {
-            const val test = "io.ktor:ktor-server-tests:$version"
+            const val server = "io.ktor:ktor-server-tests:$version"
+            const val client = "io.ktor:ktor-client-tests:$version"
         }
     }
 

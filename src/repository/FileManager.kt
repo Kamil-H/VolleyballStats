@@ -23,7 +23,10 @@ class IoFileManager(
             try {
                 val directory = File(fileMetadata.directory)
                 if (!directory.exists()) {
-                    create(directory)
+                    val created = create(directory)
+                    if (!created) {
+                        error("It was impossible to create a directory under: $directory")
+                    }
                 }
                 writeToFile(
                     existingDirectory = directory,

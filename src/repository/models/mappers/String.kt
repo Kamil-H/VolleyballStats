@@ -1,4 +1,4 @@
-package com.kamilh.scraping
+package com.kamilh.repository.models.mappers
 
 // /games/id/1101158.html
 fun String.extractGameId(): Long? = extractId()

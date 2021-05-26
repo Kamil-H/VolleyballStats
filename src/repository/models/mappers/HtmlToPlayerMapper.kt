@@ -3,7 +3,7 @@ package com.kamilh.repository.models.mappers
 import com.kamilh.models.Player
 import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
-import com.kamilh.scraping.extractPlayerId
+import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
 
 /**
@@ -18,9 +18,9 @@ import repository.parsing.ParseResult
     </div>
 </div>
  */
-class HtmlToPlayerMapper(private val htmlParser: HtmlParser) {
+class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Player>> {
 
-    fun map(html: String): ParseResult<List<Player>> = htmlParser.parse(html) {
+    override fun map(html: String): ParseResult<List<Player>> = htmlParser.parse(html) {
         val elements = getElementById("hiddenPlayersListAllBuffer")
         val players = mutableListOf<Player>()
         elements.children().forEach {
@@ -42,6 +42,9 @@ class HtmlToPlayerMapper(private val htmlParser: HtmlParser) {
                     position = positionId,
                 )
             )
+        }
+        if (players.isEmpty()) {
+            throw EmptyResultException()
         }
         players
     }

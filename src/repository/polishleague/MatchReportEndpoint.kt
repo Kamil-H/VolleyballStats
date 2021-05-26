@@ -1,7 +1,6 @@
 package com.kamilh.repository.polishleague
 
 import com.kamilh.models.*
-import com.kamilh.models.Url
 import com.kamilh.repository.models.MatchResponse
 import com.kamilh.repository.models.PlayByPlayResponse
 import com.kamilh.repository.parsing.ParseErrorHandler
@@ -62,7 +61,7 @@ class WebSocketMatchReportEndpoint(
             result = try {
                 val playByPlayResponse = json.decodeFromString<PlayByPlayResponse>(stringJson)
                 if (playByPlayResponse.data.isEmpty()) {
-                    throw IllegalStateException("PlayByPlayResponse.data is empty")
+                    error("PlayByPlayResponse.data is empty")
                 }
                 val matchResponse = playByPlayResponse.data.first()
                 Result.success(matchResponse)

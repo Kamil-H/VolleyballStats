@@ -177,19 +177,9 @@ class MatchResponseToMatchReportMapper {
         )
 
     private fun EventResponse.toEvent(): Event =
-        when {
-            libero != null -> libero.toLibero()
-            rally != null -> rally.toRally()
-            sanction != null -> sanction.toSanction()
-            improperRequest != null -> improperRequest.toImproperRequest()
-            delay != null -> delay.toDelay()
-            injury != null -> injury.toInjury()
-            newLibero != null -> newLibero.toNewLibero()
-            substitution != null -> substitution.toSubstitution()
-            timeout != null -> timeout.toTimeout()
-            videoChallenge != null -> videoChallenge.toVideoChallange()
-            else -> error("Unexpected type of Event: $this")
-        }
+        libero?.toLibero() ?: rally?.toRally() ?: sanction?.toSanction() ?: improperRequest?.toImproperRequest() ?:
+        delay?.toDelay() ?: injury?.toInjury() ?: newLibero?.toNewLibero() ?: substitution?.toSubstitution() ?:
+        timeout?.toTimeout() ?: videoChallenge?.toVideoChallange() ?: error("Unexpected type of Event: $this")
 
     private fun LiberoResponse.toLibero(): Event.Libero =
         Event.Libero(
