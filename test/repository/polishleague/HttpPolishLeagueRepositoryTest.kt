@@ -357,10 +357,6 @@ fun <T> htmlMapperOf(result: ParseResult<T>): HtmlMapper<T> = HtmlMapper { resul
 
 fun tourOf(tour: Int = 2020): Tour = Tour.create(tour)
 
-fun matchIdOf(matchId: Long = 0): MatchId = MatchId(matchId)
-
-fun matchReportIdOf(matchReportId: Long = 0): MatchReportId = MatchReportId(matchReportId)
-
 fun matchReportEndpointOf(result: NetworkResult<MatchResponse>): MatchReportEndpoint =
     object : MatchReportEndpoint {
         override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchResponse> = result

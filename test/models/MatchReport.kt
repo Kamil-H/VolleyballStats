@@ -11,7 +11,7 @@ fun matchReportOf(
     createdAt: LocalDateTime = LocalDateTime.now(),
     division: String = "",
     hall: String = "",
-    matchId: Int = 0,
+    matchId: MatchReportId = MatchReportId(0),
     matchNumber: String? = null,
     officials: Officials = officialsOf(),
     phase: String = "",
@@ -223,14 +223,14 @@ fun matchTeamOf(
     )
 
 fun teamPlayerOf(
-    code: String = "",
+    id: PlayerId = PlayerId(0),
     firstName: String = "",
     isForeign: Boolean? = null,
     lastName: String = "",
     shirtNumber: Int = 0,
 ): TeamPlayer =
     TeamPlayer(
-        code = code,
+        id = id,
         firstName = firstName,
         isForeign = isForeign,
         lastName = lastName,
@@ -406,9 +406,9 @@ fun atScoreOf(
 
 fun playOf(
     id: String = "",
-    effect: String = "",
+    effect: Effect = Effect.Perfect,
     player: Int = 0,
-    skill: String = "",
+    skill: Skill = Skill.Attack,
     team: String = "",
 ): Play =
     Play(

@@ -34,7 +34,7 @@ class HtmlToPlayerMapperTest {
         // THEN
         require(mapped is Result.Success)
         val first = mapped.value.first()
-        assert(first.id == id)
+        assert(first.id.value == id)
     }
 
     @Test
@@ -126,7 +126,7 @@ class HtmlToPlayerMapperTest {
         // THEN
         require(mapped is Result.Success)
         val first = mapped.value.first()
-        assert(first.team == teamIdString)
+        assert(first.team.value == teamIdString)
     }
 
     @Test

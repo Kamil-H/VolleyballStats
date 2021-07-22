@@ -15,7 +15,7 @@ class MatchResponseToMatchReportMapper {
             createdAt = from.createdAt,
             division = from.division,
             hall = from.hall,
-            matchId = from.matchId,
+            matchId = MatchReportId(from.matchId.toLong()),
             matchNumber = from.matchNumber,
             officials = from.officials.toOfficials(),
             phase = from.phase,
@@ -49,7 +49,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun PlayerResponse.toTeamPlayer(): TeamPlayer =
         TeamPlayer(
-            code = code,
+            id = PlayerId(code.toLong()),
             firstName = firstName,
             isForeign = isForeign,
             lastName = lastName,
@@ -295,9 +295,9 @@ class MatchResponseToMatchReportMapper {
     private fun PlayResponse.toPlay(): Play =
         Play(
             id = _id,
-            effect = effect,
+            effect = Effect.create(effect),
             player = player,
-            skill = skill,
+            skill = Skill.create(skill),
             team = team,
         )
 }

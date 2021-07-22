@@ -34,7 +34,7 @@ class HtmlToTeamMapperTest {
         // THEN
         require(mapped is Result.Success)
         val first = mapped.value.first()
-        assert(first.id == id)
+        assert(first.id.value == id)
     }
 
     @Test

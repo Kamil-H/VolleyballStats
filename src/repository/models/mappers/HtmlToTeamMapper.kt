@@ -1,6 +1,7 @@
 package com.kamilh.repository.models.mappers
 
 import com.kamilh.models.Team
+import com.kamilh.models.TeamId
 import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
 import repository.parsing.EmptyResultException
@@ -35,7 +36,7 @@ class HtmlToTeamMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Tea
 
                 teams.add(
                     Team(
-                        id = id!!,
+                        id = TeamId(id!!),
                         name = name,
                         teamImageUrl = Url.create(teamImageUrl),
                         logoUrl = Url.create(image),

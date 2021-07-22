@@ -10,7 +10,7 @@ data class MatchReport(
     val createdAt: LocalDateTime,
     val division: String,
     val hall: String,
-    val matchId: Int,
+    val matchId: MatchReportId,
     val matchNumber: String?,
     val officials: Officials,
     val phase: String,
@@ -200,9 +200,9 @@ data class AtScore(
 
 data class Play(
     val id: String,
-    val effect: String,
+    val effect: Effect,
     val player: Int,
-    val skill: String,
+    val skill: Skill,
     val team: String
 )
 
@@ -217,7 +217,7 @@ data class MatchTeam(
 )
 
 data class TeamPlayer(
-    val code: String,
+    val id: PlayerId,
     val firstName: String,
     val isForeign: Boolean?,
     val lastName: String,

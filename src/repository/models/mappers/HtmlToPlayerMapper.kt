@@ -1,6 +1,8 @@
 package com.kamilh.repository.models.mappers
 
 import com.kamilh.models.Player
+import com.kamilh.models.PlayerId
+import com.kamilh.models.TeamId
 import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
 import repository.parsing.EmptyResultException
@@ -35,10 +37,10 @@ class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<P
 
             players.add(
                 Player(
-                    id = id.extractPlayerId()!!,
+                    id = PlayerId(id.extractPlayerId()!!),
                     name = name,
                     imageUrl = Url.createOrNull(imageUrl),
-                    team = teamId,
+                    team = TeamId(teamId),
                     position = positionId,
                 )
             )
