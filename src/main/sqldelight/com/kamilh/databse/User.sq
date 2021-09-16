@@ -3,9 +3,9 @@ import java.util.UUID;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  subscription_key TEXT as UUID NOT NULL UNIQUE,
-  device_id TEXT as UUID NOT NULL UNIQUE,
-  date TEXT as OffsetDateTime NOT NULL
+  subscription_key TEXT AS UUID NOT NULL UNIQUE,
+  device_id TEXT AS UUID NOT NULL UNIQUE,
+  date TEXT AS OffsetDateTime NOT NULL
 );
 
 insertUser:

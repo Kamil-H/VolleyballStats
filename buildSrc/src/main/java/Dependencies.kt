@@ -4,8 +4,8 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.5.0"
-    const val sqlDelightVersion = "1.4.3"
+    const val kotlinVersion = "1.5.30"
+    const val sqlDelightVersion = "1.5.1"
 
     object Plugins {
         const val jvm = "jvm"
@@ -18,7 +18,7 @@ object Dependencies {
     }
 
     object Ktor {
-        private const val version = "1.5.3"
+        private const val version = "1.6.3"
         const val netty = "io.ktor:ktor-server-netty:$version"
         const val core = "io.ktor:ktor-server-core:$version"
         const val hostCommon = "io.ktor:ktor-server-host-common:$version"
@@ -43,7 +43,7 @@ object Dependencies {
     }
 
     object Coroutines {
-        private const val version = "1.4.2"
+        private const val version = "1.5.2"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
 
         object Test {

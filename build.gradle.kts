@@ -9,12 +9,11 @@ group = Constants.packageName
 version = Constants.version
 
 application {
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 repositories {
-    mavenLocal()
-    jcenter()
+    mavenCentral()
     maven { url = uri("https://kotlin.bintray.com/ktor") }
 }
 
@@ -72,5 +71,5 @@ sourceSets["test"].resources.srcDirs("testresources")
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.time.ExperimentalTime"
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
