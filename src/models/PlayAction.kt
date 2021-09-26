@@ -42,7 +42,7 @@ sealed class PlayAction {
 
     data class Dig(
         override val generalInfo: GeneralInfo,
-        val attackerId: PlayerId?,
+        val attackerId: PlayerId,
         val rebounderId: PlayerId?,
         val afterSideOut: Boolean,
     ) : PlayAction()
@@ -50,6 +50,7 @@ sealed class PlayAction {
     data class Set(
         override val generalInfo: GeneralInfo,
         val attackerId: PlayerId,
+        val attackerPosition: PlayerPosition,
         val sideOut: Boolean,
     ) : PlayAction()
 
