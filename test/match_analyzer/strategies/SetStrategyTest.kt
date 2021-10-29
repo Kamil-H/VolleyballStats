@@ -7,16 +7,6 @@ class SetStrategyTest {
 
     private val strategy = SetStrategy()
 
-    @Test(expected = IllegalStateException::class)
-    fun `test that Exception is thrown when there is no Attack after Set`() {
-        // GIVEN
-        val skills = listOf(Skill.Serve, Skill.Set)
-        val analysisInput = analysisInputOf(plays = skills.map { analysisInputPlayOf(skill = it) })
-
-        // WHEN
-        strategy.check(analysisInput)
-    }
-
     @Test
     fun `test that attackerId is equal to the PlayerId that belongs to the player that attacked`() {
         // GIVEN

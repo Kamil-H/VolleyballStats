@@ -7,26 +7,18 @@ import com.kamilh.models.Skill
 
 class BlockStrategy : PlayActionStrategy<PlayAction.Block> {
 
-    override fun check(input: AnalysisInput): List<PlayAction.Block> {
-        val plays = input.plays
-        val sideOutPlays = input.sideOutPlays()
-        return plays
-            .filter { it.skill == Skill.Block }
-            .map { play ->
-                val index = plays.indexOf(play)
-                val attack = plays[index - 1]
-                if (attack.skill != Skill.Attack) {
-                    error("No Attack before Block")
-                }
-                val beforeAttack = plays.getOrNull(plays.indexOf(attack) - 1)
-                val setterId = if (beforeAttack?.skill == Skill.Set) beforeAttack.player else null
+    override fun check(input: AnalysisInput): List<PlayAction.Block> =
+        checkInput(input) {
+            val index = plays.indexOf(play)
+            val attack = plays[index - 1]
+            val beforeAttack = plays.getOrNull(plays.indexOf(attack) - 1)
+            val setterId = if (beforeAttack?.skill == Skill.Set) beforeAttack.player else null
 
-                PlayAction.Block(
-                    generalInfo = input.generalInfo(play),
-                    attackerId = attack.player,
-                    setterId = setterId,
-                    afterSideOut = sideOutPlays.contains(attack),
-                )
-            }
-    }
+            PlayAction.Block(
+                generalInfo = input.generalInfo(play),
+                attackerId = attack.player,
+                setterId = setterId,
+                afterSideOut = sideOutPlays.contains(attack),
+            )
+        }
 }

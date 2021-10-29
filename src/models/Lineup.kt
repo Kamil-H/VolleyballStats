@@ -10,10 +10,13 @@ data class Lineup(
 ) {
 
     init {
-         if (setOf(p1, p2, p3, p4, p5, p6).size != NUMBER_OF_ITEMS) {
-             error("Please provide unique PlayerIds")
+        val set = setOf(p1, p2, p3, p4, p5, p6)
+         if (set.size != NUMBER_OF_ITEMS) {
+             error("Please provide unique PlayerIds: $set")
          }
     }
+
+    override fun toString() = "[p1: ${p1.value}, p2: ${p2.value}, p3: ${p3.value}, p4: ${p4.value}, p5: ${p5.value}, p6: ${p6.value}]"
 
     companion object {
         private const val NUMBER_OF_ITEMS = 6
@@ -33,5 +36,3 @@ data class Lineup(
             }
     }
 }
-
-fun Lineup.toList(): List<PlayerId> = listOf(p1, p2, p3, p4, p5, p6)

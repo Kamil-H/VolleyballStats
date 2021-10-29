@@ -1,6 +1,9 @@
 package com.kamilh.match_analyzer.strategies
 
-import com.kamilh.models.*
+import com.kamilh.models.PlayerId
+import com.kamilh.models.Skill
+import com.kamilh.models.TeamId
+import com.kamilh.models.analysisInputOf
 import org.junit.Test
 
 class DigStrategyTest {
@@ -10,16 +13,6 @@ class DigStrategyTest {
     private val secondTeam = TeamId(1)
     private val firstPlayer = PlayerId(0)
     private val secondPlayer = PlayerId(1)
-
-    @Test(expected = IllegalStateException::class)
-    fun `test that Exception is thrown when there is no Attack before Dig`() {
-        // GIVEN
-        val skills = listOf(Skill.Serve, Skill.Dig)
-        val analysisInput = analysisInputOf(plays = skills.map { analysisInputPlayOf(skill = it) })
-
-        // WHEN
-        strategy.check(analysisInput)
-    }
 
     @Test
     fun `test that attackerId is equal to the PlayerId that belongs to the player that attacked`() {

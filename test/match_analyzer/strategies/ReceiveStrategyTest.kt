@@ -9,14 +9,17 @@ class ReceiveStrategyTest {
     private val firstTeam = TeamId(0)
     private val secondTeam = TeamId(1)
 
-    @Test(expected = IllegalStateException::class)
-    fun `test that Exception is thrown when there is no Serve before Receive`() {
+    @Test
+    fun `test that actions are empty when there is no Serve before Receive`() {
         // GIVEN
         val skills = listOf(Skill.Serve, Skill.Set, Skill.Receive)
         val analysisInput = analysisInputOf(plays = skills.map { analysisInputPlayOf(skill = it) })
 
         // WHEN
-        strategy.check(analysisInput)
+        val actions = strategy.check(analysisInput)
+
+        // THEN
+        assert(actions.isEmpty())
     }
 
     @Test

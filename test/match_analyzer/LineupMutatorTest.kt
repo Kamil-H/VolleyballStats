@@ -55,6 +55,34 @@ class LineupMutatorTest {
         // THEN
         assert(PlayerPosition.P4 == position)
     }
+
+    @Test
+    fun `test if contains works as expected when checking a playerId that is in lineup`() {
+        // GIVEN
+        val playerIds = listOf(0, 1, 2, 3, 4, 5)
+        val startingLineup = lineupOf(playerIds)
+        val mutator = LineupMutator(startingLineup = startingLineup)
+
+        // WHEN
+        val contains = mutator.contains(playerIdOf(0))
+
+        // THEN
+        assert(contains)
+    }
+
+    @Test
+    fun `test if contains works as expected when checking a playerId that is not in lineup`() {
+        // GIVEN
+        val playerIds = listOf(0, 1, 2, 3, 4, 5)
+        val startingLineup = lineupOf(playerIds)
+        val mutator = LineupMutator(startingLineup = startingLineup)
+
+        // WHEN
+        val contains = mutator.contains(playerIdOf(6))
+
+        // THEN
+        assert(!contains)
+    }
 }
 
 fun lineupOf(playerIds: List<Int>): Lineup = Lineup.from(playerIds.map { playerIdOf(it) })

@@ -60,6 +60,9 @@ dependencies {
     testImplementation(Dependencies.Coroutines.Test.test)
     testImplementation(Dependencies.Ktor.Test.server)
     testImplementation(Dependencies.Ktor.Test.client)
+    testImplementation(Dependencies.JUnit5.jupiter)
+    testImplementation(Dependencies.JUnit5.engine)
+    testImplementation(Dependencies.JUnit5.params)
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

@@ -2,6 +2,7 @@ package com.kamilh
 
 import com.kamilh.authorization.authorizationModule
 import com.kamilh.interactors.interactorModule
+import com.kamilh.match_analyzer.matchAnalyzerModule
 import com.kamilh.repository.repositoryModule
 import com.kamilh.routes.routesModule
 import com.kamilh.storage.storageModule
@@ -27,4 +28,5 @@ fun applicationModule(scope: CoroutineScope) = DI.Module(name = MODULE_NAME) {
     import(repositoryModule)
     import(interactorModule)
     import(authorizationModule)
+    import(matchAnalyzerModule)
 }

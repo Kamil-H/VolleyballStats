@@ -22,7 +22,7 @@ fun matchReportOf(
     settings: Settings = settingsOf(),
     spectators: Int = 0,
     startDate: String = "",
-    teams: Teams = teamsOf(),
+    matchTeams: MatchTeams = teamsOf(),
     updatedAt: String = "",
 ): MatchReport = MatchReport(
     id = id,
@@ -43,7 +43,7 @@ fun matchReportOf(
     settings = settings,
     spectators = spectators,
     startDate = startDate,
-    teams = teams,
+    matchTeams = matchTeams,
     updatedAt = updatedAt,
 )
 
@@ -141,7 +141,7 @@ fun decidingOf(
 
 fun mvpOf(
     number: Int = 0,
-    team: String = "",
+    team: TeamType = TeamType.Away,
 ): Mvp =
     Mvp(
         number = number,
@@ -197,8 +197,8 @@ fun settingsOf(
 fun teamsOf(
     away: MatchTeam = matchTeamOf(),
     home: MatchTeam = matchTeamOf(),
-): Teams =
-    Teams(
+): MatchTeams =
+    MatchTeams(
         away = away,
         home = home,
     )
@@ -306,7 +306,7 @@ fun liberoOf(
     enters: Boolean = false,
     libero: Int = 0,
     player: Int = 0,
-    team: String = "",
+    team: TeamType = TeamType.Away,
     time: LocalDateTime = LocalDateTime.now(),
 ): Event.Libero =
     Event.Libero(
@@ -319,7 +319,7 @@ fun liberoOf(
 
 fun rallyOf(
     endTime: LocalDateTime = LocalDateTime.now(),
-    point: String? = null,
+    point: TeamType? = null,
     verified: Boolean? = null,
     startTime: LocalDateTime = LocalDateTime.now(),
 ): Event.Rally =
@@ -331,7 +331,7 @@ fun rallyOf(
     )
 
 fun sanctionOf(
-    team: String = "",
+    team: TeamType = TeamType.Away,
     type: String = "",
     player: Int? = null,
     time: LocalDateTime = LocalDateTime.now(),
@@ -346,7 +346,7 @@ fun sanctionOf(
     )
 
 fun delayOf(
-    team: String = "",
+    team: TeamType = TeamType.Away,
     time: LocalDateTime = LocalDateTime.now(),
 ): Event.Delay =
     Event.Delay(
@@ -357,7 +357,7 @@ fun delayOf(
 fun substitutionOf(
     `in`: Int = 0,
     `out`: Int = 0,
-    team: String = "",
+    team: TeamType = TeamType.Away,
     time: LocalDateTime = LocalDateTime.now(),
 ): Event.Substitution =
     Event.Substitution(
@@ -368,7 +368,7 @@ fun substitutionOf(
     )
 
 fun timeoutOf(
-    team: String = "",
+    team: TeamType = TeamType.Away,
     time: LocalDateTime = LocalDateTime.now(),
 ): Event.Timeout =
     Event.Timeout(
@@ -380,10 +380,10 @@ fun videoChallengeOf(
     atScore: AtScore = atScoreOf(),
     endTime: LocalDateTime = LocalDateTime.now(),
     reason: String = "",
-    response: String = "",
-    scoreChange: String? = null,
+    response: Event.VideoChallenge.Response = Event.VideoChallenge.Response.Inconclusive,
+    scoreChange: Event.VideoChallenge.ScoreChange = Event.VideoChallenge.ScoreChange.NoChange,
     startTime: LocalDateTime = LocalDateTime.now(),
-    team: String = "",
+    team: TeamType = TeamType.Away,
 ): Event.VideoChallenge =
     Event.VideoChallenge(
         atScore = atScore,
@@ -409,7 +409,7 @@ fun playOf(
     effect: Effect = Effect.Perfect,
     player: Int = 0,
     skill: Skill = Skill.Attack,
-    team: String = "",
+    team: TeamType = TeamType.Away,
 ): Play =
     Play(
         id = id,

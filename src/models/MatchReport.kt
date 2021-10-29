@@ -21,7 +21,7 @@ data class MatchReport(
     val settings: Settings,
     val spectators: Int,
     val startDate: String,
-    val teams: Teams,
+    val matchTeams: MatchTeams,
     val updatedAt: String
 )
 
@@ -46,7 +46,7 @@ data class Scout(
 data class ScoutData(
     val id: String,
     val plays: List<Play>,
-    val point: String,
+    val point: TeamType,
     val score: Score,
 )
 
@@ -56,7 +56,7 @@ data class Settings(
     val winningScore: Int,
 )
 
-data class Teams(
+data class MatchTeams(
     val away: MatchTeam,
     val home: MatchTeam,
 )
@@ -80,7 +80,7 @@ data class Scorer(
 
 data class BestPlayer(
     val number: Int,
-    val team: String,
+    val team: TeamType,
 )
 
 data class CoinToss(
@@ -95,7 +95,7 @@ data class Deciding(
 
 data class Mvp(
     val number: Int,
-    val team: String
+    val team: TeamType,
 )
 
 data class Set(
@@ -114,78 +114,104 @@ data class Start(
 
 sealed class Event {
 
+    abstract val time: LocalDateTime
+
     data class Libero(
         val enters: Boolean,
         val libero: Int,
         val player: Int,
-        val team: String,
-        val time: LocalDateTime
+        val team: TeamType,
+        override val time: LocalDateTime
     ) : Event()
 
+    /**
+     * [point] is null only when referee decides that the rally needs to be repeated
+     */
     data class Rally(
         val endTime: LocalDateTime,
-        val point: String?,
+        val point: TeamType?,
         val startTime: LocalDateTime,
         val verified: Boolean?,
-    ) : Event()
+    ) : Event() {
+        override val time: LocalDateTime = startTime
+    }
 
     data class Substitution(
         val `in`: Int,
         val `out`: Int,
-        val team: String,
-        val time: LocalDateTime
+        val team: TeamType,
+        override val time: LocalDateTime
     ) : Event()
 
     data class Timeout(
-        val team: String,
-        val time: LocalDateTime
+        val team: TeamType,
+        override val time: LocalDateTime
     ) : Event()
 
     data class VideoChallenge(
         val atScore: AtScore,
         val endTime: LocalDateTime,
         val reason: String,
-        val response: String,
-        val scoreChange: String?,
+        val response: Response,
+        val scoreChange: ScoreChange?,
         val startTime: LocalDateTime,
-        val team: String
-    ) : Event()
+        val team: TeamType
+    ) : Event() {
+        override val time: LocalDateTime = startTime
+
+        enum class Response(val value: String) {
+            Right("right"), Wrong("wrong"), Inconclusive("inconclusive");
+            companion object {
+                fun createOrNull(value: String?): Response? = values().firstOrNull { it.value == value }
+
+                fun create(value: String): Response = createOrNull(value) ?: error("Wrong TeamType=$value")
+            }
+        }
+        enum class ScoreChange(val value: String) {
+            AssignToOther("assignToOther"), RepeatLast("repeatLast"), NoChange("noChange");
+            companion object {
+                fun createOrNull(value: String?): ScoreChange? = values().firstOrNull { it.value == value }
+
+                fun create(value: String): ScoreChange = createOrNull(value) ?: error("Wrong TeamType=$value")
+            }
+        }
+    }
 
     data class Sanction(
-        val team: String,
+        val team: TeamType,
         val type: String,
         val player: Int?,
-        val time: LocalDateTime,
+        override val time: LocalDateTime,
         val staff: String?,
     ) : Event()
 
     data class ImproperRequest(
-        val team: String,
-        val time: LocalDateTime,
+        val team: TeamType,
+        override val time: LocalDateTime,
     ) : Event()
 
     data class Delay(
-        val team: String,
-        val time: LocalDateTime,
+        val team: TeamType,
+        override val time: LocalDateTime,
     ) : Event()
 
     data class Injury(
-        val team: String,
+        val team: TeamType,
         val player: Int,
-        val time: LocalDateTime,
+        override val time: LocalDateTime,
         val libero: Boolean,
     ) : Event()
 
     data class NewLibero(
-        val team: String,
+        val team: TeamType,
         val player: Int,
-        val time: LocalDateTime,
+        override val time: LocalDateTime,
     ) : Event()
 }
 
 data class Score(
+    val home: Int,
     val away: Int,
-    val home: Int
 )
 
 data class StartingLineup(
@@ -203,7 +229,7 @@ data class Play(
     val effect: Effect,
     val player: Int,
     val skill: Skill,
-    val team: String
+    val team: TeamType,
 )
 
 data class MatchTeam(
@@ -215,6 +241,16 @@ data class MatchTeam(
     val shortName: String,
     val staff: Staff
 )
+
+enum class TeamType(val value: String) {
+    Home("home"), Away("away");
+
+    companion object {
+        fun createOrNull(value: String?): TeamType? = values().firstOrNull { it.value == value }
+
+        fun create(value: String): TeamType = createOrNull(value) ?: error("Wrong TeamType=$value")
+    }
+}
 
 data class TeamPlayer(
     val id: PlayerId,

@@ -8,14 +8,14 @@ fun analysisInputOf(
     plays: List<AnalysisInput.Play> = listOf(),
     matchId: MatchReportId = matchReportIdOf(),
     set: Int = 0,
-    currentScore: CurrentScore = currentScoreOf(),
+    score: Score = scoreOf(),
     rallyStartTime: LocalDateTime = LocalDateTime.now(),
     rallyEndTime: LocalDateTime = LocalDateTime.now(),
 ): AnalysisInput = AnalysisInput(
     plays = plays,
     matchId = matchId,
     set = set,
-    currentScore = currentScore,
+    score = score,
     rallyStartTime = rallyStartTime,
     rallyEndTime = rallyEndTime,
 )

@@ -1,7 +1,6 @@
 package com.kamilh.storage
 
 import com.kamilh.Database
-import com.kamilh.authorization.CredentialsValidator
 import com.kamilh.databse.User
 import com.kamilh.databse.UserQueries
 import com.kamilh.storage.common.QueryRunner
@@ -10,7 +9,6 @@ import com.kamilh.storage.common.adapters.UuidAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import org.kodein.di.*
-import org.kodein.di.ktor.di
 import storage.AccessTokenValidator
 import storage.InMemoryAccessTokenValidator
 import storage.common.adapters.OffsetDateAdapter
@@ -48,5 +46,9 @@ val storageModule = DI.Module(name = MODULE_NAME) {
 
     bind<UserStorage>() with provider {
         SqlUserStorage(instance(), instance())
+    }
+
+    bind<TeamStorage>() with singleton {
+        DatabaseTeamStorage()
     }
 }

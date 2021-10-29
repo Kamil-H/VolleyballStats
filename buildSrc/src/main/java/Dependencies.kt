@@ -71,4 +71,11 @@ object Dependencies {
         private const val version = "0.1.1"
         const val dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:$version"
     }
+
+    object JUnit5 {
+        private const val version = "5.7.0"
+        const val jupiter = "org.junit.jupiter:junit-jupiter:$version"
+        const val engine = "org.junit.jupiter:junit-jupiter-engine:$version"
+        const val params = "org.junit.jupiter:junit-jupiter-params:$version"
+    }
 }

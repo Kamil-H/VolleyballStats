@@ -8,7 +8,7 @@ sealed class PlayAction {
 
     data class PlayerInfo(
         val playerId: PlayerId,
-        val position: PlayerPosition,
+        val position: PlayerPosition?,
         val teamId: TeamId,
     )
 
@@ -17,9 +17,10 @@ sealed class PlayAction {
         val matchId: MatchReportId,
         val set: Int,
         val effect: Effect,
-        val currentScore: CurrentScore,
+        val score: Score,
         val rallyStartTime: LocalDateTime,
         val rallyEndTime: LocalDateTime,
+        val breakPoint: Boolean,
     )
 
     data class Attack(
@@ -42,15 +43,15 @@ sealed class PlayAction {
 
     data class Dig(
         override val generalInfo: GeneralInfo,
-        val attackerId: PlayerId,
+        val attackerId: PlayerId?,
         val rebounderId: PlayerId?,
         val afterSideOut: Boolean,
     ) : PlayAction()
 
     data class Set(
         override val generalInfo: GeneralInfo,
-        val attackerId: PlayerId,
-        val attackerPosition: PlayerPosition,
+        val attackerId: PlayerId?,
+        val attackerPosition: PlayerPosition?,
         val sideOut: Boolean,
     ) : PlayAction()
 

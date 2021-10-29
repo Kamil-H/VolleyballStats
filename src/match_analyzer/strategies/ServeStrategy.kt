@@ -7,18 +7,14 @@ import com.kamilh.models.Skill
 
 class ServeStrategy : PlayActionStrategy<PlayAction.Serve> {
 
-    override fun check(input: AnalysisInput): List<PlayAction.Serve> {
-        val plays = input.plays
-        return plays
-            .filter { it.skill == Skill.Serve }
-            .map { play ->
-                val index = plays.indexOf(play)
-                val receiver = plays.getOrNull(index + 1)?.takeIf { it.skill == Skill.Receive }
-                PlayAction.Serve(
-                    generalInfo = input.generalInfo(play),
-                    receiverId = receiver?.player,
-                    receiveEffect = receiver?.effect,
-                )
-            }
-    }
+    override fun check(input: AnalysisInput): List<PlayAction.Serve> =
+        checkInput(input) {
+            val index = plays.indexOf(play)
+            val receiver = plays.getOrNull(index + 1)?.takeIf { it.skill == Skill.Receive }
+            PlayAction.Serve(
+                generalInfo = input.generalInfo(play),
+                receiverId = receiver?.player,
+                receiveEffect = receiver?.effect,
+            )
+        }
 }

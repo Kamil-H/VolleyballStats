@@ -90,22 +90,4 @@ class SideOutPlaysTest {
         // THEN
         assert(sideOutPlays.isEmpty())
     }
-
-    @Test(expected = IllegalStateException::class)
-    fun `test that there is exception thrown then plays list is empty`() {
-        // GIVEN
-        val input = analysisInputOf(plays = emptyList())
-
-        // WHEN
-        input.sideOutPlays()
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun `test that there is exception thrown then plays doesn't start from Serve`() {
-        // GIVEN
-        val input = analysisInputOf(plays = listOf(analysisInputPlayOf(skill = Skill.Receive)))
-
-        // WHEN
-        input.sideOutPlays()
-    }
 }

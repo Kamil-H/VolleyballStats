@@ -7,23 +7,15 @@ import com.kamilh.models.Skill
 
 class SetStrategy : PlayActionStrategy<PlayAction.Set> {
 
-    override fun check(input: AnalysisInput): List<PlayAction.Set> {
-        val plays = input.plays
-        val sideOutPlays = input.sideOutPlays()
-        return plays
-            .filter { it.skill == Skill.Set }
-            .map { play ->
-                val index = plays.indexOf(play)
-                val attack = plays.getOrNull(index + 1)
-                if (attack?.skill != Skill.Attack) {
-                    error("No Attack after Set")
-                }
-                PlayAction.Set(
-                    generalInfo = input.generalInfo(play),
-                    attackerId = attack.player,
-                    attackerPosition = attack.position,
-                    sideOut = sideOutPlays.contains(play),
-                )
-            }
-    }
+    override fun check(input: AnalysisInput): List<PlayAction.Set> =
+        checkInput(input) {
+            val index = plays.indexOf(play)
+            val attack = plays.getOrNull(index + 1)?.takeIf { it.skill == Skill.Attack }
+            PlayAction.Set(
+                generalInfo = input.generalInfo(play),
+                attackerId = attack?.player,
+                attackerPosition = attack?.position,
+                sideOut = sideOutPlays.contains(play),
+            )
+        }
 }

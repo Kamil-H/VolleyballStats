@@ -154,7 +154,7 @@ fun decidingResponseOf(
 
 fun mvpResponseOf(
     number: Int = 0,
-    team: String = "",
+    team: String = "home",
 ): MvpResponse =
     MvpResponse(
         number = number,

@@ -26,12 +26,12 @@ class MatchResponseToMatchReportMapper {
             settings = from.settings.toSettings(),
             spectators = from.spectators,
             startDate = from.startDate,
-            teams = from.teams.toTeams(),
+            matchTeams = from.teams.toTeams(),
             updatedAt = from.updatedAt,
         )
 
-    private fun TeamsResponse.toTeams(): Teams =
-        Teams(
+    private fun TeamsResponse.toTeams(): MatchTeams =
+        MatchTeams(
             away = away.toMatchTeam(),
             home = home.toMatchTeam(),
         )
@@ -139,7 +139,7 @@ class MatchResponseToMatchReportMapper {
     private fun BestPlayerResponse.toBestPlayer(): BestPlayer =
         BestPlayer(
             number = number,
-            team = team,
+            team = TeamType.create(team),
         )
 
     private fun CoinTossResponse.toCoinToss(): CoinToss =
@@ -163,37 +163,46 @@ class MatchResponseToMatchReportMapper {
     private fun MvpResponse.toMvp(): Mvp =
         Mvp(
             number = number,
-            team = team,
+            team = TeamType.create(team),
         )
 
     private fun SetResponse.toSet(): Set =
         Set(
             duration = duration,
             endTime = endTime,
-            events = events.map { it.toEvent() },
+            events = events.flatMap { it.toEvent() },
             score = score.toScore(),
             startTime = startTime,
             startingLineup = startingLineup.toStartingLineup(),
         )
 
-    private fun EventResponse.toEvent(): Event =
-        libero?.toLibero() ?: rally?.toRally() ?: sanction?.toSanction() ?: improperRequest?.toImproperRequest() ?:
-        delay?.toDelay() ?: injury?.toInjury() ?: newLibero?.toNewLibero() ?: substitution?.toSubstitution() ?:
-        timeout?.toTimeout() ?: videoChallenge?.toVideoChallange() ?: error("Unexpected type of Event: $this")
+    private fun EventResponse.toEvent(): List<Event> =
+        listOfNotNull(
+            libero?.toLibero(),
+            rally?.toRally(),
+            sanction?.toSanction(),
+            improperRequest?.toImproperRequest(),
+            delay?.toDelay(),
+            injury?.toInjury(),
+            newLibero?.toNewLibero(),
+            substitution?.toSubstitution(),
+            timeout?.toTimeout(),
+            videoChallenge?.toVideoChallange(),
+        ).sortedBy { it.time }
 
     private fun LiberoResponse.toLibero(): Event.Libero =
         Event.Libero(
             enters = enters,
             libero = libero,
             player = player,
-            team = team,
+            team = TeamType.create(team),
             time = time,
         )
 
     private fun RallyResponse.toRally(): Event.Rally =
         Event.Rally(
             endTime = endTime,
-            point = point,
+            point = TeamType.createOrNull(point),
             startTime = startTime,
             verified = verified,
         )
@@ -202,13 +211,13 @@ class MatchResponseToMatchReportMapper {
         Event.Substitution(
             `in` = `in`,
             out = out,
-            team = team,
+            team = TeamType.create(team),
             time = time,
         )
 
     private fun TimeoutResponse.toTimeout(): Event.Timeout =
         Event.Timeout(
-            team = team,
+            team = TeamType.create(team),
             time = time,
         )
 
@@ -217,10 +226,10 @@ class MatchResponseToMatchReportMapper {
             atScore = atScore.toAtScore(),
             endTime = endTime,
             reason = reason,
-            response = response,
-            scoreChange = scoreChange,
+            response = Event.VideoChallenge.Response.create(response),
+            scoreChange = Event.VideoChallenge.ScoreChange.createOrNull(scoreChange),
             startTime = startTime,
-            team = team,
+            team = TeamType.create(team),
         )
 
     private fun AtScoreResponse.toAtScore(): AtScore =
@@ -231,7 +240,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun SanctionResponse.toSanction(): Event.Sanction =
         Event.Sanction(
-            team = team,
+            team = TeamType.create(team),
             type = type,
             player = player,
             time = time,
@@ -240,19 +249,19 @@ class MatchResponseToMatchReportMapper {
 
     private fun ImproperRequestResponse.toImproperRequest(): Event.ImproperRequest =
         Event.ImproperRequest(
-            team = team,
+            team = TeamType.create(team),
             time = time,
         )
 
     private fun DelayResponse.toDelay(): Event.Delay =
         Event.Delay(
-            team = team,
+            team = TeamType.create(team),
             time = time,
         )
 
     private fun InjuryResponse.toInjury(): Event.Injury =
         Event.Injury(
-            team = team,
+            team = TeamType.create(team),
             player = player,
             time = time,
             libero = libero,
@@ -260,7 +269,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun NewLiberoResponse.toNewLibero(): Event.NewLibero =
         Event.NewLibero(
-            team = team,
+            team = TeamType.create(team),
             player = player,
             time = time,
         )
@@ -288,7 +297,7 @@ class MatchResponseToMatchReportMapper {
         ScoutData(
             id = _id,
             plays = plays.map { it.toPlay() },
-            point = point,
+            point = TeamType.create(point),
             score = score.toScore(),
         )
 
@@ -298,6 +307,6 @@ class MatchResponseToMatchReportMapper {
             effect = Effect.create(effect),
             player = player,
             skill = Skill.create(skill),
-            team = team,
+            team = TeamType.create(team),
         )
 }

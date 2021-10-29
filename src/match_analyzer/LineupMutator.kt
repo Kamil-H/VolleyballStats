@@ -36,4 +36,8 @@ class LineupMutator(
 
     fun position(playerId: PlayerId): PlayerPosition =
         PlayerPosition.create(_currentLineup.indexOf(playerId) + 1)
+
+    fun contains(playerId: PlayerId): Boolean = _currentLineup.contains(playerId)
+
+    private fun Lineup.toList(): List<PlayerId> = listOf(p1, p2, p3, p4, p5, p6)
 }
