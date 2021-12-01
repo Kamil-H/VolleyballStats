@@ -1,6 +1,7 @@
 package com.kamilh.models
-// should be inline
-class Tour private constructor(val value: Int) {
+
+@JvmInline
+value class Tour private constructor(val value: Int) {
 
     companion object {
         fun create(year: Int): Tour = Tour(year)

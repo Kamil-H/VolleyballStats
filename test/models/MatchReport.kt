@@ -112,6 +112,26 @@ fun scoutOf(
         sets = sets,
     )
 
+fun scoutDataOf(
+    id: String = "",
+    plays: List<Play> = emptyList(),
+    point: TeamType = TeamType.Away,
+    score: Score = scoreOf(),
+): ScoutData = ScoutData(
+    id = id,
+    plays = plays,
+    point = point,
+    score = score,
+)
+
+fun bestPlayerOf(
+    number: Int = 0,
+    team: TeamType = TeamType.Away,
+): BestPlayer = BestPlayer(
+    number = number,
+    team = team,
+)
+
 fun coinTossOf(
     start: Start = startOf(),
     deciding: Deciding? = null,
@@ -221,6 +241,14 @@ fun matchTeamOf(
         shortName = shortName,
         staff = staff,
     )
+
+fun matchTeamsOf(
+    home: MatchTeam = matchTeamOf(),
+    away: MatchTeam = matchTeamOf(),
+): MatchTeams = MatchTeams(
+    away = away,
+    home = home,
+)
 
 fun teamPlayerOf(
     id: PlayerId = PlayerId(0),
