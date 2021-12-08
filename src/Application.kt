@@ -3,7 +3,6 @@ package com.kamilh
 import com.kamilh.authorization.CredentialsValidator
 import com.kamilh.authorization.headers
 import com.kamilh.routes.user.userRoutes
-import com.squareup.sqldelight.db.SqlDriver
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
@@ -15,6 +14,7 @@ import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
+import storage.DatabaseFactory
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -23,7 +23,8 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(appModule: DI.Module = applicationModule(this)) {
     di { import(appModule) }
 
-    initDatabase()
+    val databaseFactory by di().instance<DatabaseFactory>()
+    databaseFactory.connect()
 
     install(Authentication) {
         val credentialsValidator by di().instance<CredentialsValidator>()
@@ -50,9 +51,8 @@ fun Application.module(appModule: DI.Module = applicationModule(this)) {
     install(Routing) {
         userRoutes()
     }
-}
 
-private fun Application.initDatabase() {
-    val driver by di().instance<SqlDriver>()
-    Database.Schema.create(driver)
+    environment.monitor.subscribe(ApplicationStopped) {
+        databaseFactory.close()
+    }
 }

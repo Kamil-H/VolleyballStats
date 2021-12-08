@@ -1,10 +1,10 @@
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-CREATE TABLE user (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  subscription_key TEXT AS UUID NOT NULL UNIQUE,
-  device_id TEXT AS UUID NOT NULL UNIQUE,
+CREATE TABLE IF NOT EXISTS user (
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  subscription_key VARCHAR(255) AS UUID NOT NULL UNIQUE,
+  device_id VARCHAR(255) AS UUID NOT NULL UNIQUE,
   date TEXT AS OffsetDateTime NOT NULL
 );
 

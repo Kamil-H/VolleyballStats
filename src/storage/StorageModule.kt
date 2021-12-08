@@ -1,45 +1,39 @@
 package com.kamilh.storage
 
-import com.kamilh.Database
-import com.kamilh.databse.User
 import com.kamilh.databse.UserQueries
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.TransacterQueryRunner
 import com.kamilh.storage.common.adapters.UuidAdapter
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
+import com.squareup.sqldelight.ColumnAdapter
 import org.kodein.di.*
 import storage.AccessTokenValidator
+import storage.AppConfigDatabaseFactory
+import storage.DatabaseFactory
 import storage.InMemoryAccessTokenValidator
 import storage.common.adapters.OffsetDateAdapter
+import java.time.OffsetDateTime
+import java.util.*
 
 private const val MODULE_NAME = "DI_STORAGE_MODULE"
 val storageModule = DI.Module(name = MODULE_NAME) {
     bind<AccessTokenValidator>() with provider { InMemoryAccessTokenValidator() }
 
-    bind<SqlDriver>() with singleton { JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY) }
+    bind<ColumnAdapter<UUID, String>>() with provider { UuidAdapter() }
+    bind<ColumnAdapter<OffsetDateTime, String>>() with provider { OffsetDateAdapter() }
 
-    bind<Database>() with singleton {
-        val uuidAdapter = UuidAdapter()
-        val driver by di.instance<SqlDriver>()
-        Database(
-            driver = driver,
-            userAdapter = User.Adapter(
-                dateAdapter = OffsetDateAdapter(),
-                subscription_keyAdapter = uuidAdapter,
-                device_idAdapter = uuidAdapter,
-            )
-        )
+    bind<DatabaseFactory>() with singleton {
+        AppConfigDatabaseFactory(instance(), instance(), instance())
     }
+
     bind<UserQueries>() with singleton {
-        val database by di.instance<Database>()
-        database.userQueries
+        val database by di.instance<DatabaseFactory>()
+        database.database.userQueries
     }
 
     bind<QueryRunner>() with singleton {
-        val database by di.instance<Database>()
+        val database by di.instance<DatabaseFactory>()
         TransacterQueryRunner(
-            transacter = database,
+            transacter = database.database,
             appDispatchers = instance(),
         )
     }

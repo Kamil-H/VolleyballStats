@@ -1,44 +1,37 @@
 package com.kamilh.storage
 
-import com.kamilh.Database
-import com.kamilh.databse.User
 import com.kamilh.databse.UserQueries
+import com.kamilh.models.TestAppConfig
 import com.kamilh.storage.common.adapters.UuidAdapter
-import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
+import com.squareup.sqldelight.ColumnAdapter
 import org.junit.After
 import org.junit.Before
+import storage.AppConfigDatabaseFactory
+import storage.DatabaseFactory
 import storage.common.adapters.OffsetDateAdapter
+import java.time.OffsetDateTime
+import java.util.*
 
-abstract class DatabaseTest {
+abstract class DatabaseTest(
+    private val uuidAdapter: ColumnAdapter<UUID, String> = UuidAdapter(),
+    private val offsetDateAdapter : ColumnAdapter<OffsetDateTime, String> = OffsetDateAdapter(),
+) {
 
-    private var inMemorySqlDriver: JdbcSqliteDriver? = null
-    private var database: Database? = null
-
-    protected val userQueries: UserQueries by lazy { database!!.userQueries }
+    private lateinit var databaseFactory: DatabaseFactory
+    protected val userQueries: UserQueries by lazy { databaseFactory.database.userQueries }
 
     @Before
     fun setup() {
-        val offsetDateAdapter = OffsetDateAdapter()
-        val uuidAdapter = UuidAdapter()
-
-        inMemorySqlDriver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).apply {
-            Database.Schema.create(this)
-        }
-
-        database = Database(
-            driver = inMemorySqlDriver!!,
-            userAdapter = User.Adapter(
-                subscription_keyAdapter = uuidAdapter,
-                device_idAdapter = uuidAdapter,
-                dateAdapter = offsetDateAdapter,
-            )
+        databaseFactory = AppConfigDatabaseFactory(
+            appConfig = TestAppConfig(),
+            uuidAdapter = uuidAdapter,
+            offsetDateAdapter = offsetDateAdapter,
         )
+        databaseFactory.connect()
     }
 
     @After
     fun cleanup() {
-        inMemorySqlDriver!!.close()
-        inMemorySqlDriver = null
-        database = null
+        databaseFactory.close()
     }
 }

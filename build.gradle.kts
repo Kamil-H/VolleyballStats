@@ -30,6 +30,7 @@ buildscript {
 sqldelight {
     database(name = "Database") {
         packageName = Constants.packageName
+        dialect = "mysql"
     }
 }
 
@@ -53,7 +54,9 @@ dependencies {
 
     implementation(Dependencies.Logback.classic)
 
-    implementation(Dependencies.SqlDelight.driver)
+    implementation(Dependencies.SqlDelight.jdbc)
+    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("com.h2database:h2:1.4.200")
 
     implementation(Dependencies.Jsoup.jsoup)
 

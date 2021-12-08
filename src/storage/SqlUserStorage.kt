@@ -5,8 +5,6 @@ import com.kamilh.databse.UserQueries
 import com.kamilh.models.Result
 import com.kamilh.models.User
 import com.kamilh.storage.common.QueryRunner
-import com.kamilh.storage.common.errors.SqlError
-import com.kamilh.storage.common.errors.createSqlError
 
 class SqlUserStorage(
     private val queryRunner: QueryRunner,
@@ -24,11 +22,11 @@ class SqlUserStorage(
                     )
                 )
             } catch (exception: Exception) {
-                val subscriptionKeyError = exception.createSqlError(tableName = "user", columnName = "subscription_key")
-                val deviceIdError = exception.createSqlError(tableName = "user", columnName = "device_id")
                 when {
-                    subscriptionKeyError is SqlError.Uniqueness -> Result.failure(InsertUserError.SubscriptionKeyAlreadyInUse)
-                    deviceIdError is SqlError.Uniqueness -> Result.failure(InsertUserError.DeviceIdAlreadyInUse)
+                    exception.checkIfContains(tableName = "user", columnName = "subscription_key") ->
+                        Result.failure(InsertUserError.SubscriptionKeyAlreadyInUse)
+                    exception.checkIfContains(tableName = "user", columnName = "device_id") ->
+                        Result.failure(InsertUserError.DeviceIdAlreadyInUse)
                     else -> throw exception
                 }
             }
@@ -40,9 +38,15 @@ class SqlUserStorage(
         }
 }
 
+private fun Exception.checkIfContains(tableName: String, columnName: String): Boolean =
+    message?.let { message ->
+        val subject = "$tableName($columnName)"
+        message.contains(subject, ignoreCase = true)
+    } ?: false
+
 private fun com.kamilh.databse.User.toUser(): User =
     User(
-        id = id,
+        id = id.toLong(),
         subscriptionKey = SubscriptionKey(subscription_key),
         deviceId = device_id,
         createDate = date,
