@@ -8,6 +8,7 @@ import com.kamilh.repository.polishleague.tourOf
 import com.kamilh.storage.TeamStorage
 import com.kamilh.storage.teamStorageOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import match_analyzer.lineupOf
@@ -32,7 +33,7 @@ class MatchReportAnalyzerTest {
     )
 
     @Test(expected = IllegalStateException::class)
-    fun `test that Exception is thrown when there are more Sets in Scout than in ScoutData`() {
+    fun `test that Exception is thrown when there are more Sets in Scout than in ScoutData`() = runBlockingTest {
         // GIVEN
         val matchReport = matchReportOf(
             scout = scoutOf(
@@ -50,7 +51,7 @@ class MatchReportAnalyzerTest {
     }
 
     @Test(expected = IllegalStateException::class)
-    fun `test that Exception is thrown when there are no such Home team in the Storage`() {
+    fun `test that Exception is thrown when there are no such Home team in the Storage`() = runBlockingTest {
         // GIVEN
         val home = "home"
         val matchReport = matchReportOf(
@@ -72,7 +73,7 @@ class MatchReportAnalyzerTest {
     }
 
     @Test(expected = IllegalStateException::class)
-    fun `test that Exception is thrown when there are no such Away team in the Storage`() {
+    fun `test that Exception is thrown when there are no such Away team in the Storage`() = runBlockingTest {
         // GIVEN
         val home = "home"
         val homeTeam = teamOf(name = home)

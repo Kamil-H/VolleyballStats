@@ -1,0 +1,6 @@
+insertPlayer:
+INSERT INTO team_player_model(image_url, tour_team_id, position, player_id, number)
+VALUES ( ?, (SELECT id FROM tour_team_model WHERE team_id = :team_id), ?, ?, ?);
+
+getPlayerByPlayerId:
+SELECT * FROM team_player_model WHERE player_id = ?;

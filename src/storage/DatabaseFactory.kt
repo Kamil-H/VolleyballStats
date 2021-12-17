@@ -1,9 +1,7 @@
 package storage
 
-import com.kamilh.Database
-import com.kamilh.databse.User
-import com.kamilh.models.AppConfig
-import com.kamilh.models.DatabaseConfig
+import com.kamilh.*
+import com.kamilh.models.*
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
@@ -23,6 +21,9 @@ internal class AppConfigDatabaseFactory(
 	appConfig: AppConfig,
 	uuidAdapter: ColumnAdapter<UUID, String>,
 	offsetDateAdapter : ColumnAdapter<OffsetDateTime, String>,
+	urlAdapter: ColumnAdapter<Url, String>,
+	teamIdAdapter: ColumnAdapter<TeamId, Long>,
+	playerIdAdapter: ColumnAdapter<PlayerId, Long>,
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {
@@ -40,10 +41,22 @@ internal class AppConfigDatabaseFactory(
 	override val database: Database by lazy {
 		Database(
 			driver = driver,
-			userAdapter = User.Adapter(
-				dateAdapter = offsetDateAdapter,
+			user_modelAdapter = User_model.Adapter(
+				created_dateAdapter = offsetDateAdapter,
 				subscription_keyAdapter = uuidAdapter,
 				device_idAdapter = uuidAdapter,
+			),
+			tour_team_modelAdapter = Tour_team_model.Adapter(
+				image_urlAdapter = urlAdapter,
+				logo_urlAdapter = urlAdapter,
+				team_idAdapter = teamIdAdapter,
+			),
+			player_modelAdapter = Player_model.Adapter(
+				idAdapter = playerIdAdapter,
+			),
+			team_player_modelAdapter = Team_player_model.Adapter(
+				image_urlAdapter = urlAdapter,
+				player_idAdapter = playerIdAdapter,
 			)
 		)
 	}

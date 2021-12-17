@@ -41,7 +41,7 @@ class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<P
                     name = name,
                     imageUrl = Url.createOrNull(imageUrl),
                     team = TeamId(teamId),
-                    position = positionId,
+                    specialization = Player.Specialization.create(positionId),
                 )
             )
         }

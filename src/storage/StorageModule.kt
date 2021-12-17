@@ -1,8 +1,16 @@
 package com.kamilh.storage
 
+import com.kamilh.databse.TeamQueries
+import com.kamilh.databse.TourTeamQueries
 import com.kamilh.databse.UserQueries
+import com.kamilh.models.PlayerId
+import com.kamilh.models.TeamId
+import com.kamilh.models.Url
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.TransacterQueryRunner
+import com.kamilh.storage.common.adapters.PlayerIdAdapter
+import com.kamilh.storage.common.adapters.TeamIdAdapter
+import com.kamilh.storage.common.adapters.UrlAdapter
 import com.kamilh.storage.common.adapters.UuidAdapter
 import com.squareup.sqldelight.ColumnAdapter
 import org.kodein.di.*
@@ -20,14 +28,27 @@ val storageModule = DI.Module(name = MODULE_NAME) {
 
     bind<ColumnAdapter<UUID, String>>() with provider { UuidAdapter() }
     bind<ColumnAdapter<OffsetDateTime, String>>() with provider { OffsetDateAdapter() }
+    bind<ColumnAdapter<Url, String>>() with provider { UrlAdapter() }
+    bind<ColumnAdapter<TeamId, Long>>() with provider { TeamIdAdapter() }
+    bind<ColumnAdapter<PlayerId, Long>>() with provider { PlayerIdAdapter() }
 
     bind<DatabaseFactory>() with singleton {
-        AppConfigDatabaseFactory(instance(), instance(), instance())
+        AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<UserQueries>() with singleton {
         val database by di.instance<DatabaseFactory>()
         database.database.userQueries
+    }
+
+    bind<TeamQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.teamQueries
+    }
+
+    bind<TourTeamQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.tourTeamQueries
     }
 
     bind<QueryRunner>() with singleton {
@@ -43,6 +64,6 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     }
 
     bind<TeamStorage>() with singleton {
-        DatabaseTeamStorage()
+        SqlTeamStorage(instance(), instance(), instance())
     }
 }

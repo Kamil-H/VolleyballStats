@@ -31,6 +31,7 @@ sqldelight {
     database(name = "Database") {
         packageName = Constants.packageName
         dialect = "mysql"
+        deriveSchemaFromMigrations = true
     }
 }
 
@@ -55,8 +56,8 @@ dependencies {
     implementation(Dependencies.Logback.classic)
 
     implementation(Dependencies.SqlDelight.jdbc)
-    implementation("com.zaxxer:HikariCP:3.4.5")
-    implementation("com.h2database:h2:1.4.200")
+    implementation("com.zaxxer:HikariCP:5.0.0")
+    implementation("com.h2database:h2:2.0.202")
 
     implementation(Dependencies.Jsoup.jsoup)
 

@@ -1,0 +1,13 @@
+insertTourTeam:
+INSERT INTO tour_team_model(name, image_url, logo_url, team_id, tour_id)
+VALUES (?, ?, ?, ?, (SELECT id FROM tour_model WHERE name = :tour_name))
+ON DUPLICATE KEY UPDATE
+name = VALUES(name),
+image_url = VALUES(image_url),
+logo_url = VALUES(logo_url);
+
+getTeam:
+SELECT * FROM tour_team_model WHERE tour_id = (SELECT id FROM tour_model WHERE name = :tour_name);
+
+getTeamByName:
+SELECT * FROM tour_team_model WHERE tour_id = (SELECT id FROM tour_model WHERE name = :tour_name) AND name = ?;

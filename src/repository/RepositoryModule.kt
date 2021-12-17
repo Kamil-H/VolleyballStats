@@ -1,9 +1,6 @@
 package com.kamilh.repository
 
-import com.kamilh.models.AllMatchesItem
-import com.kamilh.models.MatchReportId
-import com.kamilh.models.Player
-import com.kamilh.models.Team
+import com.kamilh.models.*
 import com.kamilh.repository.models.mappers.*
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.repository.parsing.JsoupHtmlParser
@@ -36,6 +33,7 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
     bind<HtmlMapper<List<Player>>>() with provider { HtmlToPlayerMapper(instance()) }
     bind<HtmlMapper<MatchReportId>>() with provider { HtmlToMatchReportId() }
     bind<HtmlMapper<List<AllMatchesItem>>>() with provider { HtmlToAllMatchesItemMapper(instance()) }
+    bind<HtmlMapper<PlayerDetails>>() with provider { HtmlToPlayerDetailsMapper(instance()) }
     bindProvider { MatchResponseToMatchReportMapper() }
 
     bind<HtmlParser>() with provider {
@@ -55,7 +53,7 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
     }
 
     bind<PolishLeagueRepository>() with provider {
-        HttpPolishLeagueRepository(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+        HttpPolishLeagueRepository(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<MatchResponseStorage>() with provider {

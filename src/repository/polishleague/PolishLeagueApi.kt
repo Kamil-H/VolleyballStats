@@ -1,9 +1,10 @@
 package com.kamilh.repository.polishleague
 
 import com.kamilh.models.MatchId
+import com.kamilh.models.PlayerId
 import com.kamilh.models.Tour
-import com.kamilh.models.httprequest.HttpRequest
 import com.kamilh.models.Url
+import com.kamilh.models.httprequest.HttpRequest
 import com.kamilh.models.httprequest.UrlRequest
 
 class PolishLeagueApi {
@@ -26,5 +27,10 @@ class PolishLeagueApi {
     fun getAllMatches(tour: Tour): HttpRequest<String> =
         UrlRequest.getHtml(
             Url.create("https://www.plusliga.pl/games/tour/${tour.value}.html")
+        )
+
+    fun getPlayerDetails(tour: Tour, playerId: PlayerId): HttpRequest<String> =
+        UrlRequest.getHtml(
+            Url.create("https://www.plusliga.pl/players/id/${playerId.value}/tour/${tour.value}.html")
         )
 }

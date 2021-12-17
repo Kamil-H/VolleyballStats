@@ -1,5 +1,6 @@
 package repository.models.mappers
 
+import com.kamilh.models.Player
 import com.kamilh.models.Result
 import com.kamilh.repository.models.mappers.HtmlToPlayerMapper
 import com.kamilh.repository.parsing.JsoupHtmlParser
@@ -160,9 +161,9 @@ class HtmlToPlayerMapperTest {
     @Test
     fun `test if when positionId is correct then result is Success and positionId is parsed properly`() {
         // GIVEN
-        val positionId = 1
+        val specialization = Player.Specialization.Libero
 
-        val html = html(positionId = positionId.toString())
+        val html = html(positionId = specialization.id.toString())
 
         // WHEN
         val mapped = mapper.map(html)
@@ -170,7 +171,7 @@ class HtmlToPlayerMapperTest {
         // THEN
         require(mapped is Result.Success)
         val first = mapped.value.first()
-        assert(first.position == positionId)
+        assert(first.specialization == specialization)
     }
 
     @Test
@@ -207,7 +208,7 @@ private fun html(
     name: String = "",
     imageUrl: String = "google.com",
     teamIdString: String = "0",
-    positionId: String = "0",
+    positionId: String = "1",
 ): String =
 """
 <div id="hiddenPlayersListAllBuffer" style="display: none;">

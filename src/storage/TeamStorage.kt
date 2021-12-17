@@ -1,30 +1,59 @@
 package com.kamilh.storage
 
+import com.kamilh.databse.TeamQueries
+import com.kamilh.databse.TourTeamQueries
+import com.kamilh.Tour_team_model
 import com.kamilh.models.Team
 import com.kamilh.models.Tour
+import com.kamilh.storage.common.QueryRunner
 
 interface TeamStorage {
 
-    fun save(tour: Tour, teams: List<Team>)
+    suspend fun insert(tour: Tour, teams: List<Team>)
 
-    fun getAllTeams(tour: Tour): List<Team>
+    suspend fun getAllTeams(tour: Tour): List<Team>
 
-    fun getTeam(name: String, tour: Tour): Team?
+    suspend fun getTeam(name: String, tour: Tour): Team?
 }
 
-class DatabaseTeamStorage : TeamStorage {
+class SqlTeamStorage(
+    private val queryRunner: QueryRunner,
+    private val teamQueries: TeamQueries,
+    private val tourTeamQueries: TourTeamQueries,
+) : TeamStorage {
 
-    private var teams: List<Team>? = null
-
-    override fun save(tour: Tour, teams: List<Team>) {
-        this.teams = teams
+    override suspend fun insert(tour: Tour, teams: List<Team>) {
+        queryRunner.runTransaction {
+            teams.forEach { team ->
+                teamQueries.insertTeam(team.id.value)
+                tourTeamQueries.insertTourTeam(
+                    name = team.name,
+                    image_url = team.teamImageUrl,
+                    logo_url = team.logoUrl,
+                    team_id = team.id,
+                    tour_name = tour.name,
+                )
+            }
+        }
     }
 
-    override fun getAllTeams(tour: Tour): List<Team> {
-        return teams ?: emptyList()
-    }
+    override suspend fun getAllTeams(tour: Tour): List<Team> =
+        queryRunner.run {
+            tourTeamQueries.getTeam(tour.name).executeAsList().map(Tour_team_model::toTeam)
+        }
 
-    override fun getTeam(name: String, tour: Tour): Team? {
-        return teams?.firstOrNull { it.name == name }
-    }
+    override suspend fun getTeam(name: String, tour: Tour): Team? =
+        queryRunner.run {
+            tourTeamQueries.getTeamByName(tour.name, name).executeAsOneOrNull()?.toTeam()
+        }
 }
+
+private fun Tour_team_model.toTeam(): Team =
+    Team(
+        id = team_id,
+        name = name,
+        teamImageUrl = image_url,
+        logoUrl = logo_url,
+    )
+
+private val Tour.name: String get() = value.toString()

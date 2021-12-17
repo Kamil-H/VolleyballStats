@@ -22,6 +22,7 @@ class HttpPolishLeagueRepositoryTest {
         htmlToPlayerMapper: HtmlMapper<List<Player>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToAllMatchesItemMapper: HtmlMapper<List<AllMatchesItem>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToMatchReportId: HtmlMapper<MatchReportId> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
+        htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         matchReportEndpoint: MatchReportEndpoint = matchReportEndpointOf(networkFailureOf(networkErrorOf())),
         parseErrorHandler: ParseErrorHandler = ParseErrorHandler {  },
         matchResponseStorage: MatchResponseStorage = matchResponseStorageOf(),
@@ -38,6 +39,7 @@ class HttpPolishLeagueRepositoryTest {
             parseErrorHandler = parseErrorHandler,
             matchResponseStorage = matchResponseStorage,
             matchResponseToMatchReportMapper = matchResponseToMatchReportMapper,
+            htmlToPlayerDetailsMapper = htmlToPlayerDetailsMapper,
         )
 
     @Test

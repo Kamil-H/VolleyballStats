@@ -1,0 +1,3 @@
+insertTeam:
+INSERT IGNORE INTO team_model(id)
+VALUES (?);

@@ -18,6 +18,8 @@ interface PolishLeagueRepository {
     suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId>
 
     suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchReport>
+
+    suspend fun getPlayerDetails(tour: Tour, playerId: PlayerId): NetworkResult<PlayerDetails>
 }
 
 class HttpPolishLeagueRepository(
@@ -27,6 +29,7 @@ class HttpPolishLeagueRepository(
     private val htmlToPlayerMapper: HtmlMapper<List<Player>>,
     private val htmlToAllMatchesItemMapper: HtmlMapper<List<AllMatchesItem>>,
     private val htmlToMatchReportId: HtmlMapper<MatchReportId>,
+    private val htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails>,
     private val matchReportEndpoint: MatchReportEndpoint,
     private val parseErrorHandler: ParseErrorHandler,
     private val matchResponseStorage: MatchResponseStorage,
@@ -52,6 +55,9 @@ class HttpPolishLeagueRepository(
             ?: matchReportEndpoint.getMatchReport(matchReportId, tour).onSuccess {
                 matchResponseStorage.save(it, tour)
             }.map(matchResponseToMatchReportMapper::map)
+
+    override suspend fun getPlayerDetails(tour: Tour, playerId: PlayerId): NetworkResult<PlayerDetails> =
+        httpClient.execute(polishLeagueApi.getPlayerDetails(tour, playerId)).parseHtml(htmlToPlayerDetailsMapper::map)
 
     private fun <T> NetworkResult<String>.parseHtml(parser: (String) -> ParseResult<T>): NetworkResult<T> =
         when (this) {

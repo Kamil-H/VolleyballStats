@@ -59,3 +59,15 @@ inline fun <V, E1 : Error, E2 : Error> Result<V, E1>.mapError(f: (E1) -> E2): Re
         is Result.Success -> Result.success(value)
         is Result.Failure -> Result.failure(f(error))
     }
+
+fun <V, E : Error> List<Result<V, E>>.toResults(): Results<V, E> {
+    val successes = mutableListOf<Result.Success<V>>()
+    val failures = mutableListOf<Result.Failure<E>>()
+    forEach { result ->
+        when (result) {
+            is Result.Failure -> failures.add(result)
+            is Result.Success -> successes.add(result)
+        }
+    }
+    return Results(successes = successes, failures = failures)
+}

@@ -5,7 +5,7 @@ object Constants {
 
 object Dependencies {
     const val kotlinVersion = "1.5.30"
-    const val sqlDelightVersion = "1.5.1"
+    const val sqlDelightVersion = "1.5.3"
 
     object Plugins {
         const val jvm = "jvm"

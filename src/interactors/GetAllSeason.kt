@@ -27,11 +27,18 @@ class GetAllSeasonInteractor(
     private val list = mutableListOf<Long>()
 
     override suspend fun doWork(params: GetAllSeasonParams): NetworkResult<Season> {
-        val teams = polishLeagueRepository.getAllTeams(params.tour).value
-
-        if (teams != null) {
-            teamStorage.save(params.tour, teams)
-        }
+        polishLeagueRepository.getAllPlayers(params.tour)
+            .onSuccess {
+                it.forEach {
+//                    println("[${it.id}, ${it.position}]")
+                }
+            }
+            .onFailure {  }
+//        val teams = polishLeagueRepository.getAllTeams(params.tour).value
+//
+//        if (teams != null) {
+//            teamStorage.insert(params.tour, teams)
+//        }
 //
 //        polishLeagueRepository.getAllPlayers(params.tour)
 //            .onSuccess {
@@ -45,36 +52,36 @@ class GetAllSeasonInteractor(
 
 //        getMatchReport(matchReportId = MatchReportId(2103714), params.tour, teams)
 
-        polishLeagueRepository.getAllMatches(params.tour)
-            .onSuccess {
-                it.filterIsInstance<AllMatchesItem.PotentiallyFinished>()
-                    .forEach { getMatchReport(it.id, params.tour, teams) }
-            }
-            .onFailure {
-                println("Error getAllMatches: $it")
-            }
-
-        val byTeams = actions.groupBy { it.generalInfo.playerInfo.teamId }
-        byTeams.forEach { entry ->
-            val playActions = entry.value
-            val attacks = playActions.filterIsInstance<PlayAction.Attack>()
-            val blocks = playActions.filterIsInstance<PlayAction.Block>()
-            val receives = playActions.filterIsInstance<PlayAction.Receive>()
-            val serves = playActions.filterIsInstance<PlayAction.Serve>()
-            val digs = playActions.filterIsInstance<PlayAction.Dig>()
-
-            println(teams?.first { it.id == entry.key }?.name)
-            println("${serves.perfect().size},${serves.size},${receives.perfect().size},${receives.size},${attacks.perfect().size},${attacks.size},${blocks.perfect().size},${digs.perfect().size}")
-
-            println()
-        }
-
-        actions.filterIsInstance<PlayAction.Block>().groupBy { it.generalInfo.playerInfo.position }.forEach {
-            println("${it.key}, ${it.value.size}")
-        }
-
-        println(list.joinToString { it.toString() })
-        println(list.size)
+//        polishLeagueRepository.getAllMatches(params.tour)
+//            .onSuccess {
+//                it.filterIsInstance<AllMatchesItem.PotentiallyFinished>()
+//                    .forEach { getMatchReport(it.id, params.tour, teams) }
+//            }
+//            .onFailure {
+//                println("Error getAllMatches: $it")
+//            }
+//
+//        val byTeams = actions.groupBy { it.generalInfo.playerInfo.teamId }
+//        byTeams.forEach { entry ->
+//            val playActions = entry.value
+//            val attacks = playActions.filterIsInstance<PlayAction.Attack>()
+//            val blocks = playActions.filterIsInstance<PlayAction.Block>()
+//            val receives = playActions.filterIsInstance<PlayAction.Receive>()
+//            val serves = playActions.filterIsInstance<PlayAction.Serve>()
+//            val digs = playActions.filterIsInstance<PlayAction.Dig>()
+//
+//            println(teams?.first { it.id == entry.key }?.name)
+//            println("${serves.perfect().size},${serves.size},${receives.perfect().size},${receives.size},${attacks.perfect().size},${attacks.size},${blocks.perfect().size},${digs.perfect().size}")
+//
+//            println()
+//        }
+//
+//        actions.filterIsInstance<PlayAction.Block>().groupBy { it.generalInfo.playerInfo.position }.forEach {
+//            println("${it.key}, ${it.value.size}")
+//        }
+//
+//        println(list.joinToString { it.toString() })
+//        println(list.size)
 
         return Result.success(Season(emptyList(), emptyList(), emptyList()))
     }
@@ -104,7 +111,7 @@ class GetAllSeasonInteractor(
     }
 
     private val actions = mutableListOf<PlayAction>()
-    private fun displayStats(matchReport: MatchReport, tour: Tour, teams: List<Team>?) {
+    private suspend fun displayStats(matchReport: MatchReport, tour: Tour, teams: List<Team>?) {
         println("${matchReport.matchTeams.home.name} vs ${matchReport.matchTeams.away.name} || ${matchReport.startDate} || ${matchReport.matchId}")
 
         val stats = matchReportAnalyzer.analyze(matchReport, tour)

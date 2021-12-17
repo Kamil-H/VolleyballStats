@@ -19,4 +19,7 @@ val interactorModule = DI.Module(name = MODULE_NAME) {
     bind<GetAllSeason>() with provider {
         GetAllSeasonInteractor(instance(), instance(), instance(), instance())
     }
+    bind<UpdatePlayers>() with provider {
+        UpdatePlayersInteractor(instance(), instance())
+    }
 }
