@@ -30,7 +30,7 @@ buildscript {
 sqldelight {
     database(name = "Database") {
         packageName = Constants.packageName
-        dialect = "mysql"
+        dialect = "sqlite:3.25"
         deriveSchemaFromMigrations = true
     }
 }
@@ -55,9 +55,8 @@ dependencies {
 
     implementation(Dependencies.Logback.classic)
 
-    implementation(Dependencies.SqlDelight.jdbc)
-    implementation("com.zaxxer:HikariCP:5.0.0")
-    implementation("com.h2database:h2:2.0.202")
+    implementation(Dependencies.SqlDelight.driver)
+    implementation(Dependencies.SQLiteDriver.jdbc)
 
     implementation(Dependencies.Jsoup.jsoup)
 

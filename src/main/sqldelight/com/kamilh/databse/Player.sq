@@ -1,11 +1,11 @@
 insertPlayer:
 INSERT INTO player_model(id, birth_date, height, weight, range)
 VALUES (?, ?, ?, ?, ?)
-ON DUPLICATE KEY UPDATE
-birth_date = VALUES(birth_date),
-height = VALUES(height),
-weight = VALUES(weight),
-range = VALUES(range);
+ON CONFLICT(id) DO UPDATE SET
+birth_date = birth_date,
+height = height,
+weight = weight,
+range = range;
 
 getPlayer:
 SELECT * FROM player_model;

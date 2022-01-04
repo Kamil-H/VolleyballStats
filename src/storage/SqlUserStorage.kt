@@ -40,7 +40,7 @@ class SqlUserStorage(
 
 private fun Exception.checkIfContains(tableName: String, columnName: String): Boolean =
     message?.let { message ->
-        val subject = "$tableName($columnName"
+        val subject = "$tableName.$columnName"
         message.contains(subject, ignoreCase = true)
     } ?: false
 

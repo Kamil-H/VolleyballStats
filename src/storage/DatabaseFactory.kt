@@ -1,12 +1,13 @@
 package storage
 
 import com.kamilh.*
-import com.kamilh.models.*
+import com.kamilh.models.AppConfig
+import com.kamilh.models.PlayerId
+import com.kamilh.models.TeamId
+import com.kamilh.models.Url
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
+import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -15,6 +16,10 @@ interface DatabaseFactory {
 
 	fun connect()
 	fun close()
+}
+
+interface SqlDriverCreator {
+	fun create(): SqlDriver
 }
 
 internal class AppConfigDatabaseFactory(
@@ -27,15 +32,7 @@ internal class AppConfigDatabaseFactory(
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {
-		val databaseConfig: DatabaseConfig = appConfig.databaseConfig
-		HikariDataSource(
-			HikariConfig().apply {
-				jdbcUrl = databaseConfig.jdbcUrl
-				username = databaseConfig.username
-				password = databaseConfig.password
-				maximumPoolSize = databaseConfig.maxPoolSize
-			}
-		).asJdbcDriver()
+		JdbcSqliteDriver(url = appConfig.databaseConfig.jdbcUrl)
 	}
 
 	override val database: Database by lazy {
@@ -53,11 +50,30 @@ internal class AppConfigDatabaseFactory(
 			),
 			player_modelAdapter = Player_model.Adapter(
 				idAdapter = playerIdAdapter,
+				birth_dateAdapter = offsetDateAdapter,
 			),
 			team_player_modelAdapter = Team_player_model.Adapter(
 				image_urlAdapter = urlAdapter,
 				player_idAdapter = playerIdAdapter,
-			)
+			),
+			match_modelAdapter = Match_model.Adapter(
+				dateAdapter = offsetDateAdapter,
+			),
+			match_report_modelAdapter = Match_report_model.Adapter(
+				updatedAdapter = offsetDateAdapter,
+			),
+			point_modelAdapter = Point_model.Adapter(
+				end_timeAdapter = offsetDateAdapter,
+				start_timeAdapter = offsetDateAdapter,
+			),
+			set_modelAdapter = Set_model.Adapter(
+				end_timeAdapter = offsetDateAdapter,
+				start_timeAdapter = offsetDateAdapter,
+			),
+			tour_modelAdapter = Tour_model.Adapter(
+				end_dateAdapter = offsetDateAdapter,
+				start_dateAdapter = offsetDateAdapter,
+			),
 		)
 	}
 

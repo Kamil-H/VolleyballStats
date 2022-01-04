@@ -60,7 +60,11 @@ object Dependencies {
         private const val version = sqlDelightVersion
         const val driver = "com.squareup.sqldelight:sqlite-driver:$version"
         const val plugin = "com.squareup.sqldelight:gradle-plugin:$version"
-        const val jdbc = "com.squareup.sqldelight:jdbc-driver:$version"
+    }
+
+    object SQLiteDriver {
+        private const val version = "3.36.0.3"
+        const val jdbc = "org.xerial:sqlite-jdbc:$version"
     }
 
     object Jsoup {

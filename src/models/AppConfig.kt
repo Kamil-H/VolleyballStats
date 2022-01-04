@@ -1,5 +1,6 @@
 package com.kamilh.models
 
+import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import io.ktor.application.*
 
 data class AppConfig(
@@ -13,10 +14,6 @@ data class ServerConfig(
 
 data class DatabaseConfig(
     val jdbcUrl: String,
-    val username: String,
-    val password: String,
-    val driverClassName: String,
-    val maxPoolSize: Int,
 )
 
 fun Application.config(): AppConfig {
@@ -28,10 +25,6 @@ fun Application.config(): AppConfig {
         ),
         databaseConfig = DatabaseConfig(
             jdbcUrl = dbConfig.property("jdbcUrl").getString(),
-            username = dbConfig.property("username").getString(),
-            password = dbConfig.property("password").getString(),
-            driverClassName = dbConfig.property("driverClassName").getString(),
-            maxPoolSize = dbConfig.property("maxPoolSize").getString().toInt(),
         )
     )
 }
@@ -40,10 +33,6 @@ fun TestAppConfig(): AppConfig =
     AppConfig(
         serverConfig = ServerConfig(1),
         databaseConfig = DatabaseConfig(
-            driverClassName = "org.h2.Driver",
-            jdbcUrl = "jdbc:h2:mem:;DATABASE_TO_UPPER=false;MODE=MYSQL",
-            maxPoolSize = 2,
-            username = "",
-            password = ""
+            jdbcUrl = JdbcSqliteDriver.IN_MEMORY,
         )
     )
