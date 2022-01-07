@@ -15,7 +15,7 @@ import repository.parsing.ParseError
 
 interface MatchReportEndpoint {
 
-    suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchResponse>
+    suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchResponse>
 }
 
 class WebSocketMatchReportEndpoint(
@@ -26,7 +26,7 @@ class WebSocketMatchReportEndpoint(
 
     private val url = Url.create("wss://widgets.volleystation.com/api/socket.io/?EIO=3&transport=websocket")
 
-    override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchResponse> {
+    override suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchResponse> {
         val message = "420[\"find\",\"widget/play-by-play\",{\"matchId\":\"${matchReportId.value}\",\"\$limit\":1}]"
 
         var result: NetworkResult<MatchResponse>? = null

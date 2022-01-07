@@ -53,7 +53,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
-        ).getAllTeams(tour = tourOf())
+        ).getAllTeams(tour = tourYearOf())
 
         // THEN
         require(result is Result.Success)
@@ -71,7 +71,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
-        ).getAllTeams(tour = tourOf())
+        ).getAllTeams(tour = tourYearOf())
 
         // THEN
         require(result is Result.Failure)
@@ -91,7 +91,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getAllTeams(tour = tourOf())
+        ).getAllTeams(tour = tourYearOf())
 
         // THEN
         require(result is Result.Failure)
@@ -112,7 +112,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerMapper = mapperResult,
-        ).getAllPlayers(tour = tourOf())
+        ).getAllPlayers(tour = tourYearOf())
 
         // THEN
         require(result is Result.Success)
@@ -130,7 +130,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerMapper = mapperResult,
-        ).getAllPlayers(tour = tourOf())
+        ).getAllPlayers(tour = tourYearOf())
 
         // THEN
         require(result is Result.Failure)
@@ -150,7 +150,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToPlayerMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getAllPlayers(tour = tourOf())
+        ).getAllPlayers(tour = tourYearOf())
 
         // THEN
         require(result is Result.Failure)
@@ -171,7 +171,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToAllMatchesItemMapper = mapperResult,
-        ).getAllMatches(tour = tourOf())
+        ).getAllMatches(tour = tourYearOf())
 
         // THEN
         require(result is Result.Success)
@@ -189,7 +189,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToAllMatchesItemMapper = mapperResult,
-        ).getAllMatches(tour = tourOf())
+        ).getAllMatches(tour = tourYearOf())
 
         // THEN
         require(result is Result.Failure)
@@ -209,7 +209,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToAllMatchesItemMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getAllMatches(tour = tourOf())
+        ).getAllMatches(tour = tourYearOf())
 
         // THEN
         require(result is Result.Failure)
@@ -282,7 +282,7 @@ class HttpPolishLeagueRepositoryTest {
     fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is empty then Success is returned and response is getting saved`() = runBlocking {
         // GIVEN
         val matchReportId = matchReportIdOf()
-        val tour = tourOf()
+        val tour = tourYearOf()
         val matchResponse = matchResponseOf()
         val matchReportEndpoint = matchReportEndpointOf(networkSuccessOf(matchResponse))
         var savedResponse: MatchResponse? = null
@@ -308,7 +308,7 @@ class HttpPolishLeagueRepositoryTest {
     fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is not empty then saved value is returned`() = runBlocking {
         // GIVEN
         val matchReportId = matchReportIdOf()
-        val tour = tourOf()
+        val tour = tourYearOf()
         val matchReportEndpoint = matchReportEndpointOf(networkSuccessOf(matchResponseOf()))
         val savedResponse = matchResponseOf()
         val matchResponseStorage = matchResponseStorageOf(get = savedResponse)
@@ -327,7 +327,7 @@ class HttpPolishLeagueRepositoryTest {
     fun `test that when MatchReportEndpoint returns Failure and MatchResponseStorage is not empty then saved value is returned`() = runBlocking {
         // GIVEN
         val matchReportId = matchReportIdOf()
-        val tour = tourOf()
+        val tour = tourYearOf()
         val matchReportEndpoint = matchReportEndpointOf(networkFailureOf(networkErrorOf()))
         val savedResponse = matchResponseOf()
         val matchResponseStorage = matchResponseStorageOf(get = savedResponse)
@@ -357,9 +357,9 @@ fun jsonParseErrorOf(
 
 fun <T> htmlMapperOf(result: ParseResult<T>): HtmlMapper<T> = HtmlMapper { result }
 
-fun tourOf(tour: Int = 2020): Tour = Tour.create(tour)
+fun tourYearOf(tour: Int = 2020): TourYear = TourYear.create(tour)
 
 fun matchReportEndpointOf(result: NetworkResult<MatchResponse>): MatchReportEndpoint =
     object : MatchReportEndpoint {
-        override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchResponse> = result
+        override suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchResponse> = result
     }

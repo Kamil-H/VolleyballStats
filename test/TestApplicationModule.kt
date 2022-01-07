@@ -7,10 +7,7 @@ import com.kamilh.models.Result
 import com.kamilh.models.TestAppConfig
 import com.kamilh.models.api.UserResponse
 import com.kamilh.routes.user.UserController
-import com.kamilh.storage.common.adapters.PlayerIdAdapter
-import com.kamilh.storage.common.adapters.TeamIdAdapter
-import com.kamilh.storage.common.adapters.UrlAdapter
-import com.kamilh.storage.common.adapters.UuidAdapter
+import com.kamilh.storage.common.adapters.*
 import kotlinx.serialization.json.Json
 import org.kodein.di.*
 import routes.CallResult
@@ -27,7 +24,8 @@ fun testApplicationModule(
     bindProvider { TestAppConfig() }
     bind<Json>() with provider { Json }
     bind<DatabaseFactory>() with provider { AppConfigDatabaseFactory(instance(), UuidAdapter(), OffsetDateAdapter(),
-        UrlAdapter(), TeamIdAdapter(), PlayerIdAdapter())
+        UrlAdapter(), TeamIdAdapter(), PlayerIdAdapter(), CountryAdapter(), IntAdapter(), LocalDateAdapter(),
+        LocalDateTimeAdapter(), TourYearAdapter())
     }
     bind<UserController>() with provider { userController }
     bind<CredentialsValidator>() with provider { credentialsValidator }

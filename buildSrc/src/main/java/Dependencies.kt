@@ -60,6 +60,12 @@ object Dependencies {
         private const val version = sqlDelightVersion
         const val driver = "com.squareup.sqldelight:sqlite-driver:$version"
         const val plugin = "com.squareup.sqldelight:gradle-plugin:$version"
+        const val coroutinesExtension = "com.squareup.sqldelight:coroutines-extensions-jvm:$version"
+    }
+
+    object Turbine {
+        private const val version = "0.7.0"
+        const val turbine = "app.cash.turbine:turbine:$version"
     }
 
     object SQLiteDriver {

@@ -1,7 +1,5 @@
-package com.kamilh.storage.common.exceptions
+package com.kamilh.storage.common.errors
 
-import com.kamilh.storage.common.errors.SqlError
-import com.kamilh.storage.common.errors.createSqlError
 import org.junit.Test
 
 class SqlErrorTest {
@@ -94,7 +92,7 @@ class SqlErrorTest {
     }
 
     @Test
-    fun `test if exception is SQLITE_CONSTRAINT_PRIMARYKEY and incorrect column name is passed then createSqlError returns null`() {
+    fun `test if exception is SQLITE_CONSTRAINT_PRIMARYKEY and incorrect column name is passed then createSqlError returns PrimaryKey`() {
         // GIVEN
         val tableName = "user"
         val columnName = "id"
@@ -108,5 +106,22 @@ class SqlErrorTest {
 
         // THEN
         assert(error is SqlError.PrimaryKey)
+    }
+
+    @Test
+    fun `test if exception is SQLITE_ERROR and incorrect column name is passed then createSqlError returns Error`() {
+        // GIVEN
+        val tableName = "user"
+        val columnName = "id"
+        val exception = Exception("[SQLITE_ERROR]  A UNIQUE constraint failed (UNIQUE constraint failed: $tableName.$columnName)")
+
+        // WHEN
+        val error = exception.createSqlError(
+            tableName = tableName,
+            columnName = columnName,
+        )
+
+        // THEN
+        assert(error is SqlError.Error)
     }
 }

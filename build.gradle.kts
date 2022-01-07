@@ -56,7 +56,10 @@ dependencies {
     implementation(Dependencies.Logback.classic)
 
     implementation(Dependencies.SqlDelight.driver)
+    implementation(Dependencies.SqlDelight.coroutinesExtension)
     implementation(Dependencies.SQLiteDriver.jdbc)
+
+    implementation(Dependencies.Turbine.turbine)
 
     implementation(Dependencies.Jsoup.jsoup)
 

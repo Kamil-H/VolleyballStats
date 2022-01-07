@@ -14,7 +14,7 @@ class MatchReportAnalyzer(
     private val analyzeErrorReporter: AnalyzeErrorReporter,
 ) {
 
-    suspend fun analyze(matchReport: MatchReport, tour: Tour): MatchStatistics {
+    suspend fun analyze(matchReport: MatchReport, tour: TourYear): MatchStatistics {
         val matchId = matchReport.matchId
 
         if (matchReport.scout.sets.size > matchReport.scoutData.size) {

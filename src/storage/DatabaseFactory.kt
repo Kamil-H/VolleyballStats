@@ -1,13 +1,12 @@
 package storage
 
 import com.kamilh.*
-import com.kamilh.models.AppConfig
-import com.kamilh.models.PlayerId
-import com.kamilh.models.TeamId
-import com.kamilh.models.Url
+import com.kamilh.models.*
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -25,10 +24,15 @@ interface SqlDriverCreator {
 internal class AppConfigDatabaseFactory(
 	appConfig: AppConfig,
 	uuidAdapter: ColumnAdapter<UUID, String>,
-	offsetDateAdapter : ColumnAdapter<OffsetDateTime, String>,
+	offsetDateAdapter: ColumnAdapter<OffsetDateTime, String>,
 	urlAdapter: ColumnAdapter<Url, String>,
 	teamIdAdapter: ColumnAdapter<TeamId, Long>,
 	playerIdAdapter: ColumnAdapter<PlayerId, Long>,
+    countryAdapter: ColumnAdapter<Country, String>,
+    intAdapter: ColumnAdapter<Int, Long>,
+    localDateAdapter: ColumnAdapter<LocalDate, String>,
+    localDateTimeAdapter: ColumnAdapter<LocalDateTime, String>,
+    tourYearAdapter: ColumnAdapter<TourYear, Long>,
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {
@@ -71,9 +75,18 @@ internal class AppConfigDatabaseFactory(
 				start_timeAdapter = offsetDateAdapter,
 			),
 			tour_modelAdapter = Tour_model.Adapter(
-				end_dateAdapter = offsetDateAdapter,
-				start_dateAdapter = offsetDateAdapter,
+				end_dateAdapter = localDateAdapter,
+				start_dateAdapter = localDateAdapter,
+                tour_yearAdapter = tourYearAdapter,
+                updated_atAdapter = localDateTimeAdapter,
+                winner_idAdapter = teamIdAdapter,
 			),
+			league_modelAdapter = League_model.Adapter(
+				countryAdapter = countryAdapter,
+			),
+			team_modelAdapter = Team_model.Adapter(
+				idAdapter = teamIdAdapter,
+			)
 		)
 	}
 

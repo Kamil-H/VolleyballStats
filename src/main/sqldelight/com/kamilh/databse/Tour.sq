@@ -1,0 +1,26 @@
+insert:
+INSERT INTO tour_model (name, tour_year, league_id, start_date, end_date, winner_id, updated_at) VALUES (
+?,?, (SELECT (id) FROM league_model WHERE country = :country AND division = :division),?,?,?,?);
+
+selectAll:
+SELECT * FROM tour_model;
+
+selectAllByLeague:
+SELECT name, tour_year, start_date, end_date, winner_id, updated_at, league_model.country, league_model.division FROM tour_model
+INNER JOIN league_model
+WHERE league_id = (SELECT (id) FROM league_model WHERE country = :country AND division = :division);
+
+selectByTourAndLeague:
+SELECT name, tour_year, start_date, end_date, winner_id, updated_at, league_model.country, league_model.division FROM tour_model
+INNER JOIN league_model
+WHERE tour_year = ? AND league_id = (SELECT (id) FROM league_model WHERE country = :country AND division = :division);
+
+updateEndTime:
+UPDATE tour_model
+SET end_date = ?, updated_at = ?
+WHERE id = (SELECT id FROM tour_model WHERE tour_year = ? AND league_id = (SELECT (id) FROM league_model WHERE country = :country AND division = :division));
+
+updateWinner:
+UPDATE tour_model
+SET winner_id = ?, updated_at = ?
+WHERE id = (SELECT id FROM tour_model WHERE tour_year = ? AND league_id = (SELECT (id) FROM league_model WHERE country = :country AND division = :division));

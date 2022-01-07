@@ -4,6 +4,8 @@ import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.models.Result
 import com.kamilh.models.User
 import com.kamilh.storage.common.QueryRunner
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import java.time.OffsetDateTime
@@ -15,7 +17,7 @@ class SqlUserStorageTest : DatabaseTest() {
 
     private val userStorage: UserStorage by lazy {
         SqlUserStorage(
-            queryRunner = TestQueryRunner(),
+            queryRunner = testQueryRunner,
             userQueries = userQueries
         )
     }
@@ -144,7 +146,9 @@ fun subscriptionKeyOf(
 ): SubscriptionKey =
     SubscriptionKey(value = uuid)
 
-class TestQueryRunner : QueryRunner {
+class TestQueryRunner(override val dispatcher: CoroutineDispatcher = Dispatchers.Unconfined) : QueryRunner {
     override suspend fun <T> run(body: () -> T): T = body()
     override suspend fun <T> runTransaction(body: () -> T): T = body()
 }
+
+val testQueryRunner: TestQueryRunner = TestQueryRunner()

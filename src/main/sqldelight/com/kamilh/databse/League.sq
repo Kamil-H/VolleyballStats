@@ -1,0 +1,6 @@
+insert:
+INSERT INTO league_model (country, division)
+VALUES (?, ?);
+
+selectAll:
+SELECT * FROM league_model;

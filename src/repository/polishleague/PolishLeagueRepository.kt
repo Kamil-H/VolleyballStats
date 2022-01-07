@@ -9,17 +9,17 @@ import repository.parsing.ParseResult
 
 interface PolishLeagueRepository {
 
-    suspend fun getAllTeams(tour: Tour): NetworkResult<List<Team>>
+    suspend fun getAllTeams(tour: TourYear): NetworkResult<List<Team>>
 
-    suspend fun getAllPlayers(tour: Tour): NetworkResult<List<Player>>
+    suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<Player>>
 
-    suspend fun getAllMatches(tour: Tour): NetworkResult<List<AllMatchesItem>>
+    suspend fun getAllMatches(tour: TourYear): NetworkResult<List<AllMatchesItem>>
 
     suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId>
 
-    suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchReport>
+    suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchReport>
 
-    suspend fun getPlayerDetails(tour: Tour, playerId: PlayerId): NetworkResult<PlayerDetails>
+    suspend fun getPlayerDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerDetails>
 }
 
 class HttpPolishLeagueRepository(
@@ -36,19 +36,19 @@ class HttpPolishLeagueRepository(
     private val matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper,
 ) : PolishLeagueRepository {
 
-    override suspend fun getAllTeams(tour: Tour): NetworkResult<List<Team>> =
+    override suspend fun getAllTeams(tour: TourYear): NetworkResult<List<Team>> =
         httpClient.execute(polishLeagueApi.getTeams(tour)).parseHtml(htmlToTeamMapper::map)
 
-    override suspend fun getAllPlayers(tour: Tour): NetworkResult<List<Player>> =
+    override suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<Player>> =
         httpClient.execute(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToPlayerMapper::map)
 
-    override suspend fun getAllMatches(tour: Tour): NetworkResult<List<AllMatchesItem>> =
+    override suspend fun getAllMatches(tour: TourYear): NetworkResult<List<AllMatchesItem>> =
         httpClient.execute(polishLeagueApi.getAllMatches(tour)).parseHtml(htmlToAllMatchesItemMapper::map)
 
     override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> =
         httpClient.execute(polishLeagueApi.getMatch(matchId)).parseHtml(htmlToMatchReportId::map)
 
-    override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour): NetworkResult<MatchReport> =
+    override suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchReport> =
         matchResponseStorage.get(matchReportId, tour)
             ?.let(matchResponseToMatchReportMapper::map)
             ?.let(Result.Companion::success)
@@ -56,7 +56,7 @@ class HttpPolishLeagueRepository(
                 matchResponseStorage.save(it, tour)
             }.map(matchResponseToMatchReportMapper::map)
 
-    override suspend fun getPlayerDetails(tour: Tour, playerId: PlayerId): NetworkResult<PlayerDetails> =
+    override suspend fun getPlayerDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerDetails> =
         httpClient.execute(polishLeagueApi.getPlayerDetails(tour, playerId)).parseHtml(htmlToPlayerDetailsMapper::map)
 
     private fun <T> NetworkResult<String>.parseHtml(parser: (String) -> ParseResult<T>): NetworkResult<T> =

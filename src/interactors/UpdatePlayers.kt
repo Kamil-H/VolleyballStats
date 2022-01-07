@@ -9,7 +9,7 @@ import models.PlayerWithDetails
 
 typealias UpdatePlayers = Interactor<UpdatePlayersParams, UpdatePlayersResult>
 
-data class UpdatePlayersParams(val tour: Tour)
+data class UpdatePlayersParams(val tour: TourYear)
 
 typealias UpdatePlayersResult = UnitNetworkResult
 

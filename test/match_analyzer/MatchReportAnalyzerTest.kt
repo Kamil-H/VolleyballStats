@@ -4,7 +4,7 @@ import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.repository.models.MatchResponse
 import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
-import com.kamilh.repository.polishleague.tourOf
+import com.kamilh.repository.polishleague.tourYearOf
 import com.kamilh.storage.TeamStorage
 import com.kamilh.storage.teamStorageOf
 import kotlinx.coroutines.runBlocking
@@ -19,7 +19,7 @@ import kotlin.time.Duration
 
 class MatchReportAnalyzerTest {
 
-    private val tour = tourOf()
+    private val tour = tourYearOf()
     private fun analyzer(
         teamStorage: TeamStorage = teamStorageOf(),
         strategies: List<PlayActionStrategy<*>> = emptyList(),
@@ -118,7 +118,7 @@ class MatchReportAnalyzerTest {
         )
 
         // WHEN
-        val matchStatistics = analyzer(teamStorage = teamStorage).analyze(matchReport, tourOf())
+        val matchStatistics = analyzer(teamStorage = teamStorage).analyze(matchReport, tourYearOf())
 
         // THEN
         assert(matchStatistics.matchReportId.value == matchReportId)

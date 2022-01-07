@@ -3,7 +3,7 @@ package com.kamilh
 import com.kamilh.interactors.UpdatePlayers
 import com.kamilh.interactors.UpdatePlayersParams
 import com.kamilh.models.TestAppConfig
-import com.kamilh.models.Tour
+import com.kamilh.models.TourYear
 import kotlinx.coroutines.CoroutineScope
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -24,7 +24,7 @@ suspend fun main(args: Array<String>) {
     val updatePlayers by di.instance<UpdatePlayers>()
     val result = updatePlayers(
         UpdatePlayersParams(
-            Tour.create(2020)
+            TourYear.create(2020)
         )
     )
     println(result)

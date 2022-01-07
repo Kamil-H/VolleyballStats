@@ -8,7 +8,7 @@ import com.kamilh.storage.TeamStorage
 typealias GetAllSeason = Interactor<GetAllSeasonParams, NetworkResult<Season>>
 
 data class GetAllSeasonParams(
-    val tour: Tour,
+    val tour: TourYear,
 )
 
 data class Season(
@@ -88,7 +88,7 @@ class GetAllSeasonInteractor(
 
     private fun List<PlayAction>.perfect(): List<PlayAction> = filter { it.generalInfo.effect == Effect.Perfect }
 
-    private suspend fun getMatchReport(matchId: MatchId, tour: Tour, teams: List<Team>?) {
+    private suspend fun getMatchReport(matchId: MatchId, tour: TourYear, teams: List<Team>?) {
         polishLeagueRepository.getMatchReportId(matchId)
             .onSuccess { matchReportId ->
                 getMatchReport(matchReportId, tour, teams)
@@ -98,7 +98,7 @@ class GetAllSeasonInteractor(
             }
     }
 
-    private suspend fun getMatchReport(matchReportId: MatchReportId, tour: Tour, teams: List<Team>?) {
+    private suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear, teams: List<Team>?) {
         polishLeagueRepository.getMatchReport(matchReportId, tour)
             .onSuccess { matchReport ->
                 println("${matchReport.matchTeams.home.name} vs ${matchReport.matchTeams.away.name} || ${matchReport.startDate} || ${matchReport.matchId}")
@@ -111,7 +111,7 @@ class GetAllSeasonInteractor(
     }
 
     private val actions = mutableListOf<PlayAction>()
-    private suspend fun displayStats(matchReport: MatchReport, tour: Tour, teams: List<Team>?) {
+    private suspend fun displayStats(matchReport: MatchReport, tour: TourYear, teams: List<Team>?) {
         println("${matchReport.matchTeams.home.name} vs ${matchReport.matchTeams.away.name} || ${matchReport.startDate} || ${matchReport.matchId}")
 
         val stats = matchReportAnalyzer.analyze(matchReport, tour)

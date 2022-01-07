@@ -1,3 +1,6 @@
-insertTeam:
+insert:
 INSERT OR IGNORE INTO team_model(id)
 VALUES (?);
+
+selectAll:
+SELECT * FROM team_model;

@@ -9,7 +9,7 @@ sealed class AnalyzeError {
     data class TeamNotFound(
         val matchReportId: MatchReportId,
         val teamName: String,
-        val tour: Tour,
+        val tour: TourYear,
     ) : AnalyzeError()
 
     data class PlayerNotFoundInTheTeam(
@@ -21,7 +21,7 @@ sealed class AnalyzeError {
     data class BlockNotInFirstLine(
         val matchReportId: MatchReportId,
         val team: Team,
-        val tour: Tour,
+        val tour: TourYear,
         val shirtNumber: Int,
         val position: PlayerPosition?,
         val playerId: PlayerId,
@@ -33,7 +33,7 @@ sealed class AnalyzeError {
     data class PlayerNotInGame(
         val matchReportId: MatchReportId,
         val team: Team,
-        val tour: Tour,
+        val tour: TourYear,
         val shirtNumber: Int,
         val playerId: PlayerId,
         val score: Score,
@@ -45,14 +45,14 @@ sealed class AnalyzeError {
         val matchReportId: MatchReportId,
         val score: Score,
         val set: Int,
-        val tour: Tour,
+        val tour: TourYear,
     ) : AnalyzeError()
 
     data class CalculatedScoreDifferentThanExpected(
         val matchReportId: MatchReportId,
         val calculatedScore: Score,
         val expectedScore: Score,
-        val tour: Tour,
+        val tour: TourYear,
     ) : AnalyzeError()
 
     data class WrongSubstitution(
