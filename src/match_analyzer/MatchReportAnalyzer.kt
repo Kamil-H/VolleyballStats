@@ -14,7 +14,7 @@ class MatchReportAnalyzer(
     private val analyzeErrorReporter: AnalyzeErrorReporter,
 ) {
 
-    suspend fun analyze(matchReport: MatchReport, tour: TourYear): MatchStatistics {
+    suspend fun analyze(matchReport: MatchReport, tour: TourYear, league: League = League.POLISH_LEAGUE): MatchStatistics {
         val matchId = matchReport.matchId
 
         if (matchReport.scout.sets.size > matchReport.scoutData.size) {
@@ -23,8 +23,8 @@ class MatchReportAnalyzer(
             error(error.toString())
         }
 
-        val home = teamStorage.getTeam(matchReport.matchTeams.home.name, tour)
-        val away = teamStorage.getTeam(matchReport.matchTeams.away.name, tour)
+        val home = teamStorage.getTeam(matchReport.matchTeams.home.name, league, tour)
+        val away = teamStorage.getTeam(matchReport.matchTeams.away.name, league, tour)
 
         if (home == null) {
             val error = AnalyzeError.TeamNotFound(matchId, matchReport.matchTeams.home.name, tour)

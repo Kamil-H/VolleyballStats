@@ -33,9 +33,10 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<ColumnAdapter<LocalDate, String>>() with provider { LocalDateAdapter() }
     bind<ColumnAdapter<LocalDateTime, String>>() with provider { LocalDateTimeAdapter() }
     bind<ColumnAdapter<TourYear, Long>>() with provider { TourYearAdapter() }
+    bind<ColumnAdapter<Player.Specialization, Long>>() with provider { SpecializationAdapter() }
 
     bind<DatabaseFactory>() with singleton {
-        AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+        AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<UserQueries>() with singleton {

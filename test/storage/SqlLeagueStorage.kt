@@ -26,7 +26,7 @@ class SqlLeagueStorageTest : DatabaseTest() {
         val result = storage.insert(league)
 
         // THEN
-        result.assertSuccess {  }
+        result.assertSuccess()
         assert(leagueQueries.selectAll().executeAsList().isNotEmpty())
     }
 
@@ -40,7 +40,7 @@ class SqlLeagueStorageTest : DatabaseTest() {
         val result2 = storage.insert(league)
 
         // THEN
-        result1.assertSuccess {  }
+        result1.assertSuccess()
         result2.assertFailure {
             assert(this == InsertLeagueError.LeagueAlreadyExists)
         }
@@ -57,8 +57,8 @@ class SqlLeagueStorageTest : DatabaseTest() {
         val result2 = storage.insert(league1)
 
         // THEN
-        result1.assertSuccess {  }
-        result2.assertSuccess {  }
+        result1.assertSuccess()
+        result2.assertSuccess()
     }
 
     @Test
@@ -72,7 +72,7 @@ class SqlLeagueStorageTest : DatabaseTest() {
         val result2 = storage.insert(league1)
 
         // THEN
-        result1.assertSuccess {  }
-        result2.assertSuccess {  }
+        result1.assertSuccess()
+        result2.assertSuccess()
     }
 }

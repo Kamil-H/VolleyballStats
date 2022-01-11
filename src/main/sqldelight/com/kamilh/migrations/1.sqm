@@ -1,4 +1,5 @@
 import com.kamilh.models.Country;
+import com.kamilh.models.Player.Specialization;
 import com.kamilh.models.PlayerId;
 import com.kamilh.models.TeamId;
 import com.kamilh.models.TourYear;
@@ -9,18 +10,18 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 CREATE TABLE IF NOT EXISTS league_model (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   country TEXT AS Country NOT NULL,
   division INTEGER AS Int NOT NULL,
   UNIQUE(country, division)
 );
 
 CREATE TABLE IF NOT EXISTS team_model (
-  id INTEGER AS TeamId PRIMARY KEY
+  id INTEGER AS TeamId PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tour_model (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name TEXT NOT NULL,
   tour_year INTEGER AS TourYear NOT NULL,
   league_id INTEGER NOT NULL,
@@ -34,43 +35,49 @@ CREATE TABLE IF NOT EXISTS tour_model (
 );
 
 CREATE TABLE IF NOT EXISTS tour_team_model (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name TEXT NOT NULL,
     image_url TEXT AS Url NOT NULL,
     logo_url TEXT AS Url NOT NULL,
     team_id INTEGER AS TeamId NOT NULL,
     tour_id INTEGER NOT NULL,
+    updated_at TEXT AS LocalDateTime NOT NULL,
+    UNIQUE(team_id, tour_id),
     FOREIGN KEY (team_id) REFERENCES team_model(id),
     FOREIGN KEY (tour_id) REFERENCES tour_model(id)
 );
 
 CREATE TABLE IF NOT EXISTS player_model (
-    id INTEGER AS PlayerId PRIMARY KEY,
-    birth_date TEXT AS OffsetDateTime NOT NULL,
-    height INTEGER NOT NULL,
-    weight INTEGER NOT NULL,
-    range INTEGER NOT NULL
+    id INTEGER AS PlayerId PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    birth_date TEXT AS LocalDate NOT NULL,
+    height INTEGER AS Int,
+    weight INTEGER AS Int,
+    range INTEGER AS Int,
+    updated_at TEXT AS LocalDateTime NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS team_player_model (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     image_url TEXT AS Url,
     tour_team_id INTEGER NOT NULL,
-    position TEXT NOT NULL,
+    position INTEGER AS Specialization NOT NULL,
     player_id INTEGER AS PlayerId NOT NULL,
-    number INTEGER NOT NULL,
+    number INTEGER AS Int NOT NULL,
+    updated_at TEXT AS LocalDateTime NOT NULL,
+    UNIQUE(player_id, tour_team_id),
     FOREIGN KEY (tour_team_id) REFERENCES tour_team_model(id),
     FOREIGN KEY (player_id) REFERENCES player_model(id)
 );
 
 CREATE TABLE IF NOT EXISTS match_report_model (
-  id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY NOT NULL,
   home INTEGER NOT NULL,
   away INTEGER NOT NULL,
   mvp INTEGER NOT NULL,
   best_player INTEGER,
   tour_id INTEGER NOT NULL,
-  updated TEXT AS OffsetDateTime NOT NULL,
+  updated_at TEXT AS LocalDateTime NOT NULL,
   FOREIGN KEY (home) REFERENCES tour_team_model(id),
   FOREIGN KEY (away) REFERENCES tour_team_model(id),
   FOREIGN KEY (mvp) REFERENCES team_player_model(id),

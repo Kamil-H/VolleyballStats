@@ -4,6 +4,7 @@ import com.kamilh.models.PlayerDetails
 import com.kamilh.repository.parsing.HtmlParser
 import repository.parsing.ParseResult
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -58,6 +59,7 @@ class HtmlToPlayerDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper
             weight = weight,
             range = range,
             number = number!!,
+            updatedAt = LocalDateTime.now(),
         )
     }
 }

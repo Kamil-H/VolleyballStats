@@ -1,6 +1,14 @@
 insertPlayer:
-INSERT INTO team_player_model(image_url, tour_team_id, position, player_id, number)
-VALUES ( ?, (SELECT id FROM tour_team_model WHERE team_id = :team_id), ?, ?, ?);
+INSERT INTO team_player_model(image_url, tour_team_id, position, player_id, number, updated_at)
+VALUES (?, ?, ?, ?, ?, ?);
 
-getPlayerByPlayerId:
+selectAll:
+SELECT * FROM team_player_model;
+
+selectPlayerByPlayerId:
 SELECT * FROM team_player_model WHERE player_id = ?;
+
+selectPlayersByTeam:
+SELECT team_player_model.image_url, tour_team_id, position, player_id, number, player_model.name, player_model.updated_at, team_player_model.updated_at, player_model.birth_date, player_model.height, player_model.weight, player_model.range, tour_team_model.team_id FROM team_player_model
+INNER JOIN player_model, tour_team_model
+WHERE tour_team_id = (SELECT id FROM tour_team_model WHERE team_id = :team_id AND tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country)));

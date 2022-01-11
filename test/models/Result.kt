@@ -12,12 +12,12 @@ fun <T> networkFailureOf(networkError: NetworkError): NetworkResult<T> = failure
 fun <T> parseSuccessOf(t: T): ParseResult<T> = successOf(t)
 fun <T> parseFailureOf(parseError: ParseError): ParseResult<T> = failureOf(parseError)
 
-fun <V, E: Error> Result<V, E>.assertSuccess(asserter: V.() -> Unit) {
+fun <V, E: Error> Result<V, E>.assertSuccess(asserter: (V.() -> Unit)? = null) {
     require(this is Result.Success<V>)
-    asserter(this.value)
+    asserter?.invoke(this.value)
 }
 
-fun <V, E: Error> Result<V, E>.assertFailure(asserter: E.() -> Unit) {
+fun <V, E: Error> Result<V, E>.assertFailure(asserter: (E.() -> Unit)? = null) {
     require(this is Result.Failure<E>)
-    asserter(this.error)
+    asserter?.invoke(this.error)
 }

@@ -1,14 +1,9 @@
 insertPlayer:
-INSERT INTO player_model(id, birth_date, height, weight, range)
-VALUES (?, ?, ?, ?, ?)
-ON CONFLICT(id) DO UPDATE SET
-birth_date = birth_date,
-height = height,
-weight = weight,
-range = range;
+INSERT OR IGNORE INTO player_model(id, name, birth_date, height, weight, range, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?);
 
-getPlayer:
+selectAll:
 SELECT * FROM player_model;
 
-getPlayerById:
+selectPlayerById:
 SELECT * FROM player_model WHERE id = ?;

@@ -5,6 +5,11 @@ INSERT INTO tour_model (name, tour_year, league_id, start_date, end_date, winner
 selectAll:
 SELECT * FROM tour_model;
 
+selectId:
+SELECT id FROM tour_model
+WHERE tour_year = :tour_year
+AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country);
+
 selectAllByLeague:
 SELECT name, tour_year, start_date, end_date, winner_id, updated_at, league_model.country, league_model.division FROM tour_model
 INNER JOIN league_model

@@ -1,13 +1,15 @@
-insertTourTeam:
-INSERT INTO tour_team_model(name, image_url, logo_url, team_id, tour_id)
-VALUES (:name, :image_url, :logo_url, :team_id, (SELECT id FROM tour_model WHERE tour_year = :tour_year))
-ON CONFLICT(tour_id) DO UPDATE SET
-name = name,
-image_url = image_url,
-logo_url = logo_url;
+insert:
+INSERT INTO tour_team_model(name, image_url, logo_url, team_id, tour_id, updated_at)
+VALUES (:name, :image_url, :logo_url, :team_id, (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country)), ?);
 
-getTeam:
-SELECT * FROM tour_team_model WHERE tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year);
+selectAll:
+SELECT * FROM tour_team_model;
 
-getTeamByName:
-SELECT * FROM tour_team_model WHERE tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year) AND name = ?;
+selectId:
+SELECT id FROM tour_team_model WHERE team_id = ? AND tour_id = ?;
+
+selectAllByTourYear:
+SELECT * FROM tour_team_model WHERE tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));
+
+selectByTourYearAndName:
+SELECT * FROM tour_team_model WHERE name = ? AND tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));

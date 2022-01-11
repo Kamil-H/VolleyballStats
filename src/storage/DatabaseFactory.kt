@@ -33,6 +33,7 @@ internal class AppConfigDatabaseFactory(
     localDateAdapter: ColumnAdapter<LocalDate, String>,
     localDateTimeAdapter: ColumnAdapter<LocalDateTime, String>,
     tourYearAdapter: ColumnAdapter<TourYear, Long>,
+	specializationAdapter: ColumnAdapter<Player.Specialization, Long>,
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {
@@ -51,20 +52,24 @@ internal class AppConfigDatabaseFactory(
 				image_urlAdapter = urlAdapter,
 				logo_urlAdapter = urlAdapter,
 				team_idAdapter = teamIdAdapter,
+				updated_atAdapter = localDateTimeAdapter,
 			),
 			player_modelAdapter = Player_model.Adapter(
 				idAdapter = playerIdAdapter,
-				birth_dateAdapter = offsetDateAdapter,
+				birth_dateAdapter = localDateAdapter,
+				updated_atAdapter = localDateTimeAdapter,
 			),
 			team_player_modelAdapter = Team_player_model.Adapter(
 				image_urlAdapter = urlAdapter,
 				player_idAdapter = playerIdAdapter,
+				updated_atAdapter = localDateTimeAdapter,
+				positionAdapter = specializationAdapter,
 			),
 			match_modelAdapter = Match_model.Adapter(
 				dateAdapter = offsetDateAdapter,
 			),
 			match_report_modelAdapter = Match_report_model.Adapter(
-				updatedAdapter = offsetDateAdapter,
+				updated_atAdapter = localDateTimeAdapter,
 			),
 			point_modelAdapter = Point_model.Adapter(
 				end_timeAdapter = offsetDateAdapter,
