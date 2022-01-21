@@ -4,3 +4,8 @@ VALUES (?);
 
 selectAll:
 SELECT * FROM team_model;
+
+updateCode:
+UPDATE team_model
+SET code = ?
+WHERE id = ?;

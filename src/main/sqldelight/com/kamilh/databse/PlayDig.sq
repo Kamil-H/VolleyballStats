@@ -1,0 +1,23 @@
+insert:
+INSERT INTO play_dig_model (play_id, after_side_out, attacker_id, rebounder_id)
+VALUES (?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM play_dig_model;
+
+selectAllDigsByTourId:
+SELECT dig.*, attacker_player_id.player_id AS attacker_player_id, rebounder_player_id.player_id AS rebounder_player_id,
+play_model.break_point, play_model.effect, play_model.position, team_player.player_id AS player_id, team.team_id AS team_id,
+point_model.id AS point_id, play_model.play_index AS play_index
+FROM play_dig_model dig
+INNER JOIN
+play_model ON play_model.id = dig.play_id,
+point_model ON point_model.id = play_model.point_id,
+set_model ON set_model.id = point_model.set_id,
+team_player_model team_player ON play_model.player_id = team_player.id,
+tour_team_model team ON team_player.tour_team_id = team.id
+LEFT JOIN
+team_player_model attacker_player_id ON attacker_player_id.id = dig.attacker_id
+LEFT JOIN
+team_player_model rebounder_player_id ON rebounder_player_id.id = dig.rebounder_id
+WHERE set_model.match_statistics_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);

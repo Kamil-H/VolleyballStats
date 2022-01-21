@@ -9,6 +9,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.time.Duration
 
 interface DatabaseFactory {
 	val database: Database
@@ -29,11 +30,15 @@ internal class AppConfigDatabaseFactory(
 	teamIdAdapter: ColumnAdapter<TeamId, Long>,
 	playerIdAdapter: ColumnAdapter<PlayerId, Long>,
     countryAdapter: ColumnAdapter<Country, String>,
-    intAdapter: ColumnAdapter<Int, Long>,
     localDateAdapter: ColumnAdapter<LocalDate, String>,
     localDateTimeAdapter: ColumnAdapter<LocalDateTime, String>,
     tourYearAdapter: ColumnAdapter<TourYear, Long>,
 	specializationAdapter: ColumnAdapter<Player.Specialization, Long>,
+	matchReportIdAdapter: ColumnAdapter<MatchReportId, Long>,
+	durationAdapter: ColumnAdapter<Duration, Long>,
+	phaseAdapter: ColumnAdapter<Phase, String>,
+	effectAdapter: ColumnAdapter<Effect, String>,
+	positionAdapter: ColumnAdapter<PlayerPosition, Long>,
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {
@@ -67,9 +72,7 @@ internal class AppConfigDatabaseFactory(
 			),
 			match_modelAdapter = Match_model.Adapter(
 				dateAdapter = offsetDateAdapter,
-			),
-			match_report_modelAdapter = Match_report_model.Adapter(
-				updated_atAdapter = localDateTimeAdapter,
+				match_statistics_idAdapter = matchReportIdAdapter,
 			),
 			point_modelAdapter = Point_model.Adapter(
 				end_timeAdapter = offsetDateAdapter,
@@ -78,6 +81,8 @@ internal class AppConfigDatabaseFactory(
 			set_modelAdapter = Set_model.Adapter(
 				end_timeAdapter = offsetDateAdapter,
 				start_timeAdapter = offsetDateAdapter,
+				match_statistics_idAdapter = matchReportIdAdapter,
+				durationAdapter = durationAdapter,
 			),
 			tour_modelAdapter = Tour_model.Adapter(
 				end_dateAdapter = localDateAdapter,
@@ -91,6 +96,32 @@ internal class AppConfigDatabaseFactory(
 			),
 			team_modelAdapter = Team_model.Adapter(
 				idAdapter = teamIdAdapter,
+			),
+			match_appearance_modelAdapter = Match_appearance_model.Adapter(
+				match_statistics_idAdapter = matchReportIdAdapter,
+			),
+			match_statistics_modelAdapter = Match_statistics_model.Adapter(
+				idAdapter = matchReportIdAdapter,
+				phaseAdapter = phaseAdapter,
+				updated_atAdapter = localDateTimeAdapter,
+			),
+			play_attack_modelAdapter = Play_attack_model.Adapter(
+				receive_effectAdapter = effectAdapter,
+				set_effectAdapter = effectAdapter,
+			),
+			play_modelAdapter = Play_model.Adapter(
+				effectAdapter = effectAdapter,
+				positionAdapter = positionAdapter,
+			),
+			play_receive_modelAdapter = Play_receive_model.Adapter(
+				attack_effectAdapter = effectAdapter,
+				set_effectAdapter = effectAdapter,
+			),
+			play_serve_modelAdapter = Play_serve_model.Adapter(
+				receiver_effectAdapter = effectAdapter,
+			),
+			play_set_modelAdapter = Play_set_model.Adapter(
+				attacker_positionAdapter = positionAdapter,
 			)
 		)
 	}

@@ -13,7 +13,7 @@ data class MatchReport(
     val matchId: MatchReportId,
     val matchNumber: String?,
     val officials: Officials,
-    val phase: String,
+    val phase: Phase,
     val remarks: String?,
     val commissionerRemarks: String?,
     val scout: Scout,
@@ -57,8 +57,8 @@ data class Settings(
 )
 
 data class MatchTeams(
-    val away: MatchTeam,
-    val home: MatchTeam,
+    val away: MatchReportTeam,
+    val home: MatchReportTeam,
 )
 
 data class Commissioner(
@@ -232,7 +232,7 @@ data class Play(
     val team: TeamType,
 )
 
-data class MatchTeam(
+data class MatchReportTeam(
     val captain: Int,
     val code: String,
     val libero: List<Int>,

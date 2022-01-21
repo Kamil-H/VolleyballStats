@@ -29,11 +29,6 @@ fun AnalysisInput.generalInfo(play: AnalysisInput.Play): PlayAction.GeneralInfo 
             position = play.position,
             teamId = play.team,
         ),
-        matchId = matchId,
-        set = set,
         effect = play.effect,
-        score = score,
-        rallyStartTime = rallyStartTime,
-        rallyEndTime = rallyEndTime,
         breakPoint = plays.first().team == play.team,
     )

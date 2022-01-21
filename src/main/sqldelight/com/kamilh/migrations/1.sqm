@@ -1,6 +1,10 @@
 import com.kamilh.models.Country;
+import com.kamilh.models.Effect;
+import com.kamilh.models.MatchReportId;
+import com.kamilh.models.Phase;
 import com.kamilh.models.Player.Specialization;
 import com.kamilh.models.PlayerId;
+import com.kamilh.models.PlayerPosition;
 import com.kamilh.models.TeamId;
 import com.kamilh.models.TourYear;
 import com.kamilh.models.Url;
@@ -8,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import kotlin.time.Duration;
 
 CREATE TABLE IF NOT EXISTS league_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -17,7 +22,8 @@ CREATE TABLE IF NOT EXISTS league_model (
 );
 
 CREATE TABLE IF NOT EXISTS team_model (
-  id INTEGER AS TeamId PRIMARY KEY NOT NULL
+  id INTEGER AS TeamId PRIMARY KEY NOT NULL,
+  code TEXT DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tour_model (
@@ -49,6 +55,9 @@ CREATE TABLE IF NOT EXISTS tour_team_model (
 
 CREATE TABLE IF NOT EXISTS player_model (
     id INTEGER AS PlayerId PRIMARY KEY NOT NULL,
+    first_name TEXT DEFAULT NULL,
+    last_name TEXT DEFAULT NULL,
+    is_foreign INTEGER AS Boolean DEFAULT NULL,
     name TEXT NOT NULL,
     birth_date TEXT AS LocalDate NOT NULL,
     height INTEGER AS Int,
@@ -70,13 +79,14 @@ CREATE TABLE IF NOT EXISTS team_player_model (
     FOREIGN KEY (player_id) REFERENCES player_model(id)
 );
 
-CREATE TABLE IF NOT EXISTS match_report_model (
-  id INTEGER PRIMARY KEY NOT NULL,
+CREATE TABLE IF NOT EXISTS match_statistics_model (
+  id INTEGER AS MatchReportId PRIMARY KEY NOT NULL,
   home INTEGER NOT NULL,
   away INTEGER NOT NULL,
   mvp INTEGER NOT NULL,
   best_player INTEGER,
   tour_id INTEGER NOT NULL,
+  phase TEXT AS Phase NOT NULL,
   updated_at TEXT AS LocalDateTime NOT NULL,
   FOREIGN KEY (home) REFERENCES tour_team_model(id),
   FOREIGN KEY (away) REFERENCES tour_team_model(id),
@@ -85,21 +95,48 @@ CREATE TABLE IF NOT EXISTS match_report_model (
   FOREIGN KEY (tour_id) REFERENCES tour_model(id)
 );
 
+CREATE TABLE IF NOT EXISTS match_appearance_model (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    tour_team_id INTEGER NOT NULL,
+    player_id INTEGER NOT NULL,
+    match_statistics_id INTEGER AS MatchReportId NOT NULL,
+    FOREIGN KEY (player_id) REFERENCES team_player_model(id),
+    FOREIGN KEY (tour_team_id) REFERENCES tour_team_model(id),
+    FOREIGN KEY (match_statistics_id) REFERENCES match_statistics_model(id)
+);
+
 CREATE TABLE IF NOT EXISTS set_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  number INTEGER NOT NULL,
-  home_score INTEGER NOT NULL,
-  away_score INTEGER NOT NULL,
+  number INTEGER AS Int NOT NULL,
+  home_score INTEGER AS Int NOT NULL,
+  away_score INTEGER AS Int NOT NULL,
   start_time TEXT AS OffsetDateTime NOT NULL,
   end_time TEXT AS OffsetDateTime NOT NULL,
-  match_report_id INTEGER NOT NULL,
-  FOREIGN KEY (match_report_id) REFERENCES match_report_model(id)
+  duration INTEGER AS Duration NOT NULL,
+  match_statistics_id INTEGER AS MatchReportId NOT NULL,
+  FOREIGN KEY (match_statistics_id) REFERENCES match_statistics_model(id)
+);
+
+CREATE TABLE IF NOT EXISTS point_lineup_model (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  p1 INTEGER NOT NULL,
+  p2 INTEGER NOT NULL,
+  p3 INTEGER NOT NULL,
+  p4 INTEGER NOT NULL,
+  p5 INTEGER NOT NULL,
+  p6 INTEGER NOT NULL,
+  FOREIGN KEY (p1) REFERENCES team_player_model(id),
+  FOREIGN KEY (p2) REFERENCES team_player_model(id),
+  FOREIGN KEY (p3) REFERENCES team_player_model(id),
+  FOREIGN KEY (p4) REFERENCES team_player_model(id),
+  FOREIGN KEY (p5) REFERENCES team_player_model(id),
+  FOREIGN KEY (p6) REFERENCES team_player_model(id)
 );
 
 CREATE TABLE IF NOT EXISTS point_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  home_score INTEGER NOT NULL,
-  away_score INTEGER NOT NULL,
+  home_score INTEGER AS Int NOT NULL,
+  away_score INTEGER AS Int NOT NULL,
   start_time TEXT AS OffsetDateTime NOT NULL,
   end_time TEXT AS OffsetDateTime NOT NULL,
   point INTEGER NOT NULL,
@@ -108,15 +145,16 @@ CREATE TABLE IF NOT EXISTS point_model (
   away_lineup INTEGER NOT NULL,
   FOREIGN KEY (point) REFERENCES tour_team_model(id),
   FOREIGN KEY (set_id) REFERENCES set_model(id),
-  FOREIGN KEY (home_lineup) REFERENCES set_model(id),
-  FOREIGN KEY (away_lineup) REFERENCES set_model(id)
+  FOREIGN KEY (home_lineup) REFERENCES point_lineup_model(id),
+  FOREIGN KEY (away_lineup) REFERENCES point_lineup_model(id)
 );
 
 CREATE TABLE IF NOT EXISTS play_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   player_id INTEGER NOT NULL,
-  position TEXT NOT NULL,
-  effect TEXT NOT NULL,
+  play_index INTEGER AS Int NOT NULL,
+  position INTEGER AS PlayerPosition,
+  effect TEXT AS Effect NOT NULL,
   break_point INTEGER AS Boolean NOT NULL,
   point_id INTEGER NOT NULL,
   FOREIGN KEY (player_id) REFERENCES team_player_model(id),
@@ -126,8 +164,8 @@ CREATE TABLE IF NOT EXISTS play_model (
 CREATE TABLE IF NOT EXISTS play_serve_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   play_id INTEGER NOT NULL,
-  receiver_id INTEGER NOT NULL,
-  receiver_effect TEXT,
+  receiver_id INTEGER,
+  receiver_effect TEXT AS Effect,
   FOREIGN KEY (play_id) REFERENCES play_model(id),
   FOREIGN KEY (receiver_id) REFERENCES team_player_model(id)
 );
@@ -136,8 +174,8 @@ CREATE TABLE IF NOT EXISTS play_receive_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   play_id INTEGER NOT NULL,
   server_id INTEGER NOT NULL,
-  attack_effect TEXT,
-  set_effect TEXT,
+  attack_effect TEXT AS Effect,
+  set_effect TEXT AS Effect,
   FOREIGN KEY (play_id) REFERENCES play_model(id),
   FOREIGN KEY (server_id) REFERENCES team_player_model(id)
 );
@@ -155,9 +193,9 @@ CREATE TABLE IF NOT EXISTS play_attack_model (
   side_out INTEGER AS Boolean NOT NULL,
   block_attempt INTEGER AS Boolean NOT NULL,
   dig_attempt INTEGER AS Boolean NOT NULL,
-  receive_effect TEXT,
+  receive_effect TEXT AS Effect,
   receive_id INTEGER,
-  set_effect TEXT,
+  set_effect TEXT AS Effect,
   setter_id INTEGER,
   FOREIGN KEY (play_id) REFERENCES play_model(id),
   FOREIGN KEY (receive_id) REFERENCES team_player_model(id),
@@ -168,7 +206,7 @@ CREATE TABLE IF NOT EXISTS play_block_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   play_id INTEGER NOT NULL,
   after_side_out INTEGER AS Boolean NOT NULL,
-  attacker_id INTEGER,
+  attacker_id INTEGER NOT NULL,
   setter_id INTEGER,
   FOREIGN KEY (play_id) REFERENCES play_model(id),
   FOREIGN KEY (attacker_id) REFERENCES team_player_model(id),
@@ -186,32 +224,24 @@ CREATE TABLE IF NOT EXISTS play_dig_model (
   FOREIGN KEY (rebounder_id) REFERENCES team_player_model(id)
 );
 
-CREATE TABLE IF NOT EXISTS point_lineup_model (
+CREATE TABLE IF NOT EXISTS play_set_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  p1 INTEGER NOT NULL,
-  p2 INTEGER NOT NULL,
-  p3 INTEGER NOT NULL,
-  p4 INTEGER NOT NULL,
-  p5 INTEGER NOT NULL,
-  p6 INTEGER NOT NULL,
-  point_id INTEGER NOT NULL,
-  tour_team_id INTEGER NOT NULL,
-  FOREIGN KEY (p1) REFERENCES team_player_model(id),
-  FOREIGN KEY (p2) REFERENCES team_player_model(id),
-  FOREIGN KEY (p3) REFERENCES team_player_model(id),
-  FOREIGN KEY (p4) REFERENCES team_player_model(id),
-  FOREIGN KEY (p5) REFERENCES team_player_model(id),
-  FOREIGN KEY (p6) REFERENCES team_player_model(id),
-  FOREIGN KEY (point_id) REFERENCES point_model(id),
-  FOREIGN KEY (tour_team_id) REFERENCES tour_team_model(id)
+  play_id INTEGER NOT NULL,
+  side_out INTEGER AS Boolean NOT NULL,
+  attacker_id INTEGER,
+  attacker_position INTEGER AS PlayerPosition,
+  FOREIGN KEY (play_id) REFERENCES play_model(id),
+  FOREIGN KEY (attacker_id) REFERENCES team_player_model(id)
 );
 
 CREATE TABLE IF NOT EXISTS match_model (
   id INTEGER PRIMARY KEY,
   state TEXT NOT NULL,
-  date TEXT AS OffsetDateTime NOT NULL,
-  match_report_id INTEGER,
-  FOREIGN KEY (match_report_id) REFERENCES match_report_model(id)
+  date TEXT AS OffsetDateTime,
+  match_statistics_id INTEGER AS MatchReportId,
+  tour_id INTEGER NOT NULL,
+  FOREIGN KEY (match_statistics_id) REFERENCES match_statistics_model(id),
+  FOREIGN KEY (tour_id) REFERENCES tour_model(id)
 );
 
 CREATE TABLE IF NOT EXISTS user_model (

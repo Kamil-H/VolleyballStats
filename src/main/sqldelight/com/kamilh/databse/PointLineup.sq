@@ -1,0 +1,12 @@
+insert:
+INSERT INTO point_lineup_model (p1, p2, p3, p4, p5, p6)
+VALUES (?, ?, ?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM point_lineup_model;
+
+selectAllById:
+SELECT * FROM play_freeball_model WHERE id = ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

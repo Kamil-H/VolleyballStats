@@ -5,8 +5,8 @@ VALUES (?, ?, ?, ?, ?, ?);
 selectAll:
 SELECT * FROM team_player_model;
 
-selectPlayerByPlayerId:
-SELECT * FROM team_player_model WHERE player_id = ?;
+selectTeamPlayerByPlayerId:
+SELECT id FROM team_player_model WHERE player_id = ? AND tour_team_id = ?;
 
 selectPlayersByTeam:
 SELECT team_player_model.image_url, tour_team_id, position, player_id, number, player_model.name, player_model.updated_at, team_player_model.updated_at, player_model.birth_date, player_model.height, player_model.weight, player_model.range, tour_team_model.team_id FROM team_player_model

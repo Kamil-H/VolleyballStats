@@ -1,5 +1,6 @@
 package com.kamilh.match_analyzer
 
+import com.kamilh.extensions.atPolandOffset
 import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.repository.models.MatchResponse
@@ -15,6 +16,7 @@ import match_analyzer.lineupOf
 import org.junit.Test
 import java.io.File
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import kotlin.time.Duration
 
 class MatchReportAnalyzerTest {
@@ -56,7 +58,7 @@ class MatchReportAnalyzerTest {
         val home = "home"
         val matchReport = matchReportOf(
             matchTeams = matchTeamsOf(
-                home = matchTeamOf(
+                home = matchReportTeamOf(
                     name = home
                 )
             )
@@ -80,8 +82,8 @@ class MatchReportAnalyzerTest {
         val away = "away"
         val matchReport = matchReportOf(
             matchTeams = matchTeamsOf(
-                away = matchTeamOf(name = away),
-                home = matchTeamOf(name = home),
+                away = matchReportTeamOf(name = away),
+                home = matchReportTeamOf(name = home),
             )
         )
         val errors: MutableList<AnalyzeError> = mutableListOf()
@@ -122,8 +124,8 @@ class MatchReportAnalyzerTest {
 
         // THEN
         assert(matchStatistics.matchReportId.value == matchReportId)
-        assert(matchStatistics.home.value == 0L)
-        assert(matchStatistics.away.value == 1L)
+        assert(matchStatistics.home.teamId.value == 0L)
+        assert(matchStatistics.away.teamId.value == 1L)
         assert(matchStatistics.mvp.value == 22573L)
         assert(matchStatistics.bestPlayer?.value == 2100768L)
 
@@ -201,21 +203,21 @@ class MatchReportAnalyzerTest {
         endTime: String,
         duration: Int,
     ): MatchTime = MatchTime(
-        startTime = LocalDateTime.parse(startTime),
-        endTime = LocalDateTime.parse(endTime),
+        startTime = LocalDateTime.parse(startTime).atPolandOffset(),
+        endTime = LocalDateTime.parse(endTime).atPolandOffset(),
         duration = Duration.minutes(duration),
     )
 
     private data class MatchTime(
-        val startTime: LocalDateTime,
-        val endTime: LocalDateTime,
+        val startTime: OffsetDateTime,
+        val endTime: OffsetDateTime,
         val duration: Duration,
     )
+}
 
-    private fun loadMatchReportFile(fileName: String): MatchReport {
-        val pathName = javaClass.classLoader?.getResource(fileName)?.file ?: error("No such file: $fileName")
-        val content = File(pathName).readText()
-        val response = Json { ignoreUnknownKeys = true }.decodeFromString<MatchResponse>(content)
-        return MatchResponseToMatchReportMapper().map(response)
-    }
+fun Any.loadMatchReportFile(fileName: String): MatchReport {
+    val pathName = javaClass.classLoader?.getResource(fileName)?.file ?: error("No such file: $fileName")
+    val content = File(pathName).readText()
+    val response = Json { ignoreUnknownKeys = true }.decodeFromString<MatchResponse>(content)
+    return MatchResponseToMatchReportMapper().map(response)
 }

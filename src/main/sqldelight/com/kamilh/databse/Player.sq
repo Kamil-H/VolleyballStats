@@ -7,3 +7,8 @@ SELECT * FROM player_model;
 
 selectPlayerById:
 SELECT * FROM player_model WHERE id = ?;
+
+updateInfo:
+UPDATE player_model
+SET first_name = ?, last_name = ?, is_foreign = ?
+WHERE id = ?;

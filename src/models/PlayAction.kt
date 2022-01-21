@@ -1,7 +1,5 @@
 package com.kamilh.models
 
-import java.time.LocalDateTime
-
 sealed class PlayAction {
 
     abstract val generalInfo: GeneralInfo
@@ -14,12 +12,7 @@ sealed class PlayAction {
 
     data class GeneralInfo(
         val playerInfo: PlayerInfo,
-        val matchId: MatchReportId,
-        val set: Int,
         val effect: Effect,
-        val score: Score,
-        val rallyStartTime: LocalDateTime,
-        val rallyEndTime: LocalDateTime,
         val breakPoint: Boolean,
     )
 

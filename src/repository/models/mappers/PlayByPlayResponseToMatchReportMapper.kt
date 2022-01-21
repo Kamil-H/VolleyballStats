@@ -18,7 +18,7 @@ class MatchResponseToMatchReportMapper {
             matchId = MatchReportId(from.matchId.toLong()),
             matchNumber = from.matchNumber,
             officials = from.officials.toOfficials(),
-            phase = from.phase,
+            phase = Phase.create(from.phase),
             remarks = from.remarks,
             commissionerRemarks = from.commissionerRemarks,
             scout = from.scout.toScout(),
@@ -36,8 +36,8 @@ class MatchResponseToMatchReportMapper {
             home = home.toMatchTeam(),
         )
 
-    private fun TeamResponse.toMatchTeam(): MatchTeam =
-        MatchTeam(
+    private fun TeamResponse.toMatchTeam(): MatchReportTeam =
+        MatchReportTeam(
             captain = captain,
             code = code,
             libero = libero,

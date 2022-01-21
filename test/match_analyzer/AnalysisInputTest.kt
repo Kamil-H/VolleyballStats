@@ -19,11 +19,6 @@ class AnalysisInputTest {
         assert(generalInfo.playerInfo.playerId == play.player)
         assert(generalInfo.playerInfo.position == play.position)
         assert(generalInfo.playerInfo.teamId == play.team)
-        assert(generalInfo.matchId == analysisInput.matchId)
-        assert(generalInfo.set == analysisInput.set)
         assert(generalInfo.effect == play.effect)
-        assert(generalInfo.score == analysisInput.score)
-        assert(generalInfo.rallyStartTime == analysisInput.rallyStartTime)
-        assert(generalInfo.rallyEndTime == analysisInput.rallyEndTime)
     }
 }

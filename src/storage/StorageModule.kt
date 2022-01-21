@@ -18,6 +18,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.time.Duration
 
 private const val MODULE_NAME = "DI_STORAGE_MODULE"
 val storageModule = DI.Module(name = MODULE_NAME) {
@@ -29,14 +30,19 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<ColumnAdapter<TeamId, Long>>() with provider { TeamIdAdapter() }
     bind<ColumnAdapter<PlayerId, Long>>() with provider { PlayerIdAdapter() }
     bind<ColumnAdapter<Country, String>>() with provider { CountryAdapter() }
-    bind<ColumnAdapter<Int, Long>>() with provider { IntAdapter() }
     bind<ColumnAdapter<LocalDate, String>>() with provider { LocalDateAdapter() }
     bind<ColumnAdapter<LocalDateTime, String>>() with provider { LocalDateTimeAdapter() }
     bind<ColumnAdapter<TourYear, Long>>() with provider { TourYearAdapter() }
     bind<ColumnAdapter<Player.Specialization, Long>>() with provider { SpecializationAdapter() }
+    bind<ColumnAdapter<MatchReportId, Long>>() with provider { MatchReportIdAdapter() }
+    bind<ColumnAdapter<Duration, Long>>() with provider { DurationAdapter() }
+    bind<ColumnAdapter<Phase, String>>() with provider { PhaseAdapter() }
+    bind<ColumnAdapter<Effect, String>>() with provider { EffectAdapter() }
+    bind<ColumnAdapter<PlayerPosition, Long>>() with provider { PositionAdapter() }
 
     bind<DatabaseFactory>() with singleton {
-        AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+        AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
+            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<UserQueries>() with singleton {

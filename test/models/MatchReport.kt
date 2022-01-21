@@ -14,7 +14,7 @@ fun matchReportOf(
     matchId: MatchReportId = MatchReportId(0),
     matchNumber: String? = null,
     officials: Officials = officialsOf(),
-    phase: String = "",
+    phase: Phase = Phase.PlayOff,
     remarks: String? = null,
     commissionerRemarks: String? = null,
     scout: Scout = scoutOf(),
@@ -215,15 +215,15 @@ fun settingsOf(
     )
 
 fun teamsOf(
-    away: MatchTeam = matchTeamOf(),
-    home: MatchTeam = matchTeamOf(),
+    away: MatchReportTeam = matchReportTeamOf(),
+    home: MatchReportTeam = matchReportTeamOf(),
 ): MatchTeams =
     MatchTeams(
         away = away,
         home = home,
     )
 
-fun matchTeamOf(
+fun matchReportTeamOf(
     captain: Int = 0,
     code: String = "",
     libero: List<Int> = emptyList(),
@@ -231,8 +231,8 @@ fun matchTeamOf(
     players: List<TeamPlayer> = emptyList(),
     shortName: String = "",
     staff: Staff = staffOf(),
-): MatchTeam =
-    MatchTeam(
+): MatchReportTeam =
+    MatchReportTeam(
         captain = captain,
         code = code,
         libero = libero,
@@ -243,8 +243,8 @@ fun matchTeamOf(
     )
 
 fun matchTeamsOf(
-    home: MatchTeam = matchTeamOf(),
-    away: MatchTeam = matchTeamOf(),
+    home: MatchReportTeam = matchReportTeamOf(),
+    away: MatchReportTeam = matchReportTeamOf(),
 ): MatchTeams = MatchTeams(
     away = away,
     home = home,

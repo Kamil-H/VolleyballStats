@@ -1,0 +1,34 @@
+insert:
+INSERT INTO point_model (home_score, away_score, start_time, end_time, point, set_id, home_lineup, away_lineup)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM point_model;
+
+selectAllPointsByTourId:
+SELECT point_model.*,
+home_p1.player_id AS home_p1, home_p2.player_id AS home_p2, home_p3.player_id AS home_p3, home_p4.player_id AS home_p4, home_p5.player_id AS home_p5, home_p6.player_id AS home_p6,
+away_p1.player_id AS away_p1, away_p2.player_id AS away_p2, away_p3.player_id AS away_p3, away_p4.player_id AS away_p4, away_p5.player_id AS away_p5, away_p6.player_id AS away_p6,
+tour_team.team_id AS point_team_id FROM point_model
+INNER JOIN
+set_model ON set_model.id = set_id,
+point_lineup_model home_lineup ON home_lineup = home_lineup.id,
+point_lineup_model away_lineup ON away_lineup = away_lineup.id,
+tour_team_model tour_team ON tour_team.id = point,
+team_player_model home_p1 ON home_lineup.p1 = home_p1.id,
+team_player_model home_p2 ON home_lineup.p2 = home_p2.id,
+team_player_model home_p3 ON home_lineup.p3 = home_p3.id,
+team_player_model home_p4 ON home_lineup.p4 = home_p4.id,
+team_player_model home_p5 ON home_lineup.p5 = home_p5.id,
+team_player_model home_p6 ON home_lineup.p6 = home_p6.id,
+team_player_model away_p1 ON away_lineup.p1 = away_p1.id,
+team_player_model away_p2 ON away_lineup.p2 = away_p2.id,
+team_player_model away_p3 ON away_lineup.p3 = away_p3.id,
+team_player_model away_p4 ON away_lineup.p4 = away_p4.id,
+team_player_model away_p5 ON away_lineup.p5 = away_p5.id,
+team_player_model away_p6 ON away_lineup.p6 = away_p6.id
+WHERE set_model.match_statistics_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?)
+ORDER BY point_model.home_score AND point_model.away_score;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

@@ -1,0 +1,21 @@
+insert:
+INSERT INTO match_model (id, state, date, match_statistics_id, tour_id)
+VALUES (?, ?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM match_model;
+
+updateState:
+UPDATE match_model
+SET state = ?
+WHERE id = ?;
+
+updateMatchReport:
+UPDATE match_model
+SET match_statistics_id = ?
+WHERE id = ?;
+
+updateDate:
+UPDATE match_model
+SET date = ?
+WHERE id = ?;

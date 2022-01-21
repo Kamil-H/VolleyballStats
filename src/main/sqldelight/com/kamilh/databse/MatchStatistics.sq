@@ -1,0 +1,51 @@
+insert:
+INSERT INTO match_statistics_model(id, home, away, mvp, best_player, tour_id, phase, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM match_statistics_model;
+
+selectAllById:
+SELECT * FROM match_statistics_model WHERE id = ?;
+
+selectAllStatsByTourId:
+SELECT match_statistics_model.id, mvp_model.player_id AS mvp, best_player_model.player_id AS best_player,
+match_statistics_model.updated_at, phase, home, away
+FROM match_statistics_model
+INNER JOIN
+team_player_model mvp_model ON mvp_model.id = mvp
+LEFT JOIN
+team_player_model best_player_model ON best_player_model.id = best_player
+WHERE tour_id = ?;
+
+-- selectAllByTour:
+-- SELECT
+-- stats.id, stats.home, stats.away, stats.mvp, stats.best_player, stats.tour_id, stats.updated_at,
+-- set_model.number AS set_number, set_model.home_score AS set_home_score, set_model.away_score AS set_away_score, set_model.start_time AS set_start_time, set_model.end_time AS set_end_time, set_model.match_statistics_id AS set_match_statistics_id,
+-- point_model.home_score AS point_home_score, point_model.away_score AS point_away_score, point_model.start_time AS point_start_time, point_model.end_time AS point_end_time, point_model.point AS point_point, point_model.set_id AS point_set_id, point_model.home_lineup AS point_home_lineup, point_model.away_lineup AS point_away_lineup,
+-- play_model.player_id AS play_player_id, play_model.position AS play_position, play_model.effect AS play_effect, play_model.break_point AS play_break_point, play_model.point_id AS play_point_id,
+-- play_serve_model.play_id AS serve_play_id, play_serve_model.receiver_id AS serve_receiver_id, play_serve_model.receiver_effect AS serve_receiver_effect,
+-- home_lineup.p1 AS home_p1, home_lineup.p2 AS home_p2, home_lineup.p3 AS home_p3, home_lineup.p4 AS home_p4, home_lineup.p5 AS home_p5, home_lineup.p6 AS home_p6,
+-- away_lineup.p1 AS away_p1, away_lineup.p2 AS away_p2, away_lineup.p3 AS away_p3, away_lineup.p4 AS away_p4, away_lineup.p5 AS away_p5, away_lineup.p6 AS away_p6,
+-- play_receive_model.play_id AS receive_play_id, play_receive_model.server_id AS receive_server_id, play_receive_model.attack_effect AS receive_attack_effect, play_receive_model.set_effect AS receive_set_effect,
+-- play_freeball_model.play_id AS freeball_id, play_freeball_model.after_side_out AS freeball_after_side_out,
+-- play_attack_model.play_id AS attack_play_id, play_attack_model.side_out AS attack_side_out, play_attack_model.block_attempt AS attack_block_attempt, play_attack_model.dig_attempt AS attack_dig_attempt, play_attack_model.receive_effect AS attack_receive_effect, play_attack_model.receive_id AS attack_receive_id, play_attack_model.set_effect AS attack_set_effect, play_attack_model.setter_id AS attack_setter_id,
+-- play_block_model.play_id AS block_play_id, play_block_model.after_side_out AS block_after_side_out, play_block_model.attacker_id AS block_attacker_id, play_block_model.setter_id AS block_setter_id,
+-- play_dig_model.play_id AS dig_play_id, play_dig_model.after_side_out AS dig_after_side_out, play_dig_model.attacker_id AS dig_attacker_id, play_dig_model.rebounder_id AS dig_rebounder_id,
+-- play_set_model.play_id AS play_set_play_id, play_set_model.play_id AS play_set_play_id, play_set_model.side_out AS play_set_side_out, play_set_model.attacker_id AS play_set_attacker_id, play_set_model.attacker_position AS play_set_attacker_position
+-- FROM match_statistics_model stats
+-- INNER JOIN
+-- set_model ON id = set_model.match_statistics_id,
+-- point_model ON set_model.id = point_model.set_id,
+-- play_model ON point_model.id = play_model.point_id,
+-- point_lineup_model home_lineup ON point_model.home_lineup = home_lineup.id,
+-- point_lineup_model away_lineup ON point_model.away_lineup = away_lineup.id
+-- LEFT JOIN
+-- play_serve_model ON play_model.id = play_serve_model.play_id,
+-- play_receive_model ON play_model.id = play_receive_model.play_id,
+-- play_freeball_model ON play_model.id = play_freeball_model.play_id,
+-- play_attack_model ON play_model.id = play_attack_model.play_id,
+-- play_block_model ON play_model.id = play_block_model.play_id,
+-- play_dig_model ON play_model.id = play_dig_model.play_id,
+-- play_set_model ON play_model.id = play_set_model.play_id
+-- WHERE tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));

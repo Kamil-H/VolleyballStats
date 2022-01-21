@@ -1,9 +1,11 @@
 package com.kamilh.match_analyzer
 
+import com.kamilh.extensions.atPolandOffset
 import com.kamilh.extensions.divideExcluding
 import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.storage.TeamStorage
+import java.time.LocalDateTime
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -133,10 +135,13 @@ class MatchReportAnalyzer(
                                 points.add(
                                     MatchPoint(
                                         score = score,
-                                        startTime = event.startTime,
-                                        endTime = event.endTime,
+                                        startTime = event.startTime.atPolandOffset(),
+                                        endTime = event.endTime.atPolandOffset(),
                                         playActions = strategies.flatMap { it.check(input) },
-                                        point = team,
+                                        point = when (team) {
+                                            TeamType.Home -> home.id
+                                            TeamType.Away -> away.id
+                                        },
                                         homeLineup = homeLineup.currentLineup,
                                         awayLineup = awayLineup.currentLineup,
                                     )
@@ -186,10 +191,11 @@ class MatchReportAnalyzer(
                 )
             }
             MatchSet(
+                number = setIndex + 1,
                 score = score,
                 points = points,
-                startTime = set.startTime,
-                endTime = set.endTime,
+                startTime = set.startTime.atPolandOffset(),
+                endTime = set.endTime.atPolandOffset(),
                 duration = set.duration.toDuration(DurationUnit.MINUTES),
             )
         }
@@ -197,8 +203,16 @@ class MatchReportAnalyzer(
         return MatchStatistics(
             matchReportId = matchId,
             sets = matchSets,
-            home = home.id,
-            away = away.id,
+            home = MatchTeam(
+                teamId = home.id,
+                code = matchReport.matchTeams.home.code,
+                players = matchReport.matchTeams.home.players.map { it.toMatchPlayer() },
+            ),
+            away = MatchTeam(
+                teamId = away.id,
+                code = matchReport.matchTeams.away.code,
+                players = matchReport.matchTeams.away.players.map { it.toMatchPlayer() },
+            ),
             mvp = when (matchReport.scout.mvp.team) {
                 TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.mvp.number)
                 TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.mvp.number)
@@ -207,7 +221,9 @@ class MatchReportAnalyzer(
                 TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
                 TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
                 else -> null
-            }
+            },
+            phase = matchReport.phase,
+            updatedAt = LocalDateTime.now(),
         )
     }
 
@@ -218,10 +234,10 @@ class MatchReportAnalyzer(
             null
         }
 
-    private fun LineupMutator.libero(matchReportId: MatchReportId, libero: Event.Libero, matchTeam: MatchTeam): Boolean =
+    private fun LineupMutator.libero(matchReportId: MatchReportId, libero: Event.Libero, matchTeam: MatchReportTeam): Boolean =
         doSubstitution(first = matchTeam.playerIdOrNull(matchReportId, libero.libero), second = matchTeam.playerIdOrNull(matchReportId, libero.player))
 
-    private fun LineupMutator.substitution(matchReportId: MatchReportId, substitution: Event.Substitution, matchTeam: MatchTeam): Boolean =
+    private fun LineupMutator.substitution(matchReportId: MatchReportId, substitution: Event.Substitution, matchTeam: MatchReportTeam): Boolean =
         doSubstitution(first = matchTeam.playerIdOrNull(matchReportId, substitution.`in`), second = matchTeam.playerIdOrNull(matchReportId, substitution.out))
 
     private fun LineupMutator.doSubstitution(first: PlayerId?, second: PlayerId?): Boolean {
@@ -244,13 +260,13 @@ class MatchReportAnalyzer(
     private fun StartingLineup.awayLineupMutator(matchReportId: MatchReportId, matchTeams: MatchTeams, startingRotation: Rotation): LineupMutator =
         away.lineupMutator(matchReportId, matchTeams.away, startingRotation)
 
-    private fun List<Int>.lineupMutator(matchReportId: MatchReportId, matchTeam: MatchTeam, startingRotation: Rotation): LineupMutator =
+    private fun List<Int>.lineupMutator(matchReportId: MatchReportId, matchTeam: MatchReportTeam, startingRotation: Rotation): LineupMutator =
         LineupMutator(
             startingLineup = Lineup.from(mapNotNull { number -> matchTeam.playerIdOrNull(matchReportId, number) }),
             startingRotation = startingRotation,
         )
 
-    private fun MatchTeam.playerIdOrNull(matchReportId: MatchReportId, shirtNumber: Int): PlayerId? =
+    private fun MatchReportTeam.playerIdOrNull(matchReportId: MatchReportId, shirtNumber: Int): PlayerId? =
         players.firstOrNull { it.shirtNumber == shirtNumber }?.id.apply {
             if (this == null) {
                 analyzeErrorReporter.report(
@@ -270,4 +286,12 @@ class MatchReportAnalyzer(
             TeamType.Home -> TeamType.Away
             TeamType.Away -> TeamType.Home
         }
+
+    private fun TeamPlayer.toMatchPlayer(): MatchPlayer =
+        MatchPlayer(
+            id = id,
+            firstName = firstName,
+            isForeign = isForeign,
+            lastName = lastName,
+        )
 }

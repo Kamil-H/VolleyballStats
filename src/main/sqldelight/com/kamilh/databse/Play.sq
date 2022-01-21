@@ -1,0 +1,12 @@
+insert:
+INSERT INTO play_model (player_id, play_index, position, effect, break_point, point_id)
+VALUES (?, ?, ?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM play_model;
+
+selectAllByPointId:
+SELECT * FROM play_model WHERE point_id = ?;
+
+lastInsertRowId:
+SELECT last_insert_rowid();

@@ -12,19 +12,24 @@ import storage.DatabaseFactory
 import storage.common.adapters.OffsetDateAdapter
 import java.time.*
 import java.util.*
+import kotlin.time.Duration
 
 abstract class DatabaseTest(
     private val uuidAdapter: ColumnAdapter<UUID, String> = UuidAdapter(),
-    private val offsetDateAdapter : ColumnAdapter<OffsetDateTime, String> = OffsetDateAdapter(),
+    private val offsetDateAdapter: ColumnAdapter<OffsetDateTime, String> = OffsetDateAdapter(),
     private val urlAdapter: ColumnAdapter<Url, String> = UrlAdapter(),
     private val teamIdAdapter: ColumnAdapter<TeamId, Long> = TeamIdAdapter(),
     private val playerIdAdapter: ColumnAdapter<PlayerId, Long> = PlayerIdAdapter(),
     private val countryAdapter: ColumnAdapter<Country, String> = CountryAdapter(),
-    private val intAdapter: ColumnAdapter<Int, Long> = IntAdapter(),
     private val localDateAdapter: ColumnAdapter<LocalDate, String> = LocalDateAdapter(),
     private val localDateTimeAdapter: ColumnAdapter<LocalDateTime, String> = LocalDateTimeAdapter(),
     private val tourYearAdapter: ColumnAdapter<TourYear, Long> = TourYearAdapter(),
     private val specializationAdapter: ColumnAdapter<Player.Specialization, Long> = SpecializationAdapter(),
+    private val matchReportIdAdapter: ColumnAdapter<MatchReportId, Long> = MatchReportIdAdapter(),
+    private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
+    private val phaseAdapter: ColumnAdapter<Phase, String> = PhaseAdapter(),
+    private val effectAdapter: ColumnAdapter<Effect, String> = EffectAdapter(),
+    private val positionAdapter: ColumnAdapter<PlayerPosition, Long> = PositionAdapter(),
 ) {
 
     private lateinit var databaseFactory: DatabaseFactory
@@ -34,8 +39,21 @@ abstract class DatabaseTest(
     protected val tourTeamQueries: TourTeamQueries by lazy { databaseFactory.database.tourTeamQueries }
     protected val tourQueries: TourQueries by lazy { databaseFactory.database.tourQueries }
     protected val leagueQueries: LeagueQueries by lazy { databaseFactory.database.leagueQueries }
-    protected val playerQueries: PlayerQueries by lazy { databaseFactory.database.playerQueries }
     protected val teamPlayerQueries: TeamPlayerQueries by lazy { databaseFactory.database.teamPlayerQueries }
+    protected val matchStatisticsQueries: MatchStatisticsQueries by lazy { databaseFactory.database.matchStatisticsQueries }
+    protected val playQueries: PlayQueries by lazy { databaseFactory.database.playQueries }
+    protected val playerQueries: PlayerQueries by lazy { databaseFactory.database.playerQueries }
+    protected val playAttackQueries: PlayAttackQueries by lazy { databaseFactory.database.playAttackQueries }
+    protected val playBlockQueries: PlayBlockQueries by lazy { databaseFactory.database.playBlockQueries }
+    protected val playDigQueries: PlayDigQueries by lazy { databaseFactory.database.playDigQueries }
+    protected val playFreeballQueries: PlayFreeballQueries by lazy { databaseFactory.database.playFreeballQueries }
+    protected val playReceiveQueries: PlayReceiveQueries by lazy { databaseFactory.database.playReceiveQueries }
+    protected val playServeQueries: PlayServeQueries by lazy { databaseFactory.database.playServeQueries }
+    protected val playSetQueries: PlaySetQueries by lazy { databaseFactory.database.playSetQueries }
+    protected val pointQueries: PointQueries by lazy { databaseFactory.database.pointQueries }
+    protected val pointLineupQueries: PointLineupQueries by lazy { databaseFactory.database.pointLineupQueries }
+    protected val setQueries: SetQueries by lazy { databaseFactory.database.setQueries }
+    protected val matchAppearanceQueries: MatchAppearanceQueries by lazy { databaseFactory.database.matchAppearanceQueries }
 
     @Before
     fun setup() {
@@ -47,11 +65,15 @@ abstract class DatabaseTest(
             teamIdAdapter = teamIdAdapter,
             playerIdAdapter = playerIdAdapter,
             countryAdapter = countryAdapter,
-            intAdapter = intAdapter,
             localDateAdapter = localDateAdapter,
             localDateTimeAdapter = localDateTimeAdapter,
             tourYearAdapter = tourYearAdapter,
             specializationAdapter = specializationAdapter,
+            matchReportIdAdapter = matchReportIdAdapter,
+            durationAdapter = durationAdapter,
+            phaseAdapter = phaseAdapter,
+            effectAdapter = effectAdapter,
+            positionAdapter = positionAdapter,
         )
         databaseFactory.connect()
     }
@@ -61,76 +83,85 @@ abstract class DatabaseTest(
         databaseFactory.close()
     }
 
-    protected fun insert(league: League) {
-        leagueQueries.insert(
-            country = league.country,
-            division = league.division,
-        )
+    protected fun insert(vararg leagues: League) {
+        leagues.forEach { league ->
+            leagueQueries.insert(
+                country = league.country,
+                division = league.division,
+            )
+        }
     }
 
-    protected fun insert(tour: Tour) {
-        tourQueries.insert(
-            name = tour.name,
-            tour_year = tour.year,
-            country = tour.league.country,
-            division = tour.league.division,
-            start_date = tour.startDate,
-            end_date = tour.endDate,
-            winner_id = tour.winnerId,
-            updated_at = tour.updatedAt,
-        )
+    protected fun insert(vararg tours: Tour) {
+        tours.forEach { tour ->
+            tourQueries.insert(
+                name = tour.name,
+                tour_year = tour.year,
+                country = tour.league.country,
+                division = tour.league.division,
+                start_date = tour.startDate,
+                end_date = tour.endDate,
+                winner_id = tour.winnerId,
+                updated_at = tour.updatedAt,
+            )
+        }
     }
 
-    protected fun insert(insertTeam: InsertTeam) {
-        tourTeamQueries.insert(
-            name = insertTeam.team.name,
-            image_url = insertTeam.team.teamImageUrl,
-            logo_url = insertTeam.team.logoUrl,
-            team_id = insertTeam.team.id,
-            tour_year = insertTeam.tourYear,
-            updated_at = insertTeam.team.updatedAt,
-            country = insertTeam.league.country,
-            division = insertTeam.league.division,
-        )
+    protected fun insert(vararg insertTeams: InsertTeam) {
+        insertTeams.forEach { insertTeam ->
+            teamQueries.insert(insertTeam.team.id)
+            tourTeamQueries.insert(
+                name = insertTeam.team.name,
+                image_url = insertTeam.team.teamImageUrl,
+                logo_url = insertTeam.team.logoUrl,
+                team_id = insertTeam.team.id,
+                tour_year = insertTeam.tourYear,
+                updated_at = insertTeam.team.updatedAt,
+                country = insertTeam.league.country,
+                division = insertTeam.league.division,
+            )
+        }
     }
 
-    protected fun insert(insertPlayer: InsertPlayer) {
-        val player = insertPlayer.player
-        playerQueries.insertPlayer(
-            id = player.player.id,
-            name = player.player.name,
-            birth_date = player.details.date,
-            height = player.details.height,
-            weight = player.details.weight,
-            range = player.details.weight,
-            updated_at = player.details.updatedAt,
-        )
-        teamPlayerQueries.insertPlayer(
-            image_url = player.player.imageUrl,
-            tour_team_id = tourTeamQueries.selectId(
-                team_id = player.player.team,
-                tour_id = tourQueries.selectId(
-                    tour_year = insertPlayer.tourYear,
-                    division = insertPlayer.league.division,
-                    country = insertPlayer.league.country,
-                ).executeAsOne()
-            ).executeAsOne(),
-            position = player.player.specialization,
-            player_id = player.player.id,
-            number = player.details.number,
-            updated_at = player.player.updatedAt,
-        )
+    protected fun insert(vararg insertPlayers: InsertPlayer) {
+        insertPlayers.forEach { insertPlayer ->
+            val player = insertPlayer.player
+            playerQueries.insertPlayer(
+                id = player.player.id,
+                name = player.player.name,
+                birth_date = player.details.date,
+                height = player.details.height,
+                weight = player.details.weight,
+                range = player.details.weight,
+                updated_at = player.details.updatedAt,
+            )
+            teamPlayerQueries.insertPlayer(
+                image_url = player.player.imageUrl,
+                tour_team_id = tourTeamQueries.selectId(
+                    team_id = player.player.team,
+                    tour_id = tourQueries.selectId(
+                        tour_year = insertPlayer.tourYear,
+                        division = insertPlayer.league.division,
+                        country = insertPlayer.league.country,
+                    ).executeAsOne()
+                ).executeAsOne(),
+                position = player.player.specialization,
+                player_id = player.player.id,
+                number = player.details.number,
+                updated_at = player.player.updatedAt,
+            )
+        }
     }
 
     data class InsertTeam(
         val team: Team,
         val league: League,
-        val tourYear: TourYear
+        val tourYear: TourYear,
     )
 
     data class InsertPlayer(
         val player: PlayerWithDetails,
         val league: League,
-        val tourYear: TourYear
+        val tourYear: TourYear,
     )
 }
