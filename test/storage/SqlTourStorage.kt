@@ -120,40 +120,23 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `updateEndTime updates end_time and updated_at correctly`() = runBlockingTest {
-        // GIVEN
-        val tourYear = tourYearOf()
-        val league = leagueOf(division = 1)
-        val updatedAt = LocalDateTime.now(clock).minusDays(1)
-        val tour = tourOf(year = tourYear, league = league, updatedAt = updatedAt)
-        val endTime = LocalDate.now(clock)
-
-        // WHEN
-        configure(leagues = listOf(league), tours = listOf(tour))
-        storage.updateEndTime(endTime, tourYear, league)
-
-        // THEN
-        val value = tourQueries.selectAll().executeAsList().first()
-        assert(value.end_date == endTime)
-        assert(value.updated_at != updatedAt)
-    }
-
-    @Test
-    fun `updateWinner updates winner_id and updated_at correctly`() = runBlockingTest {
+    fun `updateWinner updates winner_id, end_time and updated_at correctly`() = runBlockingTest {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf(division = 1)
         val updatedAt = LocalDateTime.now(clock).minusDays(1)
         val tour = tourOf(year = tourYear, league = league, updatedAt = updatedAt)
         val teamId = teamIdOf(1)
+        val endTime = LocalDate.now(clock)
 
         // WHEN
         configure(leagues = listOf(league), tours = listOf(tour))
-        storage.updateWinner(teamId, tourYear, league)
+        storage.update(tour, teamId, endTime)
 
         // THEN
         val value = tourQueries.selectAll().executeAsList().first()
         assert(value.winner_id == teamId)
+        assert(value.end_date == endTime)
         assert(value.updated_at != updatedAt)
     }
 }

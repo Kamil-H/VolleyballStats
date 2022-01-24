@@ -32,6 +32,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             pointLineupQueries = pointLineupQueries,
             setQueries = setQueries,
             matchAppearanceQueries = matchAppearanceQueries,
+            matchQueries = matchQueries,
         )
     }
 
@@ -58,12 +59,13 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         matchReportId: MatchReportId = matchReportIdOf(2101911L),
         homeId: TeamId = teamIdOf(2101911),
         awayId: TeamId = teamIdOf(1),
-    ) {
+        league: League = leagueOf(),
+        tourYear: TourYear = tourYearOf(2020),
+        matchId: MatchId = matchIdOf(),
+    ): MatchStatistics {
         // GIVEN
         val fileName = "${matchReportId.value}.json"
         val matchReport = loadMatchReportFile(fileName)
-        val tourYear = tourYearOf(2020)
-        val league = leagueOf()
         val tour = tourOf(league = league, year = tourYear)
 
         teamQueries.insert(homeId)
@@ -122,7 +124,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         val matchStatistics = analyzer.analyze(matchReport, tourYear, league)
 
         // WHEN
-        val insertResult = storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        val insertResult = storage.insert(matchStatistics, league, tourYear, matchId)
 
         // THEN
         val result = matchStatisticsQueries.selectAll().executeAsList()
@@ -131,5 +133,6 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         }
         assert(result.isNotEmpty())
         insertResult.assertSuccess()
+        return matchStatistics
     }
 }

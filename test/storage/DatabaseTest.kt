@@ -30,6 +30,7 @@ abstract class DatabaseTest(
     private val phaseAdapter: ColumnAdapter<Phase, String> = PhaseAdapter(),
     private val effectAdapter: ColumnAdapter<Effect, String> = EffectAdapter(),
     private val positionAdapter: ColumnAdapter<PlayerPosition, Long> = PositionAdapter(),
+    private val matchIdAdapter: ColumnAdapter<MatchId, Long> = MatchIdAdapter(),
 ) {
 
     private lateinit var databaseFactory: DatabaseFactory
@@ -54,6 +55,7 @@ abstract class DatabaseTest(
     protected val pointLineupQueries: PointLineupQueries by lazy { databaseFactory.database.pointLineupQueries }
     protected val setQueries: SetQueries by lazy { databaseFactory.database.setQueries }
     protected val matchAppearanceQueries: MatchAppearanceQueries by lazy { databaseFactory.database.matchAppearanceQueries }
+    protected val matchQueries: MatchQueries by lazy { databaseFactory.database.matchQueries }
 
     @Before
     fun setup() {
@@ -74,6 +76,7 @@ abstract class DatabaseTest(
             phaseAdapter = phaseAdapter,
             effectAdapter = effectAdapter,
             positionAdapter = positionAdapter,
+            matchIdAdapter = matchIdAdapter,
         )
         databaseFactory.connect()
     }
@@ -83,7 +86,15 @@ abstract class DatabaseTest(
         databaseFactory.close()
     }
 
-    protected fun insert(vararg leagues: League) {
+    private fun insert(insertAction: () -> Unit) {
+        try {
+            insertAction()
+        } catch (exception: Exception) {
+            println(exception.message)
+        }
+    }
+
+    protected fun insert(vararg leagues: League) = insert {
         leagues.forEach { league ->
             leagueQueries.insert(
                 country = league.country,
@@ -92,7 +103,7 @@ abstract class DatabaseTest(
         }
     }
 
-    protected fun insert(vararg tours: Tour) {
+    protected fun insert(vararg tours: Tour) = insert {
         tours.forEach { tour ->
             tourQueries.insert(
                 name = tour.name,
@@ -107,7 +118,7 @@ abstract class DatabaseTest(
         }
     }
 
-    protected fun insert(vararg insertTeams: InsertTeam) {
+    protected fun insert(vararg insertTeams: InsertTeam) = insert {
         insertTeams.forEach { insertTeam ->
             teamQueries.insert(insertTeam.team.id)
             tourTeamQueries.insert(
@@ -123,7 +134,7 @@ abstract class DatabaseTest(
         }
     }
 
-    protected fun insert(vararg insertPlayers: InsertPlayer) {
+    protected fun insert(vararg insertPlayers: InsertPlayer) = insert {
         insertPlayers.forEach { insertPlayer ->
             val player = insertPlayer.player
             playerQueries.insertPlayer(

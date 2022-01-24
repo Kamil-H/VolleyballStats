@@ -2,6 +2,7 @@ package com.kamilh.interactors
 
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -9,7 +10,7 @@ import models.PlayerWithDetails
 
 typealias UpdatePlayers = Interactor<UpdatePlayersParams, UpdatePlayersResult>
 
-data class UpdatePlayersParams(val tour: TourYear)
+data class UpdatePlayersParams(val league: League, val tour: TourYear)
 
 typealias UpdatePlayersResult = UnitNetworkResult
 
@@ -43,3 +44,6 @@ class UpdatePlayersInteractor(
 
     }
 }
+
+suspend inline fun <T, R> List<T>.mapAsync(scope: CoroutineScope, crossinline transform: suspend (T) -> R): List<R> =
+    map { scope.async { transform(it) } }.awaitAll()

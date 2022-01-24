@@ -3,6 +3,7 @@ package storage
 import com.kamilh.*
 import com.kamilh.models.*
 import com.squareup.sqldelight.ColumnAdapter
+import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import java.time.LocalDate
@@ -39,6 +40,7 @@ internal class AppConfigDatabaseFactory(
 	phaseAdapter: ColumnAdapter<Phase, String>,
 	effectAdapter: ColumnAdapter<Effect, String>,
 	positionAdapter: ColumnAdapter<PlayerPosition, Long>,
+	matchIdAdapter: ColumnAdapter<MatchId, Long>,
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {
@@ -71,8 +73,10 @@ internal class AppConfigDatabaseFactory(
 				positionAdapter = specializationAdapter,
 			),
 			match_modelAdapter = Match_model.Adapter(
-				dateAdapter = offsetDateAdapter,
+				dateAdapter = localDateTimeAdapter,
 				match_statistics_idAdapter = matchReportIdAdapter,
+				idAdapter = matchIdAdapter,
+				stateAdapter = EnumColumnAdapter(),
 			),
 			point_modelAdapter = Point_model.Adapter(
 				end_timeAdapter = offsetDateAdapter,

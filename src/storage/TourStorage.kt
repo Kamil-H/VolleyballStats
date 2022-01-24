@@ -21,9 +21,7 @@ interface TourStorage {
 
     suspend fun getByTourYearAndLeague(tourYear: TourYear, league: League): Flow<Tour?>
 
-    suspend fun updateEndTime(endTime: LocalDate, tourYear: TourYear, league: League)
-
-    suspend fun updateWinner(teamId: TeamId, tourYear: TourYear, league: League)
+    suspend fun update(tour: Tour, winnerId: TeamId, endTime: LocalDate)
 }
 
 typealias InsertTourResult = Result<Unit, InsertTourError>
@@ -66,24 +64,17 @@ class SqlTourStorage(
     override suspend fun getByTourYearAndLeague(tourYear: TourYear, league: League): Flow<Tour?> =
         tourQueries.selectByTourAndLeague(tourYear, league.country, league.division, mapper).asFlow().mapToOneOrNull(queryRunner.dispatcher)
 
-    override suspend fun updateEndTime(endTime: LocalDate, tourYear: TourYear, league: League) {
-        tourQueries.updateEndTime(
-            end_date = endTime,
-            updated_at = LocalDateTime.now(clock),
-            tour_year = tourYear,
-            country = league.country,
-            division = league.division,
-        )
-    }
-
-    override suspend fun updateWinner(teamId: TeamId, tourYear: TourYear, league: League) {
-        tourQueries.updateWinner(
-            winner_id = teamId,
-            updated_at = LocalDateTime.now(clock),
-            tour_year = tourYear,
-            country = league.country,
-            division = league.division,
-        )
+    override suspend fun update(tour: Tour, winnerId: TeamId, endTime: LocalDate) {
+        queryRunner.run {
+            tourQueries.updateWinnerEndTime(
+                winner_id = winnerId,
+                end_date = endTime,
+                updated_at = LocalDateTime.now(clock),
+                tour_year = tour.year,
+                country = tour.league.country,
+                division = tour.league.division,
+            )
+        }
     }
 
     private val mapper: (

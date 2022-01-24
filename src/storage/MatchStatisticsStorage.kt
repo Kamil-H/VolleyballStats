@@ -48,6 +48,7 @@ class SqlMatchStatisticsStorage(
     private val pointLineupQueries: PointLineupQueries,
     private val setQueries: SetQueries,
     private val matchAppearanceQueries: MatchAppearanceQueries,
+    private val matchQueries: MatchQueries,
 ) : MatchStatisticsStorage {
 
     override suspend fun insert(
@@ -136,6 +137,10 @@ class SqlMatchStatisticsStorage(
                 }
             }
         }
+        matchQueries.updateMatchReport(
+            id = matchId,
+            match_statistics_id = matchStatistics.matchReportId,
+        )
         InsertMatchStatisticsResult.success(Unit)
     }
 

@@ -2,6 +2,7 @@ package com.kamilh
 
 import com.kamilh.interactors.UpdatePlayers
 import com.kamilh.interactors.UpdatePlayersParams
+import com.kamilh.models.League
 import com.kamilh.models.TestAppConfig
 import com.kamilh.models.TourYear
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +25,8 @@ suspend fun main(args: Array<String>) {
     val updatePlayers by di.instance<UpdatePlayers>()
     val result = updatePlayers(
         UpdatePlayersParams(
-            TourYear.create(2020)
+            league = League.POLISH_LEAGUE,
+            tour = TourYear.create(2020)
         )
     )
     println(result)
