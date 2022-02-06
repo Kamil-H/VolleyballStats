@@ -47,8 +47,8 @@ class MatchResponseToMatchReportMapper {
             staff = staff.toStaff()
         )
 
-    private fun PlayerResponse.toTeamPlayer(): TeamPlayer =
-        TeamPlayer(
+    private fun PlayerResponse.toTeamPlayer(): MatchReportPlayer =
+        MatchReportPlayer(
             id = PlayerId(code.toLong()),
             firstName = firstName,
             isForeign = isForeign,

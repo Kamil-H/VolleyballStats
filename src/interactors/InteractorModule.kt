@@ -1,9 +1,7 @@
 package com.kamilh.interactors
 
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
-import org.kodein.di.provider
+import org.kodein.di.*
+import utils.Logger
 
 private const val MODULE_NAME = "DI_INTERACTOR_MODULE"
 val interactorModule = DI.Module(name = MODULE_NAME) {
@@ -20,6 +18,29 @@ val interactorModule = DI.Module(name = MODULE_NAME) {
         GetAllSeasonInteractor(instance(), instance(), instance(), instance())
     }
     bind<UpdatePlayers>() with provider {
-        UpdatePlayersInteractor(instance(), instance())
+        UpdatePlayersInteractor(instance(), instance(), instance())
+    }
+    bind<UpdateMatches>() with provider {
+        UpdateMatchesInteractor(instance(), instance(), instance(), instance(), instance())
+    }
+    bind<UpdateTeams>() with provider {
+        UpdateTeamsInteractor(instance(), instance(), instance())
+    }
+    bind<UpdateMatchReports>() with provider {
+        UpdateMatchReportInteractor(instance(), instance(), instance())
+    }
+    bind<UpdateTours>() with provider {
+        UpdateToursInteractor(instance(), instance(), instance(), instance())
+    }
+    bind<MatchReportPreparer>() with provider {
+        MatchReportPreparerInteractor(instance(), instance(), instance(), instance(), instance())
+    }
+    bind<SynchronizeScheduler>() with provider {
+        SynchronizeScheduler {
+            Logger.i("Scheduling... $it")
+        }
+    }
+    bindProvider {
+        Synchronizer(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 }

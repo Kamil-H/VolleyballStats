@@ -22,8 +22,8 @@ class SqlSqlTourStorageTest : DatabaseTest() {
         leagues: List<League> = emptyList(),
         tours: List<Tour> = emptyList(),
     ) {
-        leagues.forEach(this::insert)
-        tours.forEach(this::insert)
+        leagues.forEach { insert(it) }
+        tours.forEach { insert(it) }
     }
 
     @Test

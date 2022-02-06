@@ -13,7 +13,7 @@ data class GetAllSeasonParams(
 
 data class Season(
     val teams: List<Team>,
-    val players: List<Player>,
+    val players: List<TeamPlayer>,
     val matchReports: List<MatchReport>,
 )
 

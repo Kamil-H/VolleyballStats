@@ -26,11 +26,21 @@ class PolishLeagueApi {
 
     fun getAllMatches(tour: TourYear): HttpRequest<String> =
         UrlRequest.getHtml(
-            Url.create("https://www.plusliga.pl/games/tour/${tour.value}.html")
+            Url.create("https://www.plusliga.pl/games/tour/${tour.value}.html?memo={\"games\":{\"faza\":1,\"runda\":1}}")
         )
 
     fun getPlayerDetails(tour: TourYear, playerId: PlayerId): HttpRequest<String> =
         UrlRequest.getHtml(
             Url.create("https://www.plusliga.pl/players/id/${playerId.value}/tour/${tour.value}.html")
+        )
+
+    fun getPlayerWithDetails(tour: TourYear, playerId: PlayerId): HttpRequest<String> =
+        UrlRequest.getHtml(
+            Url.create("https://www.plusliga.pl/players/id/${playerId.value}/tour/${tour.value}.html")
+        )
+
+    fun getAllPlayers(): HttpRequest<String> =
+        UrlRequest.getHtml(
+            Url.create("https://www.plusliga.pl/statsPlayers/tournament_1/all.html?memo={\"players\":{\"mainFilter\":\"letter\",\"subFilter\":\"all\"}}")
         )
 }

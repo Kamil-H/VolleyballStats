@@ -24,7 +24,7 @@ abstract class DatabaseTest(
     private val localDateAdapter: ColumnAdapter<LocalDate, String> = LocalDateAdapter(),
     private val localDateTimeAdapter: ColumnAdapter<LocalDateTime, String> = LocalDateTimeAdapter(),
     private val tourYearAdapter: ColumnAdapter<TourYear, Long> = TourYearAdapter(),
-    private val specializationAdapter: ColumnAdapter<Player.Specialization, Long> = SpecializationAdapter(),
+    private val specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long> = SpecializationAdapter(),
     private val matchReportIdAdapter: ColumnAdapter<MatchReportId, Long> = MatchReportIdAdapter(),
     private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
     private val phaseAdapter: ColumnAdapter<Phase, String> = PhaseAdapter(),
@@ -138,8 +138,8 @@ abstract class DatabaseTest(
         insertPlayers.forEach { insertPlayer ->
             val player = insertPlayer.player
             playerQueries.insertPlayer(
-                id = player.player.id,
-                name = player.player.name,
+                id = player.teamPlayer.id,
+                name = player.teamPlayer.name,
                 birth_date = player.details.date,
                 height = player.details.height,
                 weight = player.details.weight,
@@ -147,19 +147,19 @@ abstract class DatabaseTest(
                 updated_at = player.details.updatedAt,
             )
             teamPlayerQueries.insertPlayer(
-                image_url = player.player.imageUrl,
+                image_url = player.teamPlayer.imageUrl,
                 tour_team_id = tourTeamQueries.selectId(
-                    team_id = player.player.team,
+                    team_id = player.teamPlayer.team,
                     tour_id = tourQueries.selectId(
                         tour_year = insertPlayer.tourYear,
                         division = insertPlayer.league.division,
                         country = insertPlayer.league.country,
                     ).executeAsOne()
                 ).executeAsOne(),
-                position = player.player.specialization,
-                player_id = player.player.id,
+                position = player.teamPlayer.specialization,
+                player_id = player.teamPlayer.id,
                 number = player.details.number,
-                updated_at = player.player.updatedAt,
+                updated_at = player.teamPlayer.updatedAt,
             )
         }
     }

@@ -25,10 +25,10 @@ class SqlPlayerStorageTest : DatabaseTest() {
         teams: List<InsertTeam> = emptyList(),
         players: List<InsertPlayer> = emptyList(),
     ) {
-        leagues.forEach(this::insert)
-        tours.forEach(this::insert)
-        teams.forEach(this::insert)
-        players.forEach(this::insert)
+        leagues.forEach { insert(it) }
+        tours.forEach { insert(it) }
+        teams.forEach { insert(it) }
+        players.forEach { insert(it) }
     }
 
     @Test
@@ -67,7 +67,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val player = playerWithDetailsOf(
-            player = playerOf(team = teamId)
+            teamPlayer = playerOf(team = teamId)
         )
         configure(
             leagues = listOf(league),
@@ -89,10 +89,10 @@ class SqlPlayerStorageTest : DatabaseTest() {
         // GIVEN
         val league = leagueOf()
         val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tour = tourOf(year = tourYear, league = league)
         val teamId = teamIdOf(1)
         val player = playerWithDetailsOf(
-            player = playerOf(team = teamId)
+            teamPlayer = playerOf(team = teamId)
         )
         configure(
             leagues = listOf(league),
@@ -105,7 +105,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         // THEN
         result.assertFailure {
             require(this is InsertPlayerError.Errors)
-            assert(this.teamNotFound.ids.contains(teamId))
+            assert(this.teamsNotFound.contains(teamId))
         }
         playerQueries.selectAll().executeAsList().isEmpty()
         teamPlayerQueries.selectAll().executeAsList().isEmpty()
@@ -120,7 +120,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val player = playerWithDetailsOf(
-            player = playerOf(team = teamId)
+            teamPlayer = playerOf(team = teamId)
         )
         configure(
             leagues = listOf(league),
@@ -135,8 +135,8 @@ class SqlPlayerStorageTest : DatabaseTest() {
         // THEN
         result.assertFailure {
             require(this is InsertPlayerError.Errors)
-            assert(this.teamNotFound.ids.isEmpty())
-            assert(this.teamPlayerAlreadyExists.ids.contains(player.player.id))
+            assert(this.teamsNotFound.isEmpty())
+            assert(this.teamPlayersAlreadyExists.contains(player.teamPlayer.id))
         }
         playerQueries.selectAll().executeAsList().isEmpty()
         teamPlayerQueries.selectAll().executeAsList().isEmpty()
@@ -153,11 +153,11 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val now = LocalDateTime.now()
         val playerUpdatedAt = now.plusDays(1)
         val detailsUpdatedAt = now.plusDays(2)
-        val player = playerWithDetailsOf(
-            player = playerOf(
+        val teamPlayer = playerWithDetailsOf(
+            teamPlayer = playerOf(
                 team = teamId,
                 name = "name",
-                specialization = Player.Specialization.MiddleBlocker,
+                specialization = TeamPlayer.Specialization.MiddleBlocker,
                 updatedAt = playerUpdatedAt,
             ),
             details = playerDetailsOf(
@@ -170,7 +170,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
             leagues = listOf(league),
             tours = listOf(tour),
             teams = listOf(InsertTeam(team, league, tourYear)),
-            players = listOf(InsertPlayer(player, league, tourYear))
+            players = listOf(InsertPlayer(teamPlayer, league, tourYear))
         )
 
         // WHEN
@@ -178,7 +178,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
 
         // THEN
         result.test {
-            awaitItem().contains(player)
+            awaitItem().contains(teamPlayer)
         }
     }
 }

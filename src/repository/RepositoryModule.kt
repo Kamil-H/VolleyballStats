@@ -10,6 +10,7 @@ import com.kamilh.repository.polishleague.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.websocket.*
+import models.PlayerWithDetails
 import org.kodein.di.*
 import io.ktor.client.HttpClient as Ktor
 
@@ -30,10 +31,12 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
 
     bindProvider { PolishLeagueApi() }
     bind<HtmlMapper<List<Team>>>() with provider { HtmlToTeamMapper(instance()) }
+    bind<HtmlMapper<List<TeamPlayer>>>() with provider { HtmlToTeamPlayerMapper(instance()) }
     bind<HtmlMapper<List<Player>>>() with provider { HtmlToPlayerMapper(instance()) }
     bind<HtmlMapper<MatchReportId>>() with provider { HtmlToMatchReportId() }
     bind<HtmlMapper<List<AllMatchesItem>>>() with provider { HtmlToAllMatchesItemMapper(instance()) }
     bind<HtmlMapper<PlayerDetails>>() with provider { HtmlToPlayerDetailsMapper(instance()) }
+    bind<HtmlMapper<PlayerWithDetails>>() with provider { HtmlToPlayerWithDetailsMapper(instance()) }
     bindProvider { MatchResponseToMatchReportMapper() }
 
     bind<HtmlParser>() with provider {
@@ -52,8 +55,13 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
         WebSocketMatchReportEndpoint(instance(), instance(), instance())
     }
 
+    bind<TourCache>() with provider {
+        InMemoryTourCache()
+    }
+
     bind<PolishLeagueRepository>() with provider {
-        HttpPolishLeagueRepository(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+        HttpPolishLeagueRepository(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
+            instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<MatchResponseStorage>() with provider {

@@ -5,7 +5,7 @@ import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
 import java.time.LocalDate
 
-class HtmlToPlayerMapperTest {
+class HtmlToTeamPlayerMapperTest {
 
     private val mapper = HtmlToPlayerDetailsMapper(htmlParser = JsoupHtmlParser())
 

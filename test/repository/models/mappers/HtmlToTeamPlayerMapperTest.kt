@@ -1,14 +1,14 @@
 package repository.models.mappers
 
-import com.kamilh.models.Player
+import com.kamilh.models.TeamPlayer
 import com.kamilh.models.Result
-import com.kamilh.repository.models.mappers.HtmlToPlayerMapper
+import com.kamilh.repository.models.mappers.HtmlToTeamPlayerMapper
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
 
-class HtmlToPlayerMapperTest {
+class HtmlToTeamPlayerMapperTest {
 
-    private val mapper = HtmlToPlayerMapper(htmlParser = JsoupHtmlParser())
+    private val mapper = HtmlToTeamPlayerMapper(htmlParser = JsoupHtmlParser())
 
     @Test
     fun `test if when html is empty then Failure is returned`() {
@@ -161,7 +161,7 @@ class HtmlToPlayerMapperTest {
     @Test
     fun `test if when positionId is correct then result is Success and positionId is parsed properly`() {
         // GIVEN
-        val specialization = Player.Specialization.Libero
+        val specialization = TeamPlayer.Specialization.Libero
 
         val html = html(positionId = specialization.id.toString())
 

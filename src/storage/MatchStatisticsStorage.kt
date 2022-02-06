@@ -25,7 +25,7 @@ sealed class InsertMatchStatisticsError(override val message: String? = null) : 
     object TourNotFound : InsertMatchStatisticsError()
     object NoPlayersInTeams : InsertMatchStatisticsError()
     class TeamNotFound(val teamId: TeamId) : InsertMatchStatisticsError()
-    class PlayerNotFound(val playerIds: List<PlayerId>) : InsertMatchStatisticsError()
+    class PlayerNotFound(val playerIds: List<Pair<PlayerId, TeamId>>) : InsertMatchStatisticsError()
 }
 
 class SqlMatchStatisticsStorage(
@@ -80,12 +80,14 @@ class SqlMatchStatisticsStorage(
             matchPlayers = matchStatistics.home.players,
             matchReportId = matchStatistics.matchReportId,
             tourTeamId = homeTeamId,
+            teamId = matchStatistics.home.teamId,
         ) { playerId, id ->
             playerIdCache[playerId] = id
         } + insert(
             matchPlayers = matchStatistics.away.players,
             matchReportId = matchStatistics.matchReportId,
             tourTeamId = awayTeamId,
+            teamId = matchStatistics.away.teamId,
         ) { playerId, id ->
             playerIdCache[playerId] = id
         }
@@ -144,7 +146,13 @@ class SqlMatchStatisticsStorage(
         InsertMatchStatisticsResult.success(Unit)
     }
 
-    private fun insert(matchPlayers: List<MatchPlayer>, matchReportId: MatchReportId, tourTeamId: Long, onPlayerInserted: (PlayerId, Long) -> Unit, ): List<PlayerId> =
+    private fun insert(
+        matchPlayers: List<MatchPlayer>,
+        matchReportId: MatchReportId,
+        tourTeamId: Long,
+        teamId: TeamId,
+        onPlayerInserted: (PlayerId, Long) -> Unit,
+    ): List<Pair<PlayerId, TeamId>> =
         matchPlayers.mapNotNull { matchPlayer ->
             try {
                 playerQueries.updateInfo(
@@ -165,7 +173,7 @@ class SqlMatchStatisticsStorage(
                 onPlayerInserted(matchPlayer.id, id)
                 null
             } catch (exception: Exception) {
-                matchPlayer.id
+                matchPlayer.id to teamId
             }
         }
 

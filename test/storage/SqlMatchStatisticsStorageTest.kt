@@ -10,6 +10,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert and select works properly`() = runBlocking {
         load(matchReportId = matchReportIdOf(2101911L))
+        Unit
     }
 
     @Test
@@ -202,7 +203,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         // THEN
         result.assertFailure {
             require(this is InsertMatchStatisticsError.PlayerNotFound)
-            assert(this.playerIds.contains(playerId))
+            assert(this.playerIds.contains(playerId to homeTeamId))
         }
     }
 
@@ -252,7 +253,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         insert(
             InsertPlayer(
                 player = playerWithDetailsOf(
-                    player = playerOf(
+                    teamPlayer = playerOf(
                         id = playerId,
                         team = homeTeamId,
                     ),
@@ -310,7 +311,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         insert(
             InsertPlayer(
                 player = playerWithDetailsOf(
-                    player = playerOf(
+                    teamPlayer = playerOf(
                         id = playerId,
                         team = homeTeamId,
                     ),
@@ -320,7 +321,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             ),
             InsertPlayer(
                 player = playerWithDetailsOf(
-                    player = playerOf(
+                    teamPlayer = playerOf(
                         id = awayPlayerId,
                         team = awayTeamId,
                     ),

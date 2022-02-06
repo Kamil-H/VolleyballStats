@@ -24,23 +24,23 @@ interface SqlDriverCreator {
 }
 
 internal class AppConfigDatabaseFactory(
-	appConfig: AppConfig,
-	uuidAdapter: ColumnAdapter<UUID, String>,
-	offsetDateAdapter: ColumnAdapter<OffsetDateTime, String>,
-	urlAdapter: ColumnAdapter<Url, String>,
-	teamIdAdapter: ColumnAdapter<TeamId, Long>,
-	playerIdAdapter: ColumnAdapter<PlayerId, Long>,
+    appConfig: AppConfig,
+    uuidAdapter: ColumnAdapter<UUID, String>,
+    offsetDateAdapter: ColumnAdapter<OffsetDateTime, String>,
+    urlAdapter: ColumnAdapter<Url, String>,
+    teamIdAdapter: ColumnAdapter<TeamId, Long>,
+    playerIdAdapter: ColumnAdapter<PlayerId, Long>,
     countryAdapter: ColumnAdapter<Country, String>,
     localDateAdapter: ColumnAdapter<LocalDate, String>,
     localDateTimeAdapter: ColumnAdapter<LocalDateTime, String>,
     tourYearAdapter: ColumnAdapter<TourYear, Long>,
-	specializationAdapter: ColumnAdapter<Player.Specialization, Long>,
-	matchReportIdAdapter: ColumnAdapter<MatchReportId, Long>,
-	durationAdapter: ColumnAdapter<Duration, Long>,
-	phaseAdapter: ColumnAdapter<Phase, String>,
-	effectAdapter: ColumnAdapter<Effect, String>,
-	positionAdapter: ColumnAdapter<PlayerPosition, Long>,
-	matchIdAdapter: ColumnAdapter<MatchId, Long>,
+    specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long>,
+    matchReportIdAdapter: ColumnAdapter<MatchReportId, Long>,
+    durationAdapter: ColumnAdapter<Duration, Long>,
+    phaseAdapter: ColumnAdapter<Phase, String>,
+    effectAdapter: ColumnAdapter<Effect, String>,
+    positionAdapter: ColumnAdapter<PlayerPosition, Long>,
+    matchIdAdapter: ColumnAdapter<MatchId, Long>,
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {

@@ -9,9 +9,9 @@ fun playerOf(
     name: String = "",
     imageUrl: Url? = null,
     team: TeamId = teamIdOf(),
-    specialization: Player.Specialization = Player.Specialization.Libero,
+    specialization: TeamPlayer.Specialization = TeamPlayer.Specialization.Libero,
     updatedAt: LocalDateTime = LocalDateTime.now(),
-): Player = Player(
+): TeamPlayer = TeamPlayer(
     id = id,
     name = name,
     imageUrl = imageUrl,
@@ -37,9 +37,9 @@ fun playerDetailsOf(
 )
 
 fun playerWithDetailsOf(
-    player: Player = playerOf(),
+    teamPlayer: TeamPlayer = playerOf(),
     details: PlayerDetails = playerDetailsOf(),
 ): PlayerWithDetails = PlayerWithDetails(
-    player = player,
+    teamPlayer = teamPlayer,
     details = details,
 )

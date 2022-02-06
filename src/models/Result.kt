@@ -42,6 +42,11 @@ inline fun <V, E : Error> Result<V, E>.onFailure(f: (E) -> Unit): Result<V, E> =
         }
     }
 
+inline fun <V, E : Error> Result<V, E>.onResult(f: (Result<V, E>) -> Unit): Result<V, E> {
+    f(this)
+    return this
+}
+
 inline fun <V, E : Error, T> Result<V, E>.map(f: (V) -> T): Result<T, E> =
     when (this) {
         is Result.Success -> Result.success(f(value))
@@ -58,6 +63,12 @@ inline fun <V, E1 : Error, E2 : Error> Result<V, E1>.mapError(f: (E1) -> E2): Re
     when (this) {
         is Result.Success -> Result.success(value)
         is Result.Failure -> Result.failure(f(error))
+    }
+
+inline fun <V, E1 : Error, E2 : Error> Result<V, E1>.flatMapError(f: (E1) -> Result<V, E2>): Result<V, E2> =
+    when (this) {
+        is Result.Success -> this
+        is Result.Failure -> f(error)
     }
 
 fun <V, E : Error> List<Result<V, E>>.toResults(): Results<V, E> {

@@ -13,6 +13,7 @@ import io.ktor.application.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
 import org.kodein.di.*
+import java.time.Clock
 
 private const val MODULE_NAME = "DI_APPLICATION_MODULE"
 fun applicationModule(scope: CoroutineScope, appConfig: AppConfig? = null) = DI.Module(name = MODULE_NAME) {
@@ -30,6 +31,10 @@ fun applicationModule(scope: CoroutineScope, appConfig: AppConfig? = null) = DI.
         } else {
             appConfig
         }
+    }
+
+    bind<Clock>() with singleton {
+        Clock.systemDefaultZone()
     }
 
     import(utilsModule)

@@ -237,7 +237,7 @@ data class MatchReportTeam(
     val code: String,
     val libero: List<Int>,
     val name: String,
-    val players: List<TeamPlayer>,
+    val players: List<MatchReportPlayer>,
     val shortName: String,
     val staff: Staff
 )
@@ -252,7 +252,7 @@ enum class TeamType(val value: String) {
     }
 }
 
-data class TeamPlayer(
+data class MatchReportPlayer(
     val id: PlayerId,
     val firstName: String,
     val isForeign: Boolean?,

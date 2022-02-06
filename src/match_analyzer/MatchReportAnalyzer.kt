@@ -287,7 +287,7 @@ class MatchReportAnalyzer(
             TeamType.Away -> TeamType.Home
         }
 
-    private fun TeamPlayer.toMatchPlayer(): MatchPlayer =
+    private fun MatchReportPlayer.toMatchPlayer(): MatchPlayer =
         MatchPlayer(
             id = id,
             firstName = firstName,

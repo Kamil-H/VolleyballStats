@@ -23,9 +23,9 @@ class TeamStorageTest : DatabaseTest() {
         tours: List<Tour> = emptyList(),
         insertTeams: List<InsertTeam> = emptyList(),
     ) {
-        leagues.forEach(this::insert)
-        tours.forEach(this::insert)
-        insertTeams.forEach(this::insert)
+        leagues.forEach { insert(it) }
+        tours.forEach { insert(it) }
+        insertTeams.forEach { insert(it) }
     }
 
     @Test

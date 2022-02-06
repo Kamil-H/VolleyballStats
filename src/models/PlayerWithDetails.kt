@@ -1,9 +1,9 @@
 package models
 
-import com.kamilh.models.Player
 import com.kamilh.models.PlayerDetails
+import com.kamilh.models.TeamPlayer
 
 data class PlayerWithDetails(
-    val player: Player,
+    val teamPlayer: TeamPlayer,
     val details: PlayerDetails,
 )

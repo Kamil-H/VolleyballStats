@@ -6,6 +6,7 @@ import com.kamilh.storage.InsertMatchesError
 import com.kamilh.storage.MatchStorage
 import com.kamilh.storage.TourStorage
 import kotlinx.coroutines.flow.first
+import utils.Logger
 import java.time.LocalDateTime
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
@@ -49,11 +50,13 @@ class UpdateMatchesInteractor(
             val insertResult = matchStorage.insertOrUpdate(matches, league, tourYear)
             when (insertResult.error) {
                 InsertMatchesError.TourNotFound -> return Result.failure(UpdateMatchesError.TourNotFound)
-                is InsertMatchesError.TryingToSaveSavedItems, null -> { }
+                is InsertMatchesError.TryingToInsertSavedItems, null -> { }
             }
         }
         val allMatches = matchStorage.getAllMatches(league, tourYear).first()
-
+        Logger.i("****************************************************************")
+        Logger.i("All matches:")
+        allMatches.forEach { Logger.i(message = "$it") }
         val allMatchesFinished = allMatches.all { it is AllMatchesItem.Saved }
         if (tour.isFinished && allMatchesFinished) {
             finishTour(tour, allMatches.last() as AllMatchesItem.Saved)
@@ -61,6 +64,9 @@ class UpdateMatchesInteractor(
         }
 
         val potentiallyFinished = allMatches.filterIsInstance<AllMatchesItem.PotentiallyFinished>()
+        Logger.i("****************************************************************")
+        Logger.i("All Potentially Finished:")
+        potentiallyFinished.forEach { Logger.i(message = "$it") }
         if (potentiallyFinished.isNotEmpty()) {
             val error = updateMatchReports(UpdateMatchReportParams(league, tourYear, potentiallyFinished)).mapError {
                 when (it) {

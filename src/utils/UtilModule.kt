@@ -5,6 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.provider
+import org.slf4j.LoggerFactory
+import utils.Log4JLogger
+import utils.Logger
+import utils.PlatformLogger
 
 private const val MODULE_NAME = "DI_UTILS_MODULE"
 val utilsModule = DI.Module(name = MODULE_NAME) {
@@ -23,5 +27,8 @@ val utilsModule = DI.Module(name = MODULE_NAME) {
     }
     bind<ExceptionLogger>() with provider {
         ConsoleExceptionLogger()
+    }
+    bind<PlatformLogger>() with provider {
+        Log4JLogger(LoggerFactory.getLogger(Logger.TAG))
     }
 }

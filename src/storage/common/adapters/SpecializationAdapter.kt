@@ -1,11 +1,11 @@
 package com.kamilh.storage.common.adapters
 
-import com.kamilh.models.Player
+import com.kamilh.models.TeamPlayer
 import com.squareup.sqldelight.ColumnAdapter
 
-class SpecializationAdapter : ColumnAdapter<Player.Specialization, Long> {
+class SpecializationAdapter : ColumnAdapter<TeamPlayer.Specialization, Long> {
 
-    override fun decode(databaseValue: Long): Player.Specialization = Player.Specialization.create(databaseValue.toInt())
+    override fun decode(databaseValue: Long): TeamPlayer.Specialization = TeamPlayer.Specialization.create(databaseValue.toInt())
 
-    override fun encode(value: Player.Specialization): Long = value.id.toLong()
+    override fun encode(value: TeamPlayer.Specialization): Long = value.id.toLong()
 }

@@ -228,7 +228,7 @@ fun matchReportTeamOf(
     code: String = "",
     libero: List<Int> = emptyList(),
     name: String = "",
-    players: List<TeamPlayer> = emptyList(),
+    players: List<MatchReportPlayer> = emptyList(),
     shortName: String = "",
     staff: Staff = staffOf(),
 ): MatchReportTeam =
@@ -256,8 +256,8 @@ fun teamPlayerOf(
     isForeign: Boolean? = null,
     lastName: String = "",
     shirtNumber: Int = 0,
-): TeamPlayer =
-    TeamPlayer(
+): MatchReportPlayer =
+    MatchReportPlayer(
         id = id,
         firstName = firstName,
         isForeign = isForeign,

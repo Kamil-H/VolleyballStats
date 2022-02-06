@@ -9,6 +9,7 @@ import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.repository.models.matchResponseOf
 import com.kamilh.repository.parsing.ParseErrorHandler
 import kotlinx.coroutines.runBlocking
+import models.PlayerWithDetails
 import org.junit.Test
 import repository.parsing.ParseError
 import repository.parsing.ParseResult
@@ -20,26 +21,32 @@ class HttpPolishLeagueRepositoryTest {
         polishLeagueApi: PolishLeagueApi = PolishLeagueApi(),
         htmlToTeamMapper: HtmlMapper<List<Team>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToPlayerMapper: HtmlMapper<List<Player>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
+        htmlToTeamPlayerMapper: HtmlMapper<List<TeamPlayer>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToAllMatchesItemMapper: HtmlMapper<List<AllMatchesItem>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToMatchReportId: HtmlMapper<MatchReportId> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
+        htmlToPlayerWithDetailsMapper: HtmlMapper<PlayerWithDetails> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         matchReportEndpoint: MatchReportEndpoint = matchReportEndpointOf(networkFailureOf(networkErrorOf())),
         parseErrorHandler: ParseErrorHandler = ParseErrorHandler {  },
         matchResponseStorage: MatchResponseStorage = matchResponseStorageOf(),
         matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper = MatchResponseToMatchReportMapper(),
+        tourCache: TourCache = tourCacheOf(),
     ): HttpPolishLeagueRepository =
         HttpPolishLeagueRepository(
             httpClient = httpClient,
             polishLeagueApi = polishLeagueApi,
             htmlToTeamMapper = htmlToTeamMapper,
             htmlToPlayerMapper = htmlToPlayerMapper,
+            htmlToTeamPlayerMapper = htmlToTeamPlayerMapper,
             htmlToAllMatchesItemMapper = htmlToAllMatchesItemMapper,
+            htmlToPlayerWithDetailsMapper = htmlToPlayerWithDetailsMapper,
             htmlToMatchReportId = htmlToMatchReportId,
             matchReportEndpoint = matchReportEndpoint,
             parseErrorHandler = parseErrorHandler,
             matchResponseStorage = matchResponseStorage,
             matchResponseToMatchReportMapper = matchResponseToMatchReportMapper,
             htmlToPlayerDetailsMapper = htmlToPlayerDetailsMapper,
+            tourCache = tourCache,
         )
 
     @Test
@@ -104,14 +111,14 @@ class HttpPolishLeagueRepositoryTest {
     @Test
     fun `test that when httpClient getAllPlayers returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
         // GIVEN
-        val parseResult = emptyList<Player>()
+        val parseResult = emptyList<TeamPlayer>()
         val networkResult = networkSuccessOf("")
         val mapperResult = htmlMapperOf(parseSuccessOf(parseResult))
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
-            htmlToPlayerMapper = mapperResult,
+            htmlToTeamPlayerMapper = mapperResult,
         ).getAllPlayers(tour = tourYearOf())
 
         // THEN
@@ -124,12 +131,12 @@ class HttpPolishLeagueRepositoryTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
-        val mapperResult = htmlMapperOf(parseSuccessOf(emptyList<Player>()))
+        val mapperResult = htmlMapperOf(parseSuccessOf(emptyList<TeamPlayer>()))
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
-            htmlToPlayerMapper = mapperResult,
+            htmlToTeamPlayerMapper = mapperResult,
         ).getAllPlayers(tour = tourYearOf())
 
         // THEN
@@ -142,13 +149,13 @@ class HttpPolishLeagueRepositoryTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
-        val mapperResult = htmlMapperOf(parseFailureOf<List<Player>>(parseError))
+        val mapperResult = htmlMapperOf(parseFailureOf<List<TeamPlayer>>(parseError))
 
         var parseErrorToHandle: ParseError? = null
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
-            htmlToPlayerMapper = mapperResult,
+            htmlToTeamPlayerMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
         ).getAllPlayers(tour = tourYearOf())
 
@@ -363,3 +370,9 @@ fun matchReportEndpointOf(result: NetworkResult<MatchResponse>): MatchReportEndp
     object : MatchReportEndpoint {
         override suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchResponse> = result
     }
+
+fun tourCacheOf(
+    getAll: List<Tour> = emptyList(),
+): TourCache = object : TourCache {
+    override fun getAll(): List<Tour> = getAll
+}

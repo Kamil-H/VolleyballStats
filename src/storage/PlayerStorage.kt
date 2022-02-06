@@ -20,15 +20,15 @@ interface PlayerStorage {
     suspend fun insert(players: List<PlayerWithDetails>, league: League, tour: TourYear): InsertPlayerResult
 
     suspend fun getAllPlayers(teamId: TeamId, league: League, tour: TourYear): Flow<List<PlayerWithDetails>>
+
+    suspend fun getAllPlayers(league: League, tour: TourYear): Flow<List<PlayerWithDetails>>
 }
 
 typealias InsertPlayerResult = Result<Unit, InsertPlayerError>
 
 sealed class InsertPlayerError(override val message: String? = null) : Error {
     object TourNotFound : InsertPlayerError()
-    class Errors(val teamNotFound: TeamNotFound, val teamPlayerAlreadyExists: TeamPlayerAlreadyExists) : InsertPlayerError()
-    class TeamNotFound(val ids: List<TeamId>)
-    class TeamPlayerAlreadyExists(val ids: List<PlayerId>)
+    class Errors(val teamsNotFound: List<TeamId>, val teamPlayersAlreadyExists: List<PlayerId>) : InsertPlayerError()
 }
 
 class SqlPlayerStorage(
@@ -44,10 +44,12 @@ class SqlPlayerStorage(
             if (players.isEmpty()) {
                 return@runTransaction Result.success(Unit)
             }
-            val tourId = tourQueries.selectId(tour, league.division, league.country).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertPlayerError>(InsertPlayerError.TourNotFound)
+            val tourId = tourQueries.selectId(tour, league.division, league.country).executeAsOneOrNull()
+                ?: return@runTransaction Result.failure<Unit, InsertPlayerError>(InsertPlayerError.TourNotFound)
+
             val teamIdsNotFound = mutableListOf<TeamId>()
             val playersAlreadyExists = mutableListOf<PlayerId>()
-            players.groupBy { it.player.team }.forEach { (teamId, players) ->
+            players.groupBy { it.teamPlayer.team }.forEach { (teamId, players) ->
                 val tourTeamId = tourTeamQueries.selectId(teamId, tourId).executeAsOneOrNull()
                 if (tourTeamId == null) {
                     teamIdsNotFound.add(teamId)
@@ -55,7 +57,7 @@ class SqlPlayerStorage(
                     players.forEach { player ->
                         val error = insertPlayer(player, tourTeamId)?.isTeamPlayerAlreadyExistsError()
                         if (error != null) {
-                            playersAlreadyExists.add(player.player.id)
+                            playersAlreadyExists.add(player.teamPlayer.id)
                         }
                     }
                 }
@@ -63,8 +65,8 @@ class SqlPlayerStorage(
             if (teamIdsNotFound.isNotEmpty() || playersAlreadyExists.isNotEmpty()) {
                 Result.failure<Unit, InsertPlayerError>(
                     InsertPlayerError.Errors(
-                        teamNotFound = InsertPlayerError.TeamNotFound(teamIdsNotFound),
-                        teamPlayerAlreadyExists = InsertPlayerError.TeamPlayerAlreadyExists(playersAlreadyExists)
+                        teamsNotFound = teamIdsNotFound,
+                        teamPlayersAlreadyExists = playersAlreadyExists,
                     )
                 )
             } else {
@@ -75,21 +77,21 @@ class SqlPlayerStorage(
     private fun insertPlayer(player: PlayerWithDetails, tourTeamId: Long): Exception? =
         try {
             playerQueries.insertPlayer(
-                id = player.player.id,
-                name = player.player.name,
+                id = player.teamPlayer.id,
+                name = player.teamPlayer.name,
                 birth_date = player.details.date,
                 height = player.details.height,
                 weight = player.details.weight,
-                range = player.details.weight,
+                range = player.details.range,
                 updated_at = player.details.updatedAt,
             )
             teamPlayerQueries.insertPlayer(
-                image_url = player.player.imageUrl,
+                image_url = player.teamPlayer.imageUrl,
                 tour_team_id = tourTeamId,
-                position = player.player.specialization,
-                player_id = player.player.id,
+                position = player.teamPlayer.specialization,
+                player_id = player.teamPlayer.id,
                 number = player.details.number,
-                updated_at = player.player.updatedAt,
+                updated_at = player.teamPlayer.updatedAt,
             )
             null
         } catch (exception: Exception) {
@@ -107,10 +109,20 @@ class SqlPlayerStorage(
             ).asFlow().mapToList(queryRunner.dispatcher)
         }
 
+    override suspend fun getAllPlayers(league: League, tour: TourYear): Flow<List<PlayerWithDetails>> =
+        queryRunner.run {
+            teamPlayerQueries.selectPlayers(
+                tour_year = tour,
+                division = league.division,
+                country = league.country,
+                mapper = mapper,
+            ).asFlow().mapToList(queryRunner.dispatcher)
+        }
+
     private val mapper: (
         image_url: Url?,
         tour_team_id: Long,
-        position: Player.Specialization,
+        position: TeamPlayer.Specialization,
         player_id: PlayerId,
         number: Int,
         name: String,
@@ -124,7 +136,7 @@ class SqlPlayerStorage(
     ) -> PlayerWithDetails = {
             image_url: Url?,
             _: Long,
-            position: Player.Specialization,
+            position: TeamPlayer.Specialization,
             player_id: PlayerId,
             number: Int,
             name: String,
@@ -136,7 +148,7 @@ class SqlPlayerStorage(
             range: Int?,
             team_id: TeamId ->
         PlayerWithDetails(
-            player = Player(
+            teamPlayer = TeamPlayer(
                 id = player_id,
                 name = name,
                 imageUrl = image_url,

@@ -16,6 +16,7 @@ class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMappe
         val allMatchesItems = mutableListOf<AllMatchesItem>()
         getElementsByClass("row text-center gridtable games alter")
             .forEach {
+                println(it.outerHtml() + "\n\n\n")
                 val dateString = it.getElementsByClass("date khanded").text().replace("TV ", "")
                 val date = dateString.toPolishLeagueLocalDate()
 
@@ -26,11 +27,10 @@ class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMappe
                 val isPotentiallyFinished = green == 3
 
                 id ?: error("Can't extract id from: $clickable")
-                date ?: error("Can't parse date: $dateString")
 
                 val allMatchesItem = when {
                     isPotentiallyFinished -> AllMatchesItem.PotentiallyFinished(MatchId(id))
-                    date.isMidnight() -> AllMatchesItem.NotScheduled(MatchId(id))
+                    date == null || date.isMidnight() -> AllMatchesItem.NotScheduled(MatchId(id))
                     else -> AllMatchesItem.Scheduled(MatchId(id), date)
                 }
                 allMatchesItems.add(allMatchesItem)

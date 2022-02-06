@@ -86,6 +86,6 @@ interface AnalyzeErrorReporter {
 class PrintingAnalyzeErrorReporter : AnalyzeErrorReporter {
 
     override fun report(analyzeError: AnalyzeError) {
-        println(analyzeError)
+//        println(analyzeError)
     }
 }

@@ -8,4 +8,4 @@ build/
 /match_reports
 /exceptions
 .DS_Store
-database.db
+*.db

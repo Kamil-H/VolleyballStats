@@ -14,7 +14,12 @@ data class ServerConfig(
 
 data class DatabaseConfig(
     val jdbcUrl: String,
-)
+) {
+    companion object {
+        val IN_MEMORY: DatabaseConfig = DatabaseConfig(jdbcUrl = JdbcSqliteDriver.IN_MEMORY)
+        val TEST_DATABASE: DatabaseConfig = DatabaseConfig(jdbcUrl = "jdbc:sqlite:test_database.db")
+    }
+}
 
 fun Application.config(): AppConfig {
     val dbConfig = environment.config.config("ktor.database")
@@ -29,10 +34,10 @@ fun Application.config(): AppConfig {
     )
 }
 
-fun TestAppConfig(): AppConfig =
-    AppConfig(
-        serverConfig = ServerConfig(1),
-        databaseConfig = DatabaseConfig(
-            jdbcUrl = JdbcSqliteDriver.IN_MEMORY,
-        )
-    )
+fun TestAppConfig(
+    serverConfig: ServerConfig = ServerConfig(port = 1),
+    databaseConfig: DatabaseConfig = DatabaseConfig.IN_MEMORY,
+): AppConfig = AppConfig(
+    serverConfig = serverConfig,
+    databaseConfig = databaseConfig,
+)

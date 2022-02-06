@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import kotlin.time.Duration
 
 class SqlMatchStorageTest : StatisticsStorageTest() {
 
@@ -151,7 +152,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
 
         // THEN
         result.assertFailure {
-            require(this is InsertMatchesError.TryingToSaveSavedItems)
+            require(this is InsertMatchesError.TryingToInsertSavedItems)
             assert(this.saved == listOf(match))
         }
     }
@@ -185,6 +186,158 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val newExpectedValue = selectAllMatchesByTourOf(id = matchId, date = null, state = MatchState.PotentiallyFinished)
         assert(newValue == newExpectedValue)
     }
+
+    @Test
+    fun `insert updates a match that already has associated MatchReport value properly`() = runBlocking {
+        // GIVEN
+        val tourYear = tourYearOf()
+        val league = leagueOf()
+        val tour = tourOf(year = tourYear, league = league)
+        insert(league)
+        insert(tour)
+        val matchId = matchIdOf(2)
+        val match = potentiallyFinishedOf(id = matchId)
+        val matchReportId = matchReportIdOf(1)
+
+        // WHEN
+        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+
+        // THEN
+        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val expectedValue = selectAllMatchesByTourOf(id = matchId, state = MatchState.PotentiallyFinished)
+        assert(value == expectedValue)
+
+        // WHEN
+        matchStatisticsQueries.insert(
+            id = matchReportId,
+            home = 0,
+            away = 0,
+            mvp = 0,
+            best_player = null,
+            tour_id = 1,
+            updated_at = LocalDateTime.now(clock),
+            phase = Phase.PlayOff,
+        )
+        setQueries.insert(
+            number = 1,
+            home_score = 2,
+            away_score = 3,
+            start_time = OffsetDateTime.now(clock),
+            end_time = OffsetDateTime.now(clock),
+            duration = Duration.ZERO,
+            match_statistics_id = matchReportId,
+        )
+        matchQueries.updateMatchReport(
+            id = matchId,
+            match_statistics_id = matchReportId,
+        )
+        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+
+        // THEN
+        val newValue = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val newExpectedValue = selectAllMatchesByTourOf(
+            id = matchId,
+            state = MatchState.PotentiallyFinished,
+            match_statistics_id = matchReportId,
+            date = null,
+            end_time = OffsetDateTime.now(clock),
+            winner_team_id = null,
+        )
+        assert(newValue == newExpectedValue)
+    }
+
+    @Test
+    fun `insert more matches works properly`() = runBlocking {
+        // GIVEN
+        val tourYear = tourYearOf()
+        val league = leagueOf()
+        val tour = tourOf(year = tourYear, league = league)
+        insert(league)
+        insert(tour)
+        val size = 10
+        val matches = (1..size).map { index -> potentiallyFinishedOf(matchIdOf(index.toLong())) }
+
+        // WHEN
+        matchStorage.insertOrUpdate(matches, league, tourYear)
+
+        // THEN
+        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsList()
+        assert(value.size == size)
+    }
+
+    @Test
+    fun `insert multiple finished matches works properly`() = runBlocking {
+        // GIVEN
+        val tourYear = tourYearOf()
+        val league = leagueOf()
+        val tour = tourOf(year = tourYear, league = league)
+        insert(league)
+        insert(tour)
+        val size = 2
+        val teams = (1..size*size).map { index ->
+            matchTeamOf(
+                teamId = teamIdOf(index.toLong()),
+                players = listOf(matchPlayerOf()),
+            )
+        }.toMutableList()
+        teams.map { matchTeam ->
+            InsertTeam(
+                team = teamOf(id = matchTeam.teamId),
+                league = league,
+                tourYear = tourYear,
+            )
+        }.forEach { insertTeam ->
+            insert(insertTeam)
+            insert(
+                InsertPlayer(
+                    player = playerWithDetailsOf(teamPlayer = playerOf(team = insertTeam.team.id)),
+                    league = league,
+                    tourYear = tourYear,
+                )
+            )
+        }
+        val now = OffsetDateTime.now(clock)
+        val range = (1..size)
+        val matches = (1..size + 1).map { index -> potentiallyFinishedOf(matchIdOf(index.toLong())) }
+        val matchStats = range.map { index ->
+            matchStatisticsOf(
+                away = teams.removeFirst(),
+                home = teams.removeFirst(),
+                matchReportId = matchReportIdOf(index.toLong()),
+                sets = (1..index + 3).map { setIndex ->
+                    matchSetOf(
+                        number = setIndex,
+                        endTime = now.plusHours(setIndex.toLong()),
+                        score = Score(home = 0, away = 25)
+                    )
+                }
+            )
+        }
+
+        // WHEN
+        matchStorage.insertOrUpdate(matches, league, tourYear)
+        matchStats.forEachIndexed { index, matchStatistics ->
+            storage.insert(matchStatistics, league, tourYear, matches[index].id)
+        }
+
+        // THEN
+        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsList()
+        assert(value.size == matches.size)
+        value.forEachIndexed { index, selectAllMatchesByTour ->
+            if (index == 0 || index == 1) {
+                assert(selectAllMatchesByTour.match_statistics_id == matchStats[index].matchReportId)
+                assert(selectAllMatchesByTour.end_time == matchStats[index].sets.last().endTime)
+                assert(selectAllMatchesByTour.winner_team_id == matchStats[index].away.teamId)
+            } else {
+                assert(
+                    selectAllMatchesByTour == selectAllMatchesByTourOf(
+                        id = matches[index].id,
+                        state = MatchState.PotentiallyFinished,
+                    )
+                )
+            }
+        }
+    }
 }
 
 private fun selectAllMatchesByTourOf(
@@ -194,11 +347,9 @@ private fun selectAllMatchesByTourOf(
     match_statistics_id: MatchReportId? = null,
     tour_id: Long = 1,
     end_time: OffsetDateTime? = null,
-    MAX: Long? = null,
     winner_team_id: TeamId? = null,
 ): SelectAllMatchesByTour = SelectAllMatchesByTour(
     id = id,
-    MAX = MAX,
     date = date,
     match_statistics_id = match_statistics_id,
     end_time = end_time,

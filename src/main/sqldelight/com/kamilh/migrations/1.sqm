@@ -3,7 +3,7 @@ import com.kamilh.models.Effect;
 import com.kamilh.models.MatchId;
 import com.kamilh.models.MatchReportId;
 import com.kamilh.models.Phase;
-import com.kamilh.models.Player.Specialization;
+import com.kamilh.models.TeamPlayer.Specialization;
 import com.kamilh.models.PlayerId;
 import com.kamilh.models.PlayerPosition;
 import com.kamilh.models.TeamId;

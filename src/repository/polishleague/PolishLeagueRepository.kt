@@ -5,13 +5,14 @@ import com.kamilh.repository.HttpClient
 import com.kamilh.repository.models.mappers.HtmlMapper
 import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.repository.parsing.ParseErrorHandler
+import models.PlayerWithDetails
 import repository.parsing.ParseResult
 
 interface PolishLeagueRepository {
 
     suspend fun getAllTeams(tour: TourYear): NetworkResult<List<Team>>
 
-    suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<Player>>
+    suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<TeamPlayer>>
 
     suspend fun getAllMatches(tour: TourYear): NetworkResult<List<AllMatchesItem>>
 
@@ -20,27 +21,39 @@ interface PolishLeagueRepository {
     suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchReport>
 
     suspend fun getPlayerDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerDetails>
+
+    suspend fun getPlayerWithDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerWithDetails>
+
+    suspend fun getAllTours(): NetworkResult<List<Tour>>
+
+    suspend fun getAllPlayers(): NetworkResult<List<Player>>
 }
 
 class HttpPolishLeagueRepository(
     private val httpClient: HttpClient,
     private val polishLeagueApi: PolishLeagueApi,
     private val htmlToTeamMapper: HtmlMapper<List<Team>>,
+    private val htmlToTeamPlayerMapper: HtmlMapper<List<TeamPlayer>>,
     private val htmlToPlayerMapper: HtmlMapper<List<Player>>,
     private val htmlToAllMatchesItemMapper: HtmlMapper<List<AllMatchesItem>>,
     private val htmlToMatchReportId: HtmlMapper<MatchReportId>,
     private val htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails>,
+    private val htmlToPlayerWithDetailsMapper: HtmlMapper<PlayerWithDetails>,
     private val matchReportEndpoint: MatchReportEndpoint,
     private val parseErrorHandler: ParseErrorHandler,
     private val matchResponseStorage: MatchResponseStorage,
     private val matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper,
+    private val tourCache: TourCache,
 ) : PolishLeagueRepository {
 
     override suspend fun getAllTeams(tour: TourYear): NetworkResult<List<Team>> =
         httpClient.execute(polishLeagueApi.getTeams(tour)).parseHtml(htmlToTeamMapper::map)
 
-    override suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<Player>> =
-        httpClient.execute(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToPlayerMapper::map)
+    override suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<TeamPlayer>> =
+        httpClient.execute(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToTeamPlayerMapper::map)
+
+    override suspend fun getAllPlayers(): NetworkResult<List<Player>> =
+        httpClient.execute(polishLeagueApi.getAllPlayers()).parseHtml(htmlToPlayerMapper::map)
 
     override suspend fun getAllMatches(tour: TourYear): NetworkResult<List<AllMatchesItem>> =
         httpClient.execute(polishLeagueApi.getAllMatches(tour)).parseHtml(htmlToAllMatchesItemMapper::map)
@@ -58,6 +71,12 @@ class HttpPolishLeagueRepository(
 
     override suspend fun getPlayerDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerDetails> =
         httpClient.execute(polishLeagueApi.getPlayerDetails(tour, playerId)).parseHtml(htmlToPlayerDetailsMapper::map)
+
+    override suspend fun getPlayerWithDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerWithDetails> =
+        httpClient.execute(polishLeagueApi.getPlayerWithDetails(tour, playerId)).parseHtml(htmlToPlayerWithDetailsMapper::map)
+
+    override suspend fun getAllTours(): NetworkResult<List<Tour>> =
+        Result.success(tourCache.getAll())
 
     private fun <T> NetworkResult<String>.parseHtml(parser: (String) -> ParseResult<T>): NetworkResult<T> =
         when (this) {

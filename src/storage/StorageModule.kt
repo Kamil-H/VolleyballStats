@@ -1,8 +1,6 @@
 package com.kamilh.storage
 
-import com.kamilh.databse.TeamQueries
-import com.kamilh.databse.TourTeamQueries
-import com.kamilh.databse.UserQueries
+import com.kamilh.databse.*
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.TransacterQueryRunner
@@ -33,7 +31,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<ColumnAdapter<LocalDate, String>>() with provider { LocalDateAdapter() }
     bind<ColumnAdapter<LocalDateTime, String>>() with provider { LocalDateTimeAdapter() }
     bind<ColumnAdapter<TourYear, Long>>() with provider { TourYearAdapter() }
-    bind<ColumnAdapter<Player.Specialization, Long>>() with provider { SpecializationAdapter() }
+    bind<ColumnAdapter<TeamPlayer.Specialization, Long>>() with provider { SpecializationAdapter() }
     bind<ColumnAdapter<MatchReportId, Long>>() with provider { MatchReportIdAdapter() }
     bind<ColumnAdapter<Duration, Long>>() with provider { DurationAdapter() }
     bind<ColumnAdapter<Phase, String>>() with provider { PhaseAdapter() }
@@ -60,6 +58,78 @@ val storageModule = DI.Module(name = MODULE_NAME) {
         val database by di.instance<DatabaseFactory>()
         database.database.tourTeamQueries
     }
+    bind<TourQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.tourQueries
+    }
+    bind<LeagueQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.leagueQueries
+    }
+    bind<TeamPlayerQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.teamPlayerQueries
+    }
+    bind<MatchStatisticsQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.matchStatisticsQueries
+    }
+    bind<PlayQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playQueries
+    }
+    bind<PlayerQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playerQueries
+    }
+    bind<PlayAttackQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playAttackQueries
+    }
+    bind<PlayBlockQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playBlockQueries
+    }
+    bind<PlayDigQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playDigQueries
+    }
+    bind<PlayFreeballQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playFreeballQueries
+    }
+    bind<PlayReceiveQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playReceiveQueries
+    }
+    bind<PlayServeQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playServeQueries
+    }
+    bind<PlaySetQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.playSetQueries
+    }
+    bind<PointQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.pointQueries
+    }
+    bind<PointLineupQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.pointLineupQueries
+    }
+    bind<SetQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.setQueries
+    }
+    bind<MatchAppearanceQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.matchAppearanceQueries
+    }
+    bind<MatchQueries>() with singleton {
+        val database by di.instance<DatabaseFactory>()
+        database.database.matchQueries
+    }
 
     bind<QueryRunner>() with singleton {
         val database by di.instance<DatabaseFactory>()
@@ -75,5 +145,29 @@ val storageModule = DI.Module(name = MODULE_NAME) {
 
     bind<TeamStorage>() with singleton {
         SqlTeamStorage(instance(), instance(), instance())
+    }
+
+    bind<TourStorage>() with singleton {
+        SqlTourStorage(instance(), instance(), instance())
+    }
+
+    bind<PlayerStorage>() with singleton {
+        SqlPlayerStorage(instance(), instance(), instance(), instance(), instance())
+    }
+
+    bind<LeagueStorage>() with singleton {
+        SqlLeagueStorage(instance(), instance())
+    }
+
+    bind<MatchStatisticsStorage>() with singleton {
+        SqlMatchStatisticsStorage(
+            instance(), instance(), instance(), instance(), instance(), instance(), instance(),
+            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(),
+            instance(), instance(), instance(), instance()
+        )
+    }
+
+    bind<MatchStorage>() with singleton {
+        SqlMatchStorage(instance(), instance(), instance())
     }
 }

@@ -1,10 +1,8 @@
 package com.kamilh.interactors
 
-import com.kamilh.match_analyzer.MatchReportAnalyzer
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
-import com.kamilh.storage.InsertMatchStatisticsError
-import com.kamilh.storage.MatchStatisticsStorage
+import com.kamilh.storage.InsertMatchStatisticsResult
 import kotlinx.coroutines.coroutineScope
 
 typealias UpdateMatchReports = Interactor<UpdateMatchReportParams, UpdateMatchReportResult>
@@ -25,9 +23,8 @@ sealed class UpdateMatchReportError(override val message: String? = null) : Erro
 
 class UpdateMatchReportInteractor(
     appDispatchers: AppDispatchers,
-    private val matchReportAnalyzer: MatchReportAnalyzer,
-    private val matchStatisticsStorage: MatchStatisticsStorage,
     private val polishLeagueRepository: PolishLeagueRepository,
+    private val matchReportPreparer: MatchReportPreparer,
 ): UpdateMatchReports(appDispatchers) {
 
     override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult {
@@ -54,35 +51,59 @@ class UpdateMatchReportInteractor(
             return Result.failure(UpdateMatchReportError.Network(firstFailure))
         }
 
-        val insertResults = callResults.values
-            .map { (matchId, matchReportId) ->
-                matchId to matchReportAnalyzer.analyze(matchReportId, tourYear, league)
-            }
-            .map { (matchId, matchReport) ->
-                matchStatisticsStorage.insert(
-                    matchStatistics = matchReport,
-                    league = league,
-                    tourYear = tourYear,
-                    matchId = matchId,
-                )
-            }.toResults()
+        matchReportPreparer(
+            MatchReportPreparerParams(
+                matches = callResults.values,
+                league = league,
+                tourYear = tourYear,
+            )
+        )
 
-        val insertFailures = insertResults.failures
-        val teamsNotFound = insertFailures
-            .filterIsInstance<InsertMatchStatisticsError.TeamNotFound>()
-            .map { it.teamId }
-
-        if (teamsNotFound.isNotEmpty()) {
-            return Result.failure(UpdateMatchReportError.TeamsNotFound(teamsNotFound))
-        }
-
-        val playersNotFound = insertFailures
-            .filterIsInstance<InsertMatchStatisticsError.PlayerNotFound>()
-            .flatMap { it.playerIds }
-
-        if (playersNotFound.isNotEmpty()) {
-            return Result.failure(UpdateMatchReportError.PlayersNotFound(playersNotFound))
-        }
+//        val insertResults = callResults.values
+//            .map { (matchId, matchReportId) ->
+//                matchId to matchReportAnalyzer.analyze(matchReportId, tourYear, league)
+//            }
+//            .map { (matchId, matchReport) ->
+//                InsertResult(
+//                    result = matchStatisticsStorage.insert(
+//                        matchStatistics = matchReport,
+//                        league = league,
+//                        tourYear = tourYear,
+//                        matchId = matchId,
+//                    ),
+//                    matchId = matchId,
+//                    matchReportId = matchReport.matchReportId,
+//                )
+//            }
+//
+//        val insertFailures = insertResults.map { it.result }.toResults().failures
+//        val teamsNotFound = insertFailures
+//            .filterIsInstance<InsertMatchStatisticsError.TeamNotFound>()
+//            .map { it.teamId }
+//
+//        if (teamsNotFound.isNotEmpty()) {
+//            return Result.failure(UpdateMatchReportError.TeamsNotFound(teamsNotFound))
+//        }
+//
+//        val playersNotFound = insertFailures
+//            .filterIsInstance<InsertMatchStatisticsError.PlayerNotFound>()
+//            .flatMap { it.playerIds }
+//
+//        insertResults.forEach {
+//            val error = it.result.error
+//            if (error is InsertMatchStatisticsError.PlayerNotFound) {
+//                Logger.i("matchId: ${it.matchId}, matchReportId: ${it.matchReportId}, playerIds: ${error.playerIds}")
+//            }
+//        }
+//        if (playersNotFound.isNotEmpty()) {
+//            return Result.failure(UpdateMatchReportError.PlayersNotFound(playersNotFound))
+//        }
         return Result.success(Unit)
     }
+
+    private data class InsertResult(
+        val result: InsertMatchStatisticsResult,
+        val matchId: MatchId,
+        val matchReportId: MatchReportId,
+    )
 }

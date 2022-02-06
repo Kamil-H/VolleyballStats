@@ -1,10 +1,13 @@
 package com.kamilh.repository.models.mappers
 
-import com.kamilh.models.Player
 import com.kamilh.models.PlayerId
+import com.kamilh.models.TeamId
+import com.kamilh.models.TeamPlayer
+import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
 import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
+import java.time.LocalDateTime
 
 /**
 <div class="item-1 col-xs-6 col-sm-4 col-md-3 col-lg-2 playersItem" data-playerposition="4" data-fullnamefirstletter="A" data-teamsid="1407">
@@ -18,22 +21,29 @@ import repository.parsing.ParseResult
     </div>
 </div>
  */
-class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Player>> {
+class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<TeamPlayer>> {
 
-    override fun map(html: String): ParseResult<List<Player>> = htmlParser.parse(html) {
+    override fun map(html: String): ParseResult<List<TeamPlayer>> = htmlParser.parse(html) {
         val elements = getElementById("hiddenPlayersListAllBuffer")
-        val players = mutableListOf<Player>()
+        val players = mutableListOf<TeamPlayer>()
         elements.children().forEach {
+            val positionId = it.attr("data-playerposition").toInt()
+            val teamId = it.attr("data-teamsid").toLong()
             val thumbnailPlayer = it.getElementsByClass("thumbnail player")
 
             val id = thumbnailPlayer.select("a").attr("href")
             val image = thumbnailPlayer.select("img")
+            val imageUrl = image.attr("src")
             val name = image.attr("alt")
 
             players.add(
-                Player(
+                TeamPlayer(
                     id = PlayerId(id.extractPlayerId()!!),
                     name = name,
+                    imageUrl = Url.createOrNull(imageUrl),
+                    team = TeamId(teamId),
+                    specialization = TeamPlayer.Specialization.create(positionId),
+                    updatedAt = LocalDateTime.now(),
                 )
             )
         }
