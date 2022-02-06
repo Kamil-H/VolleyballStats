@@ -1,5 +1,6 @@
 package repository.models.mappers
 
+import com.kamilh.extensions.atPolandOffset
 import com.kamilh.models.AllMatchesItem
 import com.kamilh.models.MatchId
 import com.kamilh.models.Result
@@ -41,11 +42,11 @@ class HtmlToAllMatchesItemMapperTest {
     @Test
     fun `test if when date is from in future result is Scheduled and id is parsed properly`() {
         // GIVEN
-        val date = dateString.toPolishLeagueLocalDate()!!
+        val date = dateString.toPolishLeagueLocalDate()!!.atPolandOffset()
         val idString = "1101312"
 
         val html = html(
-            dateString = date.toPolishLeagueDateString(),
+            dateString = date.toLocalDateTime().toPolishLeagueDateString(),
             idString = idString,
             green = "1",
         )

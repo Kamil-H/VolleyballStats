@@ -7,7 +7,7 @@ import com.kamilh.storage.MatchStorage
 import com.kamilh.storage.TourStorage
 import kotlinx.coroutines.flow.first
 import utils.Logger
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
 
@@ -18,7 +18,7 @@ typealias UpdateMatchesResult = Result<UpdateMatchesSuccess, UpdateMatchesError>
 sealed class UpdateMatchesSuccess {
     object SeasonCompleted : UpdateMatchesSuccess()
     object NothingToSchedule : UpdateMatchesSuccess()
-    class NextMatch(val dateTime: LocalDateTime) : UpdateMatchesSuccess()
+    class NextMatch(val dateTime: OffsetDateTime) : UpdateMatchesSuccess()
 }
 
 sealed class UpdateMatchesError(override val message: String? = null) : Error {

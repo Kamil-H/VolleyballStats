@@ -73,7 +73,7 @@ internal class AppConfigDatabaseFactory(
 				positionAdapter = specializationAdapter,
 			),
 			match_modelAdapter = Match_model.Adapter(
-				dateAdapter = localDateTimeAdapter,
+				dateAdapter = offsetDateAdapter,
 				match_statistics_idAdapter = matchReportIdAdapter,
 				idAdapter = matchIdAdapter,
 				stateAdapter = EnumColumnAdapter(),

@@ -28,10 +28,10 @@ suspend fun main(args: Array<String>) {
 //    synchronizer.synchronize(League.POLISH_LEAGUE)
 //
     val repository by di.instance<PolishLeagueRepository>()
-    repository.getAllMatches(tour = TourYear.create(2021))
+    repository.getAllMatches(tour = TourYear.create(2020))
         .onSuccess {
             println(it.size)
-            it.forEach { println(it) }
+//            it.forEach { println(it) }
         }
         .onFailure {
             when (it) {

@@ -7,7 +7,6 @@ import com.kamilh.storage.common.QueryRunner
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
 interface MatchStorage {
@@ -46,16 +45,21 @@ class SqlMatchStorage(
                 return@runTransaction InsertMatchesResult.failure<Unit, InsertMatchesError>(InsertMatchesError.TryingToInsertSavedItems(saved))
             }
             matches.forEach { match ->
+                val state = when (match) {
+                    is AllMatchesItem.NotScheduled -> MatchState.NotScheduled
+                    is AllMatchesItem.PotentiallyFinished -> MatchState.PotentiallyFinished
+                    is AllMatchesItem.Scheduled -> MatchState.Scheduled
+                    else -> error("Shouldn't try to save Saved")
+                }
                 matchQueries.insert(
                     id = match.id,
-                    state = when (match) {
-                        is AllMatchesItem.NotScheduled -> MatchState.NotScheduled
-                        is AllMatchesItem.PotentiallyFinished -> MatchState.PotentiallyFinished
-                        is AllMatchesItem.Scheduled -> MatchState.Scheduled
-                        else -> error("Shouldn't try to save Saved")
-                    },
-                    date = (match as? AllMatchesItem.Scheduled)?.date,
+                    state = state,
+                    date = match.date,
                     tour_id = tourId,
+                    home_id = match.home,
+                    away_id = match.away,
+                    home_tour_id = tourId,
+                    away_tour_id = tourId,
                 )
             }
             InsertMatchesResult.success(Unit)
@@ -66,18 +70,20 @@ class SqlMatchStorage(
 
     private val mapper: (
         id: MatchId,
-        state: MatchState,
-        date: LocalDateTime?,
+        date: OffsetDateTime?,
         match_statistics_id: MatchReportId?,
-        tour_id: Long,
+        state: MatchState,
+        home_id: TeamId?,
+        away_id: TeamId?,
         end_time: OffsetDateTime?,
-        winner_team_id: TeamId?,
+        winner_team_id: TeamId?
     ) -> AllMatchesItem = {
             id: MatchId,
-            state: MatchState,
-            date: LocalDateTime?,
+            date: OffsetDateTime?,
             match_statistics_id: MatchReportId?,
-            _: Long,
+            state: MatchState,
+            home_id: TeamId?,
+            away_id: TeamId?,
             end_time: OffsetDateTime?,
             winner_team_id: TeamId? ->
         if (end_time != null && winner_team_id != null && match_statistics_id != null) {
@@ -86,12 +92,21 @@ class SqlMatchStorage(
                 endTime = end_time,
                 winnerId = winner_team_id,
                 matchReportId = match_statistics_id,
+                away = away_id!!,
+                home = home_id!!,
+                date = date,
             )
         } else {
             when (state) {
-                MatchState.PotentiallyFinished -> AllMatchesItem.PotentiallyFinished(id)
-                MatchState.Scheduled -> AllMatchesItem.Scheduled(id, date!!)
-                MatchState.NotScheduled -> AllMatchesItem.NotScheduled(id)
+                MatchState.PotentiallyFinished -> AllMatchesItem.PotentiallyFinished(
+                    id = id, away = away_id!!, home = home_id!!, date = date,
+                )
+                MatchState.Scheduled -> AllMatchesItem.Scheduled(
+                    id = id, away = away_id!!, home = home_id!!, date = date!!,
+                )
+                MatchState.NotScheduled -> AllMatchesItem.NotScheduled(
+                    id = id, away = away_id!!, home = home_id!!, date = date,
+                )
             }
         }
     }

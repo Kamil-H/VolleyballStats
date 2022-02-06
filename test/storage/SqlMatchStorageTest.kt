@@ -20,6 +20,22 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         )
     }
 
+    private fun configure(
+        tourYear: TourYear = tourYearOf(),
+        league: League = leagueOf(),
+    ) {
+        val tour = tourOf(year = tourYear, league = league)
+        insert(league)
+        insert(tour)
+        insert(
+            InsertTeam(
+                team = teamOf(),
+                league = league,
+                tourYear = tourYear,
+            )
+        )
+    }
+
     @Test
     fun `insert returns TourNotFound when there is no tour in the database`() = runBlocking {
         // GIVEN
@@ -56,11 +72,9 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        configure(tourYear, league)
         val matchId = matchIdOf(1)
-        val match = AllMatchesItem.PotentiallyFinished(matchId)
-        insert(league)
-        insert(tour)
+        val match = potentiallyFinishedOf(id = matchId)
         matchStorage.insertOrUpdate(listOf(match), league, tourYear)
         val matchStatistics = load(league = league, tourYear = tourYear, matchId = matchId)
 
@@ -80,9 +94,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
-        insert(league)
-        insert(tour)
+        configure(tourYear, league)
         val matchId = matchIdOf(2)
         val match = notScheduledOf(id = matchId)
 
@@ -100,9 +112,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
-        insert(league)
-        insert(tour)
+        configure(tourYear, league)
         val matchId = matchIdOf(2)
         val match = potentiallyFinishedOf(id = matchId)
 
@@ -120,11 +130,9 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
-        insert(league)
-        insert(tour)
+        configure(tourYear, league)
         val matchId = matchIdOf(2)
-        val date = LocalDateTime.now()
+        val date = OffsetDateTime.now(clock)
         val match = scheduledOf(id = matchId, date = date)
 
         // WHEN
@@ -162,11 +170,9 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
-        insert(league)
-        insert(tour)
+        configure(tourYear, league)
         val matchId = matchIdOf(2)
-        val date = LocalDateTime.now()
+        val date = OffsetDateTime.now(clock)
         val match = scheduledOf(id = matchId, date = date)
 
         // WHEN
@@ -178,12 +184,17 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         assert(value == expectedValue)
 
         // WHEN
-        val newMatch = potentiallyFinishedOf(id = matchId)
+        val newDate = null
+        val newMatch = potentiallyFinishedOf(id = matchId, date = newDate)
         matchStorage.insertOrUpdate(listOf(newMatch), league, tourYear)
 
         // THEN
         val newValue = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
-        val newExpectedValue = selectAllMatchesByTourOf(id = matchId, date = null, state = MatchState.PotentiallyFinished)
+        val newExpectedValue = selectAllMatchesByTourOf(
+            id = matchId,
+            date = newDate,
+            state = MatchState.PotentiallyFinished
+        )
         assert(newValue == newExpectedValue)
     }
 
@@ -192,9 +203,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
-        insert(league)
-        insert(tour)
+        configure()
         val matchId = matchIdOf(2)
         val match = potentiallyFinishedOf(id = matchId)
         val matchReportId = matchReportIdOf(1)
@@ -251,9 +260,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
-        insert(league)
-        insert(tour)
+        configure(tourYear, league)
         val size = 10
         val matches = (1..size).map { index -> potentiallyFinishedOf(matchIdOf(index.toLong())) }
 
@@ -270,9 +277,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // GIVEN
         val tourYear = tourYearOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
-        insert(league)
-        insert(tour)
+        configure(tourYear, league)
         val size = 2
         val teams = (1..size*size).map { index ->
             matchTeamOf(
@@ -343,17 +348,19 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
 private fun selectAllMatchesByTourOf(
     id: MatchId = matchIdOf(),
     state: MatchState = MatchState.Scheduled,
-    date: LocalDateTime? = null,
+    date: OffsetDateTime? = null,
     match_statistics_id: MatchReportId? = null,
-    tour_id: Long = 1,
     end_time: OffsetDateTime? = null,
     winner_team_id: TeamId? = null,
+    home_id: TeamId = teamIdOf(),
+    away_id: TeamId = teamIdOf(),
 ): SelectAllMatchesByTour = SelectAllMatchesByTour(
     id = id,
     date = date,
     match_statistics_id = match_statistics_id,
     end_time = end_time,
     state = state,
-    tour_id = tour_id,
     winner_team_id = winner_team_id,
+    home_id = home_id,
+    away_id = away_id,
 )

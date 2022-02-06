@@ -239,9 +239,13 @@ CREATE TABLE IF NOT EXISTS play_set_model (
 CREATE TABLE IF NOT EXISTS match_model (
   id INTEGER AS MatchId PRIMARY KEY,
   state TEXT AS MatchState NOT NULL,
-  date TEXT AS LocalDateTime,
+  date TEXT AS OffsetDateTime,
   match_statistics_id INTEGER AS MatchReportId,
   tour_id INTEGER NOT NULL,
+  home INTEGER NOT NULL,
+  away INTEGER NOT NULL,
+  FOREIGN KEY (home) REFERENCES tour_team_model(id),
+  FOREIGN KEY (away) REFERENCES tour_team_model(id),
   FOREIGN KEY (match_statistics_id) REFERENCES match_statistics_model(id),
   FOREIGN KEY (tour_id) REFERENCES tour_model(id)
 );
