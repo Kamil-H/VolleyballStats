@@ -1,6 +1,6 @@
 package com.kamilh.interactors
 
-import com.kamilh.match_analyzer.MatchReportAnalyzer
+import com.kamilh.match_analyzer.MatchReportAnalyzerInteractor
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.TeamStorage
@@ -21,7 +21,7 @@ class GetAllSeasonInteractor(
     appDispatchers: AppDispatchers,
     private val polishLeagueRepository: PolishLeagueRepository,
     private val teamStorage: TeamStorage,
-    private val matchReportAnalyzer: MatchReportAnalyzer,
+    private val matchReportAnalyzer: MatchReportAnalyzerInteractor,
 ): GetAllSeason(appDispatchers) {
 
     private val list = mutableListOf<Long>()
@@ -102,7 +102,7 @@ class GetAllSeasonInteractor(
         polishLeagueRepository.getMatchReport(matchReportId, tour)
             .onSuccess { matchReport ->
                 println("${matchReport.matchTeams.home.name} vs ${matchReport.matchTeams.away.name} || ${matchReport.startDate} || ${matchReport.matchId}")
-                val stats = matchReportAnalyzer.analyze(matchReport, tour)
+                val stats = matchReportAnalyzer.analyze(matchReport, tour).value ?: return
                 actions.addAll(stats.sets.flatMap { it.points }.flatMap { it.playActions })
             }
             .onFailure {
@@ -114,7 +114,7 @@ class GetAllSeasonInteractor(
     private suspend fun displayStats(matchReport: MatchReport, tour: TourYear, teams: List<Team>?) {
         println("${matchReport.matchTeams.home.name} vs ${matchReport.matchTeams.away.name} || ${matchReport.startDate} || ${matchReport.matchId}")
 
-        val stats = matchReportAnalyzer.analyze(matchReport, tour)
+        val stats = matchReportAnalyzer.analyze(matchReport, tour).value ?: return
         actions.addAll(stats.sets.flatMap { it.points }.flatMap { it.playActions })
         val playActions = stats.sets
             .flatMap { it.points }

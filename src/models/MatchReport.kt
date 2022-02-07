@@ -30,7 +30,8 @@ data class Officials(
     val commissioner: Commissioner,
     val referee1: Referee,
     val referee2: Referee,
-    val scorer1: Scorer,
+    val scorer1: Scorer?,
+    val scorer2: Scorer?,
     val lineJudge1: LineJudge?,
     val lineJudge2: LineJudge?,
 )
@@ -75,7 +76,7 @@ data class Referee(
 data class Scorer(
     val firstName: String,
     val lastName: String,
-    val level: String,
+    val level: String?,
 )
 
 data class BestPlayer(
@@ -114,7 +115,10 @@ data class Start(
 
 sealed class Event {
 
-    abstract val time: LocalDateTime
+    /**
+     * It must be nullable, because [ManualChange] doesn't have an information about time
+     */
+    abstract val time: LocalDateTime?
 
     data class Libero(
         val enters: Boolean,
@@ -206,6 +210,13 @@ sealed class Event {
         val team: TeamType,
         val player: Int,
         override val time: LocalDateTime,
+    ) : Event()
+
+    data class ManualChange(
+        val score: Score,
+        val lineup: StartingLineup,
+        val serve: TeamType,
+        override val time: LocalDateTime?,
     ) : Event()
 }
 

@@ -65,7 +65,8 @@ fun officialsResponseOf(
     commissioner: CommissionerResponse = commissionerResponseOf(),
     referee1: RefereeResponse = refereeResponseOf(),
     referee2: RefereeResponse = refereeResponseOf(),
-    scorer1: ScorerResponse = scorerResponseOf(),
+    scorer1: ScorerResponse? = null,
+    scorer2: ScorerResponse? = null,
     lineJudge1: LineJudgeResponse? = null,
     lineJudge2: LineJudgeResponse? = null,
 ): OfficialsResponse =
@@ -75,6 +76,7 @@ fun officialsResponseOf(
         referee1 = referee1,
         referee2 = referee2,
         scorer1 = scorer1,
+        scorer2 = scorer2,
         lineJudge1 = lineJudge1,
         lineJudge2 = lineJudge2,
     )
@@ -102,7 +104,7 @@ fun refereeResponseOf(
 fun scorerResponseOf(
     firstName: String = "",
     lastName: String = "",
-    level: String = "",
+    level: String? = null,
 ): ScorerResponse =
     ScorerResponse(
         firstName = firstName,

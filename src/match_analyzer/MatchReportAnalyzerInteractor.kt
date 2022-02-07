@@ -2,42 +2,61 @@ package com.kamilh.match_analyzer
 
 import com.kamilh.extensions.atPolandOffset
 import com.kamilh.extensions.divideExcluding
+import com.kamilh.interactors.Interactor
 import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.storage.TeamStorage
+import utils.Logger
 import java.time.LocalDateTime
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class MatchReportAnalyzer(
+typealias MatchReportAnalyzer = Interactor<MatchReportAnalyzerParams, MatchReportAnalyzerResult>
+
+typealias MatchReportAnalyzerResult = Result<MatchStatistics, MatchReportAnalyzerError>
+
+data class MatchReportAnalyzerParams(
+    val matchReport: MatchReport,
+    val tour: TourYear,
+    val league: League = League.POLISH_LEAGUE,
+)
+
+sealed class MatchReportAnalyzerError(override val message: String? = null) : Error {
+    data class WrongSetsCount(val matchReportId: MatchReportId) : MatchReportAnalyzerError()
+    data class TeamNotFound(
+        val matchReportId: MatchReportId,
+        val teamName: String,
+        val tour: TourYear,
+    ) : MatchReportAnalyzerError()
+}
+
+class MatchReportAnalyzerInteractor(
+    appDispatchers: AppDispatchers,
     private val teamStorage: TeamStorage,
     private val strategies: List<PlayActionStrategy<*>>,
     private val preparer: EventsPreparer,
     private val analyzeErrorReporter: AnalyzeErrorReporter,
-) {
+) : MatchReportAnalyzer(appDispatchers) {
 
-    suspend fun analyze(matchReport: MatchReport, tour: TourYear, league: League = League.POLISH_LEAGUE): MatchStatistics {
+    override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult =
+        analyze(params.matchReport, params.tour, params.league)
+
+    suspend fun analyze(matchReport: MatchReport, tour: TourYear, league: League = League.POLISH_LEAGUE): MatchReportAnalyzerResult {
         val matchId = matchReport.matchId
 
         if (matchReport.scout.sets.size > matchReport.scoutData.size) {
-            val error = AnalyzeError.WrongSetsCount(matchId)
-            analyzeErrorReporter.report(error)
-            error(error.toString())
+            return Result.failure(MatchReportAnalyzerError.WrongSetsCount(matchId))
         }
 
-        val home = teamStorage.getTeam(matchReport.matchTeams.home.name, league, tour)
-        val away = teamStorage.getTeam(matchReport.matchTeams.away.name, league, tour)
+        val home = getTeam(matchReport.matchTeams.home, league, tour)
+        val away = getTeam(matchReport.matchTeams.away, league, tour)
 
         if (home == null) {
-            val error = AnalyzeError.TeamNotFound(matchId, matchReport.matchTeams.home.name, tour)
-            analyzeErrorReporter.report(error)
-            error(error.toString())
+            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.home.name, tour))
         }
 
         if (away == null) {
-            val error = AnalyzeError.TeamNotFound(matchId, matchReport.matchTeams.away.name, tour)
-            analyzeErrorReporter.report(error)
-            error(error.toString())
+            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.away.name, tour))
         }
 
         val toTeam: TeamType.() -> Team = {
@@ -183,6 +202,9 @@ class MatchReportAnalyzer(
                             }
                         }
                     }
+                    is Event.ManualChange -> {
+                        Logger.i("ManualChange EventScore: ${event.score}, CurrentScore: $score")
+                    }
                 }
             }
             if (score != set.score) {
@@ -200,32 +222,37 @@ class MatchReportAnalyzer(
             )
         }
 
-        return MatchStatistics(
-            matchReportId = matchId,
-            sets = matchSets,
-            home = MatchTeam(
-                teamId = home.id,
-                code = matchReport.matchTeams.home.code,
-                players = matchReport.matchTeams.home.players.map { it.toMatchPlayer() },
-            ),
-            away = MatchTeam(
-                teamId = away.id,
-                code = matchReport.matchTeams.away.code,
-                players = matchReport.matchTeams.away.players.map { it.toMatchPlayer() },
-            ),
-            mvp = when (matchReport.scout.mvp.team) {
-                TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.mvp.number)
-                TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.mvp.number)
-            }!!,
-            bestPlayer = when (matchReport.scout.bestPlayer?.team) {
-                TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
-                TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
-                else -> null
-            },
-            phase = matchReport.phase,
-            updatedAt = LocalDateTime.now(),
+        return Result.success(
+            MatchStatistics(
+                matchReportId = matchId,
+                sets = matchSets,
+                home = MatchTeam(
+                    teamId = home.id,
+                    code = matchReport.matchTeams.home.code,
+                    players = matchReport.matchTeams.home.players.map { it.toMatchPlayer() },
+                ),
+                away = MatchTeam(
+                    teamId = away.id,
+                    code = matchReport.matchTeams.away.code,
+                    players = matchReport.matchTeams.away.players.map { it.toMatchPlayer() },
+                ),
+                mvp = when (matchReport.scout.mvp.team) {
+                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.mvp.number)
+                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.mvp.number)
+                }!!,
+                bestPlayer = when (matchReport.scout.bestPlayer?.team) {
+                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
+                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
+                    else -> null
+                },
+                phase = matchReport.phase,
+                updatedAt = LocalDateTime.now(),
+            )
         )
     }
+
+    private suspend fun getTeam(matchTeam: MatchReportTeam, league: League, tour: TourYear): Team? =
+        teamStorage.getTeam(matchTeam.name, matchTeam.code, league, tour)
 
     private fun LineupMutator.positionOrNull(playerId: PlayerId): PlayerPosition? =
         if (contains(playerId)) {

@@ -14,7 +14,7 @@ val matchAnalyzerModule = DI.Module(name = MODULE_NAME) {
     }
 
     bind<MatchReportAnalyzer>() with provider {
-        MatchReportAnalyzer(instance(), instance(), instance(), instance())
+        MatchReportAnalyzerInteractor(instance(), instance(), instance(), instance(), instance())
     }
 
     bind<EventsPreparer>() with provider { EventsPreparerImpl() }

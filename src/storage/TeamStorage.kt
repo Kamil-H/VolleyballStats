@@ -1,5 +1,6 @@
 package com.kamilh.storage
 
+import com.kamilh.databse.SelectByTourYearAndName
 import com.kamilh.databse.TeamQueries
 import com.kamilh.databse.TourTeamQueries
 import com.kamilh.models.*
@@ -17,7 +18,7 @@ interface TeamStorage {
 
     suspend fun getAllTeams(league: League, tour: TourYear): Flow<List<Team>>
 
-    suspend fun getTeam(name: String, league: League, tour: TourYear): Team?
+    suspend fun getTeam(name: String, code: String, league: League, tour: TourYear): Team?
 }
 
 typealias InsertTeamResult = Result<Unit, InsertTeamError>
@@ -86,16 +87,25 @@ class SqlTeamStorage(
             ).asFlow().mapToList(queryRunner.dispatcher)
         }
 
-    override suspend fun getTeam(name: String, league: League, tour: TourYear): Team? =
+    override suspend fun getTeam(name: String, code: String, league: League, tour: TourYear): Team? =
         queryRunner.run {
             tourTeamQueries.selectByTourYearAndName(
                 tour_year = tour,
                 name = name,
                 division = league.division,
                 country = league.country,
-                mapper = mapper,
-            ).executeAsOneOrNull()
+                code = code,
+            ).executeAsOneOrNull()?.toTeam()
         }
+
+    private fun SelectByTourYearAndName.toTeam(): Team =
+        Team(
+            id = team_id,
+            name = name,
+            teamImageUrl = image_url,
+            logoUrl = logo_url,
+            updatedAt = updated_at,
+        )
 
     private val mapper: (
         id: Long,

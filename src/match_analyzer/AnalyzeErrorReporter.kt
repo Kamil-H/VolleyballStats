@@ -5,13 +5,6 @@ import java.time.LocalDateTime
 
 sealed class AnalyzeError {
 
-    data class WrongSetsCount(val matchReportId: MatchReportId) : AnalyzeError()
-    data class TeamNotFound(
-        val matchReportId: MatchReportId,
-        val teamName: String,
-        val tour: TourYear,
-    ) : AnalyzeError()
-
     data class PlayerNotFoundInTheTeam(
         val matchReportId: MatchReportId,
         val teamName: String,

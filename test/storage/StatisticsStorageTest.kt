@@ -1,7 +1,7 @@
 package com.kamilh.storage
 
 import app.cash.turbine.test
-import com.kamilh.match_analyzer.MatchReportAnalyzer
+import com.kamilh.match_analyzer.MatchReportAnalyzerInteractor
 import com.kamilh.match_analyzer.analyzeErrorReporterOf
 import com.kamilh.match_analyzer.eventsPreparerOf
 import com.kamilh.match_analyzer.loadMatchReportFile
@@ -36,8 +36,8 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         )
     }
 
-    private val analyzer: MatchReportAnalyzer by lazy {
-        MatchReportAnalyzer(
+    private val analyzer: MatchReportAnalyzerInteractor by lazy {
+        MatchReportAnalyzerInteractor(
             teamStorage = SqlTeamStorage(
                 queryRunner = TestQueryRunner(),
                 teamQueries = teamQueries,

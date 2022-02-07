@@ -52,7 +52,8 @@ fun officialsOf(
     commissioner: Commissioner = commissionerOf(),
     referee1: Referee = refereeOf(),
     referee2: Referee = refereeOf(),
-    scorer1: Scorer = scorerOf(),
+    scorer1: Scorer? = null,
+    scorer2: Scorer? = null,
     lineJudge1: LineJudge? = null,
     lineJudge2: LineJudge? = null,
 ): Officials =
@@ -62,6 +63,7 @@ fun officialsOf(
         referee1 = referee1,
         referee2 = referee2,
         scorer1 = scorer1,
+        scorer2 = scorer2,
         lineJudge1 = lineJudge1,
         lineJudge2 = lineJudge2,
     )
@@ -89,7 +91,7 @@ fun refereeOf(
 fun scorerOf(
     firstName: String = "",
     lastName: String = "",
-    level: String = "",
+    level: String? = null,
 ): Scorer =
     Scorer(
         firstName = firstName,

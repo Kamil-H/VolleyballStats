@@ -5,6 +5,7 @@ package com.kamilh.repository.models
 import com.kamilh.utils.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import kotlinx.serialization.json.JsonObject
 import java.time.LocalDateTime
 
 @Serializable
@@ -37,6 +38,7 @@ class MatchResponse(
     val startDate: String,
     val teams: TeamsResponse,
     val updatedAt: String,
+    val fullScoutData: JsonObject? = null,
 )
 
 @Serializable
@@ -45,7 +47,8 @@ class OfficialsResponse(
     val commissioner: CommissionerResponse,
     val referee1: RefereeResponse,
     val referee2: RefereeResponse,
-    val scorer1: ScorerResponse,
+    val scorer1: ScorerResponse? = null,
+    val scorer2: ScorerResponse? = null,
     val lineJudge1: LineJudgeResponse? = null,
     val lineJudge2: LineJudgeResponse? = null,
 )
@@ -103,7 +106,7 @@ class RefereeResponse(
 class ScorerResponse(
     val firstName: String,
     val lastName: String,
-    val level: String,
+    val level: String? = null,
 )
 
 @Serializable
@@ -158,6 +161,7 @@ class EventResponse(
     val substitution: SubstitutionResponse? = null,
     val timeout: TimeoutResponse? = null,
     val videoChallenge: VideoChallengeResponse? = null,
+    val manualChange: ManualChangeResponse? = null,
 )
 
 @Serializable
@@ -204,7 +208,7 @@ class LiberoResponse(
 
 @Serializable
 class RallyResponse(
-    val endTime: LocalDateTime,
+    val endTime: LocalDateTime? = null,
     val point: String? = null,
     val verified: Boolean? = null,
     val startTime: LocalDateTime,
@@ -248,6 +252,13 @@ class VideoChallengeResponse(
     val scoreChange: String? = null,
     val startTime: LocalDateTime,
     val team: String,
+)
+
+@Serializable
+class ManualChangeResponse(
+    val score: ScoreResponse,
+    val lineup: StartingLineupResponse,
+    val serve: String,
 )
 
 @Serializable

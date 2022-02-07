@@ -173,10 +173,11 @@ class TeamStorageTest : DatabaseTest() {
         val tour = tourOf(year = tourYear, league = league)
         val name = "name"
         val team = teamOf(name = name)
+        val code = "code"
 
         // WHEN
         configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
-        val insertedTeam = storage.getTeam(name, league, tourYear)
+        val insertedTeam = storage.getTeam(name, code, league, tourYear)
 
         // THEN
         assert(insertedTeam == team)
@@ -190,10 +191,30 @@ class TeamStorageTest : DatabaseTest() {
         val tour = tourOf(year = tourYear, league = league)
         val name = "name"
         val team = teamOf(name = name)
+        val code = "code"
 
         // WHEN
         configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
-        val insertedTeam = storage.getTeam("some name", league, tourYear)
+        val insertedTeam = storage.getTeam("some name", code, league, tourYear)
+
+        // THEN
+        assert(insertedTeam == null)
+    }
+
+    @Test
+    fun `getTeam returns not null value when there is no team with provided name, but there is with provided code`() = runBlockingTest {
+        // GIVEN
+        val league = leagueOf(division = 1)
+        val tourYear = tourYearOf()
+        val tour = tourOf(year = tourYear, league = league)
+        val name = "name"
+        val team = teamOf(name = name)
+        val code = "code"
+
+        // WHEN
+        teamQueries.updateCode(code, team.id)
+        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
+        val insertedTeam = storage.getTeam("some name", code, league, tourYear)
 
         // THEN
         assert(insertedTeam == null)
@@ -206,10 +227,11 @@ class TeamStorageTest : DatabaseTest() {
         val tourYear = tourYearOf()
         val tour = tourOf(year = tourYear, league = league)
         val name = "name"
+        val code = "code"
 
         // WHEN
         configure(leagues = listOf(league), tours = listOf(tour))
-        val insertedTeam = storage.getTeam(name, league, tourYear)
+        val insertedTeam = storage.getTeam(name, code, league, tourYear)
 
         // THEN
         assert(insertedTeam == null)
@@ -224,5 +246,5 @@ fun teamStorageOf(
     object : TeamStorage {
         override suspend fun insert(teams: List<Team>, league: League, tour: TourYear): InsertTeamResult = insert
         override suspend fun getAllTeams(league: League, tour: TourYear): Flow<List<Team>> = flowOf(getAllTeams)
-        override suspend fun getTeam(name: String, league: League, tour: TourYear): Team? = getTeam.firstOrNull { it.name == name }
+        override suspend fun getTeam(name: String, code: String, league: League, tour: TourYear): Team? = getTeam.firstOrNull { it.name == name }
     }

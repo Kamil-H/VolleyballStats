@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import kotlin.time.Duration
 
-class MatchReportAnalyzerTest {
+class MatchReportAnalyzerInteractorTest {
 
     private val tour = tourYearOf()
     private fun analyzer(
@@ -27,7 +27,7 @@ class MatchReportAnalyzerTest {
         strategies: List<PlayActionStrategy<*>> = emptyList(),
         preparer: EventsPreparer = eventsPreparerOf(),
         analyzeErrorReporter: AnalyzeErrorReporter = analyzeErrorReporterOf(),
-    ): MatchReportAnalyzer = MatchReportAnalyzer(
+    ): MatchReportAnalyzerInteractor = MatchReportAnalyzerInteractor(
         teamStorage = teamStorage,
         strategies = strategies,
         preparer = preparer,

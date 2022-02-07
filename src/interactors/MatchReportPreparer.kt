@@ -1,6 +1,7 @@
 package com.kamilh.interactors
 
 import com.kamilh.match_analyzer.MatchReportAnalyzer
+import com.kamilh.match_analyzer.MatchReportAnalyzerParams
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertMatchStatisticsError
@@ -60,16 +61,22 @@ class MatchReportPreparerInteractor(
         allTeamPlayers: List<TeamPlayer>,
         tryFixPlayerOnError: Boolean,
     ) {
-        insert(
-            matchReport = matchReport,
-            allPlayers = allPlayers,
-            allTeamPlayers = allTeamPlayers,
-            matchStatistics = matchReportAnalyzer.analyze(matchReport, tourYear),
-            matchId = matchId,
-            league = league,
-            tourYear = tourYear,
-            tryFixPlayerOnError = tryFixPlayerOnError,
-        )
+        matchReportAnalyzer(MatchReportAnalyzerParams(matchReport, tourYear))
+            .onSuccess { matchStatistics ->
+                insert(
+                    matchReport = matchReport,
+                    allPlayers = allPlayers,
+                    allTeamPlayers = allTeamPlayers,
+                    matchStatistics = matchStatistics,
+                    matchId = matchId,
+                    league = league,
+                    tourYear = tourYear,
+                    tryFixPlayerOnError = tryFixPlayerOnError,
+                )
+            }
+            .onFailure {
+                Logger.i("AnalyzeMatchReport failure: $it")
+            }
     }
 
     private suspend fun insert(

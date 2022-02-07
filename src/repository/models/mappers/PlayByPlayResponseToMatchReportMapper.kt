@@ -89,7 +89,8 @@ class MatchResponseToMatchReportMapper {
             commissioner = commissioner.toCommissioner(),
             referee1 = referee1.toReferee(),
             referee2 = referee2.toReferee(),
-            scorer1 = scorer1.toScorer(),
+            scorer1 = scorer1?.toScorer(),
+            scorer2 = scorer2?.toScorer(),
             supervisor = supervisor?.toSupervisor(),
             lineJudge1 = lineJudge1?.toLineJudge(),
             lineJudge2 = lineJudge2?.toLineJudge(),
@@ -188,6 +189,7 @@ class MatchResponseToMatchReportMapper {
             substitution?.toSubstitution(),
             timeout?.toTimeout(),
             videoChallenge?.toVideoChallange(),
+            manualChange?.toManualChange(),
         ).sortedBy { it.time }
 
     private fun LiberoResponse.toLibero(): Event.Libero =
@@ -201,7 +203,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun RallyResponse.toRally(): Event.Rally =
         Event.Rally(
-            endTime = endTime,
+            endTime = endTime ?: startTime,
             point = TeamType.createOrNull(point),
             startTime = startTime,
             verified = verified,
@@ -230,6 +232,14 @@ class MatchResponseToMatchReportMapper {
             scoreChange = Event.VideoChallenge.ScoreChange.createOrNull(scoreChange),
             startTime = startTime,
             team = TeamType.create(team),
+        )
+
+    private fun ManualChangeResponse.toManualChange(): Event.ManualChange =
+        Event.ManualChange(
+            score = score.toScore(),
+            lineup = lineup.toStartingLineup(),
+            serve = TeamType.create(serve),
+            time = null,
         )
 
     private fun AtScoreResponse.toAtScore(): AtScore =

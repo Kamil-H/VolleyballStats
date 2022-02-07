@@ -1,7 +1,9 @@
 package com.kamilh
 
-import com.kamilh.models.*
-import com.kamilh.repository.polishleague.PolishLeagueRepository
+import com.kamilh.interactors.Synchronizer
+import com.kamilh.models.DatabaseConfig
+import com.kamilh.models.League
+import com.kamilh.models.TestAppConfig
 import kotlinx.coroutines.CoroutineScope
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -24,35 +26,8 @@ suspend fun main(args: Array<String>) {
 //    val updateMatches by di.instance<UpdateMatches>()
 //    updateMatches.invoke((UpdateMatchesParams(League.POLISH_LEAGUE, TourYear.create(2020))))
 
-//    val synchronizer by di.instance<Synchronizer>()
-//    synchronizer.synchronize(League.POLISH_LEAGUE)
-//
-    val repository by di.instance<PolishLeagueRepository>()
-    repository.getAllMatches(tour = TourYear.create(2020))
-        .onSuccess {
-            println(it.size)
-//            it.forEach { println(it) }
-        }
-        .onFailure {
-            when (it) {
-                is NetworkError.ConnectionError -> TODO()
-                NetworkError.HttpError.BadRequestException -> TODO()
-                NetworkError.HttpError.Conflict -> TODO()
-                NetworkError.HttpError.ForbiddenException -> TODO()
-                NetworkError.HttpError.InternalServerErrorException -> TODO()
-                NetworkError.HttpError.MethodNotAllowed -> TODO()
-                NetworkError.HttpError.NotAcceptable -> TODO()
-                NetworkError.HttpError.NotFoundException -> TODO()
-                is NetworkError.HttpError.Other -> TODO()
-                NetworkError.HttpError.ProxyAuthenticationRequired -> TODO()
-                NetworkError.HttpError.RequestTimeout -> TODO()
-                NetworkError.HttpError.UnauthorizedException -> TODO()
-                is NetworkError.HttpError.UnexpectedException -> TODO()
-                is NetworkError.UnexpectedException -> {
-                    it.throwable.printStackTrace()
-                }
-            }
-        }
+    val synchronizer by di.instance<Synchronizer>()
+    synchronizer.synchronize(League.POLISH_LEAGUE)
 
     databaseFactory.close()
 }
