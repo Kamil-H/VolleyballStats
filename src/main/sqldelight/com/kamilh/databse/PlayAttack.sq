@@ -21,3 +21,25 @@ team_player_model receive_player_id ON receive_player_id.id = attack.receive_id
 LEFT JOIN
 team_player_model setter_player_id ON setter_player_id.id = attack.setter_id
 WHERE set_model.match_statistics_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+
+selectAttackStats:
+SELECT
+name,
+COUNT(*) AS attempts,
+ROUND(SUM(effect_perfect) / COUNT(*) * 100.0, 2) AS kill,
+ROUND((SUM(effect_perfect) - SUM(effect_error) - SUM(effect_half)) / COUNT(*) * 100.0, 2) AS efficiency,
+ROUND((SUM(effect_error) + SUM(effect_half)) / COUNT(*) * 100.0, 2) AS error,
+ROUND((SUM(point_win)) / COUNT(*) * 100.0, 2) AS point_win_percent,
+
+ROUND(SUM(effect_perfect_break_point) / SUM(break_point) * 100.0, 2) AS kill_break_point,
+ROUND((SUM(effect_perfect_break_point) - SUM(effect_error_break_point) - SUM(effect_half_break_point)) / SUM(break_point) * 100.0, 2) AS efficiency_break_point,
+ROUND((SUM(effect_error_break_point) + SUM(effect_half_break_point)) / SUM(break_point) * 100.0, 2) AS error_break_point,
+
+ROUND(SUM(effect_perfect_side_out) / SUM(side_out) * 100.0, 2) AS kill_side_out,
+ROUND((SUM(effect_perfect_side_out) - SUM(effect_error_side_out) - SUM(effect_half_side_out)) / SUM(side_out) * 100.0, 2) AS efficiency_side_out,
+ROUND((SUM(effect_error_side_out) + SUM(effect_half_side_out)) / SUM(side_out) * 100.0, 2) AS error_side_out
+
+FROM attack_view
+WHERE tour_id = 2
+GROUP BY player_team
+ORDER BY efficiency DESC;

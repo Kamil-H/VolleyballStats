@@ -1,5 +1,5 @@
 insertPlayer:
-INSERT INTO team_player_model(image_url, tour_team_id, position, player_id, number, updated_at)
+INSERT INTO team_player_model(image_url, tour_team_id, specialization, player_id, number, updated_at)
 VALUES (?, ?, ?, ?, ?, ?);
 
 selectAll:
@@ -9,7 +9,7 @@ selectTeamPlayerByPlayerId:
 SELECT id FROM team_player_model WHERE player_id = ? AND tour_team_id = ?;
 
 selectPlayersByTeam:
-SELECT team_player_model.image_url, tour_team_id, position, player_id, number, player_model.name, player_model.updated_at,
+SELECT team_player_model.image_url, tour_team_id, specialization, player_id, number, player_model.name, player_model.updated_at,
 team_player_model.updated_at, player_model.birth_date, player_model.height, player_model.weight, player_model.range,
 tour_team_model.team_id
 FROM team_player_model
@@ -20,7 +20,7 @@ tour_team_model ON tour_team_id = tour_team_model.id
 WHERE tour_team_id = (SELECT id FROM tour_team_model WHERE team_id = :team_id AND tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country)));
 
 selectPlayers:
-SELECT team_player_model.image_url, tour_team_id, position, player_id, number, player_model.name, player_model.updated_at,
+SELECT team_player_model.image_url, tour_team_id, specialization, player_id, number, player_model.name, player_model.updated_at,
 team_player_model.updated_at, player_model.birth_date, player_model.height, player_model.weight, player_model.range,
 tour_team_model.team_id
 FROM team_player_model

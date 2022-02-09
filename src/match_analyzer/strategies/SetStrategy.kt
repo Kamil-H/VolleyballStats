@@ -15,6 +15,7 @@ class SetStrategy : PlayActionStrategy<PlayAction.Set> {
                 generalInfo = input.generalInfo(play),
                 attackerId = attack?.player,
                 attackerPosition = attack?.position,
+                attackEffect = attack?.effect,
                 sideOut = sideOutPlays.contains(play),
             )
         }

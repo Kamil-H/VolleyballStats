@@ -243,6 +243,7 @@ class SqlMatchStatisticsStorage(
                 side_out = playAction.sideOut,
                 attacker_id = playAction.attackerId?.toId(),
                 attacker_position = playAction.attackerPosition,
+                attack_effect = playAction.attackEffect,
             )
         }
     }
@@ -479,6 +480,7 @@ class SqlMatchStatisticsStorage(
                 attackerId = attacker_player_id,
                 attackerPosition = attacker_position,
                 sideOut = side_out,
+                attackEffect = attack_effect,
             )
         )
 

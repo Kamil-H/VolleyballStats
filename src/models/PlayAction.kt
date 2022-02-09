@@ -45,6 +45,7 @@ sealed class PlayAction {
         override val generalInfo: GeneralInfo,
         val attackerId: PlayerId?,
         val attackerPosition: PlayerPosition?,
+        val attackEffect: Effect?,
         val sideOut: Boolean,
     ) : PlayAction()
 

@@ -88,7 +88,7 @@ class SqlPlayerStorage(
             teamPlayerQueries.insertPlayer(
                 image_url = player.teamPlayer.imageUrl,
                 tour_team_id = tourTeamId,
-                position = player.teamPlayer.specialization,
+                specialization = player.teamPlayer.specialization,
                 player_id = player.teamPlayer.id,
                 number = player.details.number,
                 updated_at = player.teamPlayer.updatedAt,

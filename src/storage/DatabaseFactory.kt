@@ -70,7 +70,7 @@ internal class AppConfigDatabaseFactory(
 				image_urlAdapter = urlAdapter,
 				player_idAdapter = playerIdAdapter,
 				updated_atAdapter = localDateTimeAdapter,
-				positionAdapter = specializationAdapter,
+				specializationAdapter = specializationAdapter,
 			),
 			match_modelAdapter = Match_model.Adapter(
 				dateAdapter = offsetDateAdapter,
@@ -126,6 +126,7 @@ internal class AppConfigDatabaseFactory(
 			),
 			play_set_modelAdapter = Play_set_model.Adapter(
 				attacker_positionAdapter = positionAdapter,
+				attack_effectAdapter = effectAdapter,
 			)
 		)
 	}

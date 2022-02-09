@@ -3,10 +3,10 @@ import com.kamilh.models.Effect;
 import com.kamilh.models.MatchId;
 import com.kamilh.models.MatchReportId;
 import com.kamilh.models.Phase;
-import com.kamilh.models.TeamPlayer.Specialization;
 import com.kamilh.models.PlayerId;
 import com.kamilh.models.PlayerPosition;
 import com.kamilh.models.TeamId;
+import com.kamilh.models.TeamPlayer.Specialization;
 import com.kamilh.models.TourYear;
 import com.kamilh.models.Url;
 import com.kamilh.storage.MatchState;
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS team_player_model (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     image_url TEXT AS Url,
     tour_team_id INTEGER NOT NULL,
-    position INTEGER AS Specialization NOT NULL,
+    specialization INTEGER AS Specialization NOT NULL,
     player_id INTEGER AS PlayerId NOT NULL,
     number INTEGER AS Int NOT NULL,
     updated_at TEXT AS LocalDateTime NOT NULL,
@@ -232,6 +232,7 @@ CREATE TABLE IF NOT EXISTS play_set_model (
   side_out INTEGER AS Boolean NOT NULL,
   attacker_id INTEGER,
   attacker_position INTEGER AS PlayerPosition,
+  attack_effect TEXT AS Effect,
   FOREIGN KEY (play_id) REFERENCES play_model(id),
   FOREIGN KEY (attacker_id) REFERENCES team_player_model(id)
 );
@@ -256,3 +257,278 @@ CREATE TABLE IF NOT EXISTS user_model (
   device_id TEXT AS UUID NOT NULL UNIQUE,
   created_date TEXT AS OffsetDateTime NOT NULL
 );
+
+CREATE VIEW IF NOT EXISTS attack_view AS
+SELECT player.*, team_player.*, player_team.name AS team_name, player_team.id AS player_team,
+(CASE WHEN player_team.id = match_statistics_model.home THEN match_statistics_model.away ELSE match_statistics_model.home END) AS opponent_team_id,
+(SELECT COUNT(*) FROM play_attack_model
+ INNER JOIN
+ play_model ON play_model.id = play_attack_model.play_id,
+ team_player_model ON play_model.player_id = team_player_model.id,
+ tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
+ WHERE tour_team_model.id = player_team.id) AS team_attack_count,
+attack.side_out,
+attack.block_attempt,
+attack.dig_attempt,
+attack.receive_effect,
+attack.receive_id,
+attack.set_effect,
+attack.setter_id,
+play_model.break_point,
+play_model.position,
+(CASE WHEN play_model.effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect,
+(CASE WHEN play_model.effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive,
+(CASE WHEN play_model.effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative,
+(CASE WHEN play_model.effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error,
+(CASE WHEN play_model.effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half,
+(CASE WHEN play_model.effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion,
+(CASE WHEN play_model.effect = "#" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_perfect_break_point,
+(CASE WHEN play_model.effect = "+" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_positive_break_point,
+(CASE WHEN play_model.effect = "-" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_negative_break_point,
+(CASE WHEN play_model.effect = "=" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_error_break_point,
+(CASE WHEN play_model.effect = "/" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_half_break_point,
+(CASE WHEN play_model.effect = "!" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_invasion_break_point,
+(CASE WHEN play_model.effect = "#" AND attack.side_out THEN 1.0 ELSE 0.0 END) AS effect_perfect_side_out,
+(CASE WHEN play_model.effect = "+" AND attack.side_out THEN 1.0 ELSE 0.0 END) AS effect_positive_side_out,
+(CASE WHEN play_model.effect = "-" AND attack.side_out THEN 1.0 ELSE 0.0 END) AS effect_negative_side_out,
+(CASE WHEN play_model.effect = "=" AND attack.side_out THEN 1.0 ELSE 0.0 END) AS effect_error_side_out,
+(CASE WHEN play_model.effect = "/" AND attack.side_out THEN 1.0 ELSE 0.0 END) AS effect_half_side_out,
+(CASE WHEN play_model.effect = "!" AND attack.side_out THEN 1.0 ELSE 0.0 END) AS effect_invasion_side_out,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.home_score ELSE point_model.away_score END) AS player_team_score,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.away_score ELSE point_model.home_score END) AS opponent_score,
+(CASE WHEN player_team.id = point_model.point THEN 1.0 ELSE 0.0 END) AS point_win,
+set_model.number AS set_number,
+match_statistics_model.tour_id,
+match_statistics_model.id
+FROM play_attack_model attack
+INNER JOIN
+play_model ON play_model.id = play_id,
+point_model ON point_model.id = play_model.point_id,
+set_model ON set_model.id = point_model.set_id,
+match_statistics_model ON match_statistics_model.id = set_model.match_statistics_id,
+team_player_model team_player ON play_model.player_id = team_player.id,
+tour_team_model player_team ON team_player.tour_team_id = player_team.id
+LEFT JOIN
+player_model player ON player.id = team_player.player_id;
+
+CREATE VIEW IF NOT EXISTS block_view AS
+SELECT player.*, team_player.*, player_team.name AS team_name, player_team.id AS player_team,
+(CASE WHEN player_team.id = match_statistics_model.home THEN match_statistics_model.away ELSE match_statistics_model.home END) AS opponent_team_id,
+(SELECT COUNT(*) FROM play_block_model
+ INNER JOIN
+ play_model ON play_model.id = play_block_model.play_id,
+ team_player_model ON play_model.player_id = team_player_model.id,
+ tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
+ WHERE tour_team_model.id = player_team.id) AS team_block_count,
+block.attacker_id,
+block.setter_id,
+play_model.break_point,
+play_model.position,
+(CASE WHEN play_model.effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect,
+(CASE WHEN play_model.effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive,
+(CASE WHEN play_model.effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative,
+(CASE WHEN play_model.effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error,
+(CASE WHEN play_model.effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half,
+(CASE WHEN play_model.effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion,
+(CASE WHEN play_model.effect = "#" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_perfect_break_point,
+(CASE WHEN play_model.effect = "+" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_positive_break_point,
+(CASE WHEN play_model.effect = "-" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_negative_break_point,
+(CASE WHEN play_model.effect = "=" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_error_break_point,
+(CASE WHEN play_model.effect = "/" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_half_break_point,
+(CASE WHEN play_model.effect = "!" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_invasion_break_point,
+(CASE WHEN block.after_side_out = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect_after_side_out,
+(CASE WHEN block.after_side_out = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive_after_side_out,
+(CASE WHEN block.after_side_out = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative_after_side_out,
+(CASE WHEN block.after_side_out = "=" THEN 1.0 ELSE 0.0 END) AS effect_error_after_side_out,
+(CASE WHEN block.after_side_out = "/" THEN 1.0 ELSE 0.0 END) AS effect_half_after_side_out,
+(CASE WHEN block.after_side_out = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion_after_side_out,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.home_score ELSE point_model.away_score END) AS player_team_score,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.away_score ELSE point_model.home_score END) AS opponent_score,
+(CASE WHEN player_team.id = point_model.point THEN 1.0 ELSE 0.0 END) AS point_win,
+set_model.number AS set_number,
+match_statistics_model.tour_id,
+match_statistics_model.id
+FROM play_block_model block
+INNER JOIN
+play_model ON play_model.id = play_id,
+point_model ON point_model.id = play_model.point_id,
+set_model ON set_model.id = point_model.set_id,
+match_statistics_model ON match_statistics_model.id = set_model.match_statistics_id,
+team_player_model team_player ON play_model.player_id = team_player.id,
+tour_team_model player_team ON team_player.tour_team_id = player_team.id
+LEFT JOIN
+player_model player ON player.id = team_player.player_id;
+
+CREATE VIEW IF NOT EXISTS dig_view AS
+SELECT player.*, team_player.*, player_team.name AS team_name, player_team.id AS player_team,
+(CASE WHEN player_team.id = match_statistics_model.home THEN match_statistics_model.away ELSE match_statistics_model.home END) AS opponent_team_id,
+(SELECT COUNT(*) FROM play_dig_model
+ INNER JOIN
+ play_model ON play_model.id = play_dig_model.play_id,
+ team_player_model ON play_model.player_id = team_player_model.id,
+ tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
+ WHERE tour_team_model.id = player_team.id) AS team_dig_count,
+dig.attacker_id,
+dig.rebounder_id,
+play_model.break_point,
+play_model.position,
+(CASE WHEN play_model.effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect,
+(CASE WHEN play_model.effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive,
+(CASE WHEN play_model.effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative,
+(CASE WHEN play_model.effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error,
+(CASE WHEN play_model.effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half,
+(CASE WHEN play_model.effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion,
+(CASE WHEN dig.after_side_out = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect_after_side_out,
+(CASE WHEN dig.after_side_out = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive_after_side_out,
+(CASE WHEN dig.after_side_out = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative_after_side_out,
+(CASE WHEN dig.after_side_out = "=" THEN 1.0 ELSE 0.0 END) AS effect_error_after_side_out,
+(CASE WHEN dig.after_side_out = "/" THEN 1.0 ELSE 0.0 END) AS effect_half_after_side_out,
+(CASE WHEN dig.after_side_out = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion_after_side_out,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.home_score ELSE point_model.away_score END) AS player_team_score,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.away_score ELSE point_model.home_score END) AS opponent_score,
+(CASE WHEN player_team.id = point_model.point THEN 1.0 ELSE 0.0 END) AS point_win,
+set_model.number AS set_number,
+match_statistics_model.tour_id,
+match_statistics_model.id
+FROM play_dig_model dig
+INNER JOIN
+play_model ON play_model.id = play_id,
+point_model ON point_model.id = play_model.point_id,
+set_model ON set_model.id = point_model.set_id,
+match_statistics_model ON match_statistics_model.id = set_model.match_statistics_id,
+team_player_model team_player ON play_model.player_id = team_player.id,
+tour_team_model player_team ON team_player.tour_team_id = player_team.id
+LEFT JOIN
+player_model player ON player.id = team_player.player_id;
+
+CREATE VIEW IF NOT EXISTS receive_view AS
+SELECT player.*, team_player.*, player_team.name AS team_name, player_team.id AS player_team,
+(CASE WHEN player_team.id = match_statistics_model.home THEN match_statistics_model.away ELSE match_statistics_model.home END) AS opponent_team_id,
+(SELECT COUNT(*) FROM play_receive_model
+ INNER JOIN
+ play_model ON play_model.id = play_receive_model.play_id,
+ team_player_model ON play_model.player_id = team_player_model.id,
+ tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
+ WHERE tour_team_model.id = player_team.id) AS team_receive_count,
+receive.server_id,
+receive.set_effect,
+receive.attack_effect,
+play_model.break_point,
+play_model.position,
+(CASE WHEN play_model.effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect,
+(CASE WHEN play_model.effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive,
+(CASE WHEN play_model.effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative,
+(CASE WHEN play_model.effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error,
+(CASE WHEN play_model.effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half,
+(CASE WHEN play_model.effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion,
+(CASE WHEN receive.attack_effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect_attack,
+(CASE WHEN receive.attack_effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive_attack,
+(CASE WHEN receive.attack_effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative_attack,
+(CASE WHEN receive.attack_effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error_attack,
+(CASE WHEN receive.attack_effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half_attack,
+(CASE WHEN receive.attack_effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion_attack,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.home_score ELSE point_model.away_score END) AS player_team_score,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.away_score ELSE point_model.home_score END) AS opponent_score,
+(CASE WHEN player_team.id = point_model.point THEN 1.0 ELSE 0.0 END) AS point_win,
+set_model.number AS set_number,
+match_statistics_model.tour_id,
+match_statistics_model.id
+FROM play_receive_model receive
+INNER JOIN
+play_model ON play_model.id = play_id,
+point_model ON point_model.id = play_model.point_id,
+set_model ON set_model.id = point_model.set_id,
+match_statistics_model ON match_statistics_model.id = set_model.match_statistics_id,
+team_player_model team_player ON play_model.player_id = team_player.id,
+tour_team_model player_team ON team_player.tour_team_id = player_team.id
+LEFT JOIN
+player_model player ON player.id = team_player.player_id;
+
+CREATE VIEW IF NOT EXISTS serve_view AS
+SELECT player.*, team_player.*, player_team.name AS team_name, player_team.id AS player_team,
+(CASE WHEN player_team.id = match_statistics_model.home THEN match_statistics_model.away ELSE match_statistics_model.home END) AS opponent_team_id,
+(SELECT COUNT(*) FROM play_serve_model
+ INNER JOIN
+ play_model ON play_model.id = play_serve_model.play_id,
+ team_player_model ON play_model.player_id = team_player_model.id,
+ tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
+ WHERE tour_team_model.id = player_team.id) AS team_serve_count,
+serve.receiver_id,
+play_model.break_point,
+play_model.position,
+(CASE WHEN play_model.effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect,
+(CASE WHEN play_model.effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive,
+(CASE WHEN play_model.effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative,
+(CASE WHEN play_model.effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error,
+(CASE WHEN play_model.effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half,
+(CASE WHEN play_model.effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion,
+(CASE WHEN serve.receiver_effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect_receive,
+(CASE WHEN serve.receiver_effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive_receive,
+(CASE WHEN serve.receiver_effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative_receive,
+(CASE WHEN serve.receiver_effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error_receive,
+(CASE WHEN serve.receiver_effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half_receive,
+(CASE WHEN serve.receiver_effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion_receive,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.home_score ELSE point_model.away_score END) AS player_team_score,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.away_score ELSE point_model.home_score END) AS opponent_score,
+(CASE WHEN player_team.id = point_model.point THEN 1.0 ELSE 0.0 END) AS point_win,
+set_model.number AS set_number,
+match_statistics_model.tour_id,
+match_statistics_model.id
+FROM play_serve_model serve
+INNER JOIN
+play_model ON play_model.id = play_id,
+point_model ON point_model.id = play_model.point_id,
+set_model ON set_model.id = point_model.set_id,
+match_statistics_model ON match_statistics_model.id = set_model.match_statistics_id,
+team_player_model team_player ON play_model.player_id = team_player.id,
+tour_team_model player_team ON team_player.tour_team_id = player_team.id
+LEFT JOIN
+player_model player ON player.id = team_player.player_id;
+
+CREATE VIEW IF NOT EXISTS set_view AS
+SELECT player.*, team_player.*, player_team.name AS team_name, player_team.id AS player_team,
+(CASE WHEN player_team.id = match_statistics_model.home THEN match_statistics_model.away ELSE match_statistics_model.home END) AS opponent_team_id,
+(SELECT COUNT(*) FROM play_set_model
+ INNER JOIN
+ play_model ON play_model.id = play_set_model.play_id,
+ team_player_model ON play_model.player_id = team_player_model.id,
+ tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
+ WHERE tour_team_model.id = player_team.id) AS team_set_count,
+set_play.attacker_id,
+set_play.attacker_position,
+play_model.break_point,
+play_model.position,
+(CASE WHEN play_model.effect = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect,
+(CASE WHEN play_model.effect = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive,
+(CASE WHEN play_model.effect = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative,
+(CASE WHEN play_model.effect = "=" THEN 1.0 ELSE 0.0 END) AS effect_error,
+(CASE WHEN play_model.effect = "/" THEN 1.0 ELSE 0.0 END) AS effect_half,
+(CASE WHEN play_model.effect = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion,
+(CASE WHEN play_model.effect = "#" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_perfect_break_point,
+(CASE WHEN play_model.effect = "+" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_positive_break_point,
+(CASE WHEN play_model.effect = "-" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_negative_break_point,
+(CASE WHEN play_model.effect = "=" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_error_break_point,
+(CASE WHEN play_model.effect = "/" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_half_break_point,
+(CASE WHEN play_model.effect = "!" AND play_model.break_point THEN 1.0 ELSE 0.0 END) AS effect_invasion_break_point,
+(CASE WHEN set_play.side_out = "#" THEN 1.0 ELSE 0.0 END) AS effect_perfect_after_side_out,
+(CASE WHEN set_play.side_out = "+" THEN 1.0 ELSE 0.0 END) AS effect_positive_after_side_out,
+(CASE WHEN set_play.side_out = "-" THEN 1.0 ELSE 0.0 END) AS effect_negative_after_side_out,
+(CASE WHEN set_play.side_out = "=" THEN 1.0 ELSE 0.0 END) AS effect_error_after_side_out,
+(CASE WHEN set_play.side_out = "/" THEN 1.0 ELSE 0.0 END) AS effect_half_after_side_out,
+(CASE WHEN set_play.side_out = "!" THEN 1.0 ELSE 0.0 END) AS effect_invasion_after_side_out,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.home_score ELSE point_model.away_score END) AS player_team_score,
+(CASE WHEN player_team.id = match_statistics_model.home THEN point_model.away_score ELSE point_model.home_score END) AS opponent_score,
+(CASE WHEN player_team.id = point_model.point THEN 1.0 ELSE 0.0 END) AS point_win,
+set_model.number AS set_number,
+match_statistics_model.tour_id,
+match_statistics_model.id
+FROM play_set_model set_play
+INNER JOIN
+play_model ON play_model.id = play_id,
+point_model ON point_model.id = play_model.point_id,
+set_model ON set_model.id = point_model.set_id,
+match_statistics_model ON match_statistics_model.id = set_model.match_statistics_id,
+team_player_model team_player ON play_model.player_id = team_player.id,
+tour_team_model player_team ON team_player.tour_team_id = player_team.id
+LEFT JOIN
+player_model player ON player.id = team_player.player_id;

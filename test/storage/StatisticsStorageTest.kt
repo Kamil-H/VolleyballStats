@@ -8,6 +8,7 @@ import com.kamilh.match_analyzer.loadMatchReportFile
 import com.kamilh.match_analyzer.strategies.*
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.utils.testAppDispatchers
 
 abstract class StatisticsStorageTest : DatabaseTest() {
 
@@ -38,6 +39,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
 
     private val analyzer: MatchReportAnalyzerInteractor by lazy {
         MatchReportAnalyzerInteractor(
+            appDispatchers = testAppDispatchers,
             teamStorage = SqlTeamStorage(
                 queryRunner = TestQueryRunner(),
                 teamQueries = teamQueries,
@@ -121,7 +123,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                 )
             )
         }
-        val matchStatistics = analyzer.analyze(matchReport, tourYear, league)
+        val matchStatistics = analyzer.analyze(matchReport, tourYear, league).value!!
 
         // WHEN
         val insertResult = storage.insert(matchStatistics, league, tourYear, matchId)

@@ -8,6 +8,7 @@ import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.repository.polishleague.tourYearOf
 import com.kamilh.storage.TeamStorage
 import com.kamilh.storage.teamStorageOf
+import com.kamilh.utils.testAppDispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.serialization.decodeFromString
@@ -28,13 +29,14 @@ class MatchReportAnalyzerInteractorTest {
         preparer: EventsPreparer = eventsPreparerOf(),
         analyzeErrorReporter: AnalyzeErrorReporter = analyzeErrorReporterOf(),
     ): MatchReportAnalyzerInteractor = MatchReportAnalyzerInteractor(
+        appDispatchers = testAppDispatchers,
         teamStorage = teamStorage,
         strategies = strategies,
         preparer = preparer,
         analyzeErrorReporter = analyzeErrorReporter,
     )
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `test that Exception is thrown when there are more Sets in Scout than in ScoutData`() = runBlockingTest {
         // GIVEN
         val matchReport = matchReportOf(
@@ -46,13 +48,15 @@ class MatchReportAnalyzerInteractorTest {
         val errors: MutableList<AnalyzeError> = mutableListOf()
 
         // WHEN
-        analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
+        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
 
         // THEN
-        assert(errors.filterIsInstance<AnalyzeError.WrongSetsCount>().isNotEmpty())
+        result.assertFailure {
+            assert(this is MatchReportAnalyzerError.WrongSetsCount)
+        }
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `test that Exception is thrown when there are no such Home team in the Storage`() = runBlockingTest {
         // GIVEN
         val home = "home"
@@ -66,15 +70,16 @@ class MatchReportAnalyzerInteractorTest {
         val errors: MutableList<AnalyzeError> = mutableListOf()
 
         // WHEN
-        analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
+        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
 
         // THEN
-        val teamNotFound = errors.filterIsInstance<AnalyzeError.TeamNotFound>().firstOrNull()
-        require(teamNotFound != null)
-        assert(teamNotFound.teamName == home)
+        result.assertFailure {
+            require(this is MatchReportAnalyzerError.TeamNotFound)
+            assert(this.teamName == home)
+        }
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `test that Exception is thrown when there are no such Away team in the Storage`() = runBlockingTest {
         // GIVEN
         val home = "home"
@@ -89,15 +94,16 @@ class MatchReportAnalyzerInteractorTest {
         val errors: MutableList<AnalyzeError> = mutableListOf()
 
         // WHEN
-        analyzer(
+        val result = analyzer(
             analyzeErrorReporter = analyzeErrorReporterOf(errors),
             teamStorage = teamStorageOf(getTeam = listOf(homeTeam)),
         ).analyze(matchReport, tour)
 
         // THEN
-        val teamNotFound = errors.filterIsInstance<AnalyzeError.TeamNotFound>().firstOrNull()
-        require(teamNotFound != null)
-        assert(teamNotFound.teamName == away)
+        result.assertFailure {
+            require(this is MatchReportAnalyzerError.TeamNotFound)
+            assert(this.teamName == away)
+        }
     }
 
     @Test
@@ -120,7 +126,9 @@ class MatchReportAnalyzerInteractorTest {
         )
 
         // WHEN
-        val matchStatistics = analyzer(teamStorage = teamStorage).analyze(matchReport, tourYearOf())
+        val result = analyzer(teamStorage = teamStorage).analyze(matchReport, tourYearOf())
+        require(result is Result.Success)
+        val matchStatistics = result.value
 
         // THEN
         assert(matchStatistics.matchReportId.value == matchReportId)

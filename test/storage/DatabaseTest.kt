@@ -156,7 +156,7 @@ abstract class DatabaseTest(
                         country = insertPlayer.league.country,
                     ).executeAsOne()
                 ).executeAsOne(),
-                position = player.teamPlayer.specialization,
+                specialization = player.teamPlayer.specialization,
                 player_id = player.teamPlayer.id,
                 number = player.details.number,
                 updated_at = player.teamPlayer.updatedAt,
