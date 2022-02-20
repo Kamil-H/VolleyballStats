@@ -23,9 +23,11 @@ interface TeamStorage {
 
 typealias InsertTeamResult = Result<Unit, InsertTeamError>
 
-sealed class InsertTeamError(override val message: String? = null) : Error {
-    object TourNotFound : InsertTeamError()
-    class TourTeamAlreadyExists(val teamIds: List<TeamId>) : InsertTeamError()
+sealed class InsertTeamError(override val message: String) : Error {
+    object TourNotFound : InsertTeamError("TourNotFound")
+    class TourTeamAlreadyExists(val teamIds: List<TeamId>) : InsertTeamError(
+        "TourTeamAlreadyExists(teamIds: ${teamIds.joinToString { it.toString() }}"
+    )
 }
 
 class SqlTeamStorage(

@@ -18,9 +18,11 @@ interface MatchStorage {
 
 typealias InsertMatchesResult = Result<Unit, InsertMatchesError>
 
-sealed class InsertMatchesError(override val message: String? = null) : Error {
-    object TourNotFound : InsertMatchesError()
-    class TryingToInsertSavedItems(val saved: List<AllMatchesItem.Saved>) : InsertMatchesError()
+sealed class InsertMatchesError(override val message: String) : Error {
+    object TourNotFound : InsertMatchesError("TourNotFound")
+    class TryingToInsertSavedItems(val saved: List<AllMatchesItem.Saved>) : InsertMatchesError(
+        "TryingToInsertSavedItems(saved=${saved.joinToString { it.id.toString() }})"
+    )
 }
 
 enum class MatchState {

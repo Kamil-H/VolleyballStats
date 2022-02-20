@@ -17,10 +17,9 @@ data class UpdateMatchReportParams(
 
 typealias UpdateMatchReportResult = Result<Unit, UpdateMatchReportError>
 
-sealed class UpdateMatchReportError(override val message: String? = null) : Error {
-    class Network(val networkError: NetworkError) : UpdateMatchReportError()
-    class Analyze(val error: MatchReportAnalyzerError) : UpdateMatchReportError()
-    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchReportError()
+sealed class UpdateMatchReportError(override val message: String) : Error {
+    class Network(val networkError: NetworkError) : UpdateMatchReportError("Network(networkError=${networkError.message}")
+    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchReportError("Insert(error=${error.message}")
 }
 
 class UpdateMatchReportInteractor(
@@ -59,7 +58,6 @@ class UpdateMatchReportInteractor(
             )
         ).mapError {
             when (it) {
-                is MatchReportPreparerError.Analyze -> UpdateMatchReportError.Analyze(it.error)
                 is MatchReportPreparerError.Insert -> UpdateMatchReportError.Insert(it.error)
             }
         }

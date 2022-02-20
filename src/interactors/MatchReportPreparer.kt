@@ -1,7 +1,6 @@
 package com.kamilh.interactors
 
 import com.kamilh.match_analyzer.MatchReportAnalyzer
-import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.match_analyzer.MatchReportAnalyzerParams
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
@@ -23,9 +22,8 @@ data class MatchReportPreparerParams(
 
 typealias MatchReportPreparerResult = Result<Unit, MatchReportPreparerError>
 
-sealed class MatchReportPreparerError(override val message: String? = null) : Error {
-    class Analyze(val error: MatchReportAnalyzerError) : MatchReportPreparerError()
-    class Insert(val error: InsertMatchStatisticsError) : MatchReportPreparerError()
+sealed class MatchReportPreparerError(override val message: String) : Error {
+    class Insert(val error: InsertMatchStatisticsError) : MatchReportPreparerError("Insert(error=${error.message})")
 }
 
 class MatchReportPreparerInteractor(
@@ -50,7 +48,13 @@ class MatchReportPreparerInteractor(
                 allTeamPlayers = allTeamPlayers,
                 tryFixPlayerOnError = true,
             )
-        }.toResults().toResult() ?: Result.success(Unit)
+        }.toResults().apply {
+            Logger.i(
+                message = "Matches to analyze: ${params.matches.size}, " +
+                        "Correctly analyzed: ${this.successes.size}, " +
+                        "Errors: ${this.failures.size}"
+            )
+        }.toResult() ?: Result.success(Unit)
     }
 
     private suspend fun analyze(
@@ -63,21 +67,26 @@ class MatchReportPreparerInteractor(
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
         matchReportAnalyzer(MatchReportAnalyzerParams(matchReport, tourYear))
-            .mapError {
-                Logger.i("AnalyzeMatchReport failure: $it")
-                MatchReportPreparerError.Analyze(it)
+            .flatMapError {
+                Logger.i("AnalyzeMatchReport failure: ${it.message}")
+                // Ignoring analyze error. It should be reported and proceeded further
+                Result.success<MatchStatistics?, MatchReportPreparerError>(null)
             }
             .flatMap { matchStatistics ->
-                insert(
-                    matchReport = matchReport,
-                    allPlayers = allPlayers,
-                    allTeamPlayers = allTeamPlayers,
-                    matchStatistics = matchStatistics,
-                    matchId = matchId,
-                    league = league,
-                    tourYear = tourYear,
-                    tryFixPlayerOnError = tryFixPlayerOnError,
-                )
+                if (matchStatistics != null) {
+                    insert(
+                        matchReport = matchReport,
+                        allPlayers = allPlayers,
+                        allTeamPlayers = allTeamPlayers,
+                        matchStatistics = matchStatistics,
+                        matchId = matchId,
+                        league = league,
+                        tourYear = tourYear,
+                        tryFixPlayerOnError = tryFixPlayerOnError,
+                    )
+                } else {
+                    Result.success(Unit)
+                }
             }
 
     private suspend fun insert(

@@ -1,15 +1,12 @@
 package com.kamilh.interactors
 
-import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.models.*
 import com.kamilh.storage.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import utils.Logger
 import java.time.LocalDateTime
 
 class Synchronizer(
-    private val applicationScope: CoroutineScope,
     private val tourStorage: TourStorage,
     private val teamStorage: TeamStorage,
     private val playerStorage: PlayerStorage,
@@ -45,16 +42,18 @@ class Synchronizer(
                         is UpdateMatchesError.Network -> schedule()
                         UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
                         UpdateMatchesError.NoMatchesInTour -> { }
-                        is UpdateMatchesError.Analyze -> when (error.error) {
-                            is MatchReportAnalyzerError.TeamNotFound -> updateTeams(tour.league, tour.year)
-                            is MatchReportAnalyzerError.WrongSetsCount -> { }
-                        }
                         is UpdateMatchesError.Insert -> when (error.error) {
                             InsertMatchStatisticsError.NoPlayersInTeams, is InsertMatchStatisticsError.PlayerNotFound ->
                                 updatePlayers(tour.league, tour.year)
                             is InsertMatchStatisticsError.TeamNotFound -> updateTeams(tour.league, tour.year)
                             InsertMatchStatisticsError.TourNotFound -> initializeTours(league = tour.league)
                         }
+                    }
+                }
+                .onSuccess {
+                    when (it) {
+                        UpdateMatchesSuccess.NothingToSchedule, UpdateMatchesSuccess.SeasonCompleted -> { }
+                        is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plusHours(3))
                     }
                 }
         }

@@ -26,8 +26,10 @@ interface TourStorage {
 
 typealias InsertTourResult = Result<Unit, InsertTourError>
 
-enum class InsertTourError(override val message: String? = null): Error {
-    LeagueNotFound, TourAlreadyExists
+enum class InsertTourError: Error {
+    LeagueNotFound, TourAlreadyExists;
+
+    override val message: String = name
 }
 
 class SqlTourStorage(

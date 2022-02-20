@@ -21,13 +21,17 @@ data class MatchReportAnalyzerParams(
     val league: League = League.POLISH_LEAGUE,
 )
 
-sealed class MatchReportAnalyzerError(override val message: String? = null) : Error {
-    data class WrongSetsCount(val matchReportId: MatchReportId) : MatchReportAnalyzerError()
-    data class TeamNotFound(
+sealed class MatchReportAnalyzerError(override val message: String) : Error {
+    class WrongSetsCount(val matchReportId: MatchReportId) : MatchReportAnalyzerError(
+        "WrongSetsCount(matchReportId: $matchReportId)"
+    )
+    class TeamNotFound(
         val matchReportId: MatchReportId,
         val teamName: String,
         val tour: TourYear,
-    ) : MatchReportAnalyzerError()
+    ) : MatchReportAnalyzerError(
+        "TeamNotFound(matchReportId: $matchReportId, teamName: $teamName, tour: $tour)"
+    )
 }
 
 class MatchReportAnalyzerInteractor(

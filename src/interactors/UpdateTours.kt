@@ -12,8 +12,8 @@ data class UpdateToursParams(val league: League)
 
 typealias UpdateToursResult = Result<Unit, UpdateToursError>
 
-sealed class UpdateToursError(override val message: String? = null) : Error {
-    class Network(val networkError: NetworkError) : UpdateToursError()
+sealed class UpdateToursError(override val message: String) : Error {
+    class Network(val networkError: NetworkError) : UpdateToursError("Network(networkError: ${networkError.message})")
 }
 
 class UpdateToursInteractor(

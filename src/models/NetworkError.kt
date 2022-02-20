@@ -3,26 +3,28 @@ package com.kamilh.models
 import io.ktor.client.features.*
 import io.ktor.utils.io.errors.*
 
-sealed class NetworkError(override val message: String? = null) : Error {
+sealed class NetworkError(override val message: String) : Error {
 
-    class ConnectionError(val ioException: IOException) : NetworkError()
+    class ConnectionError(val ioException: IOException) : NetworkError("ConnectionError")
 
-    class UnexpectedException(val throwable: Throwable) : NetworkError()
+    class UnexpectedException(val throwable: Throwable) : NetworkError("UnexpectedException")
 
-    sealed class HttpError : NetworkError() {
+    sealed class HttpError(override val message: String) : NetworkError(message) {
 
-        object BadRequestException : HttpError()
-        object UnauthorizedException : HttpError()
-        object ForbiddenException : HttpError()
-        object NotFoundException : HttpError()
-        object InternalServerErrorException : HttpError()
-        object MethodNotAllowed: HttpError()
-        object NotAcceptable: HttpError()
-        object ProxyAuthenticationRequired: HttpError()
-        object RequestTimeout: HttpError()
-        object Conflict: HttpError()
-        class Other(val status: Int): HttpError()
-        class UnexpectedException(val responseException: ResponseException) : HttpError()
+        object BadRequestException : HttpError("BadRequestException")
+        object UnauthorizedException : HttpError("UnauthorizedException")
+        object ForbiddenException : HttpError("ForbiddenException")
+        object NotFoundException : HttpError("NotFoundException")
+        object InternalServerErrorException : HttpError("InternalServerErrorException")
+        object MethodNotAllowed: HttpError("MethodNotAllowed")
+        object NotAcceptable: HttpError("NotAcceptable")
+        object ProxyAuthenticationRequired: HttpError("ProxyAuthenticationRequired")
+        object RequestTimeout: HttpError("RequestTimeout")
+        object Conflict: HttpError("Conflict")
+        class Other(val status: Int): HttpError("Other(status: $status)")
+        class UnexpectedException(val responseException: ResponseException) : HttpError(
+            "UnexpectedException(responseException: $responseException)"
+        )
 
         companion object {
             fun handle(responseException: ResponseException): HttpError =

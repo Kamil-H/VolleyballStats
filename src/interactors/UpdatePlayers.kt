@@ -14,9 +14,9 @@ data class UpdatePlayersParams(val league: League, val tour: TourYear)
 
 typealias UpdatePlayersResult = Result<Unit, UpdatePlayersError>
 
-sealed class UpdatePlayersError(override val message: String? = null) : Error {
-    class Network(val networkError: NetworkError) : UpdatePlayersError()
-    class Storage(val insertPlayerError: InsertPlayerError) : UpdatePlayersError()
+sealed class UpdatePlayersError(override val message: String) : Error {
+    class Network(val networkError: NetworkError) : UpdatePlayersError("Network(networkError: ${networkError.message})")
+    class Storage(val insertPlayerError: InsertPlayerError) : UpdatePlayersError("Storage(insertPlayerError: ${insertPlayerError.message})")
 }
 
 class UpdatePlayersInteractor(

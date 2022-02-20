@@ -1,6 +1,5 @@
 package com.kamilh.interactors
 
-import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertMatchStatisticsError
@@ -22,12 +21,11 @@ sealed class UpdateMatchesSuccess {
     class NextMatch(val dateTime: OffsetDateTime) : UpdateMatchesSuccess()
 }
 
-sealed class UpdateMatchesError(override val message: String? = null) : Error {
-    object TourNotFound : UpdateMatchesError()
-    object NoMatchesInTour : UpdateMatchesError()
-    class Network(val networkError: NetworkError) : UpdateMatchesError()
-    class Analyze(val error: MatchReportAnalyzerError) : UpdateMatchesError()
-    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchesError()
+sealed class UpdateMatchesError(override val message: String) : Error {
+    object TourNotFound : UpdateMatchesError("TourNotFound")
+    object NoMatchesInTour : UpdateMatchesError("NoMatchesInTour")
+    class Network(val networkError: NetworkError) : UpdateMatchesError("Network(networkError: ${networkError.message})")
+    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchesError("Insert(error: ${error.message})")
 }
 
 class UpdateMatchesInteractor(
@@ -67,7 +65,6 @@ class UpdateMatchesInteractor(
             val error = updateMatchReports(UpdateMatchReportParams(league, tourYear, potentiallyFinished)).mapError {
                 when (it) {
                     is UpdateMatchReportError.Network -> UpdateMatchesError.Network(it.networkError)
-                    is UpdateMatchReportError.Analyze -> UpdateMatchesError.Analyze(it.error)
                     is UpdateMatchReportError.Insert -> UpdateMatchesError.Insert(it.error)
                 }
             }.error

@@ -12,8 +12,8 @@ data class UpdateTeamsParams(val league: League, val tour: TourYear)
 typealias UpdateTeamsResult = Result<Unit, UpdateTeamsError>
 
 sealed class UpdateTeamsError(override val message: String? = null) : Error {
-    class Network(val networkError: NetworkError) : UpdateTeamsError()
-    class Storage(val insertTeamError: InsertTeamError) : UpdateTeamsError()
+    class Network(val networkError: NetworkError) : UpdateTeamsError("Network(networkError: ${networkError.message})")
+    class Storage(val insertTeamError: InsertTeamError) : UpdateTeamsError("Storage(insertTeamError: ${insertTeamError.message})")
 }
 
 class UpdateTeamsInteractor(

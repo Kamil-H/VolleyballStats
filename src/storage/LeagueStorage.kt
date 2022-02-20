@@ -15,8 +15,10 @@ interface LeagueStorage {
 
 typealias InsertLeagueResult = Result<Unit, InsertLeagueError>
 
-enum class InsertLeagueError(override val message: String? = null): Error {
-    LeagueAlreadyExists
+enum class InsertLeagueError: Error {
+    LeagueAlreadyExists;
+
+    override val message: String = name
 }
 
 class SqlLeagueStorage(

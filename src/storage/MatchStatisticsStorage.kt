@@ -21,11 +21,13 @@ interface MatchStatisticsStorage {
 
 typealias InsertMatchStatisticsResult = Result<Unit, InsertMatchStatisticsError>
 
-sealed class InsertMatchStatisticsError(override val message: String? = null) : Error {
-    object TourNotFound : InsertMatchStatisticsError()
-    object NoPlayersInTeams : InsertMatchStatisticsError()
-    class TeamNotFound(val teamId: TeamId) : InsertMatchStatisticsError()
-    class PlayerNotFound(val playerIds: List<Pair<PlayerId, TeamId>>) : InsertMatchStatisticsError()
+sealed class InsertMatchStatisticsError(override val message: String?) : Error {
+    object TourNotFound : InsertMatchStatisticsError("TourNotFound")
+    object NoPlayersInTeams : InsertMatchStatisticsError("NoPlayersInTeams")
+    class TeamNotFound(val teamId: TeamId) : InsertMatchStatisticsError("TeamNotFound(teamId: $teamId)")
+    class PlayerNotFound(val playerIds: List<Pair<PlayerId, TeamId>>) : InsertMatchStatisticsError(
+        "PlayerNotFound(playerIds: ${playerIds.joinToString { "[${it.first}, ${it.second}]" }}"
+    )
 }
 
 class SqlMatchStatisticsStorage(

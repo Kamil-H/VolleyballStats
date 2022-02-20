@@ -41,6 +41,6 @@ val interactorModule = DI.Module(name = MODULE_NAME) {
         }
     }
     bindProvider {
-        Synchronizer(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+        Synchronizer(instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 }

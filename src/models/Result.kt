@@ -3,7 +3,12 @@ package com.kamilh.models
 sealed class Result<out V, out E : Error> {
 
     data class Success<out V>(val value: V) : Result<V, Nothing>()
-    data class Failure<out E : Error>(val error: E) : Result<Nothing, E>()
+    data class Failure<out E : Error>(val error: E) : Result<Nothing, E>() {
+
+        override fun toString(): String {
+            return "Failure(error=${error.message})"
+        }
+    }
 
     companion object {
         fun <V, E : Error> success(value: V): Result<V, E> = Success(value)
