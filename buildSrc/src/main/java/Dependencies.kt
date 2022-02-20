@@ -4,7 +4,7 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.5.30"
+    const val kotlinVersion = "1.6.10"
     const val sqlDelightVersion = "1.5.3"
 
     object Plugins {
@@ -43,7 +43,7 @@ object Dependencies {
     }
 
     object Coroutines {
-        private const val version = "1.5.2"
+        private const val version = "1.6.0"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
 
         object Test {
@@ -79,7 +79,7 @@ object Dependencies {
     }
 
     object DateTime {
-        private const val version = "0.1.1"
+        private const val version = "0.3.2"
         const val dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:$version"
     }
 

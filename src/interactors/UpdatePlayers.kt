@@ -1,12 +1,10 @@
 package com.kamilh.interactors
 
+import com.kamilh.extensions.mapAsync
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertPlayerError
 import com.kamilh.storage.PlayerStorage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import models.PlayerWithDetails
 
@@ -51,6 +49,3 @@ class UpdatePlayersInteractor(
         playerStorage.insert(players, params.league, params.tour)
             .mapError { UpdatePlayersError.Storage(it) }
 }
-
-suspend inline fun <T, R> List<T>.mapAsync(scope: CoroutineScope, crossinline transform: suspend (T) -> R): List<R> =
-    map { scope.async { transform(it) } }.awaitAll()

@@ -1,8 +1,10 @@
 package com.kamilh.interactors
 
+import com.kamilh.extensions.mapAsync
+import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
-import com.kamilh.storage.InsertMatchStatisticsResult
+import com.kamilh.storage.InsertMatchStatisticsError
 import kotlinx.coroutines.coroutineScope
 
 typealias UpdateMatchReports = Interactor<UpdateMatchReportParams, UpdateMatchReportResult>
@@ -17,8 +19,8 @@ typealias UpdateMatchReportResult = Result<Unit, UpdateMatchReportError>
 
 sealed class UpdateMatchReportError(override val message: String? = null) : Error {
     class Network(val networkError: NetworkError) : UpdateMatchReportError()
-    class TeamsNotFound(val teamIds: List<TeamId>) : UpdateMatchReportError()
-    class PlayersNotFound(val playerIds: List<PlayerId>) : UpdateMatchReportError()
+    class Analyze(val error: MatchReportAnalyzerError) : UpdateMatchReportError()
+    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchReportError()
 }
 
 class UpdateMatchReportInteractor(
@@ -28,9 +30,7 @@ class UpdateMatchReportInteractor(
 ): UpdateMatchReports(appDispatchers) {
 
     override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult {
-        val tourYear = params.tour
-        val league = params.league
-        val potentiallyFinished = params.matches
+        val (league, tourYear, potentiallyFinished) = params
 
         if (potentiallyFinished.isEmpty()) {
             return Result.success(Unit)
@@ -51,59 +51,17 @@ class UpdateMatchReportInteractor(
             return Result.failure(UpdateMatchReportError.Network(firstFailure))
         }
 
-        matchReportPreparer(
+        return matchReportPreparer(
             MatchReportPreparerParams(
                 matches = callResults.values,
                 league = league,
                 tourYear = tourYear,
             )
-        )
-
-//        val insertResults = callResults.values
-//            .map { (matchId, matchReportId) ->
-//                matchId to matchReportAnalyzer.analyze(matchReportId, tourYear, league)
-//            }
-//            .map { (matchId, matchReport) ->
-//                InsertResult(
-//                    result = matchStatisticsStorage.insert(
-//                        matchStatistics = matchReport,
-//                        league = league,
-//                        tourYear = tourYear,
-//                        matchId = matchId,
-//                    ),
-//                    matchId = matchId,
-//                    matchReportId = matchReport.matchReportId,
-//                )
-//            }
-//
-//        val insertFailures = insertResults.map { it.result }.toResults().failures
-//        val teamsNotFound = insertFailures
-//            .filterIsInstance<InsertMatchStatisticsError.TeamNotFound>()
-//            .map { it.teamId }
-//
-//        if (teamsNotFound.isNotEmpty()) {
-//            return Result.failure(UpdateMatchReportError.TeamsNotFound(teamsNotFound))
-//        }
-//
-//        val playersNotFound = insertFailures
-//            .filterIsInstance<InsertMatchStatisticsError.PlayerNotFound>()
-//            .flatMap { it.playerIds }
-//
-//        insertResults.forEach {
-//            val error = it.result.error
-//            if (error is InsertMatchStatisticsError.PlayerNotFound) {
-//                Logger.i("matchId: ${it.matchId}, matchReportId: ${it.matchReportId}, playerIds: ${error.playerIds}")
-//            }
-//        }
-//        if (playersNotFound.isNotEmpty()) {
-//            return Result.failure(UpdateMatchReportError.PlayersNotFound(playersNotFound))
-//        }
-        return Result.success(Unit)
+        ).mapError {
+            when (it) {
+                is MatchReportPreparerError.Analyze -> UpdateMatchReportError.Analyze(it.error)
+                is MatchReportPreparerError.Insert -> UpdateMatchReportError.Insert(it.error)
+            }
+        }
     }
-
-    private data class InsertResult(
-        val result: InsertMatchStatisticsResult,
-        val matchId: MatchId,
-        val matchReportId: MatchReportId,
-    )
 }

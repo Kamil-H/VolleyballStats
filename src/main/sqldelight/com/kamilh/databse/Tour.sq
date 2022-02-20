@@ -20,7 +20,7 @@ SELECT name, tour_year, start_date, end_date, winner_id, updated_at, league_mode
 INNER JOIN league_model
 WHERE tour_year = ? AND league_id = (SELECT (id) FROM league_model WHERE country = ? AND division = ?);
 
-updateWinnerEndTime:
+updateEndTime:
 UPDATE tour_model
-SET winner_id = ?, end_date = ?, updated_at = ?
+SET end_date = ?, updated_at = ?
 WHERE id = (SELECT id FROM tour_model WHERE tour_year = ? AND league_id = (SELECT (id) FROM league_model WHERE country = ? AND division = ?));

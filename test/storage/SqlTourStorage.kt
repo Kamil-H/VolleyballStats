@@ -131,11 +131,10 @@ class SqlSqlTourStorageTest : DatabaseTest() {
 
         // WHEN
         configure(leagues = listOf(league), tours = listOf(tour))
-        storage.update(tour, teamId, endTime)
+        storage.update(tour, endTime)
 
         // THEN
         val value = tourQueries.selectAll().executeAsList().first()
-        assert(value.winner_id == teamId)
         assert(value.end_date == endTime)
         assert(value.updated_at != updatedAt)
     }

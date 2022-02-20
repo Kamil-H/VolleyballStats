@@ -27,7 +27,7 @@ fun matchResponseOf(
     matchId: Int = 0,
     matchNumber: String? = null,
     officials: OfficialsResponse = officialsResponseOf(),
-    phase: String = "",
+    phase: String = "FZ",
     remarks: String? = null,
     commissionerRemarks: String? = null,
     scout: ScoutResponse = scoutResponseOf(),

@@ -13,3 +13,6 @@ val <V, E : Error> Results<V, E>.values: List<V>
 
 val <V, E : Error> Results<V, E>.errors: List<E>
     get() = failures.map { it.error }
+
+fun <V, E : Error> Results<V, E>.toResult(): Result<V, E>? =
+    if (failures.isEmpty()) successes.firstOrNull() else firstFailure

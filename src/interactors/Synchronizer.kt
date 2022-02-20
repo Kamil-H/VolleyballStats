@@ -1,5 +1,6 @@
 package com.kamilh.interactors
 
+import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.models.*
 import com.kamilh.storage.*
 import kotlinx.coroutines.CoroutineScope
@@ -42,10 +43,18 @@ class Synchronizer(
                 .onFailure { error ->
                     when (error) {
                         is UpdateMatchesError.Network -> schedule()
-                        is UpdateMatchesError.PlayersNotFound -> updatePlayers(tour.league, tour.year)
-                        is UpdateMatchesError.TeamsNotFound -> updateTeams(tour.league, tour.year)
                         UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
                         UpdateMatchesError.NoMatchesInTour -> { }
+                        is UpdateMatchesError.Analyze -> when (error.error) {
+                            is MatchReportAnalyzerError.TeamNotFound -> updateTeams(tour.league, tour.year)
+                            is MatchReportAnalyzerError.WrongSetsCount -> { }
+                        }
+                        is UpdateMatchesError.Insert -> when (error.error) {
+                            InsertMatchStatisticsError.NoPlayersInTeams, is InsertMatchStatisticsError.PlayerNotFound ->
+                                updatePlayers(tour.league, tour.year)
+                            is InsertMatchStatisticsError.TeamNotFound -> updateTeams(tour.league, tour.year)
+                            InsertMatchStatisticsError.TourNotFound -> initializeTours(league = tour.league)
+                        }
                     }
                 }
         }

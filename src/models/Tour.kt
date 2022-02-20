@@ -12,5 +12,5 @@ data class Tour(
     val winnerId: TeamId?,
     val updatedAt: LocalDateTime,
 ) {
-    val isFinished = winnerId != null && endDate != null
+    val isFinished = endDate != null
 }

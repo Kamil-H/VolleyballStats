@@ -24,8 +24,8 @@ class SqlUserStorage(
                     )
                 )
             } catch (exception: Exception) {
-                val subscriptionKeyError = exception.createSqlError(tableName = "user", columnName = "subscription_key")
-                val deviceIdError = exception.createSqlError(tableName = "user", columnName = "device_id")
+                val subscriptionKeyError = exception.createSqlError(tableName = "user_model", columnName = "subscription_key")
+                val deviceIdError = exception.createSqlError(tableName = "user_model", columnName = "device_id")
                 when {
                     subscriptionKeyError is SqlError.Uniqueness -> Result.failure(InsertUserError.SubscriptionKeyAlreadyInUse)
                     deviceIdError is SqlError.Uniqueness -> Result.failure(InsertUserError.DeviceIdAlreadyInUse)

@@ -1,6 +1,7 @@
 package com.kamilh.interactors
 
 import com.kamilh.match_analyzer.MatchReportAnalyzer
+import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.match_analyzer.MatchReportAnalyzerParams
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
@@ -23,7 +24,8 @@ data class MatchReportPreparerParams(
 typealias MatchReportPreparerResult = Result<Unit, MatchReportPreparerError>
 
 sealed class MatchReportPreparerError(override val message: String? = null) : Error {
-    class Network(val networkError: NetworkError) : UpdatePlayersError()
+    class Analyze(val error: MatchReportAnalyzerError) : MatchReportPreparerError()
+    class Insert(val error: InsertMatchStatisticsError) : MatchReportPreparerError()
 }
 
 class MatchReportPreparerInteractor(
@@ -38,7 +40,7 @@ class MatchReportPreparerInteractor(
         val allPlayers = polishLeagueRepository.getAllPlayers().value ?: emptyList()
         val allTeamPlayers = polishLeagueRepository.getAllPlayers(params.tourYear).value ?: emptyList()
 
-        params.matches.forEach { (matchId, matchReport) ->
+        return params.matches.map { (matchId, matchReport) ->
             analyze(
                 matchId = matchId,
                 matchReport = matchReport,
@@ -48,8 +50,7 @@ class MatchReportPreparerInteractor(
                 allTeamPlayers = allTeamPlayers,
                 tryFixPlayerOnError = true,
             )
-        }
-        return Result.success(Unit)
+        }.toResults().toResult() ?: Result.success(Unit)
     }
 
     private suspend fun analyze(
@@ -60,9 +61,13 @@ class MatchReportPreparerInteractor(
         allPlayers: List<Player>,
         allTeamPlayers: List<TeamPlayer>,
         tryFixPlayerOnError: Boolean,
-    ) {
+    ): MatchReportPreparerResult =
         matchReportAnalyzer(MatchReportAnalyzerParams(matchReport, tourYear))
-            .onSuccess { matchStatistics ->
+            .mapError {
+                Logger.i("AnalyzeMatchReport failure: $it")
+                MatchReportPreparerError.Analyze(it)
+            }
+            .flatMap { matchStatistics ->
                 insert(
                     matchReport = matchReport,
                     allPlayers = allPlayers,
@@ -74,10 +79,6 @@ class MatchReportPreparerInteractor(
                     tryFixPlayerOnError = tryFixPlayerOnError,
                 )
             }
-            .onFailure {
-                Logger.i("AnalyzeMatchReport failure: $it")
-            }
-    }
 
     private suspend fun insert(
         matchReport: MatchReport,
@@ -88,13 +89,13 @@ class MatchReportPreparerInteractor(
         league: League,
         tourYear: TourYear,
         tryFixPlayerOnError: Boolean,
-    ) {
+    ): MatchReportPreparerResult =
         matchStatisticsStorage.insert(
             matchStatistics = matchStatistics,
             league = league,
             tourYear = tourYear,
             matchId = matchId,
-        ).onFailure {
+        ).flatMapError {
             when (it) {
                 is InsertMatchStatisticsError.PlayerNotFound -> {
                     Logger.i("matchId: ${matchId}, matchReportId: ${matchStatistics.matchReportId}, playerIds: ${it.playerIds}")
@@ -108,13 +109,16 @@ class MatchReportPreparerInteractor(
                             league = league,
                             tourYear = tourYear,
                         )
+                    } else {
+                        MatchReportPreparerResult.failure(MatchReportPreparerError.Insert(it))
                     }
                 }
                 is InsertMatchStatisticsError.TeamNotFound, InsertMatchStatisticsError.NoPlayersInTeams,
-                InsertMatchStatisticsError.TourNotFound -> { }
+                InsertMatchStatisticsError.TourNotFound -> MatchReportPreparerResult.failure(
+                    MatchReportPreparerError.Insert(it)
+                )
             }
         }
-    }
 
     private suspend fun tryUpdatePlayers(
         matchId: MatchId,
@@ -124,7 +128,7 @@ class MatchReportPreparerInteractor(
         league: League,
         tourYear: TourYear,
         matchReport: MatchReport,
-    ) {
+    ) : MatchReportPreparerResult =
         analyze(
             matchId = matchId,
             matchReport = matchReport.copy(
@@ -139,7 +143,6 @@ class MatchReportPreparerInteractor(
             allTeamPlayers = allTeamPlayers,
             tryFixPlayerOnError = false,
         )
-    }
 
     private suspend fun MatchReportTeam.fixPlayers(
         allPlayers: List<Player>,

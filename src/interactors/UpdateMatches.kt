@@ -1,12 +1,13 @@
 package com.kamilh.interactors
 
+import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
+import com.kamilh.storage.InsertMatchStatisticsError
 import com.kamilh.storage.InsertMatchesError
 import com.kamilh.storage.MatchStorage
 import com.kamilh.storage.TourStorage
 import kotlinx.coroutines.flow.first
-import utils.Logger
 import java.time.OffsetDateTime
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
@@ -25,8 +26,8 @@ sealed class UpdateMatchesError(override val message: String? = null) : Error {
     object TourNotFound : UpdateMatchesError()
     object NoMatchesInTour : UpdateMatchesError()
     class Network(val networkError: NetworkError) : UpdateMatchesError()
-    class TeamsNotFound(val teamIds: List<TeamId>) : UpdateMatchesError()
-    class PlayersNotFound(val playerIds: List<PlayerId>) : UpdateMatchesError()
+    class Analyze(val error: MatchReportAnalyzerError) : UpdateMatchesError()
+    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchesError()
 }
 
 class UpdateMatchesInteractor(
@@ -54,25 +55,20 @@ class UpdateMatchesInteractor(
             }
         }
         val allMatches = matchStorage.getAllMatches(league, tourYear).first()
-        Logger.i("****************************************************************")
-        Logger.i("All matches:")
-        allMatches.forEach { Logger.i(message = "$it") }
-        val allMatchesFinished = allMatches.all { it is AllMatchesItem.Saved }
-        if (tour.isFinished && allMatchesFinished) {
-            finishTour(tour, allMatches.last() as AllMatchesItem.Saved)
+        val allMatchesSaved = allMatches.all { it is AllMatchesItem.Saved }
+        if (allMatchesSaved) {
+            val lastSaved = allMatches.filterIsInstance<AllMatchesItem.Saved>().maxByOrNull { it.endTime }!!
+            finishTour(tour, lastSaved)
             return Result.success(UpdateMatchesSuccess.SeasonCompleted)
         }
 
         val potentiallyFinished = allMatches.filterIsInstance<AllMatchesItem.PotentiallyFinished>()
-        Logger.i("****************************************************************")
-        Logger.i("All Potentially Finished:")
-        potentiallyFinished.forEach { Logger.i(message = "$it") }
         if (potentiallyFinished.isNotEmpty()) {
             val error = updateMatchReports(UpdateMatchReportParams(league, tourYear, potentiallyFinished)).mapError {
                 when (it) {
                     is UpdateMatchReportError.Network -> UpdateMatchesError.Network(it.networkError)
-                    is UpdateMatchReportError.PlayersNotFound -> UpdateMatchesError.PlayersNotFound(it.playerIds)
-                    is UpdateMatchReportError.TeamsNotFound -> UpdateMatchesError.TeamsNotFound(it.teamIds)
+                    is UpdateMatchReportError.Analyze -> UpdateMatchesError.Analyze(it.error)
+                    is UpdateMatchReportError.Insert -> UpdateMatchesError.Insert(it.error)
                 }
             }.error
 
@@ -90,6 +86,6 @@ class UpdateMatchesInteractor(
     }
 
     private suspend fun finishTour(tour: Tour, lastMatch: AllMatchesItem.Saved) {
-        tourStorage.update(tour, lastMatch.winnerId, lastMatch.endTime.toLocalDate())
+        tourStorage.update(tour, lastMatch.endTime.toLocalDate())
     }
 }
