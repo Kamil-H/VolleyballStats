@@ -34,14 +34,12 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<ColumnAdapter<TeamPlayer.Specialization, Long>>() with provider { SpecializationAdapter() }
     bind<ColumnAdapter<MatchReportId, Long>>() with provider { MatchReportIdAdapter() }
     bind<ColumnAdapter<Duration, Long>>() with provider { DurationAdapter() }
-    bind<ColumnAdapter<Phase, String>>() with provider { PhaseAdapter() }
-    bind<ColumnAdapter<Effect, String>>() with provider { EffectAdapter() }
     bind<ColumnAdapter<PlayerPosition, Long>>() with provider { PositionAdapter() }
     bind<ColumnAdapter<MatchId, Long>>() with provider { MatchIdAdapter() }
 
     bind<DatabaseFactory>() with singleton {
         AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<UserQueries>() with singleton {

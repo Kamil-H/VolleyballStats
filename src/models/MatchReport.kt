@@ -163,21 +163,11 @@ sealed class Event {
     ) : Event() {
         override val time: LocalDateTime = startTime
 
-        enum class Response(val value: String) {
-            Right("right"), Wrong("wrong"), Inconclusive("inconclusive");
-            companion object {
-                fun createOrNull(value: String?): Response? = values().firstOrNull { it.value == value }
-
-                fun create(value: String): Response = createOrNull(value) ?: error("Wrong TeamType=$value")
-            }
+        enum class Response {
+            Right, Wrong, Inconclusive;
         }
-        enum class ScoreChange(val value: String) {
-            AssignToOther("assignToOther"), RepeatLast("repeatLast"), NoChange("noChange");
-            companion object {
-                fun createOrNull(value: String?): ScoreChange? = values().firstOrNull { it.value == value }
-
-                fun create(value: String): ScoreChange = createOrNull(value) ?: error("Wrong TeamType=$value")
-            }
+        enum class ScoreChange {
+            AssignToOther, RepeatLast, NoChange;
         }
     }
 
@@ -253,14 +243,8 @@ data class MatchReportTeam(
     val staff: Staff
 )
 
-enum class TeamType(val value: String) {
-    Home("home"), Away("away");
-
-    companion object {
-        fun createOrNull(value: String?): TeamType? = values().firstOrNull { it.value == value }
-
-        fun create(value: String): TeamType = createOrNull(value) ?: error("Wrong TeamType=$value")
-    }
+enum class TeamType {
+    Home, Away;
 }
 
 data class MatchReportPlayer(

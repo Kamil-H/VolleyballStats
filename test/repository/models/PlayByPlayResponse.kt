@@ -432,9 +432,9 @@ fun atScoreResponseOf(
 
 fun playResponseOf(
     _id: String = "",
-    effect: String = "",
+    effect: Char = Char.MIN_VALUE,
     player: Int = 0,
-    skill: String = "",
+    skill: Char = Char.MIN_VALUE,
     team: String = "",
 ): PlayResponse =
     PlayResponse(

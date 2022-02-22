@@ -270,9 +270,9 @@ class AtScoreResponse(
 @Serializable
 class PlayResponse(
     val _id: String,
-    val effect: String,
+    val effect: Char,
     val player: Int,
-    val skill: String,
+    val skill: Char,
     val team: String,
 )
 

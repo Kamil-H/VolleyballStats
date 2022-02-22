@@ -37,8 +37,6 @@ internal class AppConfigDatabaseFactory(
     specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long>,
     matchReportIdAdapter: ColumnAdapter<MatchReportId, Long>,
     durationAdapter: ColumnAdapter<Duration, Long>,
-    phaseAdapter: ColumnAdapter<Phase, String>,
-    effectAdapter: ColumnAdapter<Effect, String>,
     positionAdapter: ColumnAdapter<PlayerPosition, Long>,
     matchIdAdapter: ColumnAdapter<MatchId, Long>,
 ): DatabaseFactory {
@@ -106,27 +104,27 @@ internal class AppConfigDatabaseFactory(
 			),
 			match_statistics_modelAdapter = Match_statistics_model.Adapter(
 				idAdapter = matchReportIdAdapter,
-				phaseAdapter = phaseAdapter,
+				phaseAdapter = EnumColumnAdapter(),
 				updated_atAdapter = localDateTimeAdapter,
 			),
 			play_attack_modelAdapter = Play_attack_model.Adapter(
-				receive_effectAdapter = effectAdapter,
-				set_effectAdapter = effectAdapter,
+				receive_effectAdapter = EnumColumnAdapter(),
+				set_effectAdapter = EnumColumnAdapter(),
 			),
 			play_modelAdapter = Play_model.Adapter(
-				effectAdapter = effectAdapter,
+				effectAdapter = EnumColumnAdapter(),
 				positionAdapter = positionAdapter,
 			),
 			play_receive_modelAdapter = Play_receive_model.Adapter(
-				attack_effectAdapter = effectAdapter,
-				set_effectAdapter = effectAdapter,
+				attack_effectAdapter = EnumColumnAdapter(),
+				set_effectAdapter = EnumColumnAdapter(),
 			),
 			play_serve_modelAdapter = Play_serve_model.Adapter(
-				receiver_effectAdapter = effectAdapter,
+				receiver_effectAdapter = EnumColumnAdapter(),
 			),
 			play_set_modelAdapter = Play_set_model.Adapter(
 				attacker_positionAdapter = positionAdapter,
-				attack_effectAdapter = effectAdapter,
+				attack_effectAdapter = EnumColumnAdapter(),
 			)
 		)
 	}

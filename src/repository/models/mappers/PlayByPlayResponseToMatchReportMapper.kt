@@ -18,7 +18,11 @@ class MatchResponseToMatchReportMapper {
             matchId = MatchReportId(from.matchId.toLong()),
             matchNumber = from.matchNumber,
             officials = from.officials.toOfficials(),
-            phase = Phase.create(from.phase),
+            phase = when {
+                PHASE_REGULAR_SEASON.contains(from.phase) -> Phase.RegularSeason
+                PHASE_PLAYOFF.contains(from.phase) -> Phase.PlayOff
+                else -> error("Wrong Phase: ${from.phase}")
+            },
             remarks = from.remarks,
             commissionerRemarks = from.commissionerRemarks,
             scout = from.scout.toScout(),
@@ -140,7 +144,7 @@ class MatchResponseToMatchReportMapper {
     private fun BestPlayerResponse.toBestPlayer(): BestPlayer =
         BestPlayer(
             number = number,
-            team = TeamType.create(team),
+            team = team.toTeamType(),
         )
 
     private fun CoinTossResponse.toCoinToss(): CoinToss =
@@ -164,7 +168,7 @@ class MatchResponseToMatchReportMapper {
     private fun MvpResponse.toMvp(): Mvp =
         Mvp(
             number = number,
-            team = TeamType.create(team),
+            team = team.toTeamType(),
         )
 
     private fun SetResponse.toSet(): Set =
@@ -197,14 +201,14 @@ class MatchResponseToMatchReportMapper {
             enters = enters,
             libero = libero,
             player = player,
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             time = time,
         )
 
     private fun RallyResponse.toRally(): Event.Rally =
         Event.Rally(
             endTime = endTime ?: startTime,
-            point = TeamType.createOrNull(point),
+            point = point?.toTeamTypeOrNull(),
             startTime = startTime,
             verified = verified,
         )
@@ -213,13 +217,13 @@ class MatchResponseToMatchReportMapper {
         Event.Substitution(
             `in` = `in`,
             out = out,
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             time = time,
         )
 
     private fun TimeoutResponse.toTimeout(): Event.Timeout =
         Event.Timeout(
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             time = time,
         )
 
@@ -228,17 +232,27 @@ class MatchResponseToMatchReportMapper {
             atScore = atScore.toAtScore(),
             endTime = endTime,
             reason = reason,
-            response = Event.VideoChallenge.Response.create(response),
-            scoreChange = Event.VideoChallenge.ScoreChange.createOrNull(scoreChange),
+            response = when (response) {
+                VIDEO_CHALLENGE_RESPONSE_RIGHT -> Event.VideoChallenge.Response.Right
+                VIDEO_CHALLENGE_RESPONSE_WRONG -> Event.VideoChallenge.Response.Wrong
+                VIDEO_CHALLENGE_RESPONSE_INCONCLUSIVE -> Event.VideoChallenge.Response.Inconclusive
+                else -> error("Wrong VideoChallenge.Response: $response")
+            },
+            scoreChange = when (scoreChange) {
+                VIDEO_CHALLENGE_SCORE_CHANGE_ASSIGN_TO_OTHER -> Event.VideoChallenge.ScoreChange.AssignToOther
+                VIDEO_CHALLENGE_SCORE_CHANGE_NO_CHANGE -> Event.VideoChallenge.ScoreChange.NoChange
+                VIDEO_CHALLENGE_SCORE_CHANGE_REPEAT_LAST -> Event.VideoChallenge.ScoreChange.RepeatLast
+                else -> null
+            },
             startTime = startTime,
-            team = TeamType.create(team),
+            team = team.toTeamType(),
         )
 
     private fun ManualChangeResponse.toManualChange(): Event.ManualChange =
         Event.ManualChange(
             score = score.toScore(),
             lineup = lineup.toStartingLineup(),
-            serve = TeamType.create(serve),
+            serve = serve.toTeamType(),
             time = null,
         )
 
@@ -250,7 +264,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun SanctionResponse.toSanction(): Event.Sanction =
         Event.Sanction(
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             type = type,
             player = player,
             time = time,
@@ -259,19 +273,19 @@ class MatchResponseToMatchReportMapper {
 
     private fun ImproperRequestResponse.toImproperRequest(): Event.ImproperRequest =
         Event.ImproperRequest(
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             time = time,
         )
 
     private fun DelayResponse.toDelay(): Event.Delay =
         Event.Delay(
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             time = time,
         )
 
     private fun InjuryResponse.toInjury(): Event.Injury =
         Event.Injury(
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             player = player,
             time = time,
             libero = libero,
@@ -279,7 +293,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun NewLiberoResponse.toNewLibero(): Event.NewLibero =
         Event.NewLibero(
-            team = TeamType.create(team),
+            team = team.toTeamType(),
             player = player,
             time = time,
         )
@@ -307,16 +321,74 @@ class MatchResponseToMatchReportMapper {
         ScoutData(
             id = _id,
             plays = plays.map { it.toPlay() },
-            point = TeamType.create(point),
+            point = point.toTeamType(),
             score = score.toScore(),
         )
 
     private fun PlayResponse.toPlay(): Play =
         Play(
             id = _id,
-            effect = Effect.create(effect),
+            effect = when (effect) {
+                EFFECT_PERFECT -> Effect.Perfect
+                EFFECT_POSITIVE -> Effect.Positive
+                EFFECT_NEGATIVE -> Effect.Negative
+                EFFECT_ERROR -> Effect.Error
+                EFFECT_HALF -> Effect.Half
+                EFFECT_INVASION -> Effect.Invasion
+                else -> error("Wrong Effect: $effect")
+            },
             player = player,
-            skill = Skill.create(skill),
-            team = TeamType.create(team),
+            skill = when (skill) {
+                SKILL_ATTACK -> Skill.Attack
+                SKILL_BLOCK -> Skill.Block
+                SKILL_DIG -> Skill.Dig
+                SKILL_SET -> Skill.Set
+                SKILL_FREEBALL -> Skill.Freeball
+                SKILL_RECEIVE -> Skill.Receive
+                SKILL_SERVE -> Skill.Serve
+                else -> error("Wrong Skill: $skill")
+            },
+            team = team.toTeamType(),
         )
+
+    private fun String.toTeamType(): TeamType =
+        toTeamTypeOrNull() ?: error("Wrong TeamType: $this")
+
+    private fun String.toTeamTypeOrNull(): TeamType? =
+        when (this) {
+            TEAM_TYPE_AWAY -> TeamType.Away
+            TEAM_TYPE_HOME -> TeamType.Home
+            else -> null
+        }
+
+    companion object {
+        private const val EFFECT_PERFECT = '#'
+        private const val EFFECT_POSITIVE = '+'
+        private const val EFFECT_NEGATIVE = '-'
+        private const val EFFECT_ERROR = '='
+        private const val EFFECT_HALF = '/'
+        private const val EFFECT_INVASION = '!'
+
+        private const val TEAM_TYPE_HOME = "home"
+        private const val TEAM_TYPE_AWAY = "away"
+
+        private const val SKILL_ATTACK = 'A'
+        private const val SKILL_BLOCK = 'B'
+        private const val SKILL_DIG = 'D'
+        private const val SKILL_SET = 'E'
+        private const val SKILL_FREEBALL = 'F'
+        private const val SKILL_RECEIVE = 'R'
+        private const val SKILL_SERVE = 'S'
+
+        private const val VIDEO_CHALLENGE_RESPONSE_RIGHT = "right"
+        private const val VIDEO_CHALLENGE_RESPONSE_WRONG = "wrong"
+        private const val VIDEO_CHALLENGE_RESPONSE_INCONCLUSIVE = "inconclusive"
+
+        private const val VIDEO_CHALLENGE_SCORE_CHANGE_ASSIGN_TO_OTHER = "assignToOther"
+        private const val VIDEO_CHALLENGE_SCORE_CHANGE_REPEAT_LAST = "repeatLast"
+        private const val VIDEO_CHALLENGE_SCORE_CHANGE_NO_CHANGE = "noChange"
+
+        private val PHASE_PLAYOFF = listOf("Play Off", "Finał")
+        private val PHASE_REGULAR_SEASON = listOf("FZ", "ZAS", "Faza Zasadnicza")
+    }
 }

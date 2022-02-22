@@ -27,8 +27,6 @@ abstract class DatabaseTest(
     private val specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long> = SpecializationAdapter(),
     private val matchReportIdAdapter: ColumnAdapter<MatchReportId, Long> = MatchReportIdAdapter(),
     private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
-    private val phaseAdapter: ColumnAdapter<Phase, String> = PhaseAdapter(),
-    private val effectAdapter: ColumnAdapter<Effect, String> = EffectAdapter(),
     private val positionAdapter: ColumnAdapter<PlayerPosition, Long> = PositionAdapter(),
     private val matchIdAdapter: ColumnAdapter<MatchId, Long> = MatchIdAdapter(),
 ) {
@@ -73,8 +71,6 @@ abstract class DatabaseTest(
             specializationAdapter = specializationAdapter,
             matchReportIdAdapter = matchReportIdAdapter,
             durationAdapter = durationAdapter,
-            phaseAdapter = phaseAdapter,
-            effectAdapter = effectAdapter,
             positionAdapter = positionAdapter,
             matchIdAdapter = matchIdAdapter,
         )
