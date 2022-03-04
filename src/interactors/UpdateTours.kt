@@ -25,17 +25,19 @@ class UpdateToursInteractor(
 
     override suspend fun doWork(params: UpdateToursParams): UpdateToursResult =
         polishLeagueRepository.getAllTours()
-            .onSuccess { tours -> tours.forEach { insertTour(it) } }
+            .onSuccess { tours -> tours.forEach { insertTour(it, shouldTryInsertLeagueOnError = true) } }
             .map { }
             .mapError { UpdateToursError.Network(it) }
 
-    private suspend fun insertTour(tour: Tour) {
+    private suspend fun insertTour(tour: Tour, shouldTryInsertLeagueOnError: Boolean) {
         tourStorage.insert(tour)
             .onFailure {
                 when (it) {
                     InsertTourError.LeagueNotFound -> {
-                        leagueStorage.insert(tour.league)
-                        insertTour(tour)
+                        if (shouldTryInsertLeagueOnError) {
+                            leagueStorage.insert(tour.league)
+                            insertTour(tour, shouldTryInsertLeagueOnError = false)
+                        }
                     }
                     InsertTourError.TourAlreadyExists -> { }
                 }

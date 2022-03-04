@@ -1,10 +1,11 @@
 package repository.models.mappers
 
-import com.kamilh.models.TeamPlayer
 import com.kamilh.models.Result
+import com.kamilh.models.TeamPlayer
 import com.kamilh.repository.models.mappers.HtmlToTeamPlayerMapper
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
+import repository.parsing.EmptyResultException
 
 class HtmlToTeamPlayerMapperTest {
 
@@ -201,6 +202,19 @@ class HtmlToTeamPlayerMapperTest {
         // THEN
         require(mapped is Result.Failure)
     }
+
+    @Test
+    fun `mapper returns EmptyResultException when searched tag exists but is empty`() {
+        // GIVEN
+        val html = emptyHtml()
+
+        // WHEN
+        val mapped = mapper.map(html)
+
+        // THEN
+        require(mapped is Result.Failure)
+        assert(mapped.error.exception is EmptyResultException)
+    }
 }
 
 private fun html(
@@ -222,5 +236,11 @@ private fun html(
             <div class="playerposition">środkowy</div>
         </div>
     </div>
+</div>
+""".trimIndent()
+
+private fun emptyHtml(): String =
+"""
+<div id="hiddenPlayersListAllBuffer" style="display: none;">
 </div>
 """.trimIndent()

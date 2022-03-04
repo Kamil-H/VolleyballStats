@@ -101,7 +101,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                     league = league,
                     tourYear = tourYear,
                     player = playerWithDetailsOf(
-                        teamPlayer = playerOf(
+                        teamPlayer = teamPlayerOf(
                             id = teamPlayer.id,
                             team = homeId,
                         ),
@@ -115,7 +115,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                     league = league,
                     tourYear = tourYear,
                     player = playerWithDetailsOf(
-                        teamPlayer = playerOf(
+                        teamPlayer = teamPlayerOf(
                             id = teamPlayer.id,
                             team = awayId,
                         ),

@@ -2,6 +2,8 @@ package com.kamilh.storage
 
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.tourYearOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
@@ -253,7 +255,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         insert(
             InsertPlayer(
                 player = playerWithDetailsOf(
-                    teamPlayer = playerOf(
+                    teamPlayer = teamPlayerOf(
                         id = playerId,
                         team = homeTeamId,
                     ),
@@ -311,7 +313,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         insert(
             InsertPlayer(
                 player = playerWithDetailsOf(
-                    teamPlayer = playerOf(
+                    teamPlayer = teamPlayerOf(
                         id = playerId,
                         team = homeTeamId,
                     ),
@@ -321,7 +323,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             ),
             InsertPlayer(
                 player = playerWithDetailsOf(
-                    teamPlayer = playerOf(
+                    teamPlayer = teamPlayerOf(
                         id = awayPlayerId,
                         team = awayTeamId,
                     ),
@@ -337,4 +339,19 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         // THEN
         result.assertSuccess()
     }
+}
+
+fun matchStatisticsStorageOf(
+    insert: (matchStatistics: MatchStatistics, league: League, tourYear: TourYear, matchId: MatchId) -> InsertMatchStatisticsResult = { _, _, _, _ ->
+        InsertMatchStatisticsResult.success(Unit)
+    },
+    getAllMatchStatistics: Flow<List<MatchStatistics>> = flowOf(emptyList()),
+    getMatchStatistics: MatchStatistics? = null,
+): MatchStatisticsStorage = object : MatchStatisticsStorage {
+    override suspend fun insert(matchStatistics: MatchStatistics, league: League, tourYear: TourYear, matchId: MatchId): InsertMatchStatisticsResult =
+        insert(matchStatistics, league, tourYear, matchId)
+
+    override suspend fun getAllMatchStatistics(league: League, tourYear: TourYear): Flow<List<MatchStatistics>> = getAllMatchStatistics
+
+    override suspend fun getMatchStatistics(matchReportId: MatchReportId): MatchStatistics? = getMatchStatistics
 }

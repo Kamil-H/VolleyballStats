@@ -23,7 +23,7 @@ class IoFileManagerTest {
         )
 
     @Test
-    fun `test if file is getting created with correct content when Extension is null`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is null`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -45,7 +45,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file is getting created with correct content when Extension is Html`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is Html`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -68,7 +68,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file is getting created with correct content when Extension is Json`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is Json`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -91,7 +91,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file is getting created with correct content when Extension is Text`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is Text`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -114,7 +114,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file is not getting created when directory is wrong`() = runBlockingTest {
+    fun `file is not getting created when directory is wrong`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -136,7 +136,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file it's possible to ready content when Extension is null`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is null`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -157,7 +157,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file it's possible to ready content when Extension is Html`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is Html`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -178,7 +178,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file it's possible to ready content when Extension is Json`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is Json`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -199,7 +199,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file it's possible to ready content when Extension is Text`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is Text`() = runBlockingTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -220,7 +220,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `test if file it's not possible to ready content when file doesn't exists`() = runBlockingTest {
+    fun `it's not possible to ready content when file doesn't exists`() = runBlockingTest {
         // GIVEN
         val fileName = "fileName"
         val directory = temporaryFolder.root.absolutePath
@@ -242,9 +242,8 @@ class IoFileManagerTest {
 fun fileManagerOf(
     getTextContent: String? = null,
     saveTextAsFile: (String, FileMetadata) -> Boolean = { _, _ -> false },
-): FileManager =
+): FileManager = object : FileManager {
 
-    object : FileManager {
-        override suspend fun saveTextAsFile(content: String, fileMetadata: FileMetadata): Boolean = saveTextAsFile(content, fileMetadata)
-        override suspend fun getTextContent(fileMetadata: FileMetadata): String? = getTextContent
-    }
+    override suspend fun saveTextAsFile(content: String, fileMetadata: FileMetadata): Boolean = saveTextAsFile(content, fileMetadata)
+    override suspend fun getTextContent(fileMetadata: FileMetadata): String? = getTextContent
+}

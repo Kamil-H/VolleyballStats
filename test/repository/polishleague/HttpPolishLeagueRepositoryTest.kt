@@ -109,7 +109,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers by tour returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
         // GIVEN
         val parseResult = emptyList<TeamPlayer>()
         val networkResult = networkSuccessOf("")
@@ -127,7 +127,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers by tour returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -145,7 +145,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers by tour returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -158,6 +158,65 @@ class HttpPolishLeagueRepositoryTest {
             htmlToTeamPlayerMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
         ).getAllPlayers(tour = tourYearOf())
+
+        // THEN
+        require(result is Result.Failure)
+        require(result.error is NetworkError.UnexpectedException)
+        val unexpectedException = result.error as NetworkError.UnexpectedException
+        assert(unexpectedException.throwable == parseError.exception)
+        assert(parseErrorToHandle == parseError)
+    }
+
+    @Test
+    fun `test that when httpClient getAllPlayers returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+        // GIVEN
+        val parseResult = emptyList<Player>()
+        val networkResult = networkSuccessOf("")
+        val mapperResult = htmlMapperOf(parseSuccessOf(parseResult))
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerMapper = mapperResult,
+        ).getAllPlayers()
+
+        // THEN
+        require(result is Result.Success)
+        assert(result.value == parseResult)
+    }
+
+    @Test
+    fun `test that when httpClient getAllPlayers returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+        // GIVEN
+        val networkError = networkErrorOf()
+        val networkResult = networkFailureOf<String>(networkError)
+        val mapperResult = htmlMapperOf(parseSuccessOf(emptyList<Player>()))
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerMapper = mapperResult,
+        ).getAllPlayers()
+
+        // THEN
+        require(result is Result.Failure)
+        assert(result.error == networkError)
+    }
+
+    @Test
+    fun `test that when httpClient getAllPlayers returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+        // GIVEN
+        val parseError = htmlParseErrorOf()
+        val networkResult = networkSuccessOf("")
+        val mapperResult = htmlMapperOf(parseFailureOf<List<Player>>(parseError))
+
+        var parseErrorToHandle: ParseError? = null
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerMapper = mapperResult,
+            parseErrorHandler = { parseErrorToHandle = it },
+        ).getAllPlayers()
 
         // THEN
         require(result is Result.Failure)
@@ -348,6 +407,139 @@ class HttpPolishLeagueRepositoryTest {
         // THEN
         require(result is Result.Success)
     }
+
+    @Test
+    fun `test that when httpClient getPlayerDetails returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+        // GIVEN
+        val parseResult = playerDetailsOf()
+        val networkResult = networkSuccessOf("")
+        val mapperResult = htmlMapperOf(parseSuccessOf(parseResult))
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerDetailsMapper = mapperResult,
+        ).getPlayerDetails(tour = tourYearOf(), playerId = playerIdOf())
+
+        // THEN
+        require(result is Result.Success)
+        assert(result.value == parseResult)
+    }
+
+    @Test
+    fun `test that when httpClient getPlayerDetails returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+        // GIVEN
+        val networkError = networkErrorOf()
+        val networkResult = networkFailureOf<String>(networkError)
+        val mapperResult = htmlMapperOf(parseSuccessOf(playerDetailsOf()))
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerDetailsMapper = mapperResult,
+        ).getPlayerDetails(tour = tourYearOf(), playerId = playerIdOf())
+
+        // THEN
+        require(result is Result.Failure)
+        assert(result.error == networkError)
+    }
+
+    @Test
+    fun `test that when httpClient getPlayerDetails returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+        // GIVEN
+        val parseError = htmlParseErrorOf()
+        val networkResult = networkSuccessOf("")
+        val mapperResult = htmlMapperOf(parseFailureOf<PlayerDetails>(parseError))
+
+        var parseErrorToHandle: ParseError? = null
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerDetailsMapper = mapperResult,
+            parseErrorHandler = { parseErrorToHandle = it },
+        ).getPlayerDetails(tour = tourYearOf(), playerId = playerIdOf())
+
+        // THEN
+        require(result is Result.Failure)
+        require(result.error is NetworkError.UnexpectedException)
+        val unexpectedException = result.error as NetworkError.UnexpectedException
+        assert(unexpectedException.throwable == parseError.exception)
+        assert(parseErrorToHandle == parseError)
+    }
+
+    @Test
+    fun `test that when httpClient getPlayerWithDetails returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+        // GIVEN
+        val parseResult = playerWithDetailsOf()
+        val networkResult = networkSuccessOf("")
+        val mapperResult = htmlMapperOf(parseSuccessOf(parseResult))
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerWithDetailsMapper = mapperResult,
+        ).getPlayerWithDetails(tour = tourYearOf(), playerId = playerIdOf())
+
+        // THEN
+        require(result is Result.Success)
+        assert(result.value == parseResult)
+    }
+
+    @Test
+    fun `test that when httpClient getPlayerWithDetails returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+        // GIVEN
+        val networkError = networkErrorOf()
+        val networkResult = networkFailureOf<String>(networkError)
+        val mapperResult = htmlMapperOf(parseSuccessOf(playerWithDetailsOf()))
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerWithDetailsMapper = mapperResult,
+        ).getPlayerWithDetails(tour = tourYearOf(), playerId = playerIdOf())
+
+        // THEN
+        require(result is Result.Failure)
+        assert(result.error == networkError)
+    }
+
+    @Test
+    fun `test that when httpClient getPlayerWithDetails returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+        // GIVEN
+        val parseError = htmlParseErrorOf()
+        val networkResult = networkSuccessOf("")
+        val mapperResult = htmlMapperOf(parseFailureOf<PlayerWithDetails>(parseError))
+
+        var parseErrorToHandle: ParseError? = null
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            httpClient = httpClientOf(networkResult),
+            htmlToPlayerWithDetailsMapper = mapperResult,
+            parseErrorHandler = { parseErrorToHandle = it },
+        ).getPlayerWithDetails(tour = tourYearOf(), playerId = playerIdOf())
+
+        // THEN
+        require(result is Result.Failure)
+        require(result.error is NetworkError.UnexpectedException)
+        val unexpectedException = result.error as NetworkError.UnexpectedException
+        assert(unexpectedException.throwable == parseError.exception)
+        assert(parseErrorToHandle == parseError)
+    }
+
+    @Test
+    fun `test that getTours returns value from the cache`() = runBlocking {
+        // GIVEN
+        val cachedValue = listOf(tourOf())
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            tourCache = tourCacheOf(cachedValue)
+        ).getAllTours()
+
+        // THEN
+        require(result is Result.Success)
+        assert(result.value == cachedValue)
+    }
 }
 
 fun networkErrorOf(throwable: Throwable = Throwable()): NetworkError = NetworkError.createFrom(throwable)
@@ -375,4 +567,26 @@ fun tourCacheOf(
     getAll: List<Tour> = emptyList(),
 ): TourCache = object : TourCache {
     override fun getAll(): List<Tour> = getAll
+}
+
+fun polishLeagueRepositoryOf(
+    getAllTeams: NetworkResult<List<Team>> = networkFailureOf(networkErrorOf()),
+    getAllPlayersByTour: NetworkResult<List<TeamPlayer>> = networkFailureOf(networkErrorOf()),
+    getAllPlayers: NetworkResult<List<Player>> = networkFailureOf(networkErrorOf()),
+    getAllMatches: NetworkResult<List<AllMatchesItem>> = networkFailureOf(networkErrorOf()),
+    getMatchReportId: NetworkResult<MatchReportId> = networkFailureOf(networkErrorOf()),
+    getMatchReport: NetworkResult<MatchReport> = networkFailureOf(networkErrorOf()),
+    getPlayerDetails: NetworkResult<PlayerDetails> = networkFailureOf(networkErrorOf()),
+    getPlayerWithDetails: NetworkResult<PlayerWithDetails> = networkFailureOf(networkErrorOf()),
+    getAllTours: NetworkResult<List<Tour>> = networkFailureOf(networkErrorOf()),
+): PolishLeagueRepository = object : PolishLeagueRepository {
+    override suspend fun getAllTeams(tour: TourYear): NetworkResult<List<Team>> = getAllTeams
+    override suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<TeamPlayer>> = getAllPlayersByTour
+    override suspend fun getAllPlayers(): NetworkResult<List<Player>> = getAllPlayers
+    override suspend fun getAllMatches(tour: TourYear): NetworkResult<List<AllMatchesItem>> = getAllMatches
+    override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> = getMatchReportId
+    override suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchReport> = getMatchReport
+    override suspend fun getPlayerDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerDetails> = getPlayerDetails
+    override suspend fun getPlayerWithDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerWithDetails> = getPlayerWithDetails
+    override suspend fun getAllTours(): NetworkResult<List<Tour>> = getAllTours
 }

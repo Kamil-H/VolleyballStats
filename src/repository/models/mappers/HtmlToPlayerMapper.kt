@@ -7,14 +7,15 @@ import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
 
 /**
-<div class="item-1 col-xs-6 col-sm-4 col-md-3 col-lg-2 playersItem" data-playerposition="4" data-fullnamefirstletter="A" data-teamsid="1407">
-    <div class="thumbnail player">
-        <a href="/players/id/27975.html"><img src="https://dl.siatkarskaliga.pl/415488/inline/crop=226x30x411x215,scalecrop=400x400/51db60/Sebastian%20Adamczyk.png" width="400" height="400" alt="Sebastian Adamczyk" class="img-responsive isphoto" /></a>
-        <div class="caption">
-        <h3><a href="/players/id/27975.html">Sebastian Adamczyk</a></h3>
+<div id="hiddenPlayersListAllBuffer">
+    <div class="item-1 col-xs-6 col-sm-4 col-md-3 col-lg-2 playersItem"  data-fullnamefirstletter="A" >
+        <div class="thumbnail player">
+            <a href="/statsPlayers/id/26813.html"><img src="https://dl.siatkarskaliga.pl/39201/inline/scalecrop=400x400/cb6b59/NIMIR.jpg" width="400" height="400" alt="Nimir Abdel-Aziz" class="img-responsive isphoto" /></a>
+            <div class="caption no-overflow">
+                <h3><a href="/statsPlayers/id/26813.html">Nimir Abdel-Aziz</a></h3>
+                <div class="player-ranks"><div class="block-rank" data-toggle="tooltip" title="Pozycja w rankingu blokujących">510</div><div class="score-rank" data-toggle="tooltip" title="Pozycja w rankingu punktujących">601</div><div class="spike-rank" data-toggle="tooltip" title="Pozycja w rankingu atakujących">619</div><div class="serve-rank" data-toggle="tooltip" title="Pozycja w rankingu zagrywających">422</div></div>
+            </div>
         </div>
-        <div class="team-logo"><img title="PGE Skra Bełchatów" alt="PGE Skra Bełchatów" src="https://dl.siatkarskaliga.pl/411003/inline/scalecrop=60x60/b5d404/skra.png"></div>
-        <div class="playerposition">środkowy</div>
     </div>
 </div>
  */

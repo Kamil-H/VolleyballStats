@@ -2,10 +2,10 @@ package com.kamilh.repository.parsing
 
 import com.kamilh.repository.FileManager
 import com.kamilh.repository.FileMetadata
+import com.kamilh.utils.CurrentDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import repository.parsing.ParseError
-import java.time.LocalDateTime
 
 fun interface ParseErrorHandler {
     fun handle(parseError: ParseError)
@@ -18,7 +18,7 @@ class SavableParseErrorHandler(
 
     override fun handle(parseError: ParseError) {
         scope.launch {
-            val now = LocalDateTime.now().toString()
+            val now = CurrentDate.localDateTime.toString()
             fileManager.saveTextAsFile(
                 content = parseError.content,
                 fileMetadata = FileMetadata(

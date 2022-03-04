@@ -240,11 +240,11 @@ class TeamStorageTest : DatabaseTest() {
 
 fun teamStorageOf(
     insert: InsertTeamResult = Result.success(Unit),
-    getAllTeams: List<Team> = emptyList(),
+    getAllTeams: Flow<List<Team>> = flowOf(emptyList()),
     getTeam: List<Team> = emptyList(),
 ): TeamStorage =
     object : TeamStorage {
         override suspend fun insert(teams: List<Team>, league: League, tour: TourYear): InsertTeamResult = insert
-        override suspend fun getAllTeams(league: League, tour: TourYear): Flow<List<Team>> = flowOf(getAllTeams)
+        override suspend fun getAllTeams(league: League, tour: TourYear): Flow<List<Team>> = getAllTeams
         override suspend fun getTeam(name: String, code: String, league: League, tour: TourYear): Team? = getTeam.firstOrNull { it.name == name }
     }

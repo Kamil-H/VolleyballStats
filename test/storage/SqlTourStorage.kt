@@ -3,6 +3,8 @@ package com.kamilh.storage
 import app.cash.turbine.test
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.tourYearOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import java.time.LocalDate
@@ -126,7 +128,6 @@ class SqlSqlTourStorageTest : DatabaseTest() {
         val league = leagueOf(division = 1)
         val updatedAt = LocalDateTime.now(clock).minusDays(1)
         val tour = tourOf(year = tourYear, league = league, updatedAt = updatedAt)
-        val teamId = teamIdOf(1)
         val endTime = LocalDate.now(clock)
 
         // WHEN
@@ -138,4 +139,16 @@ class SqlSqlTourStorageTest : DatabaseTest() {
         assert(value.end_date == endTime)
         assert(value.updated_at != updatedAt)
     }
+}
+
+fun tourStorageOf(
+    insert: (tour: Tour) -> InsertTourResult = { InsertTourResult.success(Unit) },
+    getAllByLeague: Flow<List<Tour>> = flowOf(emptyList()),
+    getByTourYearAndLeague: Flow<Tour?> = flowOf(null),
+    onUpdate: (tour: Tour, endTime: LocalDate) -> Unit = { _, _ -> },
+): TourStorage = object : TourStorage {
+    override suspend fun insert(tour: Tour): InsertTourResult = insert(tour)
+    override suspend fun getAllByLeague(league: League): Flow<List<Tour>> = getAllByLeague
+    override suspend fun getByTourYearAndLeague(tourYear: TourYear, league: League): Flow<Tour?> = getByTourYearAndLeague
+    override suspend fun update(tour: Tour, endTime: LocalDate) = onUpdate(tour, endTime)
 }

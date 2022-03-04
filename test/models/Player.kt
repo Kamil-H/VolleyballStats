@@ -7,6 +7,14 @@ import java.time.LocalDateTime
 fun playerOf(
     id: PlayerId = playerIdOf(),
     name: String = "",
+): Player = Player(
+    id = id,
+    name = name,
+)
+
+fun teamPlayerOf(
+    id: PlayerId = playerIdOf(),
+    name: String = "",
     imageUrl: Url? = null,
     team: TeamId = teamIdOf(),
     specialization: TeamPlayer.Specialization = TeamPlayer.Specialization.Libero,
@@ -37,7 +45,7 @@ fun playerDetailsOf(
 )
 
 fun playerWithDetailsOf(
-    teamPlayer: TeamPlayer = playerOf(),
+    teamPlayer: TeamPlayer = teamPlayerOf(),
     details: PlayerDetails = playerDetailsOf(),
 ): PlayerWithDetails = PlayerWithDetails(
     teamPlayer = teamPlayer,

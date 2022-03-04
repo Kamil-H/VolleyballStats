@@ -1,6 +1,6 @@
 package utils
 
-interface PlatformLogger {
+fun interface PlatformLogger {
 
     fun log(severity: Severity, tag: String, message: String)
 }

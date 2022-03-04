@@ -1,9 +1,6 @@
 package com.kamilh.storage
 
-import com.kamilh.models.assertFailure
-import com.kamilh.models.assertSuccess
-import com.kamilh.models.countryOf
-import com.kamilh.models.leagueOf
+import com.kamilh.models.*
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
@@ -75,4 +72,10 @@ class SqlLeagueStorageTest : DatabaseTest() {
         result1.assertSuccess()
         result2.assertSuccess()
     }
+}
+
+fun leagueStorageOf(
+    insert: InsertLeagueResult = InsertLeagueResult.success(Unit)
+): LeagueStorage = object : LeagueStorage {
+    override suspend fun insert(league: League): InsertLeagueResult = insert
 }

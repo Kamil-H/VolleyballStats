@@ -3,7 +3,10 @@ package com.kamilh.storage
 import app.cash.turbine.test
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.tourYearOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
+import models.PlayerWithDetails
 import org.junit.Test
 import java.time.LocalDateTime
 
@@ -67,7 +70,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val player = playerWithDetailsOf(
-            teamPlayer = playerOf(team = teamId)
+            teamPlayer = teamPlayerOf(team = teamId)
         )
         configure(
             leagues = listOf(league),
@@ -92,7 +95,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val tour = tourOf(year = tourYear, league = league)
         val teamId = teamIdOf(1)
         val player = playerWithDetailsOf(
-            teamPlayer = playerOf(team = teamId)
+            teamPlayer = teamPlayerOf(team = teamId)
         )
         configure(
             leagues = listOf(league),
@@ -120,7 +123,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val player = playerWithDetailsOf(
-            teamPlayer = playerOf(team = teamId)
+            teamPlayer = teamPlayerOf(team = teamId)
         )
         configure(
             leagues = listOf(league),
@@ -154,7 +157,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val playerUpdatedAt = now.plusDays(1)
         val detailsUpdatedAt = now.plusDays(2)
         val teamPlayer = playerWithDetailsOf(
-            teamPlayer = playerOf(
+            teamPlayer = teamPlayerOf(
                 team = teamId,
                 name = "name",
                 specialization = TeamPlayer.Specialization.MiddleBlocker,
@@ -181,4 +184,17 @@ class SqlPlayerStorageTest : DatabaseTest() {
             awaitItem().contains(teamPlayer)
         }
     }
+}
+
+fun playerStorageOf(
+    insert: (players: List<PlayerWithDetails>, league: League, tour: TourYear) -> InsertPlayerResult = { _, _, _ ->
+        InsertPlayerResult.success(Unit)
+    },
+    getAllPlayersByTeam: Flow<List<PlayerWithDetails>> = flowOf(emptyList()),
+    getAllPlayers: Flow<List<PlayerWithDetails>> = flowOf(emptyList()),
+): PlayerStorage = object : PlayerStorage {
+    override suspend fun insert(players: List<PlayerWithDetails>, league: League, tour: TourYear): InsertPlayerResult =
+        insert(players, league, tour)
+    override suspend fun getAllPlayers(teamId: TeamId, league: League, tour: TourYear): Flow<List<PlayerWithDetails>> = getAllPlayersByTeam
+    override suspend fun getAllPlayers(league: League, tour: TourYear): Flow<List<PlayerWithDetails>> = getAllPlayers
 }

@@ -3,6 +3,7 @@ package com.kamilh.storage
 import com.kamilh.databse.*
 import com.kamilh.models.*
 import com.kamilh.storage.common.adapters.*
+import com.kamilh.utils.testClock
 import com.squareup.sqldelight.ColumnAdapter
 import models.PlayerWithDetails
 import org.junit.After
@@ -10,7 +11,10 @@ import org.junit.Before
 import storage.AppConfigDatabaseFactory
 import storage.DatabaseFactory
 import storage.common.adapters.OffsetDateAdapter
-import java.time.*
+import java.time.Clock
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.*
 import kotlin.time.Duration
 
@@ -32,7 +36,7 @@ abstract class DatabaseTest(
 ) {
 
     private lateinit var databaseFactory: DatabaseFactory
-    protected val clock: Clock = Clock.fixed(Instant.parse("2007-12-03T10:15:30.00Z"), ZoneId.of("Z"))
+    protected val clock: Clock = testClock
     protected val userQueries: UserQueries by lazy { databaseFactory.database.userQueries }
     protected val teamQueries: TeamQueries by lazy { databaseFactory.database.teamQueries }
     protected val tourTeamQueries: TourTeamQueries by lazy { databaseFactory.database.tourTeamQueries }

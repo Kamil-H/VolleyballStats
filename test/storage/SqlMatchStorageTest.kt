@@ -3,7 +3,9 @@ package com.kamilh.storage
 import com.kamilh.databse.SelectAllMatchesByTour
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.tourYearOf
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.time.LocalDateTime
@@ -295,7 +297,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             insert(insertTeam)
             insert(
                 InsertPlayer(
-                    player = playerWithDetailsOf(teamPlayer = playerOf(team = insertTeam.team.id)),
+                    player = playerWithDetailsOf(teamPlayer = teamPlayerOf(team = insertTeam.team.id)),
                     league = league,
                     tourYear = tourYear,
                 )
@@ -364,3 +366,11 @@ private fun selectAllMatchesByTourOf(
     home_id = home_id,
     away_id = away_id,
 )
+
+fun matchStorageOf(
+    insertOrUpdate: InsertMatchesResult = InsertMatchesResult.success(Unit),
+    getAllMatches: Flow<List<AllMatchesItem>> = flowOf(emptyList()),
+): MatchStorage = object : MatchStorage {
+    override suspend fun insertOrUpdate(matches: List<AllMatchesItem>, league: League, tourYear: TourYear): InsertMatchesResult = insertOrUpdate
+    override suspend fun getAllMatches(league: League, tourYear: TourYear): Flow<List<AllMatchesItem>> = getAllMatches
+}

@@ -14,9 +14,6 @@ val interactorModule = DI.Module(name = MODULE_NAME) {
     bind<SubscriptionKeyValidator>() with provider {
         SubscriptionKeyValidatorInteractor(instance(), instance())
     }
-    bind<GetAllSeason>() with provider {
-        GetAllSeasonInteractor(instance(), instance(), instance(), instance())
-    }
     bind<UpdatePlayers>() with provider {
         UpdatePlayersInteractor(instance(), instance(), instance())
     }
@@ -32,8 +29,11 @@ val interactorModule = DI.Module(name = MODULE_NAME) {
     bind<UpdateTours>() with provider {
         UpdateToursInteractor(instance(), instance(), instance(), instance())
     }
+    bind<WrongPlayerFixer>() with provider {
+        WrongPlayerFixerInteractor(instance(), instance(), instance())
+    }
     bind<MatchReportPreparer>() with provider {
-        MatchReportPreparerInteractor(instance(), instance(), instance(), instance(), instance())
+        MatchReportPreparerInteractor(instance(), instance(), instance(), instance())
     }
     bind<SynchronizeScheduler>() with provider {
         SynchronizeScheduler {

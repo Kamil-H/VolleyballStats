@@ -229,3 +229,10 @@ fun Any.loadMatchReportFile(fileName: String): MatchReport {
     val response = Json { ignoreUnknownKeys = true }.decodeFromString<MatchResponse>(content)
     return MatchResponseToMatchReportMapper().map(response)
 }
+
+fun matchReportAnalyzerOf(
+    appDispatchers: AppDispatchers = testAppDispatchers,
+    invoke: MatchReportAnalyzerResult = MatchReportAnalyzerResult.success(matchStatisticsOf())
+): MatchReportAnalyzer = object : MatchReportAnalyzer(appDispatchers) {
+    override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult = invoke
+}

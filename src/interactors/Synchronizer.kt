@@ -2,6 +2,7 @@ package com.kamilh.interactors
 
 import com.kamilh.models.*
 import com.kamilh.storage.*
+import com.kamilh.utils.CurrentDate
 import kotlinx.coroutines.flow.first
 import utils.Logger
 import java.time.LocalDateTime
@@ -20,10 +21,10 @@ class Synchronizer(
     private val tag = this::class.simpleName!!
 
     suspend fun synchronize(league: League) {
-        Logger.i("Synchronizing: $league", tag)
+        log("Synchronizing: $league")
         val tours = tourStorage.getAllByLeague(League.POLISH_LEAGUE).first()
         if (tours.isEmpty()) {
-            Logger.i("Tours are empty", tag)
+            log("Tours are empty")
             initializeTours(league)
         } else {
             updateMatches(tours.filterNot { it.isFinished })
@@ -60,7 +61,7 @@ class Synchronizer(
     }
 
     private suspend fun schedule() {
-        schedule(LocalDateTime.now().plusHours(1))
+        schedule(CurrentDate.localDateTime.plusHours(1))
     }
 
     private suspend fun schedule(dateTime: LocalDateTime) {
@@ -123,8 +124,4 @@ class Synchronizer(
     private fun log(message: String) {
         Logger.i(message = message, tag = tag)
     }
-}
-
-fun interface SynchronizeScheduler {
-    suspend fun schedule(dateTime: LocalDateTime)
 }
