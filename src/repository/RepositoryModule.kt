@@ -7,13 +7,18 @@ import com.kamilh.repository.parsing.JsoupHtmlParser
 import com.kamilh.repository.parsing.ParseErrorHandler
 import com.kamilh.repository.parsing.SavableParseErrorHandler
 import com.kamilh.repository.polishleague.*
+import com.kamilh.utils.cache.ExpirableCache
+import com.kamilh.utils.cache.LocalDateTimeCacheValidator
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.websocket.*
 import models.PlayerWithDetails
 import org.kodein.di.*
+import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.hours
 import io.ktor.client.HttpClient as Ktor
 
+private val playersCacheValidity = 6.hours
 private const val MODULE_NAME = "DI_REPOSITORY_MODULE"
 val repositoryModule = DI.Module(name = MODULE_NAME) {
     bind<Ktor>() with provider {
@@ -59,9 +64,17 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
         InMemoryTourCache()
     }
 
+    bind<ExpirableCache<Unit, List<Player>, LocalDateTime>>() with singleton {
+        ExpirableCache(LocalDateTimeCacheValidator(cacheExpiration = playersCacheValidity))
+    }
+
+    bind<ExpirableCache<TourYear, List<TeamPlayer>, LocalDateTime>>() with singleton {
+        ExpirableCache(LocalDateTimeCacheValidator(cacheExpiration = playersCacheValidity))
+    }
+
     bind<PolishLeagueRepository>() with provider {
         HttpPolishLeagueRepository(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance(), instance(), instance(), instance())
+            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<MatchResponseStorage>() with provider {

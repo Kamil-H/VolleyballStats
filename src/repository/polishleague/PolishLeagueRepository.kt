@@ -5,6 +5,7 @@ import com.kamilh.repository.HttpClient
 import com.kamilh.repository.models.mappers.HtmlMapper
 import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.repository.parsing.ParseErrorHandler
+import com.kamilh.utils.cache.Cache
 import models.PlayerWithDetails
 import repository.parsing.ParseResult
 
@@ -44,16 +45,30 @@ class HttpPolishLeagueRepository(
     private val matchResponseStorage: MatchResponseStorage,
     private val matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper,
     private val tourCache: TourCache,
+    private val allPlayersCache: Cache<Unit, List<Player>>,
+    private val allPlayersByTourCache: Cache<TourYear, List<TeamPlayer>>,
 ) : PolishLeagueRepository {
 
     override suspend fun getAllTeams(tour: TourYear): NetworkResult<List<Team>> =
         httpClient.execute(polishLeagueApi.getTeams(tour)).parseHtml(htmlToTeamMapper::map)
 
     override suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<TeamPlayer>> =
-        httpClient.execute(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToTeamPlayerMapper::map)
+        getFromCacheOrFetch(key = tour, cache = allPlayersByTourCache) {
+            httpClient.execute(polishLeagueApi.getPlayers(tour)).parseHtml(htmlToTeamPlayerMapper::map)
+        }
 
     override suspend fun getAllPlayers(): NetworkResult<List<Player>> =
-        httpClient.execute(polishLeagueApi.getAllPlayers()).parseHtml(htmlToPlayerMapper::map)
+        getFromCacheOrFetch(key = Unit, cache = allPlayersCache) {
+            httpClient.execute(polishLeagueApi.getAllPlayers()).parseHtml(htmlToPlayerMapper::map)
+        }
+
+    private suspend inline fun <KEY, VALUE> getFromCacheOrFetch(
+        key: KEY,
+        cache: Cache<KEY, VALUE>,
+        fetch: (key: KEY) -> NetworkResult<VALUE>,
+    ): NetworkResult<VALUE> = cache.get(key)?.let { NetworkResult.success(it) } ?: fetch(key).onSuccess {
+        cache.set(key, it)
+    }
 
     override suspend fun getAllMatches(tour: TourYear): NetworkResult<List<AllMatchesItem>> =
         httpClient.execute(polishLeagueApi.getAllMatches(tour)).parseHtml(htmlToAllMatchesItemMapper::map)

@@ -8,11 +8,15 @@ import com.kamilh.repository.models.mappers.HtmlMapper
 import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.repository.models.matchResponseOf
 import com.kamilh.repository.parsing.ParseErrorHandler
+import com.kamilh.utils.cache.Cache
+import com.kamilh.utils.cache.cacheOf
 import kotlinx.coroutines.runBlocking
 import models.PlayerWithDetails
 import org.junit.Test
 import repository.parsing.ParseError
 import repository.parsing.ParseResult
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class HttpPolishLeagueRepositoryTest {
 
@@ -31,6 +35,8 @@ class HttpPolishLeagueRepositoryTest {
         matchResponseStorage: MatchResponseStorage = matchResponseStorageOf(),
         matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper = MatchResponseToMatchReportMapper(),
         tourCache: TourCache = tourCacheOf(),
+        allPlayersCache: Cache<Unit, List<Player>> = cacheOf(),
+        allPlayersByTourCache: Cache<TourYear, List<TeamPlayer>> = cacheOf(),
     ): HttpPolishLeagueRepository =
         HttpPolishLeagueRepository(
             httpClient = httpClient,
@@ -47,6 +53,8 @@ class HttpPolishLeagueRepositoryTest {
             matchResponseToMatchReportMapper = matchResponseToMatchReportMapper,
             htmlToPlayerDetailsMapper = htmlToPlayerDetailsMapper,
             tourCache = tourCache,
+            allPlayersCache = allPlayersCache,
+            allPlayersByTourCache = allPlayersByTourCache,
         )
 
     @Test
@@ -109,21 +117,39 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
+    fun `getAllPlayers by tour returns value from cache when it's available`() = runBlocking {
+        // GIVEN
+        val cached = listOf(teamPlayerOf())
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            allPlayersByTourCache = cacheOf(get = cached),
+        ).getAllPlayers(tour = tourYearOf())
+
+        // THEN
+        require(result is Result.Success)
+        assert(result.value == cached)
+    }
+
+    @Test
     fun `test that when httpClient getAllPlayers by tour returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
         // GIVEN
         val parseResult = emptyList<TeamPlayer>()
         val networkResult = networkSuccessOf("")
         val mapperResult = htmlMapperOf(parseSuccessOf(parseResult))
+        var setCacheCalled = false
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamPlayerMapper = mapperResult,
+            allPlayersByTourCache = cacheOf { _, _ -> setCacheCalled = true },
         ).getAllPlayers(tour = tourYearOf())
 
         // THEN
         require(result is Result.Success)
         assert(result.value == parseResult)
+        assertTrue(setCacheCalled)
     }
 
     @Test
@@ -132,16 +158,19 @@ class HttpPolishLeagueRepositoryTest {
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
         val mapperResult = htmlMapperOf(parseSuccessOf(emptyList<TeamPlayer>()))
+        var setCacheCalled = false
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamPlayerMapper = mapperResult,
+            allPlayersByTourCache = cacheOf { _, _ -> setCacheCalled = true },
         ).getAllPlayers(tour = tourYearOf())
 
         // THEN
         require(result is Result.Failure)
         assert(result.error == networkError)
+        assertFalse(setCacheCalled)
     }
 
     @Test
@@ -150,6 +179,7 @@ class HttpPolishLeagueRepositoryTest {
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
         val mapperResult = htmlMapperOf(parseFailureOf<List<TeamPlayer>>(parseError))
+        var setCacheCalled = false
 
         var parseErrorToHandle: ParseError? = null
         // WHEN
@@ -157,6 +187,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToTeamPlayerMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
+            allPlayersByTourCache = cacheOf { _, _ -> setCacheCalled = true },
         ).getAllPlayers(tour = tourYearOf())
 
         // THEN
@@ -165,6 +196,22 @@ class HttpPolishLeagueRepositoryTest {
         val unexpectedException = result.error as NetworkError.UnexpectedException
         assert(unexpectedException.throwable == parseError.exception)
         assert(parseErrorToHandle == parseError)
+        assertFalse(setCacheCalled)
+    }
+
+    @Test
+    fun `getAllPlayers returns value from cache when it's available`() = runBlocking {
+        // GIVEN
+        val cached = listOf(playerOf())
+
+        // WHEN
+        val result = httpPolishLeagueRepositoryOf<String>(
+            allPlayersCache = cacheOf(get = cached),
+        ).getAllPlayers()
+
+        // THEN
+        require(result is Result.Success)
+        assert(result.value == cached)
     }
 
     @Test
@@ -173,16 +220,19 @@ class HttpPolishLeagueRepositoryTest {
         val parseResult = emptyList<Player>()
         val networkResult = networkSuccessOf("")
         val mapperResult = htmlMapperOf(parseSuccessOf(parseResult))
+        var setCacheCalled = false
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerMapper = mapperResult,
+            allPlayersCache = cacheOf { _, _ -> setCacheCalled = true },
         ).getAllPlayers()
 
         // THEN
         require(result is Result.Success)
         assert(result.value == parseResult)
+        assertTrue(setCacheCalled)
     }
 
     @Test
@@ -191,16 +241,19 @@ class HttpPolishLeagueRepositoryTest {
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
         val mapperResult = htmlMapperOf(parseSuccessOf(emptyList<Player>()))
+        var setCacheCalled = false
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerMapper = mapperResult,
+            allPlayersCache = cacheOf { _, _ -> setCacheCalled = true },
         ).getAllPlayers()
 
         // THEN
         require(result is Result.Failure)
         assert(result.error == networkError)
+        assertFalse(setCacheCalled)
     }
 
     @Test
@@ -209,6 +262,7 @@ class HttpPolishLeagueRepositoryTest {
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
         val mapperResult = htmlMapperOf(parseFailureOf<List<Player>>(parseError))
+        var setCacheCalled = false
 
         var parseErrorToHandle: ParseError? = null
         // WHEN
@@ -216,6 +270,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToPlayerMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
+            allPlayersCache = cacheOf { _, _ -> setCacheCalled = true },
         ).getAllPlayers()
 
         // THEN
@@ -224,6 +279,7 @@ class HttpPolishLeagueRepositoryTest {
         val unexpectedException = result.error as NetworkError.UnexpectedException
         assert(unexpectedException.throwable == parseError.exception)
         assert(parseErrorToHandle == parseError)
+        assertFalse(setCacheCalled)
     }
 
     @Test
