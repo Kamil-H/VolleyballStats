@@ -10,7 +10,7 @@ import models.PlayerWithDetails
 
 typealias UpdatePlayers = Interactor<UpdatePlayersParams, UpdatePlayersResult>
 
-data class UpdatePlayersParams(val league: League, val tour: TourYear)
+data class UpdatePlayersParams(val league: League, val season: Season)
 
 typealias UpdatePlayersResult = Result<Unit, UpdatePlayersError>
 
@@ -26,14 +26,14 @@ class UpdatePlayersInteractor(
 ) : UpdatePlayers(appDispatchers) {
 
     override suspend fun doWork(params: UpdatePlayersParams): UpdatePlayersResult {
-        val playersResult = polishLeagueRepository.getAllPlayers(params.tour)
+        val playersResult = polishLeagueRepository.getAllPlayers(params.season)
         if (playersResult is Result.Failure) {
             return playersResult.mapError { UpdatePlayersError.Network(it) }
         }
         val players = playersResult.value!!
         val playersWithDetails = coroutineScope {
             players.mapAsync(this) { player ->
-                polishLeagueRepository.getPlayerDetails(params.tour, player.id).map { details ->
+                polishLeagueRepository.getPlayerDetails(params.season, player.id).map { details ->
                     PlayerWithDetails(player, details)
                 }
             }.toResults()
@@ -46,6 +46,6 @@ class UpdatePlayersInteractor(
     }
 
     private suspend fun updatePlayers(players: List<PlayerWithDetails>, params: UpdatePlayersParams): UpdatePlayersResult =
-        playerStorage.insert(players, params.league, params.tour)
+        playerStorage.insert(players, params.league, params.season)
             .mapError { UpdatePlayersError.Storage(it) }
 }

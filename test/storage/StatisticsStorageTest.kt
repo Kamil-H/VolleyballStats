@@ -7,7 +7,7 @@ import com.kamilh.match_analyzer.eventsPreparerOf
 import com.kamilh.match_analyzer.loadMatchReportFile
 import com.kamilh.match_analyzer.strategies.*
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.utils.testAppDispatchers
 
 abstract class StatisticsStorageTest : DatabaseTest() {
@@ -62,13 +62,13 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         homeId: TeamId = teamIdOf(2101911),
         awayId: TeamId = teamIdOf(1),
         league: League = leagueOf(),
-        tourYear: TourYear = tourYearOf(2020),
+        season: Season = seasonOf(2020),
         matchId: MatchId = matchIdOf(),
     ): MatchStatistics {
         // GIVEN
         val fileName = "${matchReportId.value}.json"
         val matchReport = loadMatchReportFile(fileName)
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
 
         teamQueries.insert(homeId)
         teamQueries.insert(awayId)
@@ -81,7 +81,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                     id = homeId,
                     name = matchReport.matchTeams.home.name
                 ),
-                tourYear = tourYear,
+                season = season,
                 league = league,
             )
         )
@@ -91,7 +91,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                     id = awayId,
                     name = matchReport.matchTeams.away.name
                 ),
-                tourYear = tourYear,
+                season = season,
                 league = league,
             )
         )
@@ -99,7 +99,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             insert(
                 InsertPlayer(
                     league = league,
-                    tourYear = tourYear,
+                    season = season,
                     player = playerWithDetailsOf(
                         teamPlayer = teamPlayerOf(
                             id = teamPlayer.id,
@@ -113,7 +113,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             insert(
                 InsertPlayer(
                     league = league,
-                    tourYear = tourYear,
+                    season = season,
                     player = playerWithDetailsOf(
                         teamPlayer = teamPlayerOf(
                             id = teamPlayer.id,
@@ -123,14 +123,14 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                 )
             )
         }
-        val matchStatistics = analyzer.analyze(matchReport, tourYear, league).value!!
+        val matchStatistics = analyzer.analyze(matchReport, season, league).value!!
 
         // WHEN
-        val insertResult = storage.insert(matchStatistics, league, tourYear, matchId)
+        val insertResult = storage.insert(matchStatistics, league, season, matchId)
 
         // THEN
         val result = matchStatisticsQueries.selectAll().executeAsList()
-        storage.getAllMatchStatistics(league, tourYear).test {
+        storage.getAllMatchStatistics(league, season).test {
             assert(awaitItem().first() == matchStatistics)
         }
         assert(result.isNotEmpty())

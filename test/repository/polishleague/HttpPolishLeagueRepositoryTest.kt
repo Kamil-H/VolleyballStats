@@ -36,7 +36,7 @@ class HttpPolishLeagueRepositoryTest {
         matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper = MatchResponseToMatchReportMapper(),
         tourCache: TourCache = tourCacheOf(),
         allPlayersCache: Cache<Unit, List<Player>> = cacheOf(),
-        allPlayersByTourCache: Cache<TourYear, List<TeamPlayer>> = cacheOf(),
+        allPlayersByTourCache: Cache<Season, List<TeamPlayer>> = cacheOf(),
     ): HttpPolishLeagueRepository =
         HttpPolishLeagueRepository(
             httpClient = httpClient,
@@ -68,7 +68,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
-        ).getAllTeams(tour = tourYearOf())
+        ).getAllTeams(season = seasonOf())
 
         // THEN
         require(result is Result.Success)
@@ -86,7 +86,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
-        ).getAllTeams(tour = tourYearOf())
+        ).getAllTeams(season = seasonOf())
 
         // THEN
         require(result is Result.Failure)
@@ -106,7 +106,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getAllTeams(tour = tourYearOf())
+        ).getAllTeams(season = seasonOf())
 
         // THEN
         require(result is Result.Failure)
@@ -124,7 +124,7 @@ class HttpPolishLeagueRepositoryTest {
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             allPlayersByTourCache = cacheOf(get = cached),
-        ).getAllPlayers(tour = tourYearOf())
+        ).getAllPlayers(season = seasonOf())
 
         // THEN
         require(result is Result.Success)
@@ -144,7 +144,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToTeamPlayerMapper = mapperResult,
             allPlayersByTourCache = cacheOf { _, _ -> setCacheCalled = true },
-        ).getAllPlayers(tour = tourYearOf())
+        ).getAllPlayers(season = seasonOf())
 
         // THEN
         require(result is Result.Success)
@@ -165,7 +165,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToTeamPlayerMapper = mapperResult,
             allPlayersByTourCache = cacheOf { _, _ -> setCacheCalled = true },
-        ).getAllPlayers(tour = tourYearOf())
+        ).getAllPlayers(season = seasonOf())
 
         // THEN
         require(result is Result.Failure)
@@ -188,7 +188,7 @@ class HttpPolishLeagueRepositoryTest {
             htmlToTeamPlayerMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
             allPlayersByTourCache = cacheOf { _, _ -> setCacheCalled = true },
-        ).getAllPlayers(tour = tourYearOf())
+        ).getAllPlayers(season = seasonOf())
 
         // THEN
         require(result is Result.Failure)
@@ -293,7 +293,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToAllMatchesItemMapper = mapperResult,
-        ).getAllMatches(tour = tourYearOf())
+        ).getAllMatches(season = seasonOf())
 
         // THEN
         require(result is Result.Success)
@@ -311,7 +311,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToAllMatchesItemMapper = mapperResult,
-        ).getAllMatches(tour = tourYearOf())
+        ).getAllMatches(season = seasonOf())
 
         // THEN
         require(result is Result.Failure)
@@ -331,7 +331,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToAllMatchesItemMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getAllMatches(tour = tourYearOf())
+        ).getAllMatches(season = seasonOf())
 
         // THEN
         require(result is Result.Failure)
@@ -404,7 +404,7 @@ class HttpPolishLeagueRepositoryTest {
     fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is empty then Success is returned and response is getting saved`() = runBlocking {
         // GIVEN
         val matchReportId = matchReportIdOf()
-        val tour = tourYearOf()
+        val tour = seasonOf()
         val matchResponse = matchResponseOf()
         val matchReportEndpoint = matchReportEndpointOf(networkSuccessOf(matchResponse))
         var savedResponse: MatchResponse? = null
@@ -419,7 +419,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<Unit>(
             matchReportEndpoint = matchReportEndpoint,
             matchResponseStorage = matchResponseStorage,
-        ).getMatchReport(matchReportId = matchReportId, tour = tour)
+        ).getMatchReport(matchReportId = matchReportId, season = tour)
 
         // THEN
         require(result is Result.Success)
@@ -430,7 +430,7 @@ class HttpPolishLeagueRepositoryTest {
     fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is not empty then saved value is returned`() = runBlocking {
         // GIVEN
         val matchReportId = matchReportIdOf()
-        val tour = tourYearOf()
+        val tour = seasonOf()
         val matchReportEndpoint = matchReportEndpointOf(networkSuccessOf(matchResponseOf()))
         val savedResponse = matchResponseOf()
         val matchResponseStorage = matchResponseStorageOf(get = savedResponse)
@@ -439,7 +439,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<Unit>(
             matchReportEndpoint = matchReportEndpoint,
             matchResponseStorage = matchResponseStorage,
-        ).getMatchReport(matchReportId = matchReportId, tour = tour)
+        ).getMatchReport(matchReportId = matchReportId, season = tour)
 
         // THEN
         require(result is Result.Success)
@@ -449,7 +449,7 @@ class HttpPolishLeagueRepositoryTest {
     fun `test that when MatchReportEndpoint returns Failure and MatchResponseStorage is not empty then saved value is returned`() = runBlocking {
         // GIVEN
         val matchReportId = matchReportIdOf()
-        val tour = tourYearOf()
+        val tour = seasonOf()
         val matchReportEndpoint = matchReportEndpointOf(networkFailureOf(networkErrorOf()))
         val savedResponse = matchResponseOf()
         val matchResponseStorage = matchResponseStorageOf(get = savedResponse)
@@ -458,7 +458,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<Unit>(
             matchReportEndpoint = matchReportEndpoint,
             matchResponseStorage = matchResponseStorage,
-        ).getMatchReport(matchReportId = matchReportId, tour = tour)
+        ).getMatchReport(matchReportId = matchReportId, season = tour)
 
         // THEN
         require(result is Result.Success)
@@ -475,7 +475,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerDetailsMapper = mapperResult,
-        ).getPlayerDetails(tour = tourYearOf(), playerId = playerIdOf())
+        ).getPlayerDetails(season = seasonOf(), playerId = playerIdOf())
 
         // THEN
         require(result is Result.Success)
@@ -493,7 +493,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerDetailsMapper = mapperResult,
-        ).getPlayerDetails(tour = tourYearOf(), playerId = playerIdOf())
+        ).getPlayerDetails(season = seasonOf(), playerId = playerIdOf())
 
         // THEN
         require(result is Result.Failure)
@@ -513,7 +513,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToPlayerDetailsMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getPlayerDetails(tour = tourYearOf(), playerId = playerIdOf())
+        ).getPlayerDetails(season = seasonOf(), playerId = playerIdOf())
 
         // THEN
         require(result is Result.Failure)
@@ -534,7 +534,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerWithDetailsMapper = mapperResult,
-        ).getPlayerWithDetails(tour = tourYearOf(), playerId = playerIdOf())
+        ).getPlayerWithDetails(season = seasonOf(), playerId = playerIdOf())
 
         // THEN
         require(result is Result.Success)
@@ -552,7 +552,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToPlayerWithDetailsMapper = mapperResult,
-        ).getPlayerWithDetails(tour = tourYearOf(), playerId = playerIdOf())
+        ).getPlayerWithDetails(season = seasonOf(), playerId = playerIdOf())
 
         // THEN
         require(result is Result.Failure)
@@ -572,7 +572,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToPlayerWithDetailsMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getPlayerWithDetails(tour = tourYearOf(), playerId = playerIdOf())
+        ).getPlayerWithDetails(season = seasonOf(), playerId = playerIdOf())
 
         // THEN
         require(result is Result.Failure)
@@ -612,11 +612,11 @@ fun jsonParseErrorOf(
 
 fun <T> htmlMapperOf(result: ParseResult<T>): HtmlMapper<T> = HtmlMapper { result }
 
-fun tourYearOf(tour: Int = 2020): TourYear = TourYear.create(tour)
+fun seasonOf(tour: Int = 2020): Season = Season.create(tour)
 
 fun matchReportEndpointOf(result: NetworkResult<MatchResponse>): MatchReportEndpoint =
     object : MatchReportEndpoint {
-        override suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchResponse> = result
+        override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Season): NetworkResult<MatchResponse> = result
     }
 
 fun tourCacheOf(
@@ -636,13 +636,13 @@ fun polishLeagueRepositoryOf(
     getPlayerWithDetails: NetworkResult<PlayerWithDetails> = networkFailureOf(networkErrorOf()),
     getAllTours: NetworkResult<List<Tour>> = networkFailureOf(networkErrorOf()),
 ): PolishLeagueRepository = object : PolishLeagueRepository {
-    override suspend fun getAllTeams(tour: TourYear): NetworkResult<List<Team>> = getAllTeams
-    override suspend fun getAllPlayers(tour: TourYear): NetworkResult<List<TeamPlayer>> = getAllPlayersByTour
+    override suspend fun getAllTeams(season: Season): NetworkResult<List<Team>> = getAllTeams
+    override suspend fun getAllPlayers(season: Season): NetworkResult<List<TeamPlayer>> = getAllPlayersByTour
     override suspend fun getAllPlayers(): NetworkResult<List<Player>> = getAllPlayers
-    override suspend fun getAllMatches(tour: TourYear): NetworkResult<List<AllMatchesItem>> = getAllMatches
+    override suspend fun getAllMatches(season: Season): NetworkResult<List<AllMatchesItem>> = getAllMatches
     override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> = getMatchReportId
-    override suspend fun getMatchReport(matchReportId: MatchReportId, tour: TourYear): NetworkResult<MatchReport> = getMatchReport
-    override suspend fun getPlayerDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerDetails> = getPlayerDetails
-    override suspend fun getPlayerWithDetails(tour: TourYear, playerId: PlayerId): NetworkResult<PlayerWithDetails> = getPlayerWithDetails
+    override suspend fun getMatchReport(matchReportId: MatchReportId, season: Season): NetworkResult<MatchReport> = getMatchReport
+    override suspend fun getPlayerDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerDetails> = getPlayerDetails
+    override suspend fun getPlayerWithDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerWithDetails> = getPlayerWithDetails
     override suspend fun getAllTours(): NetworkResult<List<Tour>> = getAllTours
 }

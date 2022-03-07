@@ -7,7 +7,7 @@ import com.kamilh.models.PlayerId;
 import com.kamilh.models.PlayerPosition;
 import com.kamilh.models.TeamId;
 import com.kamilh.models.TeamPlayer.Specialization;
-import com.kamilh.models.TourYear;
+import com.kamilh.models.Season;
 import com.kamilh.models.Url;
 import com.kamilh.storage.MatchState;
 import java.time.LocalDate;
@@ -31,13 +31,13 @@ CREATE TABLE IF NOT EXISTS team_model (
 CREATE TABLE IF NOT EXISTS tour_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name TEXT NOT NULL,
-  tour_year INTEGER AS TourYear NOT NULL,
+  season INTEGER AS Season NOT NULL,
   league_id INTEGER NOT NULL,
   start_date TEXT AS LocalDate NOT NULL,
   end_date TEXT AS LocalDate,
   winner_id INTEGER AS TeamId,
   updated_at TEXT AS LocalDateTime NOT NULL,
-  UNIQUE(tour_year, league_id),
+  UNIQUE(season, league_id),
   FOREIGN KEY (league_id) REFERENCES league_model(id),
   FOREIGN KEY (winner_id) REFERENCES team_model(id)
 );

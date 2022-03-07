@@ -1,7 +1,7 @@
 package com.kamilh.repository.polishleague
 
 import com.kamilh.models.MatchReportId
-import com.kamilh.models.TourYear
+import com.kamilh.models.Season
 import com.kamilh.models.matchReportIdOf
 import com.kamilh.repository.FileManager
 import com.kamilh.repository.FileMetadata
@@ -32,7 +32,7 @@ class MatchResponseStorageTest {
         // WHEN
         val matchResponse = matchResponseStorageOf(
             fileManagerOf(getTextContent = fileManagerReturns)
-        ).get(matchReportIdOf(), tourYearOf())
+        ).get(matchReportIdOf(), seasonOf())
 
         // THEN
         assert(matchResponse == null)
@@ -47,7 +47,7 @@ class MatchResponseStorageTest {
         // WHEN
         val matchResponse = matchResponseStorageOf(
             fileManagerOf(getTextContent = fileManagerReturns)
-        ).get(matchReportIdOf(), tourYearOf())
+        ).get(matchReportIdOf(), seasonOf())
 
         // THEN
         assert(matchResponse != null)
@@ -61,7 +61,7 @@ class MatchResponseStorageTest {
         // WHEN
         val isSaved = matchResponseStorageOf(
             fileManagerOf(getTextContent = fileManagerReturns)
-        ).isSaved(matchReportIdOf(), tourYearOf())
+        ).isSaved(matchReportIdOf(), seasonOf())
 
         // THEN
         assert(!isSaved)
@@ -76,7 +76,7 @@ class MatchResponseStorageTest {
         // WHEN
         val isSaved = matchResponseStorageOf(
             fileManagerOf(getTextContent = fileManagerReturns)
-        ).isSaved(matchReportIdOf(), tourYearOf())
+        ).isSaved(matchReportIdOf(), seasonOf())
 
         // THEN
         assert(isSaved)
@@ -97,7 +97,7 @@ class MatchResponseStorageTest {
         // WHEN
         matchResponseStorageOf(
             fileManagerOf(saveTextAsFile = saveTextAsFile)
-        ).save(matchResponse, tourYearOf(tour))
+        ).save(matchResponse, seasonOf(tour))
 
         // THEN
         assert(savingFileMetadata?.directory == "match_reports/plus_liga/${tour}")
@@ -108,15 +108,15 @@ class MatchResponseStorageTest {
 
 fun matchResponseStorageOf(
     get: MatchResponse? = null,
-    saveCallback: ((matchResponse: MatchResponse, tour: TourYear) -> Unit)? = null,
+    saveCallback: ((matchResponse: MatchResponse, tour: Season) -> Unit)? = null,
     isSaved: Boolean = false
 ): MatchResponseStorage = object : MatchResponseStorage {
 
-    override suspend fun get(matchReportId: MatchReportId, tour: TourYear): MatchResponse? = get
+    override suspend fun get(matchReportId: MatchReportId, tour: Season): MatchResponse? = get
 
-    override suspend fun save(matchResponse: MatchResponse, tour: TourYear) {
+    override suspend fun save(matchResponse: MatchResponse, tour: Season) {
         saveCallback?.invoke(matchResponse, tour)
     }
 
-    override suspend fun isSaved(matchReportId: MatchReportId, tour: TourYear): Boolean = isSaved
+    override suspend fun isSaved(matchReportId: MatchReportId, tour: Season): Boolean = isSaved
 }

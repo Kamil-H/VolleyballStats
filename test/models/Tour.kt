@@ -1,12 +1,12 @@
 package com.kamilh.models
 
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun tourOf(
     name: String = "",
-    year: TourYear = tourYearOf(),
+    season: Season = seasonOf(),
     league: League = leagueOf(),
     startDate: LocalDate = LocalDate.now(),
     endDate: LocalDate? = null,
@@ -14,7 +14,7 @@ fun tourOf(
     updatedAt: LocalDateTime = LocalDateTime.now(),
 ): Tour = Tour(
     name = name,
-    year = year,
+    season = season,
     league = league,
     startDate = startDate,
     endDate = endDate,

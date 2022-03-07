@@ -27,7 +27,7 @@ INNER JOIN
 tour_team_model home_team ON match_model.home = home_team.id
 INNER JOIN
 tour_team_model away_team ON match_model.away = away_team.id
-WHERE match_model.tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id = (SELECT (id) FROM league_model WHERE country = :country AND division = :division))
+WHERE match_model.tour_id = (SELECT id FROM tour_model WHERE season = :season AND league_id = (SELECT (id) FROM league_model WHERE country = :country AND division = :division))
 AND CASE WHEN match_model.match_statistics_id IS NULL THEN TRUE ELSE match_set.number = (SELECT MAX(number) FROM set_model WHERE set_model.match_statistics_id = match_model.match_statistics_id) END;
 
 updateMatchReport:

@@ -14,11 +14,11 @@ import java.time.LocalDateTime
 
 interface TeamStorage {
 
-    suspend fun insert(teams: List<Team>, league: League, tour: TourYear): InsertTeamResult
+    suspend fun insert(teams: List<Team>, league: League, season: Season): InsertTeamResult
 
-    suspend fun getAllTeams(league: League, tour: TourYear): Flow<List<Team>>
+    suspend fun getAllTeams(league: League, season: Season): Flow<List<Team>>
 
-    suspend fun getTeam(name: String, code: String, league: League, tour: TourYear): Team?
+    suspend fun getTeam(name: String, code: String, league: League, season: Season): Team?
 }
 
 typealias InsertTeamResult = Result<Unit, InsertTeamError>
@@ -36,7 +36,7 @@ class SqlTeamStorage(
     private val tourTeamQueries: TourTeamQueries,
 ) : TeamStorage {
 
-    override suspend fun insert(teams: List<Team>, league: League, tour: TourYear): InsertTeamResult =
+    override suspend fun insert(teams: List<Team>, league: League, season: Season): InsertTeamResult =
         queryRunner.runTransaction {
             val firstTeam = teams.firstOrNull() ?: return@runTransaction Result.success(Unit)
             val insert: Team.() -> Exception? = {
@@ -47,7 +47,7 @@ class SqlTeamStorage(
                         image_url = teamImageUrl,
                         logo_url = logoUrl,
                         team_id = id,
-                        tour_year = tour,
+                        season = season,
                         updated_at = updatedAt,
                         country = league.country,
                         division = league.division,
@@ -79,20 +79,20 @@ class SqlTeamStorage(
             }
         }
 
-    override suspend fun getAllTeams(league: League, tour: TourYear): Flow<List<Team>> =
+    override suspend fun getAllTeams(league: League, season: Season): Flow<List<Team>> =
         queryRunner.run {
             tourTeamQueries.selectAllByTourYear(
-                tour_year = tour,
+                season = season,
                 division = league.division,
                 country = league.country,
                 mapper = mapper,
             ).asFlow().mapToList(queryRunner.dispatcher)
         }
 
-    override suspend fun getTeam(name: String, code: String, league: League, tour: TourYear): Team? =
+    override suspend fun getTeam(name: String, code: String, league: League, season: Season): Team? =
         queryRunner.run {
             tourTeamQueries.selectByTourYearAndName(
-                tour_year = tour,
+                season = season,
                 name = name,
                 division = league.division,
                 country = league.country,

@@ -1,7 +1,6 @@
 package com.kamilh.interactors
 
 import com.kamilh.extensions.mapAsync
-import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertMatchStatisticsError
@@ -11,7 +10,7 @@ typealias UpdateMatchReports = Interactor<UpdateMatchReportParams, UpdateMatchRe
 
 data class UpdateMatchReportParams(
     val league: League,
-    val tour: TourYear,
+    val season: Season,
     val matches: List<AllMatchesItem.PotentiallyFinished>,
 )
 
@@ -29,7 +28,7 @@ class UpdateMatchReportInteractor(
 ): UpdateMatchReports(appDispatchers) {
 
     override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult {
-        val (league, tourYear, potentiallyFinished) = params
+        val (league, season, potentiallyFinished) = params
 
         if (potentiallyFinished.isEmpty()) {
             return Result.success(Unit)
@@ -38,7 +37,7 @@ class UpdateMatchReportInteractor(
             potentiallyFinished
                 .mapAsync(scope = this) { match ->
                     polishLeagueRepository.getMatchReportId(match.id).flatMap { matchReportId ->
-                        polishLeagueRepository.getMatchReport(matchReportId, tourYear).map { matchReport ->
+                        polishLeagueRepository.getMatchReport(matchReportId, season).map { matchReport ->
                             match.id to matchReport
                         }
                     }
@@ -54,7 +53,7 @@ class UpdateMatchReportInteractor(
             MatchReportPreparerParams(
                 matches = callResults.values,
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         ).mapError {
             when (it) {

@@ -5,7 +5,7 @@ import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.match_analyzer.MatchReportAnalyzerResult
 import com.kamilh.match_analyzer.matchReportAnalyzerOf
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.InsertMatchStatisticsError
 import com.kamilh.storage.InsertMatchStatisticsResult
 import com.kamilh.storage.MatchStatisticsStorage
@@ -31,14 +31,14 @@ class MatchReportPreparerInteractorTest {
     private fun paramsOf(
         matches: List<Pair<MatchId, MatchReport>> = emptyList(),
         league: League = leagueOf(),
-        tourYear: TourYear = tourYearOf(),
+        tourYear: Season = seasonOf(),
     ): MatchReportPreparerParams = MatchReportPreparerParams(
         matches = matches,
         league = league,
-        tourYear = tourYear,
+        season = tourYear,
     )
 
-    private fun insertCallbackOf(callback: () -> InsertMatchStatisticsResult): (matchStatistics: MatchStatistics, league: League, tourYear: TourYear, matchId: MatchId) -> InsertMatchStatisticsResult =
+    private fun insertCallbackOf(callback: () -> InsertMatchStatisticsResult): (matchStatistics: MatchStatistics, league: League, tourYear: Season, matchId: MatchId) -> InsertMatchStatisticsResult =
         { _, _, _, _ -> callback() }
 
     @Test

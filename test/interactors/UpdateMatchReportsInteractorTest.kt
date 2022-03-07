@@ -4,7 +4,7 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.InsertMatchStatisticsError
 import com.kamilh.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
@@ -24,11 +24,11 @@ class UpdateMatchReportsTest {
 
     private fun paramsOf(
         league: League = leagueOf(),
-        tour: TourYear = tourYearOf(),
+        tour: Season = seasonOf(),
         matches: List<AllMatchesItem.PotentiallyFinished> = emptyList(),
     ): UpdateMatchReportParams = UpdateMatchReportParams(
         league = league,
-        tour = tour,
+        season = tour,
         matches = matches,
     )
 

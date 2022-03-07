@@ -19,7 +19,7 @@ interface TourStorage {
 
     suspend fun getAllByLeague(league: League): Flow<List<Tour>>
 
-    suspend fun getByTourYearAndLeague(tourYear: TourYear, league: League): Flow<Tour?>
+    suspend fun getByTourYearAndLeague(tourYear: Season, league: League): Flow<Tour?>
 
     suspend fun update(tour: Tour, endTime: LocalDate)
 }
@@ -42,7 +42,7 @@ class SqlTourStorage(
         queryRunner.run {
             tourQueries.insert(
                 name = tour.name,
-                tour_year = tour.year,
+                season = tour.season,
                 country = tour.league.country,
                 division = tour.league.division,
                 start_date = tour.startDate,
@@ -63,7 +63,7 @@ class SqlTourStorage(
     override suspend fun getAllByLeague(league: League): Flow<List<Tour>> =
         tourQueries.selectAllByLeague(league.country, league.division, mapper).asFlow().mapToList(queryRunner.dispatcher)
 
-    override suspend fun getByTourYearAndLeague(tourYear: TourYear, league: League): Flow<Tour?> =
+    override suspend fun getByTourYearAndLeague(tourYear: Season, league: League): Flow<Tour?> =
         tourQueries.selectByTourAndLeague(tourYear, league.country, league.division, mapper).asFlow().mapToOneOrNull(queryRunner.dispatcher)
 
     override suspend fun update(tour: Tour, endTime: LocalDate) {
@@ -71,7 +71,7 @@ class SqlTourStorage(
             tourQueries.updateEndTime(
                 end_date = endTime,
                 updated_at = LocalDateTime.now(clock),
-                tour_year = tour.year,
+                season = tour.season,
                 country = tour.league.country,
                 division = tour.league.division,
             )
@@ -80,7 +80,7 @@ class SqlTourStorage(
 
     private val mapper: (
         name: String,
-        tour_year: TourYear,
+        season: Season,
         start_date: LocalDate,
         end_date: LocalDate?,
         winner_id: TeamId?,
@@ -89,7 +89,7 @@ class SqlTourStorage(
         division: Int,
     ) -> Tour = {
             name: String,
-            tour_year: TourYear,
+            season: Season,
             start_date: LocalDate,
             end_date: LocalDate?,
             winner_id: TeamId?,
@@ -98,7 +98,7 @@ class SqlTourStorage(
             division: Int, ->
         Tour(
             name = name,
-            year = tour_year,
+            season = season,
             league = League(country, division),
             startDate = start_date,
             endDate = end_date,

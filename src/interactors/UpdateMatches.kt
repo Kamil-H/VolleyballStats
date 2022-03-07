@@ -11,7 +11,7 @@ import java.time.OffsetDateTime
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
 
-data class UpdateMatchesParams(val league: League, val tour: TourYear)
+data class UpdateMatchesParams(val league: League, val season: Season)
 
 typealias UpdateMatchesResult = Result<UpdateMatchesSuccess, UpdateMatchesError>
 
@@ -37,22 +37,22 @@ class UpdateMatchesInteractor(
 ) : UpdateMatches(appDispatchers) {
 
     override suspend fun doWork(params: UpdateMatchesParams): UpdateMatchesResult {
-        val (league, tourYear) = params
-        val tour = tourStorage.getByTourYearAndLeague(tourYear, league).first()
+        val (league, season) = params
+        val tour = tourStorage.getByTourYearAndLeague(season, league).first()
             ?: return Result.failure(UpdateMatchesError.TourNotFound)
 
-        val matches = polishLeagueRepository.getAllMatches(params.tour).value
+        val matches = polishLeagueRepository.getAllMatches(params.season).value
         if (matches != null) {
             if (matches.isEmpty()) {
                 return Result.failure(UpdateMatchesError.NoMatchesInTour)
             }
-            val insertResult = matchStorage.insertOrUpdate(matches, league, tourYear)
+            val insertResult = matchStorage.insertOrUpdate(matches, league, season)
             when (insertResult.error) {
                 InsertMatchesError.TourNotFound -> return Result.failure(UpdateMatchesError.TourNotFound)
                 is InsertMatchesError.TryingToInsertSavedItems, null -> { }
             }
         }
-        val allMatches = matchStorage.getAllMatches(league, tourYear).first()
+        val allMatches = matchStorage.getAllMatches(league, season).first()
         val allMatchesSaved = allMatches.all { it is AllMatchesItem.Saved }
         if (allMatchesSaved) {
             val lastSaved = allMatches.filterIsInstance<AllMatchesItem.Saved>().maxByOrNull { it.endTime }!!
@@ -62,7 +62,7 @@ class UpdateMatchesInteractor(
 
         val potentiallyFinished = allMatches.filterIsInstance<AllMatchesItem.PotentiallyFinished>()
         if (potentiallyFinished.isNotEmpty()) {
-            val error = updateMatchReports(UpdateMatchReportParams(league, tourYear, potentiallyFinished)).mapError {
+            val error = updateMatchReports(UpdateMatchReportParams(league, season, potentiallyFinished)).mapError {
                 when (it) {
                     is UpdateMatchReportError.Network -> UpdateMatchesError.Network(it.networkError)
                     is UpdateMatchReportError.Insert -> UpdateMatchesError.Insert(it.error)

@@ -17,11 +17,11 @@ import java.time.LocalDateTime
 
 interface PlayerStorage {
 
-    suspend fun insert(players: List<PlayerWithDetails>, league: League, tour: TourYear): InsertPlayerResult
+    suspend fun insert(players: List<PlayerWithDetails>, league: League, season: Season): InsertPlayerResult
 
-    suspend fun getAllPlayers(teamId: TeamId, league: League, tour: TourYear): Flow<List<PlayerWithDetails>>
+    suspend fun getAllPlayers(teamId: TeamId, league: League, season: Season): Flow<List<PlayerWithDetails>>
 
-    suspend fun getAllPlayers(league: League, tour: TourYear): Flow<List<PlayerWithDetails>>
+    suspend fun getAllPlayers(league: League, season: Season): Flow<List<PlayerWithDetails>>
 }
 
 typealias InsertPlayerResult = Result<Unit, InsertPlayerError>
@@ -41,12 +41,12 @@ class SqlPlayerStorage(
     private val tourQueries: TourQueries,
 ) : PlayerStorage {
 
-    override suspend fun insert(players: List<PlayerWithDetails>, league: League, tour: TourYear): InsertPlayerResult =
+    override suspend fun insert(players: List<PlayerWithDetails>, league: League, season: Season): InsertPlayerResult =
         queryRunner.runTransaction {
             if (players.isEmpty()) {
                 return@runTransaction Result.success(Unit)
             }
-            val tourId = tourQueries.selectId(tour, league.division, league.country).executeAsOneOrNull()
+            val tourId = tourQueries.selectId(season, league.division, league.country).executeAsOneOrNull()
                 ?: return@runTransaction Result.failure<Unit, InsertPlayerError>(InsertPlayerError.TourNotFound)
 
             val teamIdsNotFound = mutableListOf<TeamId>()
@@ -100,21 +100,21 @@ class SqlPlayerStorage(
             exception
         }
 
-    override suspend fun getAllPlayers(teamId: TeamId, league: League, tour: TourYear): Flow<List<PlayerWithDetails>> =
+    override suspend fun getAllPlayers(teamId: TeamId, league: League, season: Season): Flow<List<PlayerWithDetails>> =
         queryRunner.run {
             teamPlayerQueries.selectPlayersByTeam(
                 team_id = teamId,
-                tour_year = tour,
+                season = season,
                 division = league.division,
                 country = league.country,
                 mapper = mapper,
             ).asFlow().mapToList(queryRunner.dispatcher)
         }
 
-    override suspend fun getAllPlayers(league: League, tour: TourYear): Flow<List<PlayerWithDetails>> =
+    override suspend fun getAllPlayers(league: League, season: Season): Flow<List<PlayerWithDetails>> =
         queryRunner.run {
             teamPlayerQueries.selectPlayers(
-                tour_year = tour,
+                season = season,
                 division = league.division,
                 country = league.country,
                 mapper = mapper,

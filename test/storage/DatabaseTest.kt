@@ -27,7 +27,7 @@ abstract class DatabaseTest(
     private val countryAdapter: ColumnAdapter<Country, String> = CountryAdapter(),
     private val localDateAdapter: ColumnAdapter<LocalDate, String> = LocalDateAdapter(),
     private val localDateTimeAdapter: ColumnAdapter<LocalDateTime, String> = LocalDateTimeAdapter(),
-    private val tourYearAdapter: ColumnAdapter<TourYear, Long> = TourYearAdapter(),
+    private val tourYearAdapter: ColumnAdapter<Season, Long> = TourYearAdapter(),
     private val specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long> = SpecializationAdapter(),
     private val matchReportIdAdapter: ColumnAdapter<MatchReportId, Long> = MatchReportIdAdapter(),
     private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
@@ -71,7 +71,7 @@ abstract class DatabaseTest(
             countryAdapter = countryAdapter,
             localDateAdapter = localDateAdapter,
             localDateTimeAdapter = localDateTimeAdapter,
-            tourYearAdapter = tourYearAdapter,
+            seasonAdapter = tourYearAdapter,
             specializationAdapter = specializationAdapter,
             matchReportIdAdapter = matchReportIdAdapter,
             durationAdapter = durationAdapter,
@@ -107,7 +107,7 @@ abstract class DatabaseTest(
         tours.forEach { tour ->
             tourQueries.insert(
                 name = tour.name,
-                tour_year = tour.year,
+                season = tour.season,
                 country = tour.league.country,
                 division = tour.league.division,
                 start_date = tour.startDate,
@@ -126,7 +126,7 @@ abstract class DatabaseTest(
                 image_url = insertTeam.team.teamImageUrl,
                 logo_url = insertTeam.team.logoUrl,
                 team_id = insertTeam.team.id,
-                tour_year = insertTeam.tourYear,
+                season = insertTeam.season,
                 updated_at = insertTeam.team.updatedAt,
                 country = insertTeam.league.country,
                 division = insertTeam.league.division,
@@ -151,7 +151,7 @@ abstract class DatabaseTest(
                 tour_team_id = tourTeamQueries.selectId(
                     team_id = player.teamPlayer.team,
                     tour_id = tourQueries.selectId(
-                        tour_year = insertPlayer.tourYear,
+                        season = insertPlayer.season,
                         division = insertPlayer.league.division,
                         country = insertPlayer.league.country,
                     ).executeAsOne()
@@ -167,12 +167,12 @@ abstract class DatabaseTest(
     data class InsertTeam(
         val team: Team,
         val league: League,
-        val tourYear: TourYear,
+        val season: Season,
     )
 
     data class InsertPlayer(
         val player: PlayerWithDetails,
         val league: League,
-        val tourYear: TourYear,
+        val season: Season,
     )
 }

@@ -2,7 +2,7 @@ package com.kamilh.storage
 
 import app.cash.turbine.test
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -32,7 +32,7 @@ class TeamStorageTest : DatabaseTest() {
     fun `TourNotFound error returned when no tour in database`() = runBlockingTest {
         // GIVEN
         val team = teamOf()
-        val tour = tourYearOf()
+        val tour = seasonOf()
         val league = leagueOf()
 
         // WHEN
@@ -47,7 +47,7 @@ class TeamStorageTest : DatabaseTest() {
     @Test
     fun `Success is returned when there are no teams to insert`() = runBlockingTest {
         // GIVEN
-        val tour = tourYearOf()
+        val tour = seasonOf()
         val league = leagueOf()
 
         // WHEN
@@ -60,8 +60,8 @@ class TeamStorageTest : DatabaseTest() {
     @Test
     fun `Success is returned when there are teams to insert and tour and league exists`() = runBlockingTest {
         // GIVEN
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
         val league = leagueOf()
         configure(leagues = listOf(league), tours = listOf(tour))
 
@@ -75,8 +75,8 @@ class TeamStorageTest : DatabaseTest() {
     @Test
     fun `TourTeamAlreadyExists with correct teamId is returned even though it happens as first`() = runBlockingTest {
         // GIVEN
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
         val league = leagueOf()
         val teamId = teamIdOf(value = 1)
         val team = teamOf(id = teamId)
@@ -95,8 +95,8 @@ class TeamStorageTest : DatabaseTest() {
     @Test
     fun `TourTeamAlreadyExists with correct teamId is returned when this not happens as first`() = runBlockingTest {
         // GIVEN
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
         val league = leagueOf()
         val teamId = teamIdOf(value = 1)
         val team = teamOf(id = teamId)
@@ -116,8 +116,8 @@ class TeamStorageTest : DatabaseTest() {
     @Test
     fun `TourTeamAlreadyExists with correct teamId is returned when trying to add the same team multiple times`() = runBlockingTest {
         // GIVEN
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
         val league = leagueOf()
         val teamId = teamIdOf(value = 1)
         val team = teamOf(id = teamId)
@@ -137,7 +137,7 @@ class TeamStorageTest : DatabaseTest() {
     fun `getAllTeams returns empty list when no entries in the database`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = tourYearOf()
+        val tourYear = seasonOf()
 
         // WHEN
         configure(leagues = listOf(league))
@@ -152,8 +152,8 @@ class TeamStorageTest : DatabaseTest() {
     fun `getAllByLeague returns not empty list when there are entries in the database`() = runBlockingTest {
         // GIVEN
         val league = leagueOf(division = 1)
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear, league = league)
         val team = teamOf()
 
         // WHEN
@@ -169,8 +169,8 @@ class TeamStorageTest : DatabaseTest() {
     fun `getTeam returns not null value when there is team with provided name`() = runBlockingTest {
         // GIVEN
         val league = leagueOf(division = 1)
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear, league = league)
         val name = "name"
         val team = teamOf(name = name)
         val code = "code"
@@ -187,8 +187,8 @@ class TeamStorageTest : DatabaseTest() {
     fun `getTeam returns null value when there is no team with provided name`() = runBlockingTest {
         // GIVEN
         val league = leagueOf(division = 1)
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear, league = league)
         val name = "name"
         val team = teamOf(name = name)
         val code = "code"
@@ -205,8 +205,8 @@ class TeamStorageTest : DatabaseTest() {
     fun `getTeam returns not null value when there is no team with provided name, but there is with provided code`() = runBlockingTest {
         // GIVEN
         val league = leagueOf(division = 1)
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear, league = league)
         val name = "name"
         val team = teamOf(name = name)
         val code = "code"
@@ -224,8 +224,8 @@ class TeamStorageTest : DatabaseTest() {
     fun `getTeam returns null value when no entries in the database`() = runBlockingTest {
         // GIVEN
         val league = leagueOf(division = 1)
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear, league = league)
         val name = "name"
         val code = "code"
 
@@ -244,7 +244,7 @@ fun teamStorageOf(
     getTeam: List<Team> = emptyList(),
 ): TeamStorage =
     object : TeamStorage {
-        override suspend fun insert(teams: List<Team>, league: League, tour: TourYear): InsertTeamResult = insert
-        override suspend fun getAllTeams(league: League, tour: TourYear): Flow<List<Team>> = getAllTeams
-        override suspend fun getTeam(name: String, code: String, league: League, tour: TourYear): Team? = getTeam.firstOrNull { it.name == name }
+        override suspend fun insert(teams: List<Team>, league: League, season: Season): InsertTeamResult = insert
+        override suspend fun getAllTeams(league: League, season: Season): Flow<List<Team>> = getAllTeams
+        override suspend fun getTeam(name: String, code: String, league: League, season: Season): Team? = getTeam.firstOrNull { it.name == name }
     }

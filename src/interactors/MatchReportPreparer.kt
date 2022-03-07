@@ -12,7 +12,7 @@ typealias MatchReportPreparer = Interactor<MatchReportPreparerParams, MatchRepor
 data class MatchReportPreparerParams(
     val matches: List<Pair<MatchId, MatchReport>>,
     val league: League,
-    val tourYear: TourYear,
+    val season: Season,
 )
 
 typealias MatchReportPreparerResult = Result<Unit, MatchReportPreparerError>
@@ -34,7 +34,7 @@ class MatchReportPreparerInteractor(
                 matchId = matchId,
                 matchReport = matchReport,
                 league = params.league,
-                tourYear = params.tourYear,
+                tourYear = params.season,
                 tryFixPlayerOnError = true,
             )
         }.toResults().apply {
@@ -49,7 +49,7 @@ class MatchReportPreparerInteractor(
         matchId: MatchId,
         matchReport: MatchReport,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
         matchReportAnalyzer(MatchReportAnalyzerParams(matchReport, tourYear))
@@ -78,13 +78,13 @@ class MatchReportPreparerInteractor(
         matchStatistics: MatchStatistics,
         matchId: MatchId,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
         matchStatisticsStorage.insert(
             matchStatistics = matchStatistics,
             league = league,
-            tourYear = tourYear,
+            season = tourYear,
             matchId = matchId,
         ).flatMapError {
             when (it) {
@@ -113,7 +113,7 @@ class MatchReportPreparerInteractor(
         matchId: MatchId,
         playersNotFound: List<Pair<PlayerId, TeamId>>,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
         matchReport: MatchReport,
     ) : MatchReportPreparerResult =
         analyze(
@@ -132,7 +132,7 @@ class MatchReportPreparerInteractor(
     private suspend fun MatchReportTeam.fixPlayers(
         playersNotFound: List<Pair<PlayerId, TeamId>>,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
     ): MatchReportTeam = wrongPlayerFixer(
         WrongPlayerFixerParams(
             team = this,

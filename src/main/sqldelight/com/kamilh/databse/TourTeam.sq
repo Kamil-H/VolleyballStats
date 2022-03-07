@@ -1,6 +1,6 @@
 insert:
 INSERT INTO tour_team_model(name, image_url, logo_url, team_id, tour_id, updated_at)
-VALUES (:name, :image_url, :logo_url, :team_id, (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country)), :updated_at);
+VALUES (:name, :image_url, :logo_url, :team_id, (SELECT id FROM tour_model WHERE season = :season AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country)), :updated_at);
 
 selectAll:
 SELECT * FROM tour_team_model;
@@ -9,11 +9,11 @@ selectId:
 SELECT id FROM tour_team_model WHERE team_id = ? AND tour_id = ?;
 
 selectAllByTourYear:
-SELECT * FROM tour_team_model WHERE tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));
+SELECT * FROM tour_team_model WHERE tour_id = (SELECT id FROM tour_model WHERE season = :season AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));
 
 selectByTourYearAndName:
 SELECT * FROM tour_team_model
 INNER JOIN
 team_model ON tour_team_model.team_id = team_model.id
-WHERE name = :name AND tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country))
-OR code = :code AND tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));
+WHERE name = :name AND tour_id = (SELECT id FROM tour_model WHERE season = :season AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country))
+OR code = :code AND tour_id = (SELECT id FROM tour_model WHERE season = :season AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));

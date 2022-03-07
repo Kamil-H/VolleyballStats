@@ -2,7 +2,7 @@ package com.kamilh.storage
 
 import com.kamilh.databse.SelectAllMatchesByTour
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -23,17 +23,17 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     private fun configure(
-        tourYear: TourYear = tourYearOf(),
+        season: Season = seasonOf(),
         league: League = leagueOf(),
     ) {
-        val tour = tourOf(year = tourYear, league = league)
+        val tour = tourOf(season = season, league = league)
         insert(league)
         insert(tour)
         insert(
             InsertTeam(
                 team = teamOf(),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
     }
@@ -41,11 +41,11 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns TourNotFound when there is no tour in the database`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
 
         // WHEN
-        val result = matchStorage.insertOrUpdate(emptyList(), league, tourYear)
+        val result = matchStorage.insertOrUpdate(emptyList(), league, season)
 
         // THEN
         result.assertFailure {
@@ -56,14 +56,14 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns Success when there is a tour in the database`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tour = tourOf(season = season, league = league)
         insert(league)
         insert(tour)
 
         // WHEN
-        val result = matchStorage.insertOrUpdate(emptyList(), league, tourYear)
+        val result = matchStorage.insertOrUpdate(emptyList(), league, season)
 
         // THEN
         result.assertSuccess()
@@ -72,16 +72,16 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert select returns Saved when there is MatchReport associated with the Match`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        configure(tourYear, league)
+        configure(season, league)
         val matchId = matchIdOf(1)
         val match = potentiallyFinishedOf(id = matchId)
-        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
-        val matchStatistics = load(league = league, tourYear = tourYear, matchId = matchId)
+        matchStorage.insertOrUpdate(listOf(match), league, season)
+        val matchStatistics = load(league = league, season = season, matchId = matchId)
 
         // WHEN
-        val result = matchStorage.getAllMatches(league, tourYear).first().first()
+        val result = matchStorage.getAllMatches(league, season).first().first()
 
         // THEN
         require(result is AllMatchesItem.Saved)
@@ -94,17 +94,17 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert NotScheduled works properly`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        configure(tourYear, league)
+        configure(season, league)
         val matchId = matchIdOf(2)
         val match = notScheduledOf(id = matchId)
 
         // WHEN
-        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+        matchStorage.insertOrUpdate(listOf(match), league, season)
 
         // THEN
-        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val value = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsOne()
         val expectedValue = selectAllMatchesByTourOf(id = matchId, state = MatchState.NotScheduled)
         assert(value == expectedValue)
     }
@@ -112,17 +112,17 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert PotentiallyFinished works properly`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        configure(tourYear, league)
+        configure(season, league)
         val matchId = matchIdOf(2)
         val match = potentiallyFinishedOf(id = matchId)
 
         // WHEN
-        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+        matchStorage.insertOrUpdate(listOf(match), league, season)
 
         // THEN
-        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val value = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsOne()
         val expectedValue = selectAllMatchesByTourOf(id = matchId, state = MatchState.PotentiallyFinished)
         assert(value == expectedValue)
     }
@@ -130,18 +130,18 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert Scheduled works properly`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        configure(tourYear, league)
+        configure(season, league)
         val matchId = matchIdOf(2)
         val date = OffsetDateTime.now(clock)
         val match = scheduledOf(id = matchId, date = date)
 
         // WHEN
-        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+        matchStorage.insertOrUpdate(listOf(match), league, season)
 
         // THEN
-        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val value = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsOne()
         val expectedValue = selectAllMatchesByTourOf(id = matchId, date = date, state = MatchState.Scheduled)
         assert(value == expectedValue)
     }
@@ -149,16 +149,16 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert Saved returns error`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tour = tourOf(season = season, league = league)
         insert(league)
         insert(tour)
         val matchId = matchIdOf(2)
         val match = savedOf(id = matchId)
 
         // WHEN
-        val result = matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+        val result = matchStorage.insertOrUpdate(listOf(match), league, season)
 
         // THEN
         result.assertFailure {
@@ -170,28 +170,28 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert updates a value properly`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        configure(tourYear, league)
+        configure(season, league)
         val matchId = matchIdOf(2)
         val date = OffsetDateTime.now(clock)
         val match = scheduledOf(id = matchId, date = date)
 
         // WHEN
-        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+        matchStorage.insertOrUpdate(listOf(match), league, season)
 
         // THEN
-        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val value = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsOne()
         val expectedValue = selectAllMatchesByTourOf(id = matchId, date = date, state = MatchState.Scheduled)
         assert(value == expectedValue)
 
         // WHEN
         val newDate = null
         val newMatch = potentiallyFinishedOf(id = matchId, date = newDate)
-        matchStorage.insertOrUpdate(listOf(newMatch), league, tourYear)
+        matchStorage.insertOrUpdate(listOf(newMatch), league, season)
 
         // THEN
-        val newValue = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val newValue = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsOne()
         val newExpectedValue = selectAllMatchesByTourOf(
             id = matchId,
             date = newDate,
@@ -203,7 +203,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert updates a match that already has associated MatchReport value properly`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
         configure()
         val matchId = matchIdOf(2)
@@ -211,10 +211,10 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val matchReportId = matchReportIdOf(1)
 
         // WHEN
-        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+        matchStorage.insertOrUpdate(listOf(match), league, season)
 
         // THEN
-        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val value = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsOne()
         val expectedValue = selectAllMatchesByTourOf(id = matchId, state = MatchState.PotentiallyFinished)
         assert(value == expectedValue)
 
@@ -242,10 +242,10 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             id = matchId,
             match_statistics_id = matchReportId,
         )
-        matchStorage.insertOrUpdate(listOf(match), league, tourYear)
+        matchStorage.insertOrUpdate(listOf(match), league, season)
 
         // THEN
-        val newValue = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsOne()
+        val newValue = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsOne()
         val newExpectedValue = selectAllMatchesByTourOf(
             id = matchId,
             state = MatchState.PotentiallyFinished,
@@ -260,26 +260,26 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert more matches works properly`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        configure(tourYear, league)
+        configure(season, league)
         val size = 10
         val matches = (1..size).map { index -> potentiallyFinishedOf(matchIdOf(index.toLong())) }
 
         // WHEN
-        matchStorage.insertOrUpdate(matches, league, tourYear)
+        matchStorage.insertOrUpdate(matches, league, season)
 
         // THEN
-        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsList()
+        val value = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsList()
         assert(value.size == size)
     }
 
     @Test
     fun `insert multiple finished matches works properly`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        configure(tourYear, league)
+        configure(season, league)
         val size = 2
         val teams = (1..size*size).map { index ->
             matchTeamOf(
@@ -291,7 +291,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             InsertTeam(
                 team = teamOf(id = matchTeam.teamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         }.forEach { insertTeam ->
             insert(insertTeam)
@@ -299,7 +299,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
                 InsertPlayer(
                     player = playerWithDetailsOf(teamPlayer = teamPlayerOf(team = insertTeam.team.id)),
                     league = league,
-                    tourYear = tourYear,
+                    season = season,
                 )
             )
         }
@@ -322,13 +322,13 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         }
 
         // WHEN
-        matchStorage.insertOrUpdate(matches, league, tourYear)
+        matchStorage.insertOrUpdate(matches, league, season)
         matchStats.forEachIndexed { index, matchStatistics ->
-            storage.insert(matchStatistics, league, tourYear, matches[index].id)
+            storage.insert(matchStatistics, league, season, matches[index].id)
         }
 
         // THEN
-        val value = matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division).executeAsList()
+        val value = matchQueries.selectAllMatchesByTour(season, league.country, league.division).executeAsList()
         assert(value.size == matches.size)
         value.forEachIndexed { index, selectAllMatchesByTour ->
             if (index == 0 || index == 1) {
@@ -371,6 +371,6 @@ fun matchStorageOf(
     insertOrUpdate: InsertMatchesResult = InsertMatchesResult.success(Unit),
     getAllMatches: Flow<List<AllMatchesItem>> = flowOf(emptyList()),
 ): MatchStorage = object : MatchStorage {
-    override suspend fun insertOrUpdate(matches: List<AllMatchesItem>, league: League, tourYear: TourYear): InsertMatchesResult = insertOrUpdate
-    override suspend fun getAllMatches(league: League, tourYear: TourYear): Flow<List<AllMatchesItem>> = getAllMatches
+    override suspend fun insertOrUpdate(matches: List<AllMatchesItem>, league: League, season: Season): InsertMatchesResult = insertOrUpdate
+    override suspend fun getAllMatches(league: League, season: Season): Flow<List<AllMatchesItem>> = getAllMatches
 }

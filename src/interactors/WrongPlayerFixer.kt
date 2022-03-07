@@ -14,7 +14,7 @@ data class WrongPlayerFixerParams(
     val team: MatchReportTeam,
     val playersNotFound: List<Pair<PlayerId, TeamId>>,
     val league: League,
-    val tourYear: TourYear,
+    val tourYear: Season,
 )
 
 class WrongPlayerFixerInteractor(
@@ -41,7 +41,7 @@ class WrongPlayerFixerInteractor(
         allTeamPlayers: List<TeamPlayer>,
         playersNotFound: List<Pair<PlayerId, TeamId>>,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
     ): MatchReportTeam {
         val playerIds = playersNotFound.map { it.first }
         return copy(
@@ -69,7 +69,7 @@ class WrongPlayerFixerInteractor(
         allTeamPlayers: List<TeamPlayer>,
         matchPlayer: MatchReportPlayer,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
         teamId: TeamId,
     ): PlayerId {
         val playerIdFromName = allPlayers.findByName(matchPlayer)
@@ -99,7 +99,7 @@ class WrongPlayerFixerInteractor(
     private suspend fun getDetailsAndSave(
         player: TeamPlayer,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
         matchPlayer: MatchReportPlayer,
         teamId: TeamId,
     ): PlayerId =
@@ -117,7 +117,7 @@ class WrongPlayerFixerInteractor(
     private suspend fun insert(
         playerWithDetails: PlayerWithDetails,
         league: League,
-        tourYear: TourYear,
+        tourYear: Season,
         matchPlayer: MatchReportPlayer,
         teamId: TeamId,
     ): PlayerId {
@@ -139,7 +139,7 @@ class WrongPlayerFixerInteractor(
                 )
             ),
             league = league,
-            tour = tourYear,
+            season = tourYear,
         ).onFailure { error ->
             val message = when (error) {
                 is InsertPlayerError.Errors -> buildString {

@@ -1,7 +1,7 @@
 package com.kamilh.storage
 
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -18,12 +18,12 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns TourNotFound when there is no such tour`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
         val matchStatistics = matchStatisticsOf()
 
         // WHEN
-        val result = storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        val result = storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         result.assertFailure {
@@ -34,16 +34,16 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns TeamNotFound when there is no such team`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
         val teamId = teamIdOf(1)
         val matchStatistics = matchStatisticsOf(home = matchTeamOf(teamId = teamId))
         insert(league)
         insert(tour)
 
         // WHEN
-        val result = storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        val result = storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         result.assertFailure {
@@ -55,9 +55,9 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert updates Home's team code`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val code = "code"
@@ -74,12 +74,12 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             InsertTeam(
                 team = teamOf(id = homeTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
 
         // WHEN
-        val result = storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        val result = storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         assert(teamQueries.selectAll().executeAsList().first { it.id == homeTeamId }.code == code)
@@ -92,9 +92,9 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert updates Away's team code`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val code = "code"
@@ -113,17 +113,17 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             InsertTeam(
                 team = teamOf(id = homeTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             ),
             InsertTeam(
                 team = teamOf(id = awayTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
 
         // WHEN
-        storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         assert(teamQueries.selectAll().executeAsList().first { it.id == awayTeamId }.code == code)
@@ -132,9 +132,9 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns NoPlayersInTeams when one of the teams doesn't have players`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val matchStatistics = matchStatisticsOf(
@@ -147,17 +147,17 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             InsertTeam(
                 team = teamOf(id = homeTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             ),
             InsertTeam(
                 team = teamOf(id = awayTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
 
         // WHEN
-        val result = storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        val result = storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         result.assertFailure {
@@ -168,9 +168,9 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns PlayerNotFound when some player is not in the database`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val playerId = playerIdOf(1)
@@ -190,17 +190,17 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             InsertTeam(
                 team = teamOf(id = homeTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             ),
             InsertTeam(
                 team = teamOf(id = awayTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
 
         // WHEN
-        val result = storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        val result = storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         result.assertFailure {
@@ -212,9 +212,9 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns updates Player's information`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val playerId = playerIdOf(1)
@@ -244,12 +244,12 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             InsertTeam(
                 team = teamOf(id = homeTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             ),
             InsertTeam(
                 team = teamOf(id = awayTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
         insert(
@@ -261,12 +261,12 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
                     ),
                 ),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
 
         // WHEN
-        storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         val player = playerQueries.selectPlayerById(playerId).executeAsOne()
@@ -278,9 +278,9 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     @Test
     fun `insert returns Success when there is at least one player in each team`() = runBlocking {
         // GIVEN
-        val tourYear = tourYearOf()
+        val season = seasonOf()
         val league = leagueOf()
-        val tour = tourOf(league = league, year = tourYear)
+        val tour = tourOf(league = league, season = season)
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val playerId = playerIdOf(1)
@@ -302,12 +302,12 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
             InsertTeam(
                 team = teamOf(id = homeTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             ),
             InsertTeam(
                 team = teamOf(id = awayTeamId),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
         insert(
@@ -319,7 +319,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
                     ),
                 ),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             ),
             InsertPlayer(
                 player = playerWithDetailsOf(
@@ -329,12 +329,12 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
                     ),
                 ),
                 league = league,
-                tourYear = tourYear,
+                season = season,
             )
         )
 
         // WHEN
-        val result = storage.insert(matchStatistics, league, tourYear, matchIdOf())
+        val result = storage.insert(matchStatistics, league, season, matchIdOf())
 
         // THEN
         result.assertSuccess()
@@ -342,16 +342,16 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
 }
 
 fun matchStatisticsStorageOf(
-    insert: (matchStatistics: MatchStatistics, league: League, tourYear: TourYear, matchId: MatchId) -> InsertMatchStatisticsResult = { _, _, _, _ ->
+    insert: (matchStatistics: MatchStatistics, league: League, season: Season, matchId: MatchId) -> InsertMatchStatisticsResult = { _, _, _, _ ->
         InsertMatchStatisticsResult.success(Unit)
     },
     getAllMatchStatistics: Flow<List<MatchStatistics>> = flowOf(emptyList()),
     getMatchStatistics: MatchStatistics? = null,
 ): MatchStatisticsStorage = object : MatchStatisticsStorage {
-    override suspend fun insert(matchStatistics: MatchStatistics, league: League, tourYear: TourYear, matchId: MatchId): InsertMatchStatisticsResult =
-        insert(matchStatistics, league, tourYear, matchId)
+    override suspend fun insert(matchStatistics: MatchStatistics, league: League, season: Season, matchId: MatchId): InsertMatchStatisticsResult =
+        insert(matchStatistics, league, season, matchId)
 
-    override suspend fun getAllMatchStatistics(league: League, tourYear: TourYear): Flow<List<MatchStatistics>> = getAllMatchStatistics
+    override suspend fun getAllMatchStatistics(league: League, season: Season): Flow<List<MatchStatistics>> = getAllMatchStatistics
 
     override suspend fun getMatchStatistics(matchReportId: MatchReportId): MatchStatistics? = getMatchStatistics
 }

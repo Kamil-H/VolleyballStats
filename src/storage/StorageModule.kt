@@ -30,7 +30,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<ColumnAdapter<Country, String>>() with provider { CountryAdapter() }
     bind<ColumnAdapter<LocalDate, String>>() with provider { LocalDateAdapter() }
     bind<ColumnAdapter<LocalDateTime, String>>() with provider { LocalDateTimeAdapter() }
-    bind<ColumnAdapter<TourYear, Long>>() with provider { TourYearAdapter() }
+    bind<ColumnAdapter<Season, Long>>() with provider { TourYearAdapter() }
     bind<ColumnAdapter<TeamPlayer.Specialization, Long>>() with provider { SpecializationAdapter() }
     bind<ColumnAdapter<MatchReportId, Long>>() with provider { MatchReportIdAdapter() }
     bind<ColumnAdapter<Duration, Long>>() with provider { DurationAdapter() }

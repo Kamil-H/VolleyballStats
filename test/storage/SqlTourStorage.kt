@@ -2,7 +2,7 @@ package com.kamilh.storage
 
 import app.cash.turbine.test
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -63,9 +63,9 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     fun `insert returns TourAlreadyExists error when no trying to insert a tour with the same TourYear`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
-        val tour1 = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
+        val tour1 = tourOf(season = tourYear)
 
         // WHEN
         configure(leagues = listOf(league))
@@ -109,7 +109,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     @Test
     fun `getByTourYearAndLeague returns empty list when no entries in the database`() = runBlockingTest {
         // GIVEN
-        val tourYear = tourYearOf()
+        val tourYear = seasonOf()
         val league = leagueOf(division = 1)
 
         // WHEN
@@ -124,10 +124,10 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     @Test
     fun `updateWinner updates winner_id, end_time and updated_at correctly`() = runBlockingTest {
         // GIVEN
-        val tourYear = tourYearOf()
+        val tourYear = seasonOf()
         val league = leagueOf(division = 1)
         val updatedAt = LocalDateTime.now(clock).minusDays(1)
-        val tour = tourOf(year = tourYear, league = league, updatedAt = updatedAt)
+        val tour = tourOf(season = tourYear, league = league, updatedAt = updatedAt)
         val endTime = LocalDate.now(clock)
 
         // WHEN
@@ -149,6 +149,6 @@ fun tourStorageOf(
 ): TourStorage = object : TourStorage {
     override suspend fun insert(tour: Tour): InsertTourResult = insert(tour)
     override suspend fun getAllByLeague(league: League): Flow<List<Tour>> = getAllByLeague
-    override suspend fun getByTourYearAndLeague(tourYear: TourYear, league: League): Flow<Tour?> = getByTourYearAndLeague
+    override suspend fun getByTourYearAndLeague(tourYear: Season, league: League): Flow<Tour?> = getByTourYearAndLeague
     override suspend fun update(tour: Tour, endTime: LocalDate) = onUpdate(tour, endTime)
 }

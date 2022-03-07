@@ -68,7 +68,7 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
         ExpirableCache(LocalDateTimeCacheValidator(cacheExpiration = playersCacheValidity))
     }
 
-    bind<ExpirableCache<TourYear, List<TeamPlayer>, LocalDateTime>>() with singleton {
+    bind<ExpirableCache<Season, List<TeamPlayer>, LocalDateTime>>() with singleton {
         ExpirableCache(LocalDateTimeCacheValidator(cacheExpiration = playersCacheValidity))
     }
 

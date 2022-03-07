@@ -3,7 +3,7 @@ package com.kamilh.repository.polishleague
 import com.kamilh.repository.FileManager
 import com.kamilh.repository.FileMetadata
 import com.kamilh.models.MatchReportId
-import com.kamilh.models.TourYear
+import com.kamilh.models.Season
 import com.kamilh.repository.models.MatchResponse
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -11,11 +11,11 @@ import kotlinx.serialization.json.Json
 
 interface MatchResponseStorage {
 
-    suspend fun get(matchReportId: MatchReportId, tour: TourYear): MatchResponse?
+    suspend fun get(matchReportId: MatchReportId, tour: Season): MatchResponse?
 
-    suspend fun save(matchResponse: MatchResponse, tour: TourYear)
+    suspend fun save(matchResponse: MatchResponse, tour: Season)
 
-    suspend fun isSaved(matchReportId: MatchReportId, tour: TourYear): Boolean
+    suspend fun isSaved(matchReportId: MatchReportId, tour: Season): Boolean
 }
 
 class FileBasedMatchResponseStorage(
@@ -23,7 +23,7 @@ class FileBasedMatchResponseStorage(
     private val fileManager: FileManager,
 ) : MatchResponseStorage {
 
-    override suspend fun get(matchReportId: MatchReportId, tour: TourYear): MatchResponse? =
+    override suspend fun get(matchReportId: MatchReportId, tour: Season): MatchResponse? =
         fileManager.getTextContent(
             FileMetadata(
                 name = matchReportId.fileName,
@@ -32,7 +32,7 @@ class FileBasedMatchResponseStorage(
             )
         )?.let { json.decodeFromString(it) }
 
-    override suspend fun save(matchResponse: MatchResponse, tour: TourYear) {
+    override suspend fun save(matchResponse: MatchResponse, tour: Season) {
         fileManager.saveTextAsFile(
             content = json.encodeToString(matchResponse),
             fileMetadata = FileMetadata(
@@ -43,7 +43,7 @@ class FileBasedMatchResponseStorage(
         )
     }
 
-    override suspend fun isSaved(matchReportId: MatchReportId, tour: TourYear): Boolean =
+    override suspend fun isSaved(matchReportId: MatchReportId, tour: Season): Boolean =
         get(matchReportId, tour) != null
 
     private val MatchResponse.fileName: String
@@ -52,6 +52,6 @@ class FileBasedMatchResponseStorage(
     private val MatchReportId.fileName: String
         get() = value.toString()
 
-    private val TourYear.directory: String
+    private val Season.directory: String
         get() = "match_reports/plus_liga/$value"
 }

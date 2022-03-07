@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.*
 
 interface MatchStatisticsStorage {
 
-    suspend fun insert(matchStatistics: MatchStatistics, league: League, tourYear: TourYear, matchId: MatchId): InsertMatchStatisticsResult
+    suspend fun insert(matchStatistics: MatchStatistics, league: League, season: Season, matchId: MatchId): InsertMatchStatisticsResult
 
-    suspend fun getAllMatchStatistics(league: League, tourYear: TourYear): Flow<List<MatchStatistics>>
+    suspend fun getAllMatchStatistics(league: League, season: Season): Flow<List<MatchStatistics>>
 
     suspend fun getMatchStatistics(matchReportId: MatchReportId): MatchStatistics?
 }
@@ -56,11 +56,11 @@ class SqlMatchStatisticsStorage(
     override suspend fun insert(
         matchStatistics: MatchStatistics,
         league: League,
-        tourYear: TourYear,
+        season: Season,
         matchId: MatchId,
     ): InsertMatchStatisticsResult = queryRunner.runTransaction {
         val tourId = tourQueries.selectId(
-            tour_year = tourYear,
+            season = season,
             division = league.division,
             country = league.country,
         ).executeAsOneOrNull() ?: return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TourNotFound)
@@ -253,8 +253,8 @@ class SqlMatchStatisticsStorage(
     private fun <T: Any> Flow<Long>.mapQuery(query: (Long) -> Query<T>): Flow<List<T>> =
         flatMapLatest { query(it).asFlow().mapToList() }.distinctUntilChanged()
 
-    override suspend fun getAllMatchStatistics(league: League, tourYear: TourYear): Flow<List<MatchStatistics>> {
-        val tourId = tourQueries.selectId(tourYear, league.division, league.country).asFlow().mapToOneOrNull()
+    override suspend fun getAllMatchStatistics(league: League, season: Season): Flow<List<MatchStatistics>> {
+        val tourId = tourQueries.selectId(season, league.division, league.country).asFlow().mapToOneOrNull()
             .mapNotNull { it }
             .distinctUntilChanged()
 

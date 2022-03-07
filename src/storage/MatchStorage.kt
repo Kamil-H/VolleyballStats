@@ -11,9 +11,9 @@ import java.time.OffsetDateTime
 
 interface MatchStorage {
 
-    suspend fun insertOrUpdate(matches: List<AllMatchesItem>, league: League, tourYear: TourYear): InsertMatchesResult
+    suspend fun insertOrUpdate(matches: List<AllMatchesItem>, league: League, season: Season): InsertMatchesResult
 
-    suspend fun getAllMatches(league: League, tourYear: TourYear): Flow<List<AllMatchesItem>>
+    suspend fun getAllMatches(league: League, season: Season): Flow<List<AllMatchesItem>>
 }
 
 typealias InsertMatchesResult = Result<Unit, InsertMatchesError>
@@ -35,10 +35,10 @@ class SqlMatchStorage(
     private val matchQueries: MatchQueries,
 ): MatchStorage {
 
-    override suspend fun insertOrUpdate(matches: List<AllMatchesItem>, league: League, tourYear: TourYear): InsertMatchesResult =
+    override suspend fun insertOrUpdate(matches: List<AllMatchesItem>, league: League, season: Season): InsertMatchesResult =
         queryRunner.runTransaction {
             val tourId = tourQueries.selectId(
-                tour_year = tourYear,
+                season = season,
                 division = league.division,
                 country = league.country
             ).executeAsOneOrNull() ?: return@runTransaction InsertMatchesResult.failure<Unit, InsertMatchesError>(InsertMatchesError.TourNotFound)
@@ -67,8 +67,8 @@ class SqlMatchStorage(
             InsertMatchesResult.success(Unit)
         }
 
-    override suspend fun getAllMatches(league: League, tourYear: TourYear): Flow<List<AllMatchesItem>> =
-        matchQueries.selectAllMatchesByTour(tourYear, league.country, league.division, mapper).asFlow().mapToList()
+    override suspend fun getAllMatches(league: League, season: Season): Flow<List<AllMatchesItem>> =
+        matchQueries.selectAllMatchesByTour(season, league.country, league.division, mapper).asFlow().mapToList()
 
     private val mapper: (
         id: MatchId,

@@ -2,7 +2,7 @@ package com.kamilh.storage
 
 import app.cash.turbine.test
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -39,7 +39,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         // GIVEN
         val player = playerWithDetailsOf()
         val league = leagueOf()
-        val tourYear = tourYearOf()
+        val tourYear = seasonOf()
 
         // WHEN
         val result = storage.insert(listOf(player), league, tourYear)
@@ -52,7 +52,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     fun `insert returns Success when no players to add`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = tourYearOf()
+        val tourYear = seasonOf()
 
         // WHEN
         val result = storage.insert(emptyList(), league, tourYear)
@@ -65,8 +65,8 @@ class SqlPlayerStorageTest : DatabaseTest() {
     fun `insert returns Success when correct team and tour is in the database`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val player = playerWithDetailsOf(
@@ -91,8 +91,8 @@ class SqlPlayerStorageTest : DatabaseTest() {
     fun `insert returns Errors when team is not in the database`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear, league = league)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear, league = league)
         val teamId = teamIdOf(1)
         val player = playerWithDetailsOf(
             teamPlayer = teamPlayerOf(team = teamId)
@@ -118,8 +118,8 @@ class SqlPlayerStorageTest : DatabaseTest() {
     fun `insert returns Errors when player is already in the database`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val player = playerWithDetailsOf(
@@ -149,8 +149,8 @@ class SqlPlayerStorageTest : DatabaseTest() {
     fun `getAllPlayers returns a correct data`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = tourYearOf()
-        val tour = tourOf(year = tourYear)
+        val tourYear = seasonOf()
+        val tour = tourOf(season = tourYear)
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val now = LocalDateTime.now()
@@ -187,14 +187,14 @@ class SqlPlayerStorageTest : DatabaseTest() {
 }
 
 fun playerStorageOf(
-    insert: (players: List<PlayerWithDetails>, league: League, tour: TourYear) -> InsertPlayerResult = { _, _, _ ->
+    insert: (players: List<PlayerWithDetails>, league: League, tour: Season) -> InsertPlayerResult = { _, _, _ ->
         InsertPlayerResult.success(Unit)
     },
     getAllPlayersByTeam: Flow<List<PlayerWithDetails>> = flowOf(emptyList()),
     getAllPlayers: Flow<List<PlayerWithDetails>> = flowOf(emptyList()),
 ): PlayerStorage = object : PlayerStorage {
-    override suspend fun insert(players: List<PlayerWithDetails>, league: League, tour: TourYear): InsertPlayerResult =
-        insert(players, league, tour)
-    override suspend fun getAllPlayers(teamId: TeamId, league: League, tour: TourYear): Flow<List<PlayerWithDetails>> = getAllPlayersByTeam
-    override suspend fun getAllPlayers(league: League, tour: TourYear): Flow<List<PlayerWithDetails>> = getAllPlayers
+    override suspend fun insert(players: List<PlayerWithDetails>, league: League, season: Season): InsertPlayerResult =
+        insert(players, league, season)
+    override suspend fun getAllPlayers(teamId: TeamId, league: League, season: Season): Flow<List<PlayerWithDetails>> = getAllPlayersByTeam
+    override suspend fun getAllPlayers(league: League, season: Season): Flow<List<PlayerWithDetails>> = getAllPlayers
 }

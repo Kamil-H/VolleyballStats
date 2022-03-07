@@ -17,7 +17,7 @@ typealias MatchReportAnalyzerResult = Result<MatchStatistics, MatchReportAnalyze
 
 data class MatchReportAnalyzerParams(
     val matchReport: MatchReport,
-    val tour: TourYear,
+    val season: Season,
     val league: League = League.POLISH_LEAGUE,
 )
 
@@ -28,9 +28,9 @@ sealed class MatchReportAnalyzerError(override val message: String) : Error {
     class TeamNotFound(
         val matchReportId: MatchReportId,
         val teamName: String,
-        val tour: TourYear,
+        val season: Season,
     ) : MatchReportAnalyzerError(
-        "TeamNotFound(matchReportId: $matchReportId, teamName: $teamName, tour: $tour)"
+        "TeamNotFound(matchReportId: $matchReportId, teamName: $teamName, season: $season)"
     )
 }
 
@@ -43,24 +43,24 @@ class MatchReportAnalyzerInteractor(
 ) : MatchReportAnalyzer(appDispatchers) {
 
     override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult =
-        analyze(params.matchReport, params.tour, params.league)
+        analyze(params.matchReport, params.season, params.league)
 
-    suspend fun analyze(matchReport: MatchReport, tour: TourYear, league: League = League.POLISH_LEAGUE): MatchReportAnalyzerResult {
+    suspend fun analyze(matchReport: MatchReport, season: Season, league: League = League.POLISH_LEAGUE): MatchReportAnalyzerResult {
         val matchId = matchReport.matchId
 
         if (matchReport.scout.sets.size > matchReport.scoutData.size) {
             return Result.failure(MatchReportAnalyzerError.WrongSetsCount(matchId))
         }
 
-        val home = getTeam(matchReport.matchTeams.home, league, tour)
-        val away = getTeam(matchReport.matchTeams.away, league, tour)
+        val home = getTeam(matchReport.matchTeams.home, league, season)
+        val away = getTeam(matchReport.matchTeams.away, league, season)
 
         if (home == null) {
-            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.home.name, tour))
+            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.home.name, season))
         }
 
         if (away == null) {
-            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.away.name, tour))
+            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.away.name, season))
         }
 
         val toTeam: TeamType.() -> Team = {
@@ -103,7 +103,7 @@ class MatchReportAnalyzerInteractor(
                             val data = dataToAnalyze?.copy(plays = dataToAnalyze.plays.filter { it.player != 0 })
 
                             if (data == null || data.plays.isEmpty()) {
-                                analyzeErrorReporter.report(AnalyzeError.NoScoutDataForScore(matchId, score, setIndex + 1, tour))
+                                analyzeErrorReporter.report(AnalyzeError.NoScoutDataForScore(matchId, score, setIndex + 1, season))
                             } else if (data.plays.firstOrNull()?.skill != Skill.Serve) {
                                 analyzeErrorReporter.report(AnalyzeError.ActionStartNotFromService(matchId, score, setIndex + 1))
                             } else {
@@ -132,7 +132,7 @@ class MatchReportAnalyzerInteractor(
                                                         PlayerPosition.P1, PlayerPosition.P5, PlayerPosition.P6, null -> {
                                                             analyzeErrorReporter.report(
                                                                 AnalyzeError.BlockNotInFirstLine(
-                                                                    matchId, play.team.toTeam(), tour, play.player,
+                                                                    matchId, play.team.toTeam(), season, play.player,
                                                                     this, player, score, setIndex + 1, event.startTime
                                                                 )
                                                             )
@@ -141,7 +141,7 @@ class MatchReportAnalyzerInteractor(
                                                 }
                                                 if (this == null) {
                                                     analyzeErrorReporter.report(
-                                                        AnalyzeError.PlayerNotInGame(matchId, play.team.toTeam(), tour,
+                                                        AnalyzeError.PlayerNotInGame(matchId, play.team.toTeam(), season,
                                                             play.player, player, score, setIndex + 1, event.startTime
                                                         )
                                                     )
@@ -213,7 +213,7 @@ class MatchReportAnalyzerInteractor(
             }
             if (score != set.score) {
                 analyzeErrorReporter.report(
-                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchId, calculatedScore = score, expectedScore = set.score, tour)
+                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchId, calculatedScore = score, expectedScore = set.score, season)
                 )
             }
             MatchSet(
@@ -255,8 +255,8 @@ class MatchReportAnalyzerInteractor(
         )
     }
 
-    private suspend fun getTeam(matchTeam: MatchReportTeam, league: League, tour: TourYear): Team? =
-        teamStorage.getTeam(matchTeam.name, matchTeam.code, league, tour)
+    private suspend fun getTeam(matchTeam: MatchReportTeam, league: League, season: Season): Team? =
+        teamStorage.getTeam(matchTeam.name, matchTeam.code, league, season)
 
     private fun LineupMutator.positionOrNull(playerId: PlayerId): PlayerPosition? =
         if (contains(playerId)) {

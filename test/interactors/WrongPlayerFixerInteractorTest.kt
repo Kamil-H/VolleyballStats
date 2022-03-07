@@ -4,7 +4,7 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
-import com.kamilh.repository.polishleague.tourYearOf
+import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.InsertPlayerResult
 import com.kamilh.storage.PlayerStorage
 import com.kamilh.storage.playerStorageOf
@@ -32,7 +32,7 @@ class WrongPlayerFixerInteractorTest {
         team: MatchReportTeam = matchReportTeamOf(),
         playersNotFound: List<Pair<PlayerId, TeamId>> = emptyList(),
         league: League = leagueOf(),
-        tourYear: TourYear = tourYearOf(),
+        tourYear: Season = seasonOf(),
     ): WrongPlayerFixerParams = WrongPlayerFixerParams(
         team = team,
         playersNotFound = playersNotFound,

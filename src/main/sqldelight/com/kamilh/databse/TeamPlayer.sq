@@ -17,7 +17,7 @@ INNER JOIN
 player_model ON player_id = player_model.id
 INNER JOIN
 tour_team_model ON tour_team_id = tour_team_model.id
-WHERE tour_team_id = (SELECT id FROM tour_team_model WHERE team_id = :team_id AND tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country)));
+WHERE tour_team_id = (SELECT id FROM tour_team_model WHERE team_id = :team_id AND tour_id = (SELECT id FROM tour_model WHERE season = :season AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country)));
 
 selectPlayers:
 SELECT team_player_model.image_url, tour_team_id, specialization, player_id, number, player_model.name, player_model.updated_at,
@@ -28,4 +28,4 @@ INNER JOIN
 player_model ON player_id = player_model.id
 INNER JOIN
 tour_team_model ON tour_team_id = tour_team_model.id
-WHERE tour_team_model.tour_id = (SELECT id FROM tour_model WHERE tour_year = :tour_year AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));
+WHERE tour_team_model.tour_id = (SELECT id FROM tour_model WHERE season = :season AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country));

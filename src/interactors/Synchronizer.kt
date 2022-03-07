@@ -33,10 +33,10 @@ class Synchronizer(
 
     private suspend fun updateMatches(tours: List<Tour>) {
         tours.forEach { tour ->
-            log("Updating matches ${tour.league}, ${tour.year}")
-            updateTeams(tour.league, tour.year)
-            updatePlayers(tour.league, tour.year)
-            updateMatches(UpdateMatchesParams(league = tour.league, tour = tour.year))
+            log("Updating matches ${tour.league}, ${tour.season}")
+            updateTeams(tour.league, tour.season)
+            updatePlayers(tour.league, tour.season)
+            updateMatches(UpdateMatchesParams(league = tour.league, season = tour.season))
                 .onResult { log("Updating matches result: $it") }
                 .onFailure { error ->
                     when (error) {
@@ -45,8 +45,8 @@ class Synchronizer(
                         UpdateMatchesError.NoMatchesInTour -> { }
                         is UpdateMatchesError.Insert -> when (error.error) {
                             InsertMatchStatisticsError.NoPlayersInTeams, is InsertMatchStatisticsError.PlayerNotFound ->
-                                updatePlayers(tour.league, tour.year)
-                            is InsertMatchStatisticsError.TeamNotFound -> updateTeams(tour.league, tour.year)
+                                updatePlayers(tour.league, tour.season)
+                            is InsertMatchStatisticsError.TeamNotFound -> updateTeams(tour.league, tour.season)
                             InsertMatchStatisticsError.TourNotFound -> initializeTours(league = tour.league)
                         }
                     }
@@ -77,14 +77,14 @@ class Synchronizer(
             .onSuccess { synchronize(league) }
     }
 
-    private suspend fun updatePlayers(league: League, tourYear: TourYear) {
+    private suspend fun updatePlayers(league: League, tourYear: Season) {
         log("Updating players for: $league, $tourYear")
         val players = playerStorage.getAllPlayers(league, tourYear).first()
         log("There are: ${players.size} players in the database")
         if (players.isNotEmpty()) {
             return
         }
-        updatePlayers(UpdatePlayersParams(league = league, tour = tourYear))
+        updatePlayers(UpdatePlayersParams(league = league, season = tourYear))
             .onResult { log("Updating players result: $it") }
             .onFailure { error ->
                 when (error) {
@@ -101,14 +101,14 @@ class Synchronizer(
             }
     }
 
-    private suspend fun updateTeams(league: League, tourYear: TourYear) {
+    private suspend fun updateTeams(league: League, tourYear: Season) {
         log("Updating teams for: $league, $tourYear")
         val teams = teamStorage.getAllTeams(league, tourYear).first()
         log("There are: ${teams.size} teams in the database")
         if (teams.isNotEmpty()) {
             return
         }
-        updateTeams(UpdateTeamsParams(league = league, tour = tourYear))
+        updateTeams(UpdateTeamsParams(league = league, season = tourYear))
             .onResult { log("Updating teams result: $it") }
             .onFailure { error ->
                 when (error) {

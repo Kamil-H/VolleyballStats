@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class Tour(
     val name: String,
-    val year: TourYear,
+    val season: Season,
     val league: League,
     val startDate: LocalDate,
     val endDate: LocalDate?,
