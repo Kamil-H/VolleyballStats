@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 data class MatchReport(
     val id: String,
     val category: String,
-    val city: String,
-    val competition: String,
+    val city: String?,
+    val competition: String?,
     val createdAt: LocalDateTime,
     val division: String,
     val hall: String,

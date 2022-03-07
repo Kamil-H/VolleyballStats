@@ -20,8 +20,8 @@ class PlayByPlayResponse(
 class MatchResponse(
     val _id: String,
     val category: String,
-    val city: String,
-    val competition: String,
+    val city: String? = null,
+    val competition: String? = null,
     val createdAt: LocalDateTime,
     val division: String,
     val hall: String,

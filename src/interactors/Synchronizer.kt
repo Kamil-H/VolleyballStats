@@ -40,7 +40,13 @@ class Synchronizer(
                 .onResult { log("Updating matches result: $it") }
                 .onFailure { error ->
                     when (error) {
-                        is UpdateMatchesError.Network -> schedule()
+                        is UpdateMatchesError.Network -> {
+                            val networkError = error.networkError
+                            if (networkError is NetworkError.UnexpectedException) {
+                                networkError.throwable.printStackTrace()
+                            }
+                            schedule()
+                        }
                         UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
                         UpdateMatchesError.NoMatchesInTour -> { }
                         is UpdateMatchesError.Insert -> when (error.error) {

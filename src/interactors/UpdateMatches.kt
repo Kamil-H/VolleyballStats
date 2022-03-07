@@ -54,7 +54,7 @@ class UpdateMatchesInteractor(
         }
         val allMatches = matchStorage.getAllMatches(league, season).first()
         val allMatchesSaved = allMatches.all { it is AllMatchesItem.Saved }
-        if (allMatchesSaved) {
+        if (allMatches.isNotEmpty() && allMatchesSaved) {
             val lastSaved = allMatches.filterIsInstance<AllMatchesItem.Saved>().maxByOrNull { it.endTime }!!
             finishTour(tour, lastSaved)
             return Result.success(UpdateMatchesSuccess.SeasonCompleted)

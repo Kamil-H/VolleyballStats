@@ -6,8 +6,8 @@ import java.time.LocalDateTime
 fun matchReportOf(
     id: String = "",
     category: String = "",
-    city: String = "",
-    competition: String = "",
+    city: String? = null,
+    competition: String? = null,
     createdAt: LocalDateTime = LocalDateTime.now(),
     division: String = "",
     hall: String = "",
