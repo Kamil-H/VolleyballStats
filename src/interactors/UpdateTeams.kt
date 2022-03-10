@@ -7,7 +7,7 @@ import com.kamilh.storage.TeamStorage
 
 typealias UpdateTeams = Interactor<UpdateTeamsParams, UpdateTeamsResult>
 
-data class UpdateTeamsParams(val league: League, val season: Season)
+data class UpdateTeamsParams(val tour: Tour)
 
 typealias UpdateTeamsResult = Result<Unit, UpdateTeamsError>
 
@@ -23,11 +23,11 @@ class UpdateTeamsInteractor(
 ) : UpdateTeams(appDispatchers) {
 
     override suspend fun doWork(params: UpdateTeamsParams): UpdateTeamsResult =
-        polishLeagueRepository.getAllTeams(params.season)
+        polishLeagueRepository.getAllTeams(params.tour.season)
             .mapError { UpdateTeamsError.Network(it) }
             .flatMap { updateTeams(it, params) }
 
     private suspend fun updateTeams(players: List<Team>, params: UpdateTeamsParams): UpdateTeamsResult =
-        teamStorage.insert(players, params.league, params.season)
+        teamStorage.insert(players, params.tour.id)
             .mapError { UpdateTeamsError.Storage(it) }
 }

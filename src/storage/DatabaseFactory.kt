@@ -39,6 +39,7 @@ internal class AppConfigDatabaseFactory(
 	durationAdapter: ColumnAdapter<Duration, Long>,
 	positionAdapter: ColumnAdapter<PlayerPosition, Long>,
 	matchIdAdapter: ColumnAdapter<MatchId, Long>,
+	tourIdAdapter: ColumnAdapter<TourId, Long>,
 ): DatabaseFactory {
 
 	private val driver: SqlDriver by lazy {
@@ -58,6 +59,7 @@ internal class AppConfigDatabaseFactory(
 				logo_urlAdapter = urlAdapter,
 				team_idAdapter = teamIdAdapter,
 				updated_atAdapter = localDateTimeAdapter,
+				tour_idAdapter = tourIdAdapter,
 			),
 			player_modelAdapter = Player_model.Adapter(
 				idAdapter = playerIdAdapter,
@@ -75,6 +77,7 @@ internal class AppConfigDatabaseFactory(
 				match_statistics_idAdapter = matchReportIdAdapter,
 				idAdapter = matchIdAdapter,
 				stateAdapter = EnumColumnAdapter(),
+				tour_idAdapter = tourIdAdapter,
 			),
 			point_modelAdapter = Point_model.Adapter(
 				end_timeAdapter = offsetDateAdapter,
@@ -92,6 +95,7 @@ internal class AppConfigDatabaseFactory(
                 seasonAdapter = seasonAdapter,
                 updated_atAdapter = localDateTimeAdapter,
                 winner_idAdapter = teamIdAdapter,
+				idAdapter = tourIdAdapter,
 			),
 			league_modelAdapter = League_model.Adapter(
 				countryAdapter = countryAdapter,
@@ -106,6 +110,7 @@ internal class AppConfigDatabaseFactory(
 				idAdapter = matchReportIdAdapter,
 				phaseAdapter = EnumColumnAdapter(),
 				updated_atAdapter = localDateTimeAdapter,
+				tour_idAdapter = tourIdAdapter,
 			),
 			play_attack_modelAdapter = Play_attack_model.Adapter(
 				receive_effectAdapter = EnumColumnAdapter(),

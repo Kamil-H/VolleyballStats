@@ -36,10 +36,11 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<ColumnAdapter<Duration, Long>>() with provider { DurationAdapter() }
     bind<ColumnAdapter<PlayerPosition, Long>>() with provider { PositionAdapter() }
     bind<ColumnAdapter<MatchId, Long>>() with provider { MatchIdAdapter() }
+    bind<ColumnAdapter<TourId, Long>>() with provider { TourIdAdapter() }
 
     bind<DatabaseFactory>() with singleton {
         AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<UserQueries>() with singleton {
@@ -142,7 +143,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     }
 
     bind<TeamStorage>() with singleton {
-        SqlTeamStorage(instance(), instance(), instance())
+        SqlTeamStorage(instance(), instance(), instance(), instance())
     }
 
     bind<TourStorage>() with singleton {
@@ -150,7 +151,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     }
 
     bind<PlayerStorage>() with singleton {
-        SqlPlayerStorage(instance(), instance(), instance(), instance(), instance())
+        SqlPlayerStorage(instance(), instance(), instance(), instance())
     }
 
     bind<LeagueStorage>() with singleton {

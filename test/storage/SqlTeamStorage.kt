@@ -15,6 +15,7 @@ class TeamStorageTest : DatabaseTest() {
             queryRunner = TestQueryRunner(),
             teamQueries = teamQueries,
             tourTeamQueries = tourTeamQueries,
+            tourQueries = tourQueries,
         )
     }
 
@@ -32,11 +33,10 @@ class TeamStorageTest : DatabaseTest() {
     fun `TourNotFound error returned when no tour in database`() = runBlockingTest {
         // GIVEN
         val team = teamOf()
-        val tour = seasonOf()
-        val league = leagueOf()
+        val tourId = tourIdOf()
 
         // WHEN
-        val result = storage.insert(listOf(team), league, tour)
+        val result = storage.insert(listOf(team), tourId)
 
         // THEN
         result.assertFailure {
@@ -47,11 +47,10 @@ class TeamStorageTest : DatabaseTest() {
     @Test
     fun `Success is returned when there are no teams to insert`() = runBlockingTest {
         // GIVEN
-        val tour = seasonOf()
-        val league = leagueOf()
+        val tourId = tourIdOf()
 
         // WHEN
-        val result = storage.insert(emptyList(), league, tour)
+        val result = storage.insert(emptyList(), tourId)
 
         // THEN
         result.assertSuccess()
@@ -60,13 +59,13 @@ class TeamStorageTest : DatabaseTest() {
     @Test
     fun `Success is returned when there are teams to insert and tour and league exists`() = runBlockingTest {
         // GIVEN
-        val tourYear = seasonOf()
-        val tour = tourOf(season = tourYear)
+        val season = seasonOf()
+        val tour = tourOf(season = season)
         val league = leagueOf()
         configure(leagues = listOf(league), tours = listOf(tour))
 
         // WHEN
-        val result = storage.insert(emptyList(), league, tourYear)
+        val result = storage.insert(emptyList(), tour.id)
 
         // THEN
         result.assertSuccess()
@@ -80,10 +79,10 @@ class TeamStorageTest : DatabaseTest() {
         val league = leagueOf()
         val teamId = teamIdOf(value = 1)
         val team = teamOf(id = teamId)
-        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
+        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, tour)))
 
         // WHEN
-        val result = storage.insert(listOf(team), league, tourYear)
+        val result = storage.insert(listOf(team), tour.id)
 
         // THEN
         result.assertFailure {
@@ -101,10 +100,10 @@ class TeamStorageTest : DatabaseTest() {
         val teamId = teamIdOf(value = 1)
         val team = teamOf(id = teamId)
         val secondTeam = teamOf()
-        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
+        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, tour)))
 
         // WHEN
-        val result = storage.insert(listOf(secondTeam, team), league, tourYear)
+        val result = storage.insert(listOf(secondTeam, team), tour.id)
 
         // THEN
         result.assertFailure {
@@ -124,7 +123,7 @@ class TeamStorageTest : DatabaseTest() {
         configure(leagues = listOf(league), tours = listOf(tour))
 
         // WHEN
-        val result = storage.insert(listOf(team, team), league, tourYear)
+        val result = storage.insert(listOf(team, team), tour.id)
 
         // THEN
         result.assertFailure {
@@ -137,13 +136,13 @@ class TeamStorageTest : DatabaseTest() {
     fun `getAllTeams returns empty list when no entries in the database`() = runBlockingTest {
         // GIVEN
         val league = leagueOf()
-        val tourYear = seasonOf()
+        val tourId = tourIdOf()
 
         // WHEN
         configure(leagues = listOf(league))
 
         // THEN
-        storage.getAllTeams(league, tourYear).test {
+        storage.getAllTeams(tourId).test {
             assert(awaitItem().isEmpty())
         }
     }
@@ -157,10 +156,10 @@ class TeamStorageTest : DatabaseTest() {
         val team = teamOf()
 
         // WHEN
-        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
+        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, tour)))
 
         // THEN
-        storage.getAllTeams(league, tourYear).test {
+        storage.getAllTeams(tour.id).test {
             assert(awaitItem().isNotEmpty())
         }
     }
@@ -176,8 +175,8 @@ class TeamStorageTest : DatabaseTest() {
         val code = "code"
 
         // WHEN
-        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
-        val insertedTeam = storage.getTeam(name, code, league, tourYear)
+        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, tour)))
+        val insertedTeam = storage.getTeam(name, code, tour.id)
 
         // THEN
         assert(insertedTeam == team)
@@ -194,8 +193,8 @@ class TeamStorageTest : DatabaseTest() {
         val code = "code"
 
         // WHEN
-        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
-        val insertedTeam = storage.getTeam("some name", code, league, tourYear)
+        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, tour)))
+        val insertedTeam = storage.getTeam("some name", code, tour.id)
 
         // THEN
         assert(insertedTeam == null)
@@ -213,8 +212,8 @@ class TeamStorageTest : DatabaseTest() {
 
         // WHEN
         teamQueries.updateCode(code, team.id)
-        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, league, tourYear)))
-        val insertedTeam = storage.getTeam("some name", code, league, tourYear)
+        configure(leagues = listOf(league), tours = listOf(tour), insertTeams = listOf(InsertTeam(team, tour)))
+        val insertedTeam = storage.getTeam("some name", code, tour.id)
 
         // THEN
         assert(insertedTeam == null)
@@ -231,7 +230,7 @@ class TeamStorageTest : DatabaseTest() {
 
         // WHEN
         configure(leagues = listOf(league), tours = listOf(tour))
-        val insertedTeam = storage.getTeam(name, code, league, tourYear)
+        val insertedTeam = storage.getTeam(name, code, tour.id)
 
         // THEN
         assert(insertedTeam == null)
@@ -244,7 +243,7 @@ fun teamStorageOf(
     getTeam: List<Team> = emptyList(),
 ): TeamStorage =
     object : TeamStorage {
-        override suspend fun insert(teams: List<Team>, league: League, season: Season): InsertTeamResult = insert
-        override suspend fun getAllTeams(league: League, season: Season): Flow<List<Team>> = getAllTeams
-        override suspend fun getTeam(name: String, code: String, league: League, season: Season): Team? = getTeam.firstOrNull { it.name == name }
+        override suspend fun insert(teams: List<Team>, tourId: TourId): InsertTeamResult = insert
+        override suspend fun getAllTeams(tourId: TourId): Flow<List<Team>> = getAllTeams
+        override suspend fun getTeam(name: String, code: String, tourId: TourId): Team? = getTeam.firstOrNull { it.name == name }
     }

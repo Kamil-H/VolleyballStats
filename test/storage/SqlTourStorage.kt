@@ -109,14 +109,14 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     @Test
     fun `getByTourYearAndLeague returns empty list when no entries in the database`() = runBlockingTest {
         // GIVEN
-        val tourYear = seasonOf()
+        val tourId = tourIdOf()
         val league = leagueOf(division = 1)
 
         // WHEN
         configure(leagues = listOf(league))
 
         // THEN
-        storage.getByTourYearAndLeague(tourYear, league).test {
+        storage.getByTourId(tourId).test {
             assert(awaitItem() == null)
         }
     }
@@ -144,11 +144,11 @@ class SqlSqlTourStorageTest : DatabaseTest() {
 fun tourStorageOf(
     insert: (tour: Tour) -> InsertTourResult = { InsertTourResult.success(Unit) },
     getAllByLeague: Flow<List<Tour>> = flowOf(emptyList()),
-    getByTourYearAndLeague: Flow<Tour?> = flowOf(null),
+    getByTourId: Flow<Tour?> = flowOf(null),
     onUpdate: (tour: Tour, endTime: LocalDate) -> Unit = { _, _ -> },
 ): TourStorage = object : TourStorage {
     override suspend fun insert(tour: Tour): InsertTourResult = insert(tour)
     override suspend fun getAllByLeague(league: League): Flow<List<Tour>> = getAllByLeague
-    override suspend fun getByTourYearAndLeague(tourYear: Season, league: League): Flow<Tour?> = getByTourYearAndLeague
+    override suspend fun getByTourId(tourId: TourId): Flow<Tour?> = getByTourId
     override suspend fun update(tour: Tour, endTime: LocalDate) = onUpdate(tour, endTime)
 }

@@ -33,6 +33,7 @@ abstract class DatabaseTest(
     private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
     private val positionAdapter: ColumnAdapter<PlayerPosition, Long> = PositionAdapter(),
     private val matchIdAdapter: ColumnAdapter<MatchId, Long> = MatchIdAdapter(),
+    private val tourIdAdapter: ColumnAdapter<TourId, Long> = TourIdAdapter(),
 ) {
 
     private lateinit var databaseFactory: DatabaseFactory
@@ -77,6 +78,7 @@ abstract class DatabaseTest(
             durationAdapter = durationAdapter,
             positionAdapter = positionAdapter,
             matchIdAdapter = matchIdAdapter,
+            tourIdAdapter = tourIdAdapter,
         )
         databaseFactory.connect()
     }
@@ -106,6 +108,7 @@ abstract class DatabaseTest(
     protected fun insert(vararg tours: Tour) = insert {
         tours.forEach { tour ->
             tourQueries.insert(
+                id = tour.id,
                 name = tour.name,
                 season = tour.season,
                 country = tour.league.country,
@@ -126,10 +129,8 @@ abstract class DatabaseTest(
                 image_url = insertTeam.team.teamImageUrl,
                 logo_url = insertTeam.team.logoUrl,
                 team_id = insertTeam.team.id,
-                season = insertTeam.season,
+                tour_id = insertTeam.tour.id,
                 updated_at = insertTeam.team.updatedAt,
-                country = insertTeam.league.country,
-                division = insertTeam.league.division,
             )
         }
     }
@@ -150,11 +151,7 @@ abstract class DatabaseTest(
                 image_url = player.teamPlayer.imageUrl,
                 tour_team_id = tourTeamQueries.selectId(
                     team_id = player.teamPlayer.team,
-                    tour_id = tourQueries.selectId(
-                        season = insertPlayer.season,
-                        division = insertPlayer.league.division,
-                        country = insertPlayer.league.country,
-                    ).executeAsOne()
+                    tour_id = insertPlayer.tour.id,
                 ).executeAsOne(),
                 specialization = player.teamPlayer.specialization,
                 player_id = player.teamPlayer.id,
@@ -166,13 +163,11 @@ abstract class DatabaseTest(
 
     data class InsertTeam(
         val team: Team,
-        val league: League,
-        val season: Season,
+        val tour: Tour,
     )
 
     data class InsertPlayer(
         val player: PlayerWithDetails,
-        val league: League,
-        val season: Season,
+        val tour: Tour,
     )
 }

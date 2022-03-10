@@ -16,7 +16,6 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         SqlMatchStatisticsStorage(
             queryRunner = testQueryRunner,
             teamQueries = teamQueries,
-            tourQueries = tourQueries,
             teamPlayerQueries = teamPlayerQueries,
             tourTeamQueries = tourTeamQueries,
             matchStatisticsQueries = matchStatisticsQueries,
@@ -34,6 +33,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             setQueries = setQueries,
             matchAppearanceQueries = matchAppearanceQueries,
             matchQueries = matchQueries,
+            tourQueries = tourQueries,
         )
     }
 
@@ -44,6 +44,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                 queryRunner = TestQueryRunner(),
                 teamQueries = teamQueries,
                 tourTeamQueries = tourTeamQueries,
+                tourQueries = tourQueries,
             ),
             strategies = listOf(AttackStrategy(), BlockStrategy(), DigStrategy(), FreeballStrategy(), ReceiveStrategy(),
                 ServeStrategy(), SetStrategy()
@@ -81,8 +82,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                     id = homeId,
                     name = matchReport.matchTeams.home.name
                 ),
-                season = season,
-                league = league,
+                tour = tour,
             )
         )
         insert(
@@ -91,15 +91,13 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                     id = awayId,
                     name = matchReport.matchTeams.away.name
                 ),
-                season = season,
-                league = league,
+                tour = tour,
             )
         )
         matchReport.matchTeams.home.players.forEach { teamPlayer ->
             insert(
                 InsertPlayer(
-                    league = league,
-                    season = season,
+                    tour = tour,
                     player = playerWithDetailsOf(
                         teamPlayer = teamPlayerOf(
                             id = teamPlayer.id,
@@ -112,8 +110,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         matchReport.matchTeams.away.players.forEach { teamPlayer ->
             insert(
                 InsertPlayer(
-                    league = league,
-                    season = season,
+                    tour = tour,
                     player = playerWithDetailsOf(
                         teamPlayer = teamPlayerOf(
                             id = teamPlayer.id,
@@ -123,14 +120,14 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                 )
             )
         }
-        val matchStatistics = analyzer.analyze(matchReport, season, league).value!!
+        val matchStatistics = analyzer.analyze(matchReport, tour).value!!
 
         // WHEN
-        val insertResult = storage.insert(matchStatistics, league, season, matchId)
+        val insertResult = storage.insert(matchStatistics, tour.id, matchId)
 
         // THEN
         val result = matchStatisticsQueries.selectAll().executeAsList()
-        storage.getAllMatchStatistics(league, season).test {
+        storage.getAllMatchStatistics(tour.id).test {
             assert(awaitItem().first() == matchStatistics)
         }
         assert(result.isNotEmpty())

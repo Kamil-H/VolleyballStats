@@ -19,7 +19,7 @@ interface TourStorage {
 
     suspend fun getAllByLeague(league: League): Flow<List<Tour>>
 
-    suspend fun getByTourYearAndLeague(tourYear: Season, league: League): Flow<Tour?>
+    suspend fun getByTourId(tourId: TourId): Flow<Tour?>
 
     suspend fun update(tour: Tour, endTime: LocalDate)
 }
@@ -41,6 +41,7 @@ class SqlTourStorage(
     override suspend fun insert(tour: Tour): InsertTourResult = try {
         queryRunner.run {
             tourQueries.insert(
+                id = tour.id,
                 name = tour.name,
                 season = tour.season,
                 country = tour.league.country,
@@ -53,18 +54,22 @@ class SqlTourStorage(
         }
         Result.success(Unit)
     } catch (exception: Exception) {
-        when (exception.createSqlError(tableName = "tour_model", columnName = "league_id")) {
-            SqlError.Uniqueness -> Result.failure(InsertTourError.TourAlreadyExists)
-            SqlError.NotNull -> Result.failure(InsertTourError.LeagueNotFound)
-            else -> throw exception
+        val tourAlreadyExistsError = exception.createSqlError(tableName = "tour_model", columnName = "id") as? SqlError.PrimaryKey
+        val leagueNotFoundError = exception.createSqlError(tableName = "tour_model", columnName = "league_id") as? SqlError.NotNull
+        if (tourAlreadyExistsError != null) {
+            Result.failure(InsertTourError.TourAlreadyExists)
+        } else if (leagueNotFoundError != null) {
+            Result.failure(InsertTourError.LeagueNotFound)
+        } else {
+            throw exception
         }
     }
 
     override suspend fun getAllByLeague(league: League): Flow<List<Tour>> =
         tourQueries.selectAllByLeague(league.country, league.division, mapper).asFlow().mapToList(queryRunner.dispatcher)
 
-    override suspend fun getByTourYearAndLeague(tourYear: Season, league: League): Flow<Tour?> =
-        tourQueries.selectByTourAndLeague(tourYear, league.country, league.division, mapper).asFlow().mapToOneOrNull(queryRunner.dispatcher)
+    override suspend fun getByTourId(tourId: TourId): Flow<Tour?> =
+        tourQueries.selectById(tourId, mapper).asFlow().mapToOneOrNull(queryRunner.dispatcher)
 
     override suspend fun update(tour: Tour, endTime: LocalDate) {
         queryRunner.run {
@@ -79,6 +84,7 @@ class SqlTourStorage(
     }
 
     private val mapper: (
+        id: TourId,
         name: String,
         season: Season,
         start_date: LocalDate,
@@ -88,6 +94,7 @@ class SqlTourStorage(
         country: Country,
         division: Int,
     ) -> Tour = {
+            id: TourId,
             name: String,
             season: Season,
             start_date: LocalDate,
@@ -97,6 +104,7 @@ class SqlTourStorage(
             country: Country,
             division: Int, ->
         Tour(
+            id = id,
             name = name,
             season = season,
             league = League(country, division),

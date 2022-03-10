@@ -4,7 +4,6 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
-import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.InsertTeamError
 import com.kamilh.storage.InsertTeamResult
 import com.kamilh.storage.TeamStorage
@@ -26,11 +25,9 @@ class UpdateTeamsInteractorTest {
     )
 
     private fun paramsOf(
-        league: League = leagueOf(),
-        tourYear: Season = seasonOf(),
+        tour: Tour = tourOf(),
     ): UpdateTeamsParams = UpdateTeamsParams(
-        league = league,
-        season = tourYear,
+        tour = tour,
     )
 
     @Test

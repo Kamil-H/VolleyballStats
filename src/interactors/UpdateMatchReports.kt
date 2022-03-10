@@ -9,8 +9,7 @@ import kotlinx.coroutines.coroutineScope
 typealias UpdateMatchReports = Interactor<UpdateMatchReportParams, UpdateMatchReportResult>
 
 data class UpdateMatchReportParams(
-    val league: League,
-    val season: Season,
+    val tour: Tour,
     val matches: List<AllMatchesItem.PotentiallyFinished>,
 )
 
@@ -28,7 +27,7 @@ class UpdateMatchReportInteractor(
 ): UpdateMatchReports(appDispatchers) {
 
     override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult {
-        val (league, season, potentiallyFinished) = params
+        val (tour, potentiallyFinished) = params
 
         if (potentiallyFinished.isEmpty()) {
             return Result.success(Unit)
@@ -37,7 +36,7 @@ class UpdateMatchReportInteractor(
             potentiallyFinished
                 .mapAsync(scope = this) { match ->
                     polishLeagueRepository.getMatchReportId(match.id).flatMap { matchReportId ->
-                        polishLeagueRepository.getMatchReport(matchReportId, season).map { matchReport ->
+                        polishLeagueRepository.getMatchReport(matchReportId, tour.season).map { matchReport ->
                             match.id to matchReport
                         }
                     }
@@ -49,13 +48,7 @@ class UpdateMatchReportInteractor(
             return Result.failure(UpdateMatchReportError.Network(firstFailure))
         }
 
-        return matchReportPreparer(
-            MatchReportPreparerParams(
-                matches = callResults.values,
-                league = league,
-                season = season,
-            )
-        ).mapError {
+        return matchReportPreparer(MatchReportPreparerParams(matches = callResults.values, tour = tour)).mapError {
             when (it) {
                 is MatchReportPreparerError.Insert -> UpdateMatchReportError.Insert(it.error)
             }

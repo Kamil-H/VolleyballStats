@@ -25,7 +25,8 @@ fun testApplicationModule(
     bind<Json>() with provider { Json }
     bind<DatabaseFactory>() with provider { AppConfigDatabaseFactory(instance(), UuidAdapter(), OffsetDateAdapter(),
         UrlAdapter(), TeamIdAdapter(), PlayerIdAdapter(), CountryAdapter(), LocalDateAdapter(), LocalDateTimeAdapter(),
-        TourYearAdapter(), SpecializationAdapter(), MatchReportIdAdapter(), DurationAdapter(), PositionAdapter(), MatchIdAdapter())
+        TourYearAdapter(), SpecializationAdapter(), MatchReportIdAdapter(), DurationAdapter(), PositionAdapter(),
+        MatchIdAdapter(), TourIdAdapter())
     }
     bind<UserController>() with provider { userController }
     bind<CredentialsValidator>() with provider { credentialsValidator }

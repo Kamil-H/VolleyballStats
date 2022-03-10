@@ -34,9 +34,9 @@ class Synchronizer(
     private suspend fun updateMatches(tours: List<Tour>) {
         tours.forEach { tour ->
             log("Updating matches ${tour.league}, ${tour.season}")
-            updateTeams(tour.league, tour.season)
-            updatePlayers(tour.league, tour.season)
-            updateMatches(UpdateMatchesParams(league = tour.league, season = tour.season))
+            updateTeams(tour)
+            updatePlayers(tour)
+            updateMatches(UpdateMatchesParams(tour))
                 .onResult { log("Updating matches result: $it") }
                 .onFailure { error ->
                     when (error) {
@@ -50,9 +50,8 @@ class Synchronizer(
                         UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
                         UpdateMatchesError.NoMatchesInTour -> { }
                         is UpdateMatchesError.Insert -> when (error.error) {
-                            InsertMatchStatisticsError.NoPlayersInTeams, is InsertMatchStatisticsError.PlayerNotFound ->
-                                updatePlayers(tour.league, tour.season)
-                            is InsertMatchStatisticsError.TeamNotFound -> updateTeams(tour.league, tour.season)
+                            InsertMatchStatisticsError.NoPlayersInTeams, is InsertMatchStatisticsError.PlayerNotFound -> updatePlayers(tour)
+                            is InsertMatchStatisticsError.TeamNotFound -> updateTeams(tour)
                             InsertMatchStatisticsError.TourNotFound -> initializeTours(league = tour.league)
                         }
                     }
@@ -83,14 +82,14 @@ class Synchronizer(
             .onSuccess { synchronize(league) }
     }
 
-    private suspend fun updatePlayers(league: League, tourYear: Season) {
-        log("Updating players for: $league, $tourYear")
-        val players = playerStorage.getAllPlayers(league, tourYear).first()
+    private suspend fun updatePlayers(tour: Tour) {
+        log("Updating players for: ${tour.league}, ${tour.season}")
+        val players = playerStorage.getAllPlayers(tour.id).first()
         log("There are: ${players.size} players in the database")
         if (players.isNotEmpty()) {
             return
         }
-        updatePlayers(UpdatePlayersParams(league = league, season = tourYear))
+        updatePlayers(UpdatePlayersParams(tour = tour))
             .onResult { log("Updating players result: $it") }
             .onFailure { error ->
                 when (error) {
@@ -98,30 +97,30 @@ class Synchronizer(
                     is UpdatePlayersError.Storage -> when (val insertPlayerError = error.insertPlayerError) {
                         is InsertPlayerError.Errors -> {
                             if (insertPlayerError.teamsNotFound.isNotEmpty()) {
-                                updateTeams(league, tourYear)
+                                updateTeams(tour)
                             }
                         }
-                        InsertPlayerError.TourNotFound -> initializeTours(league)
+                        InsertPlayerError.TourNotFound -> initializeTours(tour.league)
                     }
                 }
             }
     }
 
-    private suspend fun updateTeams(league: League, tourYear: Season) {
-        log("Updating teams for: $league, $tourYear")
-        val teams = teamStorage.getAllTeams(league, tourYear).first()
+    private suspend fun updateTeams(tour: Tour) {
+        log("Updating teams for: ${tour.league}, ${tour.season}")
+        val teams = teamStorage.getAllTeams(tour.id).first()
         log("There are: ${teams.size} teams in the database")
         if (teams.isNotEmpty()) {
             return
         }
-        updateTeams(UpdateTeamsParams(league = league, season = tourYear))
+        updateTeams(UpdateTeamsParams(tour = tour))
             .onResult { log("Updating teams result: $it") }
             .onFailure { error ->
                 when (error) {
                     is UpdateTeamsError.Network -> schedule()
                     is UpdateTeamsError.Storage -> when (error.insertTeamError) {
                         is InsertTeamError.TourTeamAlreadyExists -> { }
-                        InsertTeamError.TourNotFound -> initializeTours(league)
+                        InsertTeamError.TourNotFound -> initializeTours(tour.league)
                     }
                 }
             }

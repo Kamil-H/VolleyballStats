@@ -11,8 +11,7 @@ typealias MatchReportPreparer = Interactor<MatchReportPreparerParams, MatchRepor
 
 data class MatchReportPreparerParams(
     val matches: List<Pair<MatchId, MatchReport>>,
-    val league: League,
-    val season: Season,
+    val tour: Tour
 )
 
 typealias MatchReportPreparerResult = Result<Unit, MatchReportPreparerError>
@@ -33,8 +32,7 @@ class MatchReportPreparerInteractor(
             analyze(
                 matchId = matchId,
                 matchReport = matchReport,
-                league = params.league,
-                tourYear = params.season,
+                tour = params.tour,
                 tryFixPlayerOnError = true,
             )
         }.toResults().apply {
@@ -48,11 +46,10 @@ class MatchReportPreparerInteractor(
     private suspend fun analyze(
         matchId: MatchId,
         matchReport: MatchReport,
-        league: League,
-        tourYear: Season,
+        tour: Tour,
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
-        matchReportAnalyzer(MatchReportAnalyzerParams(matchReport, tourYear))
+        matchReportAnalyzer(MatchReportAnalyzerParams(matchReport, tour))
             .flatMapError {
                 Logger.i("AnalyzeMatchReport failure: ${it.message}")
                 // Ignoring analyze error. It should be reported and proceeded further
@@ -64,8 +61,7 @@ class MatchReportPreparerInteractor(
                         matchReport = matchReport,
                         matchStatistics = matchStatistics,
                         matchId = matchId,
-                        league = league,
-                        tourYear = tourYear,
+                        tour = tour,
                         tryFixPlayerOnError = tryFixPlayerOnError,
                     )
                 } else {
@@ -77,14 +73,12 @@ class MatchReportPreparerInteractor(
         matchReport: MatchReport,
         matchStatistics: MatchStatistics,
         matchId: MatchId,
-        league: League,
-        tourYear: Season,
+        tour: Tour,
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
         matchStatisticsStorage.insert(
             matchStatistics = matchStatistics,
-            league = league,
-            season = tourYear,
+            tourId = tour.id,
             matchId = matchId,
         ).flatMapError {
             when (it) {
@@ -95,8 +89,7 @@ class MatchReportPreparerInteractor(
                             matchReport = matchReport,
                             matchId = matchId,
                             playersNotFound = it.playerIds,
-                            league = league,
-                            tourYear = tourYear,
+                            tour = tour,
                         )
                     } else {
                         MatchReportPreparerResult.failure(MatchReportPreparerError.Insert(it))
@@ -112,33 +105,29 @@ class MatchReportPreparerInteractor(
     private suspend fun tryUpdatePlayers(
         matchId: MatchId,
         playersNotFound: List<Pair<PlayerId, TeamId>>,
-        league: League,
-        tourYear: Season,
+        tour: Tour,
         matchReport: MatchReport,
     ) : MatchReportPreparerResult =
         analyze(
             matchId = matchId,
             matchReport = matchReport.copy(
                 matchTeams = matchReport.matchTeams.copy(
-                    home = matchReport.matchTeams.home.fixPlayers(playersNotFound, league, tourYear),
-                    away = matchReport.matchTeams.away.fixPlayers(playersNotFound, league, tourYear),
+                    home = matchReport.matchTeams.home.fixPlayers(playersNotFound, tour),
+                    away = matchReport.matchTeams.away.fixPlayers(playersNotFound, tour),
                 )
             ),
-            league = league,
-            tourYear = tourYear,
+            tour = tour,
             tryFixPlayerOnError = false,
         )
 
     private suspend fun MatchReportTeam.fixPlayers(
         playersNotFound: List<Pair<PlayerId, TeamId>>,
-        league: League,
-        tourYear: Season,
+        tour: Tour,
     ): MatchReportTeam = wrongPlayerFixer(
         WrongPlayerFixerParams(
             team = this,
             playersNotFound = playersNotFound,
-            league = league,
-            tourYear = tourYear,
+            tour = tour,
         )
     )
 }

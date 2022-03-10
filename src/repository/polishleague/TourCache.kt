@@ -3,6 +3,7 @@ package com.kamilh.repository.polishleague
 import com.kamilh.models.League
 import com.kamilh.models.Season
 import com.kamilh.models.Tour
+import com.kamilh.models.TourId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -23,8 +24,9 @@ class InMemoryTourCache : TourCache {
     )
 
     override fun getAll(): List<Tour> =
-        tours.map { (tour, startDate) ->
+        tours.mapIndexed { index, (tour, startDate) ->
             Tour(
+                id = TourId(value = index.toLong() + 1),
                 name = "PlusLiga",
                 season = tour,
                 league = League.POLISH_LEAGUE,

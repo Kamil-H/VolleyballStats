@@ -4,7 +4,6 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
-import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.InsertPlayerResult
 import com.kamilh.storage.PlayerStorage
 import com.kamilh.storage.playerStorageOf
@@ -31,13 +30,11 @@ class WrongPlayerFixerInteractorTest {
     private fun paramsOf(
         team: MatchReportTeam = matchReportTeamOf(),
         playersNotFound: List<Pair<PlayerId, TeamId>> = emptyList(),
-        league: League = leagueOf(),
-        tourYear: Season = seasonOf(),
+        tour: Tour = tourOf(),
     ): WrongPlayerFixerParams = WrongPlayerFixerParams(
         team = team,
         playersNotFound = playersNotFound,
-        league = league,
-        tourYear = tourYear,
+        tour = tour,
     )
 
     @Before
@@ -277,8 +274,8 @@ class WrongPlayerFixerInteractorTest {
                 getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf(id = playerId))),
             ),
             playerStorage = playerStorageOf(
-                insert = { playerWithDetials, _, _ ->
-                    insertedPlayers = playerWithDetials
+                insert = { playerWithDetails, _ ->
+                    insertedPlayers = playerWithDetails
                     InsertPlayerResult.success(Unit)
                 }
             )

@@ -7,14 +7,16 @@ import com.kamilh.storage.common.QueryRunner
 import com.squareup.sqldelight.Query
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 interface MatchStatisticsStorage {
 
-    suspend fun insert(matchStatistics: MatchStatistics, league: League, season: Season, matchId: MatchId): InsertMatchStatisticsResult
+    suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId, matchId: MatchId): InsertMatchStatisticsResult
 
-    suspend fun getAllMatchStatistics(league: League, season: Season): Flow<List<MatchStatistics>>
+    suspend fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>>
 
     suspend fun getMatchStatistics(matchReportId: MatchReportId): MatchStatistics?
 }
@@ -33,7 +35,6 @@ sealed class InsertMatchStatisticsError(override val message: String?) : Error {
 class SqlMatchStatisticsStorage(
     private val queryRunner: QueryRunner,
     private val teamQueries: TeamQueries,
-    private val tourQueries: TourQueries,
     private val teamPlayerQueries: TeamPlayerQueries,
     private val tourTeamQueries: TourTeamQueries,
     private val matchStatisticsQueries: MatchStatisticsQueries,
@@ -51,19 +52,11 @@ class SqlMatchStatisticsStorage(
     private val setQueries: SetQueries,
     private val matchAppearanceQueries: MatchAppearanceQueries,
     private val matchQueries: MatchQueries,
+    private val tourQueries: TourQueries,
 ) : MatchStatisticsStorage {
 
-    override suspend fun insert(
-        matchStatistics: MatchStatistics,
-        league: League,
-        season: Season,
-        matchId: MatchId,
-    ): InsertMatchStatisticsResult = queryRunner.runTransaction {
-        val tourId = tourQueries.selectId(
-            season = season,
-            division = league.division,
-            country = league.country,
-        ).executeAsOneOrNull() ?: return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TourNotFound)
+    override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId, matchId: MatchId): InsertMatchStatisticsResult = queryRunner.runTransaction {
+        tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertMatchStatisticsError>(InsertMatchStatisticsError.TourNotFound)
 
         val homeTeamId = tourTeamQueries.selectId(matchStatistics.home.teamId, tourId).executeAsOneOrNull()
             ?: return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TeamNotFound(matchStatistics.home.teamId))
@@ -250,26 +243,21 @@ class SqlMatchStatisticsStorage(
         }
     }
 
-    private fun <T: Any> Flow<Long>.mapQuery(query: (Long) -> Query<T>): Flow<List<T>> =
-        flatMapLatest { query(it).asFlow().mapToList() }.distinctUntilChanged()
+    private fun <T: Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
 
-    override suspend fun getAllMatchStatistics(league: League, season: Season): Flow<List<MatchStatistics>> {
-        val tourId = tourQueries.selectId(season, league.division, league.country).asFlow().mapToOneOrNull()
-            .mapNotNull { it }
-            .distinctUntilChanged()
+    override suspend fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>> {
+        val stats = matchStatisticsQueries.selectAllStatsByTourId(tourId).mapQuery()
+        val matchAppearances = matchAppearanceQueries.selectAllAppearancesByTour(tourId).mapQuery()
+        val sets = setQueries.selectAllBySetsTourId(tourId).mapQuery()
+        val points = pointQueries.selectAllPointsByTourId(tourId).mapQuery()
 
-        val stats = tourId.mapQuery { matchStatisticsQueries.selectAllStatsByTourId(it) }
-        val matchAppearances = tourId.mapQuery { matchAppearanceQueries.selectAllAppearancesByTour(it) }
-        val sets = tourId.mapQuery { setQueries.selectAllBySetsTourId(it) }
-        val points = tourId.mapQuery { pointQueries.selectAllPointsByTourId(it) }
-
-        val attacks = tourId.mapQuery { playAttackQueries.selectAllAttacksByTourId(it) }.map { it.map { it.toPlayAction() } }
-        val blocks = tourId.mapQuery { playBlockQueries.selectAllBlocksByTourId(it) }.map { it.map { it.toPlayAction() } }
-        val digs = tourId.mapQuery { playDigQueries.selectAllDigsByTourId(it) }.map { it.map { it.toPlayAction() } }
-        val freeballs = tourId.mapQuery { playFreeballQueries.selectAllFreeballsByTourId(it) }.map { it.map { it.toPlayAction() } }
-        val serves = tourId.mapQuery { playServeQueries.selectAllServesByTourId(it) }.map { it.map { it.toPlayAction() } }
-        val receives = tourId.mapQuery { playReceiveQueries.selectAllReceivesByTourId(it) }.map { it.map { it.toPlayAction() } }
-        val playSets = tourId.mapQuery { playSetQueries.selectAllSetsByTourId(it) }.map { it.map { it.toPlayAction() } }
+        val attacks = playAttackQueries.selectAllAttacksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val blocks = playBlockQueries.selectAllBlocksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val digs = playDigQueries.selectAllDigsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val freeballs = playFreeballQueries.selectAllFreeballsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val serves = playServeQueries.selectAllServesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val receives = playReceiveQueries.selectAllReceivesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val playSets = playSetQueries.selectAllSetsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
 
         val playActions = combine(attacks, blocks, digs, freeballs, receives, serves, playSets) { list -> list.flatMap { it } }
 

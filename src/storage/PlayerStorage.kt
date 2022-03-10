@@ -2,7 +2,6 @@ package com.kamilh.storage
 
 import com.kamilh.databse.PlayerQueries
 import com.kamilh.databse.TeamPlayerQueries
-import com.kamilh.databse.TourQueries
 import com.kamilh.databse.TourTeamQueries
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
@@ -17,11 +16,11 @@ import java.time.LocalDateTime
 
 interface PlayerStorage {
 
-    suspend fun insert(players: List<PlayerWithDetails>, league: League, season: Season): InsertPlayerResult
+    suspend fun insert(players: List<PlayerWithDetails>, tourId: TourId): InsertPlayerResult
 
-    suspend fun getAllPlayers(teamId: TeamId, league: League, season: Season): Flow<List<PlayerWithDetails>>
+    suspend fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>>
 
-    suspend fun getAllPlayers(league: League, season: Season): Flow<List<PlayerWithDetails>>
+    suspend fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>>
 }
 
 typealias InsertPlayerResult = Result<Unit, InsertPlayerError>
@@ -38,16 +37,13 @@ class SqlPlayerStorage(
     private val playerQueries: PlayerQueries,
     private val teamPlayerQueries: TeamPlayerQueries,
     private val tourTeamQueries: TourTeamQueries,
-    private val tourQueries: TourQueries,
 ) : PlayerStorage {
 
-    override suspend fun insert(players: List<PlayerWithDetails>, league: League, season: Season): InsertPlayerResult =
+    override suspend fun insert(players: List<PlayerWithDetails>, tourId: TourId): InsertPlayerResult =
         queryRunner.runTransaction {
             if (players.isEmpty()) {
                 return@runTransaction Result.success(Unit)
             }
-            val tourId = tourQueries.selectId(season, league.division, league.country).executeAsOneOrNull()
-                ?: return@runTransaction Result.failure<Unit, InsertPlayerError>(InsertPlayerError.TourNotFound)
 
             val teamIdsNotFound = mutableListOf<TeamId>()
             val playersAlreadyExists = mutableListOf<PlayerId>()
@@ -100,23 +96,19 @@ class SqlPlayerStorage(
             exception
         }
 
-    override suspend fun getAllPlayers(teamId: TeamId, league: League, season: Season): Flow<List<PlayerWithDetails>> =
+    override suspend fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>> =
         queryRunner.run {
             teamPlayerQueries.selectPlayersByTeam(
                 team_id = teamId,
-                season = season,
-                division = league.division,
-                country = league.country,
+                tour_id = tourId,
                 mapper = mapper,
             ).asFlow().mapToList(queryRunner.dispatcher)
         }
 
-    override suspend fun getAllPlayers(league: League, season: Season): Flow<List<PlayerWithDetails>> =
+    override suspend fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>> =
         queryRunner.run {
             teamPlayerQueries.selectPlayers(
-                season = season,
-                division = league.division,
-                country = league.country,
+                tour_id = tourId,
                 mapper = mapper,
             ).asFlow().mapToList(queryRunner.dispatcher)
         }

@@ -4,10 +4,13 @@ package com.kamilh.models
 value class MatchId(val value: Long)
 
 @JvmInline
-value  class MatchReportId(val value: Long)
+value class MatchReportId(val value: Long)
 
 @JvmInline
-value  class PlayerId(val value: Long)
+value class PlayerId(val value: Long)
 
 @JvmInline
-value  class TeamId(val value: Long)
+value class TeamId(val value: Long)
+
+@JvmInline
+value class TourId(val value: Long)

@@ -4,7 +4,6 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
-import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.*
 import com.kamilh.utils.offsetDateTime
 import com.kamilh.utils.testAppDispatchers
@@ -30,43 +29,21 @@ class UpdateMatchesInteractorTest {
     )
 
     private fun paramsOf(
-        league: League = leagueOf(),
-        tour: Season = seasonOf(),
+        tour: Tour = tourOf(),
     ): UpdateMatchesParams = UpdateMatchesParams(
-        league = league,
-        season = tour,
+        tour = tour,
     )
-
-    @Test
-    fun `interactor returns ToursNotFound error when getByTourYearAndLeague returns null`() = runTest {
-        // GIVEN
-        val getByTourYearAndLeague = flowOf(null)
-
-        // WHEN
-        val result = interactor(
-            tourStorage = tourStorageOf(getByTourYearAndLeague = getByTourYearAndLeague)
-        )(paramsOf())
-
-        // THEN
-        result.assertFailure {
-            assert(this is UpdateMatchesError.TourNotFound)
-        }
-    }
 
     @Test
     fun `interactor returns TourNotFound error when getAllMatches returns empty list`() = runTest {
         // GIVEN
         val getAllMatches = listOf(savedOf())
-        val getByTourYearAndLeague = flowOf(tourOf())
         val insertOrUpdate = InsertMatchesResult.failure<Unit, InsertMatchesError>(InsertMatchesError.TourNotFound)
 
         // WHEN
         val result = interactor(
-            tourStorage = tourStorageOf(getByTourYearAndLeague = getByTourYearAndLeague),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatches)),
-            matchStorage = matchStorageOf(
-                insertOrUpdate = insertOrUpdate,
-            )
+            matchStorage = matchStorageOf(insertOrUpdate = insertOrUpdate)
         )(paramsOf())
 
         // THEN
@@ -79,16 +56,12 @@ class UpdateMatchesInteractorTest {
     fun `interactor returns NoMatchesInTour error when repository's getAllMatches returns empty list`() = runTest {
         // GIVEN
         val getAllMatches = emptyList<AllMatchesItem>()
-        val getByTourYearAndLeague = flowOf(tourOf())
         val insertOrUpdate = InsertMatchesResult.failure<Unit, InsertMatchesError>(InsertMatchesError.TourNotFound)
 
         // WHEN
         val result = interactor(
-            tourStorage = tourStorageOf(getByTourYearAndLeague = getByTourYearAndLeague),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatches)),
-            matchStorage = matchStorageOf(
-                insertOrUpdate = insertOrUpdate,
-            )
+            matchStorage = matchStorageOf(insertOrUpdate = insertOrUpdate)
         )(paramsOf())
 
         // THEN
@@ -101,11 +74,9 @@ class UpdateMatchesInteractorTest {
     fun `interactor returns SeasonCompleted success when all matches are saved`() = runTest {
         // GIVEN
         val getAllMatches = listOf(savedOf())
-        val getByTourYearAndLeague = flowOf(tourOf())
 
         // WHEN
         val result = interactor(
-            tourStorage = tourStorageOf(getByTourYearAndLeague = getByTourYearAndLeague),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches))
         )(paramsOf())
@@ -121,25 +92,23 @@ class UpdateMatchesInteractorTest {
         // GIVEN
         val dates = (0..2).map { index -> offsetDateTime().minusDays(index.toLong()) }
         val getAllMatches = dates.map { date -> savedOf(endTime = date) }
-        val tour = tourOf()
-        val getByTourYearAndLeague = flowOf(tour)
         var onUpdate: Pair<Tour, LocalDate>? = null
+        val params = paramsOf()
 
         // WHEN
         val result = interactor(
             tourStorage = tourStorageOf(
-                getByTourYearAndLeague = getByTourYearAndLeague,
-                onUpdate = { tour, endTime -> onUpdate = tour to endTime },
+                onUpdate = { newTour, endTime -> onUpdate = newTour to endTime },
             ),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches))
-        )(paramsOf())
+        )(params)
 
         // THEN
         result.assertSuccess {
             assert(this is UpdateMatchesSuccess.SeasonCompleted)
         }
-        assert(onUpdate?.first == tour)
+        assert(onUpdate?.first == params.tour)
         assert(onUpdate?.second == dates.first().toLocalDate())
     }
 
@@ -148,14 +117,9 @@ class UpdateMatchesInteractorTest {
         // GIVEN
         val networkError = networkErrorOf()
         val getAllMatches = listOf(potentiallyFinishedOf())
-        val tour = tourOf()
-        val getByTourYearAndLeague = flowOf(tour)
 
         // WHEN
         val result = interactor(
-            tourStorage = tourStorageOf(
-                getByTourYearAndLeague = getByTourYearAndLeague,
-            ),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(
@@ -175,14 +139,9 @@ class UpdateMatchesInteractorTest {
         // GIVEN
         val insertError = InsertMatchStatisticsError.TourNotFound
         val getAllMatches = listOf(potentiallyFinishedOf())
-        val tour = tourOf()
-        val getByTourYearAndLeague = flowOf(tour)
 
         // WHEN
         val result = interactor(
-            tourStorage = tourStorageOf(
-                getByTourYearAndLeague = getByTourYearAndLeague,
-            ),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(
@@ -202,14 +161,9 @@ class UpdateMatchesInteractorTest {
         // GIVEN
         val dates = (0..2).map { index -> offsetDateTime().minusDays(index.toLong()) }
         val getAllMatches = dates.map { date -> scheduledOf(date = date) }
-        val tour = tourOf()
-        val getByTourYearAndLeague = flowOf(tour)
 
         // WHEN
         val result = interactor(
-            tourStorage = tourStorageOf(
-                getByTourYearAndLeague = getByTourYearAndLeague,
-            ),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(invoke = { UpdateMatchReportResult.success(Unit) })
@@ -226,14 +180,9 @@ class UpdateMatchesInteractorTest {
     fun `interactor returns NothingToSchedule success when there is no Scheduled match`() = runTest {
         // GIVEN
         val getAllMatches = listOf(potentiallyFinishedOf(), notScheduledOf(), savedOf())
-        val tour = tourOf()
-        val getByTourYearAndLeague = flowOf(tour)
 
         // WHEN
         val result = interactor(
-            tourStorage = tourStorageOf(
-                getByTourYearAndLeague = getByTourYearAndLeague,
-            ),
             polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(invoke = { UpdateMatchReportResult.success(Unit) })

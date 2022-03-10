@@ -4,7 +4,6 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
-import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.InsertPlayerError
 import com.kamilh.storage.InsertPlayerResult
 import com.kamilh.storage.PlayerStorage
@@ -26,11 +25,9 @@ class UpdatePlayersInteractorTest {
     )
 
     private fun paramsOf(
-        league: League = leagueOf(),
-        tourYear: Season = seasonOf(),
+        tour: Tour = tourOf(),
     ): UpdatePlayersParams = UpdatePlayersParams(
-        league = league,
-        season = tourYear,
+        tour = tour,
     )
 
     @Test
@@ -100,7 +97,7 @@ class UpdatePlayersInteractorTest {
                 getPlayerDetails = networkSuccessOf(playerDetails)
             ),
             playerStorage = playerStorageOf(
-                insert = { _, _, _ -> InsertPlayerResult.success(Unit) }
+                insert = { _, _ -> InsertPlayerResult.success(Unit) }
             )
         )(paramsOf())
 
@@ -120,7 +117,7 @@ class UpdatePlayersInteractorTest {
                 getPlayerDetails = networkSuccessOf(playerDetailsOf())
             ),
             playerStorage = playerStorageOf(
-                insert = { _, _, _ -> InsertPlayerResult.failure(error) }
+                insert = { _, _ -> InsertPlayerResult.failure(error) }
             )
         )(paramsOf())
 

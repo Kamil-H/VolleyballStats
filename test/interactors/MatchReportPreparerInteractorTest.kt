@@ -5,7 +5,6 @@ import com.kamilh.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.match_analyzer.MatchReportAnalyzerResult
 import com.kamilh.match_analyzer.matchReportAnalyzerOf
 import com.kamilh.models.*
-import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.InsertMatchStatisticsError
 import com.kamilh.storage.InsertMatchStatisticsResult
 import com.kamilh.storage.MatchStatisticsStorage
@@ -30,16 +29,14 @@ class MatchReportPreparerInteractorTest {
 
     private fun paramsOf(
         matches: List<Pair<MatchId, MatchReport>> = emptyList(),
-        league: League = leagueOf(),
-        tourYear: Season = seasonOf(),
+        tour: Tour = tourOf(),
     ): MatchReportPreparerParams = MatchReportPreparerParams(
         matches = matches,
-        league = league,
-        season = tourYear,
+        tour = tour,
     )
 
-    private fun insertCallbackOf(callback: () -> InsertMatchStatisticsResult): (matchStatistics: MatchStatistics, league: League, tourYear: Season, matchId: MatchId) -> InsertMatchStatisticsResult =
-        { _, _, _, _ -> callback() }
+    private fun insertCallbackOf(callback: () -> InsertMatchStatisticsResult): (matchStatistics: MatchStatistics, tourId: TourId, matchId: MatchId) -> InsertMatchStatisticsResult =
+        { _, _, _ -> callback() }
 
     @Test
     fun `interactor returns Success when empty matches list is passed`() = runTest {

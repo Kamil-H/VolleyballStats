@@ -5,9 +5,10 @@ import com.kamilh.models.MatchReportId;
 import com.kamilh.models.Phase;
 import com.kamilh.models.PlayerId;
 import com.kamilh.models.PlayerPosition;
+import com.kamilh.models.Season;
 import com.kamilh.models.TeamId;
 import com.kamilh.models.TeamPlayer.Specialization;
-import com.kamilh.models.Season;
+import com.kamilh.models.TourId;
 import com.kamilh.models.Url;
 import com.kamilh.storage.MatchState;
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ CREATE TABLE IF NOT EXISTS team_model (
 );
 
 CREATE TABLE IF NOT EXISTS tour_model (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  id INTEGER AS TourId PRIMARY KEY NOT NULL,
   name TEXT NOT NULL,
   season INTEGER AS Season NOT NULL,
   league_id INTEGER NOT NULL,
@@ -48,7 +49,7 @@ CREATE TABLE IF NOT EXISTS tour_team_model (
     image_url TEXT AS Url NOT NULL,
     logo_url TEXT AS Url NOT NULL,
     team_id INTEGER AS TeamId NOT NULL,
-    tour_id INTEGER NOT NULL,
+    tour_id INTEGER AS TourId NOT NULL,
     updated_at TEXT AS LocalDateTime NOT NULL,
     UNIQUE(team_id, tour_id),
     FOREIGN KEY (team_id) REFERENCES team_model(id),
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS match_statistics_model (
   away INTEGER NOT NULL,
   mvp INTEGER NOT NULL,
   best_player INTEGER,
-  tour_id INTEGER NOT NULL,
+  tour_id INTEGER AS TourId NOT NULL,
   phase TEXT AS Phase NOT NULL,
   updated_at TEXT AS LocalDateTime NOT NULL,
   FOREIGN KEY (home) REFERENCES tour_team_model(id),
@@ -242,7 +243,7 @@ CREATE TABLE IF NOT EXISTS match_model (
   state TEXT AS MatchState NOT NULL,
   date TEXT AS OffsetDateTime,
   match_statistics_id INTEGER AS MatchReportId,
-  tour_id INTEGER NOT NULL,
+  tour_id INTEGER AS TourId NOT NULL,
   home INTEGER NOT NULL,
   away INTEGER NOT NULL,
   FOREIGN KEY (home) REFERENCES tour_team_model(id),

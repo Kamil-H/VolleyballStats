@@ -2,6 +2,7 @@ package com.kamilh.storage
 
 import com.kamilh.databse.SelectByTourYearAndName
 import com.kamilh.databse.TeamQueries
+import com.kamilh.databse.TourQueries
 import com.kamilh.databse.TourTeamQueries
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
@@ -14,11 +15,11 @@ import java.time.LocalDateTime
 
 interface TeamStorage {
 
-    suspend fun insert(teams: List<Team>, league: League, season: Season): InsertTeamResult
+    suspend fun insert(teams: List<Team>, tourId: TourId): InsertTeamResult
 
-    suspend fun getAllTeams(league: League, season: Season): Flow<List<Team>>
+    suspend fun getAllTeams(tourId: TourId): Flow<List<Team>>
 
-    suspend fun getTeam(name: String, code: String, league: League, season: Season): Team?
+    suspend fun getTeam(name: String, code: String, tourId: TourId): Team?
 }
 
 typealias InsertTeamResult = Result<Unit, InsertTeamError>
@@ -34,11 +35,13 @@ class SqlTeamStorage(
     private val queryRunner: QueryRunner,
     private val teamQueries: TeamQueries,
     private val tourTeamQueries: TourTeamQueries,
+    private val tourQueries: TourQueries,
 ) : TeamStorage {
 
-    override suspend fun insert(teams: List<Team>, league: League, season: Season): InsertTeamResult =
+    override suspend fun insert(teams: List<Team>, tourId: TourId): InsertTeamResult =
         queryRunner.runTransaction {
             val firstTeam = teams.firstOrNull() ?: return@runTransaction Result.success(Unit)
+            tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertTeamError>(InsertTeamError.TourNotFound)
             val insert: Team.() -> Exception? = {
                 try {
                     teamQueries.insert(id)
@@ -47,10 +50,8 @@ class SqlTeamStorage(
                         image_url = teamImageUrl,
                         logo_url = logoUrl,
                         team_id = id,
-                        season = season,
+                        tour_id = tourId,
                         updated_at = updatedAt,
-                        country = league.country,
-                        division = league.division,
                     )
                     null
                 } catch (exception: Exception) {
@@ -58,9 +59,7 @@ class SqlTeamStorage(
                 }
             }
             val insertResult = firstTeam.insert()
-            val alreadyExitsTeamIds = if (insertResult?.isTourNotFoundError() == true) {
-                return@runTransaction Result.failure<Unit, InsertTeamError>(InsertTeamError.TourNotFound)
-            } else if (insertResult?.isTourTeamAlreadyExistsError() == true) {
+            val alreadyExitsTeamIds = if (insertResult?.isTourTeamAlreadyExistsError() == true) {
                 listOf(firstTeam.id)
             } else {
                 emptyList()
@@ -79,23 +78,19 @@ class SqlTeamStorage(
             }
         }
 
-    override suspend fun getAllTeams(league: League, season: Season): Flow<List<Team>> =
+    override suspend fun getAllTeams(tourId: TourId): Flow<List<Team>> =
         queryRunner.run {
             tourTeamQueries.selectAllByTourYear(
-                season = season,
-                division = league.division,
-                country = league.country,
+                tour_id = tourId,
                 mapper = mapper,
             ).asFlow().mapToList(queryRunner.dispatcher)
         }
 
-    override suspend fun getTeam(name: String, code: String, league: League, season: Season): Team? =
+    override suspend fun getTeam(name: String, code: String, tourId: TourId): Team? =
         queryRunner.run {
             tourTeamQueries.selectByTourYearAndName(
-                season = season,
+                tour_id = tourId,
                 name = name,
-                division = league.division,
-                country = league.country,
                 code = code,
             ).executeAsOneOrNull()?.toTeam()
         }
@@ -115,7 +110,7 @@ class SqlTeamStorage(
         image_url: Url,
         logo_url: Url,
         team_id: TeamId,
-        tour_id: Long,
+        tour_id: TourId,
         updated_at: LocalDateTime,
     ) -> Team = {
             _: Long,
@@ -123,7 +118,7 @@ class SqlTeamStorage(
             image_url: Url,
             logo_url: Url,
             team_id: TeamId,
-            _: Long,
+            _: TourId,
             updated_at: LocalDateTime,
         ->
         Team(
@@ -135,9 +130,6 @@ class SqlTeamStorage(
         )
     }
 }
-
-private fun Exception.isTourNotFoundError(): Boolean =
-    createSqlError(tableName = "tour_team_model", columnName = "tour_id") is SqlError.NotNull
 
 private fun Exception.isTourTeamAlreadyExistsError(): Boolean =
     createSqlError(tableName = "tour_team_model", columnName = "team_id") is SqlError.Uniqueness

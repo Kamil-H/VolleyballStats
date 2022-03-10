@@ -5,6 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun tourOf(
+    id: TourId = tourIdOf(),
     name: String = "",
     season: Season = seasonOf(),
     league: League = leagueOf(),
@@ -13,6 +14,7 @@ fun tourOf(
     winnerId: TeamId? = teamIdOf(),
     updatedAt: LocalDateTime = LocalDateTime.now(),
 ): Tour = Tour(
+    id = id,
     name = name,
     season = season,
     league = league,

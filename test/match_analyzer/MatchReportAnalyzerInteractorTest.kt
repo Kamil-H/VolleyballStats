@@ -5,7 +5,6 @@ import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.repository.models.MatchResponse
 import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
-import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.storage.TeamStorage
 import com.kamilh.storage.teamStorageOf
 import com.kamilh.utils.testAppDispatchers
@@ -22,7 +21,7 @@ import kotlin.time.Duration
 
 class MatchReportAnalyzerInteractorTest {
 
-    private val season = seasonOf()
+    private val tour = tourOf()
     private fun analyzer(
         teamStorage: TeamStorage = teamStorageOf(),
         strategies: List<PlayActionStrategy<*>> = emptyList(),
@@ -48,7 +47,7 @@ class MatchReportAnalyzerInteractorTest {
         val errors: MutableList<AnalyzeError> = mutableListOf()
 
         // WHEN
-        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, season)
+        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
 
         // THEN
         result.assertFailure {
@@ -70,7 +69,7 @@ class MatchReportAnalyzerInteractorTest {
         val errors: MutableList<AnalyzeError> = mutableListOf()
 
         // WHEN
-        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, season)
+        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
 
         // THEN
         result.assertFailure {
@@ -97,7 +96,7 @@ class MatchReportAnalyzerInteractorTest {
         val result = analyzer(
             analyzeErrorReporter = analyzeErrorReporterOf(errors),
             teamStorage = teamStorageOf(getTeam = listOf(homeTeam)),
-        ).analyze(matchReport, season)
+        ).analyze(matchReport, tour)
 
         // THEN
         result.assertFailure {
@@ -126,7 +125,7 @@ class MatchReportAnalyzerInteractorTest {
         )
 
         // WHEN
-        val result = analyzer(teamStorage = teamStorage).analyze(matchReport, seasonOf())
+        val result = analyzer(teamStorage = teamStorage).analyze(matchReport, tourOf())
         require(result is Result.Success)
         val matchStatistics = result.value
 

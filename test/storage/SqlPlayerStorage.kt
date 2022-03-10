@@ -18,7 +18,6 @@ class SqlPlayerStorageTest : DatabaseTest() {
             playerQueries = playerQueries,
             teamPlayerQueries = teamPlayerQueries,
             tourTeamQueries = tourTeamQueries,
-            tourQueries = tourQueries,
         )
     }
 
@@ -38,11 +37,10 @@ class SqlPlayerStorageTest : DatabaseTest() {
     fun `insert returns TourNotFound when no tour in the database`() = runBlockingTest {
         // GIVEN
         val player = playerWithDetailsOf()
-        val league = leagueOf()
-        val tourYear = seasonOf()
+        val tourId = tourIdOf()
 
         // WHEN
-        val result = storage.insert(listOf(player), league, tourYear)
+        val result = storage.insert(listOf(player), tourId)
 
         // THEN
         result.assertFailure()
@@ -51,11 +49,10 @@ class SqlPlayerStorageTest : DatabaseTest() {
     @Test
     fun `insert returns Success when no players to add`() = runBlockingTest {
         // GIVEN
-        val league = leagueOf()
-        val tourYear = seasonOf()
+        val tourId = tourIdOf()
 
         // WHEN
-        val result = storage.insert(emptyList(), league, tourYear)
+        val result = storage.insert(emptyList(), tourId)
 
         // THEN
         result.assertSuccess()
@@ -64,22 +61,20 @@ class SqlPlayerStorageTest : DatabaseTest() {
     @Test
     fun `insert returns Success when correct team and tour is in the database`() = runBlockingTest {
         // GIVEN
-        val league = leagueOf()
-        val tourYear = seasonOf()
-        val tour = tourOf(season = tourYear)
+        val tour = tourOf()
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val player = playerWithDetailsOf(
             teamPlayer = teamPlayerOf(team = teamId)
         )
         configure(
-            leagues = listOf(league),
+            leagues = listOf(tour.league),
             tours = listOf(tour),
-            teams = listOf(InsertTeam(team, league, tourYear)),
+            teams = listOf(InsertTeam(team, tour)),
         )
 
         // WHEN
-        val result = storage.insert(listOf(player), league, tourYear)
+        val result = storage.insert(listOf(player), tour.id)
 
         // THEN
         result.assertSuccess()
@@ -103,7 +98,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         )
 
         // WHEN
-        val result = storage.insert(listOf(player), league, tourYear)
+        val result = storage.insert(listOf(player), tour.id)
 
         // THEN
         result.assertFailure {
@@ -128,12 +123,12 @@ class SqlPlayerStorageTest : DatabaseTest() {
         configure(
             leagues = listOf(league),
             tours = listOf(tour),
-            teams = listOf(InsertTeam(team, league, tourYear)),
-            players = listOf(InsertPlayer(player, league, tourYear))
+            teams = listOf(InsertTeam(team, tour)),
+            players = listOf(InsertPlayer(player, tour))
         )
 
         // WHEN
-        val result = storage.insert(listOf(player), league, tourYear)
+        val result = storage.insert(listOf(player), tour.id)
 
         // THEN
         result.assertFailure {
@@ -172,12 +167,12 @@ class SqlPlayerStorageTest : DatabaseTest() {
         configure(
             leagues = listOf(league),
             tours = listOf(tour),
-            teams = listOf(InsertTeam(team, league, tourYear)),
-            players = listOf(InsertPlayer(teamPlayer, league, tourYear))
+            teams = listOf(InsertTeam(team, tour)),
+            players = listOf(InsertPlayer(teamPlayer, tour))
         )
 
         // WHEN
-        val result = storage.getAllPlayers(teamId, league, tourYear)
+        val result = storage.getAllPlayers(teamId, tour.id)
 
         // THEN
         result.test {
@@ -187,14 +182,14 @@ class SqlPlayerStorageTest : DatabaseTest() {
 }
 
 fun playerStorageOf(
-    insert: (players: List<PlayerWithDetails>, league: League, tour: Season) -> InsertPlayerResult = { _, _, _ ->
+    insert: (players: List<PlayerWithDetails>, tourId: TourId) -> InsertPlayerResult = { _, _ ->
         InsertPlayerResult.success(Unit)
     },
     getAllPlayersByTeam: Flow<List<PlayerWithDetails>> = flowOf(emptyList()),
     getAllPlayers: Flow<List<PlayerWithDetails>> = flowOf(emptyList()),
 ): PlayerStorage = object : PlayerStorage {
-    override suspend fun insert(players: List<PlayerWithDetails>, league: League, season: Season): InsertPlayerResult =
-        insert(players, league, season)
-    override suspend fun getAllPlayers(teamId: TeamId, league: League, season: Season): Flow<List<PlayerWithDetails>> = getAllPlayersByTeam
-    override suspend fun getAllPlayers(league: League, season: Season): Flow<List<PlayerWithDetails>> = getAllPlayers
+    override suspend fun insert(players: List<PlayerWithDetails>, tourId: TourId): InsertPlayerResult =
+        insert(players, tourId)
+    override suspend fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>> = getAllPlayersByTeam
+    override suspend fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>> = getAllPlayers
 }
