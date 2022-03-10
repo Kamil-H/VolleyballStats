@@ -1,10 +1,7 @@
 package com.kamilh.storage
 
 import app.cash.turbine.test
-import com.kamilh.match_analyzer.MatchReportAnalyzerInteractor
-import com.kamilh.match_analyzer.analyzeErrorReporterOf
-import com.kamilh.match_analyzer.eventsPreparerOf
-import com.kamilh.match_analyzer.loadMatchReportFile
+import com.kamilh.match_analyzer.*
 import com.kamilh.match_analyzer.strategies.*
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
@@ -120,7 +117,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                 )
             )
         }
-        val matchStatistics = analyzer.analyze(matchReport, tour).value!!
+        val matchStatistics = analyzer(MatchReportAnalyzerParams(matchReport, tour)).value!!
 
         // WHEN
         val insertResult = storage.insert(matchStatistics, tour.id, matchId)

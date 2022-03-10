@@ -41,10 +41,8 @@ class MatchReportAnalyzerInteractor(
     private val analyzeErrorReporter: AnalyzeErrorReporter,
 ) : MatchReportAnalyzer(appDispatchers) {
 
-    override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult =
-        analyze(params.matchReport, params.tour)
-
-    suspend fun analyze(matchReport: MatchReport, tour: Tour): MatchReportAnalyzerResult {
+    override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult {
+        val (matchReport: MatchReport, tour: Tour) = params
         val matchId = matchReport.matchId
 
         if (matchReport.scout.sets.size > matchReport.scoutData.size) {

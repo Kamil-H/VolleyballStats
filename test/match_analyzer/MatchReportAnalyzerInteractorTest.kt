@@ -35,6 +35,14 @@ class MatchReportAnalyzerInteractorTest {
         analyzeErrorReporter = analyzeErrorReporter,
     )
 
+    private fun paramsOf(
+        matchReport: MatchReport = matchReportOf(),
+        tour: Tour = tourOf(),
+    ): MatchReportAnalyzerParams = MatchReportAnalyzerParams(
+        matchReport = matchReport,
+        tour = tour,
+    )
+
     @Test
     fun `test that Exception is thrown when there are more Sets in Scout than in ScoutData`() = runBlockingTest {
         // GIVEN
@@ -47,7 +55,7 @@ class MatchReportAnalyzerInteractorTest {
         val errors: MutableList<AnalyzeError> = mutableListOf()
 
         // WHEN
-        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
+        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors))(paramsOf(matchReport, tour))
 
         // THEN
         result.assertFailure {
@@ -69,7 +77,7 @@ class MatchReportAnalyzerInteractorTest {
         val errors: MutableList<AnalyzeError> = mutableListOf()
 
         // WHEN
-        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors)).analyze(matchReport, tour)
+        val result = analyzer(analyzeErrorReporter = analyzeErrorReporterOf(errors))(paramsOf(matchReport, tour))
 
         // THEN
         result.assertFailure {
@@ -96,7 +104,7 @@ class MatchReportAnalyzerInteractorTest {
         val result = analyzer(
             analyzeErrorReporter = analyzeErrorReporterOf(errors),
             teamStorage = teamStorageOf(getTeam = listOf(homeTeam)),
-        ).analyze(matchReport, tour)
+        )(paramsOf(matchReport, tour))
 
         // THEN
         result.assertFailure {
@@ -125,7 +133,7 @@ class MatchReportAnalyzerInteractorTest {
         )
 
         // WHEN
-        val result = analyzer(teamStorage = teamStorage).analyze(matchReport, tourOf())
+        val result = analyzer(teamStorage = teamStorage)(paramsOf(matchReport, tourOf()))
         require(result is Result.Success)
         val matchStatistics = result.value
 
