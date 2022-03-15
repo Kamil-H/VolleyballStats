@@ -1,6 +1,8 @@
 package com.kamilh.storage
 
 import com.kamilh.databse.SelectAllMatchesByTour
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
@@ -8,9 +10,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 class SqlMatchStorageTest : StatisticsStorageTest() {
 
@@ -133,7 +134,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val league = leagueOf()
         val tour = configure(season, league)
         val matchId = matchIdOf(2)
-        val date = OffsetDateTime.now(clock)
+        val date = ZonedDateTime.now(clock)
         val match = scheduledOf(id = matchId, date = date)
 
         // WHEN
@@ -173,7 +174,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val league = leagueOf()
         val tour = configure(season, league)
         val matchId = matchIdOf(2)
-        val date = OffsetDateTime.now(clock)
+        val date = ZonedDateTime.now(clock)
         val match = scheduledOf(id = matchId, date = date)
 
         // WHEN
@@ -232,8 +233,8 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             number = 1,
             home_score = 2,
             away_score = 3,
-            start_time = OffsetDateTime.now(clock),
-            end_time = OffsetDateTime.now(clock),
+            start_time = ZonedDateTime.now(clock),
+            end_time = ZonedDateTime.now(clock),
             duration = Duration.ZERO,
             match_statistics_id = matchReportId,
         )
@@ -250,7 +251,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             state = MatchState.PotentiallyFinished,
             match_statistics_id = matchReportId,
             date = null,
-            end_time = OffsetDateTime.now(clock),
+            end_time = ZonedDateTime.now(clock),
             winner_team_id = null,
         )
         assert(newValue == newExpectedValue)
@@ -300,7 +301,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
                 )
             )
         }
-        val now = OffsetDateTime.now(clock)
+        val now = ZonedDateTime.now(clock)
         val range = (1..size)
         val matches = (1..size + 1).map { index -> potentiallyFinishedOf(matchIdOf(index.toLong())) }
         val matchStats = range.map { index ->
@@ -311,7 +312,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
                 sets = (1..index + 3).map { setIndex ->
                     matchSetOf(
                         number = setIndex,
-                        endTime = now.plusHours(setIndex.toLong()),
+                        endTime = now.plus(setIndex.hours),
                         score = Score(home = 0, away = 25)
                     )
                 }
@@ -347,9 +348,9 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
 private fun selectAllMatchesByTourOf(
     id: MatchId = matchIdOf(),
     state: MatchState = MatchState.Scheduled,
-    date: OffsetDateTime? = null,
+    date: ZonedDateTime? = null,
     match_statistics_id: MatchReportId? = null,
-    end_time: OffsetDateTime? = null,
+    end_time: ZonedDateTime? = null,
     winner_team_id: TeamId? = null,
     home_id: TeamId = teamIdOf(),
     away_id: TeamId = teamIdOf(),

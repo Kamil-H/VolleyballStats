@@ -1,9 +1,8 @@
 package com.kamilh.utils.cache
 
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.utils.CurrentDate
-import java.time.LocalDateTime
 import kotlin.time.Duration
-import kotlin.time.toJavaDuration
 
 interface CacheValidator<STAMP> {
 
@@ -17,7 +16,7 @@ class LocalDateTimeCacheValidator(
 ) : CacheValidator<LocalDateTime> {
 
     override suspend fun isValid(stamp: LocalDateTime): Boolean =
-        CurrentDate.localDateTime < stamp.plus(cacheExpiration.toJavaDuration())
+        CurrentDate.localDateTime < stamp.plus(cacheExpiration)
 
     override suspend fun getStamp(): LocalDateTime = CurrentDate.localDateTime
 }

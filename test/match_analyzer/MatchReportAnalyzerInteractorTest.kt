@@ -1,6 +1,7 @@
 package com.kamilh.match_analyzer
 
-import com.kamilh.extensions.atPolandOffset
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.repository.models.MatchResponse
@@ -15,8 +16,6 @@ import kotlinx.serialization.json.Json
 import match_analyzer.lineupOf
 import org.junit.Test
 import java.io.File
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import kotlin.time.Duration
 
 class MatchReportAnalyzerInteractorTest {
@@ -218,14 +217,14 @@ class MatchReportAnalyzerInteractorTest {
         endTime: String,
         duration: Int,
     ): MatchTime = MatchTime(
-        startTime = LocalDateTime.parse(startTime).atPolandOffset(),
-        endTime = LocalDateTime.parse(endTime).atPolandOffset(),
+        startTime = LocalDateTime.parse(startTime).atPolandZone(),
+        endTime = LocalDateTime.parse(endTime).atPolandZone(),
         duration = Duration.minutes(duration),
     )
 
     private data class MatchTime(
-        val startTime: OffsetDateTime,
-        val endTime: OffsetDateTime,
+        val startTime: ZonedDateTime,
+        val endTime: ZonedDateTime,
         val duration: Duration,
     )
 }

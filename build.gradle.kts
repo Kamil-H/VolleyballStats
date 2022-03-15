@@ -63,6 +63,8 @@ dependencies {
 
     implementation(Dependencies.Jsoup.jsoup)
 
+    implementation(Dependencies.DateTime.dateTime)
+
     testImplementation(Dependencies.Coroutines.Test.test)
     testImplementation(Dependencies.Ktor.Test.server)
     testImplementation(Dependencies.Ktor.Test.client)

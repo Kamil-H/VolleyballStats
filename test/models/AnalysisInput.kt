@@ -1,7 +1,8 @@
 package com.kamilh.models
 
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.match_analyzer.AnalysisInput
-import java.time.LocalDateTime
+import com.kamilh.utils.localDateTime
 import java.util.*
 
 fun analysisInputOf(
@@ -9,8 +10,8 @@ fun analysisInputOf(
     matchId: MatchReportId = matchReportIdOf(),
     set: Int = 0,
     score: Score = scoreOf(),
-    rallyStartTime: LocalDateTime = LocalDateTime.now(),
-    rallyEndTime: LocalDateTime = LocalDateTime.now(),
+    rallyStartTime: LocalDateTime = localDateTime(),
+    rallyEndTime: LocalDateTime = localDateTime(),
 ): AnalysisInput = AnalysisInput(
     plays = plays,
     matchId = matchId,

@@ -1,10 +1,11 @@
 package com.kamilh.models
 
-import java.time.OffsetDateTime
+import com.kamilh.datetime.ZonedDateTime
+import com.kamilh.utils.zonedDateTime
 
 fun potentiallyFinishedOf(
     id: MatchId = matchIdOf(),
-    date: OffsetDateTime? = null,
+    date: ZonedDateTime? = null,
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
 ): AllMatchesItem.PotentiallyFinished = AllMatchesItem.PotentiallyFinished(
@@ -16,7 +17,7 @@ fun potentiallyFinishedOf(
 
 fun scheduledOf(
     id: MatchId = matchIdOf(),
-    date: OffsetDateTime = OffsetDateTime.now(),
+    date: ZonedDateTime = zonedDateTime(),
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
 ): AllMatchesItem.Scheduled = AllMatchesItem.Scheduled(
@@ -28,7 +29,7 @@ fun scheduledOf(
 
 fun notScheduledOf(
     id: MatchId = matchIdOf(),
-    date: OffsetDateTime? = null,
+    date: ZonedDateTime? = null,
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
 ): AllMatchesItem.NotScheduled = AllMatchesItem.NotScheduled(
@@ -40,12 +41,12 @@ fun notScheduledOf(
 
 fun savedOf(
     id: MatchId = matchIdOf(),
-    date: OffsetDateTime? = null,
+    date: ZonedDateTime? = null,
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
     matchReportId: MatchReportId = matchReportIdOf(),
     winnerId: TeamId = teamIdOf(),
-    endTime: OffsetDateTime = OffsetDateTime.now(),
+    endTime: ZonedDateTime = zonedDateTime(),
 ): AllMatchesItem.Saved = AllMatchesItem.Saved(
     id = id,
     date = date,

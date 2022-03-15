@@ -1,15 +1,13 @@
 package com.kamilh.storage.common.adapters
 
-import com.kamilh.extensions.toIsoString
-import com.kamilh.extensions.toLocalDate
+import com.kamilh.datetime.LocalDate
 import com.squareup.sqldelight.ColumnAdapter
-import java.time.LocalDate
 
 internal class LocalDateAdapter : ColumnAdapter<LocalDate, String> {
 
     override fun decode(databaseValue: String): LocalDate =
-        databaseValue.toLocalDate()!!
+        LocalDate.parse(databaseValue)
 
     override fun encode(value: LocalDate): String =
-        value.toIsoString()
+        value.toIso8601String()
 }

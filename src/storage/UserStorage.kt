@@ -1,10 +1,10 @@
 package com.kamilh.storage
 
 import com.kamilh.authorization.SubscriptionKey
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.Error
 import com.kamilh.models.Result
 import com.kamilh.models.User
-import java.time.OffsetDateTime
 import java.util.*
 
 interface UserStorage {
@@ -17,7 +17,7 @@ interface UserStorage {
 data class InsertUser(
     val subscriptionKey: SubscriptionKey,
     val deviceId: UUID,
-    val createDate: OffsetDateTime,
+    val createDate: LocalDateTime,
 )
 
 typealias InsertUserResult = Result<Unit, InsertUserError>

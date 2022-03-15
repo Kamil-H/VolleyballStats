@@ -1,7 +1,6 @@
 package com.kamilh.routes.user
 
 import com.kamilh.authorization.SubscriptionKey
-import com.kamilh.extensions.toIsoString
 import com.kamilh.interactors.AddUser
 import com.kamilh.interactors.AddUserParams
 import com.kamilh.interactors.GetUser
@@ -71,5 +70,5 @@ private fun User.toUserResponse(): UserResponse =
         id = id,
         subscriptionKey = subscriptionKey.value.toString(),
         deviceId = deviceId.toString(),
-        createDate = createDate.toIsoString(),
+        createDate = createDate.toIso8601String(),
     )

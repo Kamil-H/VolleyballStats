@@ -1,7 +1,9 @@
 package com.kamilh.models
 
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
+import com.kamilh.utils.localDateTime
+import com.kamilh.utils.zonedDateTime
 import kotlin.time.Duration
 
 fun matchStatisticsOf(
@@ -11,7 +13,7 @@ fun matchStatisticsOf(
     away: MatchTeam = matchTeamOf(),
     mvp: PlayerId = playerIdOf(),
     bestPlayer: PlayerId? = null,
-    updatedAt: LocalDateTime = LocalDateTime.now(),
+    updatedAt: LocalDateTime = localDateTime(),
     phase: Phase = Phase.PlayOff,
 ): MatchStatistics = MatchStatistics(
     matchReportId = matchReportId,
@@ -50,8 +52,8 @@ fun matchSetOf(
     number: Int = 0,
     score: Score = scoreOf(),
     points: List<MatchPoint> = emptyList(),
-    startTime: OffsetDateTime = OffsetDateTime.now(),
-    endTime: OffsetDateTime = OffsetDateTime.now(),
+    startTime: ZonedDateTime = zonedDateTime(),
+    endTime: ZonedDateTime = zonedDateTime(),
     duration: Duration = Duration.ZERO,
 ): MatchSet = MatchSet(
     number = number,
@@ -64,8 +66,8 @@ fun matchSetOf(
 
 fun matchPointOf(
     score: Score = scoreOf(),
-    startTime: OffsetDateTime = OffsetDateTime.now(),
-    endTime: OffsetDateTime = OffsetDateTime.now(),
+    startTime: ZonedDateTime = zonedDateTime(),
+    endTime: ZonedDateTime = zonedDateTime(),
     playActions: List<PlayAction> = emptyList(),
     point: TeamId = teamIdOf(),
     homeLineup: Lineup = lineupOf(),

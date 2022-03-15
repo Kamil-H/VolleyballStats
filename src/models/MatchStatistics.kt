@@ -1,7 +1,7 @@
 package com.kamilh.models
 
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
 import kotlin.time.Duration
 
 data class MatchStatistics(
@@ -19,15 +19,15 @@ data class MatchSet(
     val number: Int,
     val score: Score,
     val points: List<MatchPoint>,
-    val startTime: OffsetDateTime,
-    val endTime: OffsetDateTime,
+    val startTime: ZonedDateTime,
+    val endTime: ZonedDateTime,
     val duration: Duration,
 )
 
 data class MatchPoint(
     val score: Score,
-    val startTime: OffsetDateTime,
-    val endTime: OffsetDateTime,
+    val startTime: ZonedDateTime,
+    val endTime: ZonedDateTime,
     val playActions: List<PlayAction> = emptyList(),
     val point: TeamId,
     val homeLineup: Lineup,

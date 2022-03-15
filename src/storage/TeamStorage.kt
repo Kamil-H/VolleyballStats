@@ -11,7 +11,7 @@ import com.kamilh.storage.common.errors.createSqlError
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDateTime
 
 interface TeamStorage {
 

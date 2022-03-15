@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
-import java.time.LocalDate
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
+import kotlin.time.Duration.Companion.days
 
 class SqlSqlTourStorageTest : DatabaseTest() {
 
@@ -16,7 +17,6 @@ class SqlSqlTourStorageTest : DatabaseTest() {
         SqlTourStorage(
             queryRunner = testQueryRunner,
             tourQueries = tourQueries,
-            clock = clock,
         )
     }
 
@@ -126,7 +126,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
         // GIVEN
         val tourYear = seasonOf()
         val league = leagueOf(division = 1)
-        val updatedAt = LocalDateTime.now(clock).minusDays(1)
+        val updatedAt = LocalDateTime.now(clock).minus(1.days)
         val tour = tourOf(season = tourYear, league = league, updatedAt = updatedAt)
         val endTime = LocalDate.now(clock)
 

@@ -1,5 +1,6 @@
 package com.kamilh.interactors
 
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertMatchStatisticsError
@@ -7,7 +8,6 @@ import com.kamilh.storage.InsertMatchesError
 import com.kamilh.storage.MatchStorage
 import com.kamilh.storage.TourStorage
 import kotlinx.coroutines.flow.first
-import java.time.OffsetDateTime
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
 
@@ -18,7 +18,7 @@ typealias UpdateMatchesResult = Result<UpdateMatchesSuccess, UpdateMatchesError>
 sealed class UpdateMatchesSuccess {
     object SeasonCompleted : UpdateMatchesSuccess()
     object NothingToSchedule : UpdateMatchesSuccess()
-    class NextMatch(val dateTime: OffsetDateTime) : UpdateMatchesSuccess()
+    class NextMatch(val dateTime: ZonedDateTime) : UpdateMatchesSuccess()
 }
 
 sealed class UpdateMatchesError(override val message: String) : Error {

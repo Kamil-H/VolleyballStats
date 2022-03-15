@@ -1,11 +1,12 @@
 package com.kamilh.interactors
 
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.storage.*
 import com.kamilh.utils.CurrentDate
-import com.kamilh.utils.offsetDateTime
 import com.kamilh.utils.testClock
+import com.kamilh.utils.zonedDateTime
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -14,7 +15,8 @@ import org.junit.Before
 import org.junit.Test
 import utils.Logger
 import utils.Severity
-import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 class SynchronizerTest {
 
@@ -418,7 +420,7 @@ class SynchronizerTest {
     fun `schedule called when updateMatches returns NextMatch success`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
-        val nextMatch = offsetDateTime().plusDays(2)
+        val nextMatch = zonedDateTime().plus(2.days)
         var scheduleDate: LocalDateTime? = null
 
         // WHEN
@@ -431,11 +433,10 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        println("nextMatch: $nextMatch, nextMatchLocal: ${nextMatch.toLocalDateTime()}, $scheduleDate")
-        assert(nextMatch.toLocalDateTime().plusHours(3) == scheduleDate)
+        assert(nextMatch.toLocalDateTime().plus(3.hours) == scheduleDate)
     }
 
     private fun assertDate(date: LocalDateTime?) {
-        assert(LocalDateTime.now(testClock).plusHours(1) == date)
+        assert(LocalDateTime.now(testClock).plus(1.hours) == date)
     }
 }

@@ -1,17 +1,12 @@
 package repository.models.mappers
 
-import com.kamilh.extensions.atPolandOffset
 import com.kamilh.models.AllMatchesItem
 import com.kamilh.models.MatchId
 import com.kamilh.models.Result
-import com.kamilh.repository.extensions.toPolishLeagueDateString
 import com.kamilh.repository.extensions.toPolishLeagueLocalDate
 import com.kamilh.repository.models.mappers.HtmlToAllMatchesItemMapper
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 class HtmlToAllMatchesItemMapperTest {
 
@@ -42,11 +37,11 @@ class HtmlToAllMatchesItemMapperTest {
     @Test
     fun `test if when date is from in future result is Scheduled and id is parsed properly`() {
         // GIVEN
-        val date = dateString.toPolishLeagueLocalDate()!!.atPolandOffset()
+        val date = dateString.toPolishLeagueLocalDate()!!.atPolandZone()
         val idString = "1101312"
 
         val html = html(
-            dateString = date.toLocalDateTime().toPolishLeagueDateString(),
+            dateString = dateString,
             idString = idString,
             green = "1",
         )
@@ -65,11 +60,11 @@ class HtmlToAllMatchesItemMapperTest {
     @Test
     fun `test if when date is from in midnight result is NotScheduled and id is parsed properly`() {
         // GIVEN
-        val date = LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT)
+        val dateString = "03.06.2021, 00:00"
         val idString = "1101312"
 
         val html = html(
-            dateString = date.toPolishLeagueDateString(),
+            dateString = dateString,
             idString = idString,
             green = "1",
         )

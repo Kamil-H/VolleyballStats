@@ -79,8 +79,8 @@ object Dependencies {
     }
 
     object DateTime {
-        private const val version = "0.3.2"
-        const val dateTime = "org.jetbrains.kotlinx:kotlinx-datetime:$version"
+        private const val version = "0.6.3"
+        const val dateTime = "io.islandtime:core:$version"
     }
 
     object JUnit5 {

@@ -1,11 +1,11 @@
 package com.kamilh.repository.models.mappers
 
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.parsePolishLeagueDate
 import com.kamilh.models.PlayerDetails
 import com.kamilh.repository.parsing.HtmlParser
+import com.kamilh.utils.CurrentDate
 import repository.parsing.ParseResult
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /**
 <div class="row">
@@ -33,8 +33,7 @@ class HtmlToPlayerDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper
             it.children().forEach { child ->
                 val regex = Regex("\\d{2}.\\d{2}.\\d{4}")
                 regex.find(child.outerHtml())?.value?.let { dateString ->
-                    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-                    date = LocalDate.parse(dateString, formatter)
+                    date = LocalDate.parsePolishLeagueDate(dateString)
                 }
             }
         }
@@ -59,7 +58,7 @@ class HtmlToPlayerDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper
             weight = weight,
             range = range,
             number = number!!,
-            updatedAt = LocalDateTime.now(),
+            updatedAt = CurrentDate.localDateTime,
         )
     }
 }

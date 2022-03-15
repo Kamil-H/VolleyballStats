@@ -9,7 +9,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.toJavaDuration
 
 class LocalDateTimeCacheValidatorTest {
 
@@ -39,7 +38,7 @@ class LocalDateTimeCacheValidatorTest {
         val cacheExpiration = 5.minutes
         val validator = validatorOf(cacheExpiration = cacheExpiration)
         val stamp = validator.getStamp()
-        val newClock = clockOf(testInstant.plus((cacheExpiration - 1.minutes).toJavaDuration()))
+        val newClock = clockOf(testInstant.plus((cacheExpiration - 1.minutes)))
         CurrentDate.changeClock(newClock)
 
         // WHEN
@@ -55,7 +54,7 @@ class LocalDateTimeCacheValidatorTest {
         val cacheExpiration = 5.minutes
         val validator = validatorOf(cacheExpiration = cacheExpiration)
         val stamp = validator.getStamp()
-        val newClock = clockOf(testInstant.plus((cacheExpiration + 1.minutes).toJavaDuration()))
+        val newClock = clockOf(testInstant.plus((cacheExpiration + 1.minutes)))
         CurrentDate.changeClock(newClock)
 
         // WHEN

@@ -1,18 +1,20 @@
 package com.kamilh.models
 
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.repository.polishleague.seasonOf
-import java.time.LocalDate
-import java.time.LocalDateTime
+import com.kamilh.utils.localDate
+import com.kamilh.utils.localDateTime
 
 fun tourOf(
     id: TourId = tourIdOf(),
     name: String = "",
     season: Season = seasonOf(),
     league: League = leagueOf(),
-    startDate: LocalDate = LocalDate.now(),
+    startDate: LocalDate = localDate(),
     endDate: LocalDate? = null,
     winnerId: TeamId? = teamIdOf(),
-    updatedAt: LocalDateTime = LocalDateTime.now(),
+    updatedAt: LocalDateTime = localDateTime(),
 ): Tour = Tour(
     id = id,
     name = name,

@@ -1,17 +1,17 @@
 package com.kamilh.storage
 
 import com.kamilh.databse.TourQueries
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.errors.SqlError
 import com.kamilh.storage.common.errors.createSqlError
+import com.kamilh.utils.CurrentDate
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
-import java.time.Clock
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 interface TourStorage {
 
@@ -35,7 +35,6 @@ enum class InsertTourError: Error {
 class SqlTourStorage(
     private val queryRunner: QueryRunner,
     private val tourQueries: TourQueries,
-    private val clock: Clock,
 ) : TourStorage {
 
     override suspend fun insert(tour: Tour): InsertTourResult = try {
@@ -75,7 +74,7 @@ class SqlTourStorage(
         queryRunner.run {
             tourQueries.updateEndTime(
                 end_date = endTime,
-                updated_at = LocalDateTime.now(clock),
+                updated_at = CurrentDate.localDateTime,
                 season = tour.season,
                 country = tour.league.country,
                 division = tour.league.division,

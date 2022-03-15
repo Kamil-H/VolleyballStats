@@ -1,19 +1,19 @@
 package com.kamilh.utils
 
-import java.time.*
+import com.kamilh.datetime.Clock
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
 
 object CurrentDate {
 
-    private var clock: Clock = Clock.systemDefaultZone()
+    private var clock: Clock = Clock.systemDefault()
 
     val localDate: LocalDate
         get() = LocalDate.now(clock)
 
     val localDateTime: LocalDateTime
         get() = LocalDateTime.now(clock)
-
-    val offsetDateTime: OffsetDateTime
-        get() = OffsetDateTime.now(clock)
 
     val zonedDateTime: ZonedDateTime
         get() = ZonedDateTime.now(clock)

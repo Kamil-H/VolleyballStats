@@ -1,7 +1,7 @@
 package com.kamilh.match_analyzer
 
 import com.kamilh.models.*
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDateTime
 
 sealed class AnalyzeError {
 

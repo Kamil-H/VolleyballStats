@@ -3,12 +3,13 @@ package com.kamilh.storage
 import app.cash.turbine.test
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
+import com.kamilh.utils.localDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import models.PlayerWithDetails
 import org.junit.Test
-import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.days
 
 class SqlPlayerStorageTest : DatabaseTest() {
 
@@ -148,9 +149,9 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val tour = tourOf(season = tourYear)
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
-        val now = LocalDateTime.now()
-        val playerUpdatedAt = now.plusDays(1)
-        val detailsUpdatedAt = now.plusDays(2)
+        val now = localDateTime()
+        val playerUpdatedAt = now.plus(1.days)
+        val detailsUpdatedAt = now.plus(2.days)
         val teamPlayer = playerWithDetailsOf(
             teamPlayer = teamPlayerOf(
                 team = teamId,

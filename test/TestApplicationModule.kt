@@ -13,7 +13,7 @@ import org.kodein.di.*
 import routes.CallResult
 import storage.AppConfigDatabaseFactory
 import storage.DatabaseFactory
-import storage.common.adapters.OffsetDateAdapter
+import storage.common.adapters.ZonedDateTimeAdapter
 
 private const val MODULE_NAME = "DI_TEST_APPLICATION_MODULE"
 fun testApplicationModule(
@@ -23,7 +23,7 @@ fun testApplicationModule(
 
     bindProvider { TestAppConfig() }
     bind<Json>() with provider { Json }
-    bind<DatabaseFactory>() with provider { AppConfigDatabaseFactory(instance(), UuidAdapter(), OffsetDateAdapter(),
+    bind<DatabaseFactory>() with provider { AppConfigDatabaseFactory(instance(), UuidAdapter(), ZonedDateTimeAdapter(),
         UrlAdapter(), TeamIdAdapter(), PlayerIdAdapter(), CountryAdapter(), LocalDateAdapter(), LocalDateTimeAdapter(),
         TourYearAdapter(), SpecializationAdapter(), MatchReportIdAdapter(), DurationAdapter(), PositionAdapter(),
         MatchIdAdapter(), TourIdAdapter())

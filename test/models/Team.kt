@@ -1,13 +1,14 @@
 package com.kamilh.models
 
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.utils.localDateTime
 
 fun teamOf(
     id: TeamId = teamIdOf(),
     name: String = "",
     teamImageUrl: Url = urlOf(),
     logoUrl: Url = urlOf(),
-    updatedAt: LocalDateTime = LocalDateTime.now(),
+    updatedAt: LocalDateTime = localDateTime(),
 ): Team = Team(
     id = id,
     name = name,

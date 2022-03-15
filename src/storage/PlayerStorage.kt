@@ -11,8 +11,8 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import models.PlayerWithDetails
-import java.time.LocalDate
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
 
 interface PlayerStorage {
 

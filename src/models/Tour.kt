@@ -1,7 +1,7 @@
 package com.kamilh.models
 
-import java.time.LocalDate
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
 
 data class Tour(
     val id: TourId,

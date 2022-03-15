@@ -1,6 +1,6 @@
 package com.kamilh.interactors
 
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDateTime
 
 fun interface SynchronizeScheduler {
     suspend fun schedule(dateTime: LocalDateTime)

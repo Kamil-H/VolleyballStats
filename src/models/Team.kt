@@ -1,6 +1,6 @@
 package com.kamilh.models
 
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDateTime
 
 data class Team(
     val id: TeamId,

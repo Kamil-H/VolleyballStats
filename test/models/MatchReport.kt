@@ -1,14 +1,15 @@
 package com.kamilh.models
 
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.utils.localDateTime
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 
 fun matchReportOf(
     id: String = "",
     category: String = "",
     city: String? = null,
     competition: String? = null,
-    createdAt: LocalDateTime = LocalDateTime.now(),
+    createdAt: LocalDateTime = localDateTime(),
     division: String = "",
     hall: String = "",
     matchId: MatchReportId = MatchReportId(0),
@@ -98,7 +99,7 @@ fun scorerOf(
 fun scoutOf(
     bestPlayer: BestPlayer? = null,
     coinToss: CoinToss = coinTossOf(),
-    ended: LocalDateTime = LocalDateTime.now(),
+    ended: LocalDateTime = localDateTime(),
     mvp: Mvp = mvpOf(),
     sets: List<Set> = emptyList(),
 ): Scout = Scout(
@@ -163,10 +164,10 @@ fun mvpOf(
 
 fun setOf(
     duration: Int = 0,
-    endTime: LocalDateTime = LocalDateTime.now(),
+    endTime: LocalDateTime = localDateTime(),
     events: List<Event> = emptyList(),
     score: Score = scoreOf(),
-    startTime: LocalDateTime = LocalDateTime.now(),
+    startTime: LocalDateTime = localDateTime(),
     startingLineup: StartingLineup = startingLineupOf(),
 ): Set = Set(
     duration = duration,
@@ -317,7 +318,7 @@ fun liberoOf(
     libero: Int = 0,
     player: Int = 0,
     team: TeamType = TeamType.Away,
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): Event.Libero = Event.Libero(
     enters = enters,
     libero = libero,
@@ -327,10 +328,10 @@ fun liberoOf(
 )
 
 fun rallyOf(
-    endTime: LocalDateTime = LocalDateTime.now(),
+    endTime: LocalDateTime = localDateTime(),
     point: TeamType? = null,
     verified: Boolean? = null,
-    startTime: LocalDateTime = LocalDateTime.now(),
+    startTime: LocalDateTime = localDateTime(),
 ): Event.Rally = Event.Rally(
     endTime = endTime,
     point = point,
@@ -342,7 +343,7 @@ fun sanctionOf(
     team: TeamType = TeamType.Away,
     type: String = "",
     player: Int? = null,
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
     staff: String? = null,
 ): Event.Sanction = Event.Sanction(
     team = team,
@@ -354,7 +355,7 @@ fun sanctionOf(
 
 fun delayOf(
     team: TeamType = TeamType.Away,
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): Event.Delay = Event.Delay(
     team = team,
     time = time,
@@ -364,7 +365,7 @@ fun substitutionOf(
     `in`: Int = 0,
     `out`: Int = 0,
     team: TeamType = TeamType.Away,
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): Event.Substitution = Event.Substitution(
     `in` = `in`,
     `out` = `out`,
@@ -374,7 +375,7 @@ fun substitutionOf(
 
 fun timeoutOf(
     team: TeamType = TeamType.Away,
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): Event.Timeout = Event.Timeout(
     team = team,
     time = time,
@@ -382,11 +383,11 @@ fun timeoutOf(
 
 fun videoChallengeOf(
     atScore: AtScore = atScoreOf(),
-    endTime: LocalDateTime = LocalDateTime.now(),
+    endTime: LocalDateTime = localDateTime(),
     reason: String = "",
     response: Event.VideoChallenge.Response = Event.VideoChallenge.Response.Inconclusive,
     scoreChange: Event.VideoChallenge.ScoreChange = Event.VideoChallenge.ScoreChange.NoChange,
-    startTime: LocalDateTime = LocalDateTime.now(),
+    startTime: LocalDateTime = localDateTime(),
     team: TeamType = TeamType.Away,
 ): Event.VideoChallenge = Event.VideoChallenge(
     atScore = atScore,

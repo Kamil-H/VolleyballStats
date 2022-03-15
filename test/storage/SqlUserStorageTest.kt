@@ -1,14 +1,15 @@
 package com.kamilh.storage
 
 import com.kamilh.authorization.SubscriptionKey
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.Result
 import com.kamilh.models.User
 import com.kamilh.storage.common.QueryRunner
+import com.kamilh.utils.localDateTime
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
-import java.time.OffsetDateTime
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -121,7 +122,7 @@ fun userOf(
     id: Long = 0L,
     subscriptionKey: UUID = nullUUID(),
     deviceId: UUID = nullUUID(),
-    createDate: OffsetDateTime = OffsetDateTime.now(),
+    createDate: LocalDateTime = localDateTime(),
 ): User =
     User(
         id = id,
@@ -133,7 +134,7 @@ fun userOf(
 fun insertUserOf(
     subscriptionKey: UUID = nullUUID(),
     deviceId: UUID = nullUUID(),
-    createDate: OffsetDateTime = OffsetDateTime.now(),
+    createDate: LocalDateTime = localDateTime(),
 ): InsertUser =
     InsertUser(
         subscriptionKey = subscriptionKeyOf(subscriptionKey),

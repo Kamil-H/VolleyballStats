@@ -1,8 +1,10 @@
 package com.kamilh.models
 
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.utils.localDate
+import com.kamilh.utils.localDateTime
 import models.PlayerWithDetails
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 fun playerOf(
     id: PlayerId = playerIdOf(),
@@ -18,7 +20,7 @@ fun teamPlayerOf(
     imageUrl: Url? = null,
     team: TeamId = teamIdOf(),
     specialization: TeamPlayer.Specialization = TeamPlayer.Specialization.Libero,
-    updatedAt: LocalDateTime = LocalDateTime.now(),
+    updatedAt: LocalDateTime = localDateTime(),
 ): TeamPlayer = TeamPlayer(
     id = id,
     name = name,
@@ -29,12 +31,12 @@ fun teamPlayerOf(
 )
 
 fun playerDetailsOf(
-    date: LocalDate = LocalDate.now(),
+    date: LocalDate = localDate(),
     height: Int? = null,
     weight: Int? = null,
     range: Int? = null,
     number: Int = 0,
-    updatedAt: LocalDateTime = LocalDateTime.now(),
+    updatedAt: LocalDateTime = localDateTime(),
 ): PlayerDetails = PlayerDetails(
     date = date,
     height = height,

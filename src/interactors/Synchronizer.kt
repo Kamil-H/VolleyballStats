@@ -1,11 +1,13 @@
 package com.kamilh.interactors
 
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.*
 import com.kamilh.utils.CurrentDate
 import kotlinx.coroutines.flow.first
 import utils.Logger
-import java.time.LocalDateTime
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 class Synchronizer(
     private val tourStorage: TourStorage,
@@ -59,14 +61,14 @@ class Synchronizer(
                 .onSuccess {
                     when (it) {
                         UpdateMatchesSuccess.NothingToSchedule, UpdateMatchesSuccess.SeasonCompleted -> { }
-                        is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plusHours(3))
+                        is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plus(3.hours))
                     }
                 }
         }
     }
 
-    private suspend fun schedule() {
-        schedule(CurrentDate.localDateTime.plusHours(1))
+    private suspend fun schedule(duration: Duration = 1.hours) {
+        schedule(CurrentDate.localDateTime.plus(duration))
     }
 
     private suspend fun schedule(dateTime: LocalDateTime) {

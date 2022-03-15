@@ -6,7 +6,7 @@ import com.kamilh.utils.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.JsonObject
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDateTime
 
 @Serializable
 class PlayByPlayResponse(

@@ -4,9 +4,9 @@ import com.kamilh.models.Team
 import com.kamilh.models.TeamId
 import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
+import com.kamilh.utils.CurrentDate
 import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
-import java.time.LocalDateTime
 
 /**
 <div class="thumbnail teamlist">
@@ -41,7 +41,7 @@ class HtmlToTeamMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Tea
                         name = name,
                         teamImageUrl = Url.create(teamImageUrl),
                         logoUrl = Url.create(image),
-                        updatedAt = LocalDateTime.now(),
+                        updatedAt = CurrentDate.localDateTime,
                     )
                 )
             }

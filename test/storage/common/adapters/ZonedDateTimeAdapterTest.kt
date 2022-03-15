@@ -1,17 +1,17 @@
 package com.kamilh.storage.common.adapters
 
+import com.kamilh.utils.zonedDateTime
 import org.junit.Test
-import storage.common.adapters.OffsetDateAdapter
-import java.time.OffsetDateTime
+import storage.common.adapters.ZonedDateTimeAdapter
 
-class OffsetDateAdapterTest {
+class ZonedDateTimeAdapterTest {
 
-    private val adapter = OffsetDateAdapter()
+    private val adapter = ZonedDateTimeAdapter()
 
     @Test
     fun `test if date is getting parsed properly`() {
         // GIVEN
-        val date = OffsetDateTime.now()
+        val date = zonedDateTime()
 
         // WHEN
         val stringDate = adapter.encode(date)

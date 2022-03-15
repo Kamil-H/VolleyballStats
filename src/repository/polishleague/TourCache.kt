@@ -1,11 +1,11 @@
 package com.kamilh.repository.polishleague
 
+import com.kamilh.datetime.LocalDate
 import com.kamilh.models.League
 import com.kamilh.models.Season
 import com.kamilh.models.Tour
 import com.kamilh.models.TourId
-import java.time.LocalDate
-import java.time.LocalDateTime
+import com.kamilh.utils.CurrentDate
 
 interface TourCache {
 
@@ -33,7 +33,7 @@ class InMemoryTourCache : TourCache {
                 startDate = startDate,
                 endDate = null,
                 winnerId = null,
-                updatedAt = LocalDateTime.now(),
+                updatedAt = CurrentDate.localDateTime,
             )
         }
 }

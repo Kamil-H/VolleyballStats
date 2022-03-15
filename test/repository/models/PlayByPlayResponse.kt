@@ -1,7 +1,8 @@
 package com.kamilh.repository.models
 
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.utils.localDateTime
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 
 fun playByPlayResponseOf(
     total: Int = 0,
@@ -21,7 +22,7 @@ fun matchResponseOf(
     category: String = "",
     city: String? = null,
     competition: String? = null,
-    createdAt: LocalDateTime = LocalDateTime.now(),
+    createdAt: LocalDateTime = localDateTime(),
     division: String = "",
     hall: String = "",
     matchId: Int = 0,
@@ -115,7 +116,7 @@ fun scorerResponseOf(
 fun scoutResponseOf(
     bestPlayer: BestPlayerResponse? = null,
     coinToss: CoinTossResponse = coinTossResponseOf(),
-    ended: LocalDateTime = LocalDateTime.now(),
+    ended: LocalDateTime = localDateTime(),
     mvp: MvpResponse = mvpResponseOf(),
     sets: List<SetResponse> = emptyList(),
 ): ScoutResponse =
@@ -165,10 +166,10 @@ fun mvpResponseOf(
 
 fun setResponseOf(
     duration: Int = 0,
-    endTime: LocalDateTime = LocalDateTime.now(),
+    endTime: LocalDateTime = localDateTime(),
     events: List<EventResponse> = emptyList(),
     score: ScoreResponse = scoreResponseOf(),
-    startTime: LocalDateTime = LocalDateTime.now(),
+    startTime: LocalDateTime = localDateTime(),
     startingLineup: StartingLineupResponse = startingLineupResponseOf(),
 ): SetResponse =
     SetResponse(
@@ -333,7 +334,7 @@ fun liberoResponseOf(
     libero: Int = 0,
     player: Int = 0,
     team: String = "",
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): LiberoResponse =
     LiberoResponse(
         enters = enters,
@@ -344,10 +345,10 @@ fun liberoResponseOf(
     )
 
 fun rallyResponseOf(
-    endTime: LocalDateTime = LocalDateTime.now(),
+    endTime: LocalDateTime = localDateTime(),
     point: String? = null,
     verified: Boolean? = null,
-    startTime: LocalDateTime = LocalDateTime.now(),
+    startTime: LocalDateTime = localDateTime(),
 ): RallyResponse =
     RallyResponse(
         endTime = endTime,
@@ -360,7 +361,7 @@ fun sanctionResponseOf(
     team: String = "",
     type: String = "",
     player: Int? = null,
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
     staff: String? = null,
 ): SanctionResponse =
     SanctionResponse(
@@ -373,7 +374,7 @@ fun sanctionResponseOf(
 
 fun delayResponseOf(
     team: String = "",
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): DelayResponse =
     DelayResponse(
         team = team,
@@ -384,7 +385,7 @@ fun substitutionResponseOf(
     `in`: Int = 0,
     `out`: Int = 0,
     team: String = "",
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): SubstitutionResponse =
     SubstitutionResponse(
         `in` = `in`,
@@ -395,7 +396,7 @@ fun substitutionResponseOf(
 
 fun timeoutResponseOf(
     team: String = "",
-    time: LocalDateTime = LocalDateTime.now(),
+    time: LocalDateTime = localDateTime(),
 ): TimeoutResponse =
     TimeoutResponse(
         team = team,
@@ -404,11 +405,11 @@ fun timeoutResponseOf(
 
 fun videoChallengeResponseOf(
     atScore: AtScoreResponse = atScoreResponseOf(),
-    endTime: LocalDateTime = LocalDateTime.now(),
+    endTime: LocalDateTime = localDateTime(),
     reason: String = "",
     response: String = "",
     scoreChange: String? = null,
-    startTime: LocalDateTime = LocalDateTime.now(),
+    startTime: LocalDateTime = localDateTime(),
     team: String = "",
 ): VideoChallengeResponse =
     VideoChallengeResponse(

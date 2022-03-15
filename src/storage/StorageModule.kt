@@ -1,6 +1,9 @@
 package com.kamilh.storage
 
 import com.kamilh.databse.*
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.TransacterQueryRunner
@@ -11,10 +14,7 @@ import storage.AccessTokenValidator
 import storage.AppConfigDatabaseFactory
 import storage.DatabaseFactory
 import storage.InMemoryAccessTokenValidator
-import storage.common.adapters.OffsetDateAdapter
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
+import storage.common.adapters.ZonedDateTimeAdapter
 import java.util.*
 import kotlin.time.Duration
 
@@ -23,7 +23,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<AccessTokenValidator>() with provider { InMemoryAccessTokenValidator() }
 
     bind<ColumnAdapter<UUID, String>>() with provider { UuidAdapter() }
-    bind<ColumnAdapter<OffsetDateTime, String>>() with provider { OffsetDateAdapter() }
+    bind<ColumnAdapter<ZonedDateTime, String>>() with provider { ZonedDateTimeAdapter() }
     bind<ColumnAdapter<Url, String>>() with provider { UrlAdapter() }
     bind<ColumnAdapter<TeamId, Long>>() with provider { TeamIdAdapter() }
     bind<ColumnAdapter<PlayerId, Long>>() with provider { PlayerIdAdapter() }
@@ -147,7 +147,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     }
 
     bind<TourStorage>() with singleton {
-        SqlTourStorage(instance(), instance(), instance())
+        SqlTourStorage(instance(), instance())
     }
 
     bind<PlayerStorage>() with singleton {

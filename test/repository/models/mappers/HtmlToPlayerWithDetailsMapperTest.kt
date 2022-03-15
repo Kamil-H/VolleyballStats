@@ -4,7 +4,7 @@ import com.kamilh.models.Result
 import com.kamilh.models.TeamPlayer
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
-import java.time.LocalDate
+import com.kamilh.datetime.LocalDate
 
 class HtmlToPlayerWithDetailsMapperTest {
 

@@ -4,8 +4,8 @@ import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.models.*
 import com.kamilh.storage.InsertUser
 import com.kamilh.storage.UserStorage
+import com.kamilh.utils.CurrentDate
 import com.kamilh.utils.UuidCreator
-import java.time.OffsetDateTime
 import java.util.*
 
 typealias AddUser = Interactor<AddUserParams, AddUserResult>
@@ -32,7 +32,7 @@ class AddUserInteractor(
             InsertUser(
                 subscriptionKey = subscriptionKey,
                 deviceId = params.deviceId,
-                createDate = OffsetDateTime.now(),
+                createDate = CurrentDate.localDateTime,
             )
         )
         return result

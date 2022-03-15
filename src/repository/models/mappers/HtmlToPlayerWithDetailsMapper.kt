@@ -1,15 +1,15 @@
 package com.kamilh.repository.models.mappers
 
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.parsePolishLeagueDate
 import com.kamilh.models.PlayerDetails
 import com.kamilh.models.PlayerId
 import com.kamilh.models.TeamId
 import com.kamilh.models.TeamPlayer
 import com.kamilh.repository.parsing.HtmlParser
+import com.kamilh.utils.CurrentDate
 import models.PlayerWithDetails
 import repository.parsing.ParseResult
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /**
 <div class="col-xs-9 col-sm-8 col-md-8 col-lg-9">
@@ -78,8 +78,7 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
             it.children().forEach { child ->
                 val outerHtml = child.outerHtml()
                 dateRegex.find(outerHtml)?.value?.let { dateString ->
-                    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-                    date = LocalDate.parse(dateString, formatter)
+                    date = LocalDate.parsePolishLeagueDate(dateString)
                 }
                 outerHtml.tryCreateSpecialization()?.let {
                     specialization = it
@@ -108,7 +107,7 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
                 imageUrl = null,
                 team = team!!,
                 specialization = specialization!!,
-                updatedAt = LocalDateTime.now(),
+                updatedAt = CurrentDate.localDateTime,
             ),
             details = PlayerDetails(
                 date = date!!,
@@ -116,7 +115,7 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
                 weight = weight,
                 range = range,
                 number = number!!,
-                updatedAt = LocalDateTime.now(),
+                updatedAt = CurrentDate.localDateTime,
             )
         )
     }

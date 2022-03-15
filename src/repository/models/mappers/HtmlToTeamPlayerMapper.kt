@@ -5,9 +5,9 @@ import com.kamilh.models.TeamId
 import com.kamilh.models.TeamPlayer
 import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
+import com.kamilh.utils.CurrentDate
 import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
-import java.time.LocalDateTime
 
 /**
 <div class="item-1 col-xs-6 col-sm-4 col-md-3 col-lg-2 playersItem" data-playerposition="4" data-fullnamefirstletter="A" data-teamsid="1407">
@@ -43,7 +43,7 @@ class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<Li
                     imageUrl = Url.createOrNull(imageUrl),
                     team = TeamId(teamId),
                     specialization = TeamPlayer.Specialization.create(positionId),
-                    updatedAt = LocalDateTime.now(),
+                    updatedAt = CurrentDate.localDateTime,
                 )
             )
         }

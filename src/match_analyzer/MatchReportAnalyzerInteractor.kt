@@ -1,13 +1,12 @@
 package com.kamilh.match_analyzer
 
-import com.kamilh.extensions.atPolandOffset
 import com.kamilh.extensions.divideExcluding
 import com.kamilh.interactors.Interactor
 import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.storage.TeamStorage
+import com.kamilh.utils.CurrentDate
 import utils.Logger
-import java.time.LocalDateTime
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -155,8 +154,8 @@ class MatchReportAnalyzerInteractor(
                                 points.add(
                                     MatchPoint(
                                         score = score,
-                                        startTime = event.startTime.atPolandOffset(),
-                                        endTime = event.endTime.atPolandOffset(),
+                                        startTime = event.startTime.atPolandZone(),
+                                        endTime = event.endTime.atPolandZone(),
                                         playActions = strategies.flatMap { it.check(input) },
                                         point = when (team) {
                                             TeamType.Home -> home.id
@@ -217,8 +216,8 @@ class MatchReportAnalyzerInteractor(
                 number = setIndex + 1,
                 score = score,
                 points = points,
-                startTime = set.startTime.atPolandOffset(),
-                endTime = set.endTime.atPolandOffset(),
+                startTime = set.startTime.atPolandZone(),
+                endTime = set.endTime.atPolandZone(),
                 duration = set.duration.toDuration(DurationUnit.MINUTES),
             )
         }
@@ -247,7 +246,7 @@ class MatchReportAnalyzerInteractor(
                     else -> null
                 },
                 phase = matchReport.phase,
-                updatedAt = LocalDateTime.now(),
+                updatedAt = CurrentDate.localDateTime,
             )
         )
     }

@@ -11,9 +11,9 @@ import com.kamilh.models.TeamPlayer.Specialization;
 import com.kamilh.models.TourId;
 import com.kamilh.models.Url;
 import com.kamilh.storage.MatchState;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import com.kamilh.datetime.LocalDate;
+import com.kamilh.datetime.LocalDateTime;
+import com.kamilh.datetime.ZonedDateTime;
 import java.util.UUID;
 import kotlin.time.Duration;
 
@@ -113,8 +113,8 @@ CREATE TABLE IF NOT EXISTS set_model (
   number INTEGER AS Int NOT NULL,
   home_score INTEGER AS Int NOT NULL,
   away_score INTEGER AS Int NOT NULL,
-  start_time TEXT AS OffsetDateTime NOT NULL,
-  end_time TEXT AS OffsetDateTime NOT NULL,
+  start_time TEXT AS ZonedDateTime NOT NULL,
+  end_time TEXT AS ZonedDateTime NOT NULL,
   duration INTEGER AS Duration NOT NULL,
   match_statistics_id INTEGER AS MatchReportId NOT NULL,
   FOREIGN KEY (match_statistics_id) REFERENCES match_statistics_model(id)
@@ -140,8 +140,8 @@ CREATE TABLE IF NOT EXISTS point_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   home_score INTEGER AS Int NOT NULL,
   away_score INTEGER AS Int NOT NULL,
-  start_time TEXT AS OffsetDateTime NOT NULL,
-  end_time TEXT AS OffsetDateTime NOT NULL,
+  start_time TEXT AS ZonedDateTime NOT NULL,
+  end_time TEXT AS ZonedDateTime NOT NULL,
   point INTEGER NOT NULL,
   set_id INTEGER NOT NULL,
   home_lineup INTEGER NOT NULL,
@@ -241,7 +241,7 @@ CREATE TABLE IF NOT EXISTS play_set_model (
 CREATE TABLE IF NOT EXISTS match_model (
   id INTEGER AS MatchId PRIMARY KEY,
   state TEXT AS MatchState NOT NULL,
-  date TEXT AS OffsetDateTime,
+  date TEXT AS ZonedDateTime,
   match_statistics_id INTEGER AS MatchReportId,
   tour_id INTEGER AS TourId NOT NULL,
   home INTEGER NOT NULL,
@@ -256,7 +256,7 @@ CREATE TABLE IF NOT EXISTS user_model (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   subscription_key TEXT AS UUID NOT NULL UNIQUE,
   device_id TEXT AS UUID NOT NULL UNIQUE,
-  created_date TEXT AS OffsetDateTime NOT NULL
+  created_date TEXT AS LocalDateTime NOT NULL
 );
 
 CREATE VIEW IF NOT EXISTS attack_view AS

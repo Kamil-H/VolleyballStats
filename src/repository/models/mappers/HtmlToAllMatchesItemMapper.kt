@@ -1,13 +1,12 @@
 package com.kamilh.repository.models.mappers
 
-import com.kamilh.extensions.atPolandOffset
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.AllMatchesItem
 import com.kamilh.models.MatchId
 import com.kamilh.models.TeamId
 import com.kamilh.repository.extensions.toPolishLeagueLocalDate
 import com.kamilh.repository.parsing.HtmlParser
 import repository.parsing.ParseResult
-import java.time.OffsetDateTime
 
 /**
  * <div class="gameresult clickable" onclick="location.href='/games/id/1101019.html';"> <span class="green">3</span><span class="doubledot">:</span><span class="red">0</span></div>
@@ -31,7 +30,7 @@ class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMappe
                 }
 
                 val dateString = element.getElementsByClass("date khanded").text().replace("TV ", "")
-                val date = dateString.toPolishLeagueLocalDate()?.atPolandOffset()
+                val date = dateString.toPolishLeagueLocalDate()?.atPolandZone()
 
                 val clickable = element.getElementsByClass("gameresult clickable")
                 val id = clickable.attr("onclick").dropUntilGameIdUrl().extractGameId()
@@ -67,7 +66,7 @@ class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMappe
         allMatchesItems
     }
 
-    private fun OffsetDateTime.isMidnight(): Boolean = hour == 0 && minute == 0
+    private fun ZonedDateTime.isMidnight(): Boolean = hour == 0 && minute == 0
 
     private fun String.dropUntilGameIdUrl(): String =
         dropWhile { it != '\'' }.dropLastWhile { it != '\'' }.replace("\'", "")

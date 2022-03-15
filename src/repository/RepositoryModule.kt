@@ -14,7 +14,7 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.websocket.*
 import models.PlayerWithDetails
 import org.kodein.di.*
-import java.time.LocalDateTime
+import com.kamilh.datetime.LocalDateTime
 import kotlin.time.Duration.Companion.hours
 import io.ktor.client.HttpClient as Ktor
 

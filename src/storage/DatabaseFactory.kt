@@ -1,14 +1,14 @@
 package storage
 
 import com.kamilh.*
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.util.*
 import kotlin.time.Duration
 
@@ -26,7 +26,7 @@ interface SqlDriverCreator {
 internal class AppConfigDatabaseFactory(
 	appConfig: AppConfig,
 	uuidAdapter: ColumnAdapter<UUID, String>,
-	offsetDateAdapter: ColumnAdapter<OffsetDateTime, String>,
+	zonedDateAdapter: ColumnAdapter<ZonedDateTime, String>,
 	urlAdapter: ColumnAdapter<Url, String>,
 	teamIdAdapter: ColumnAdapter<TeamId, Long>,
 	playerIdAdapter: ColumnAdapter<PlayerId, Long>,
@@ -50,7 +50,7 @@ internal class AppConfigDatabaseFactory(
 		Database(
 			driver = driver,
 			user_modelAdapter = User_model.Adapter(
-				created_dateAdapter = offsetDateAdapter,
+				created_dateAdapter = localDateTimeAdapter,
 				subscription_keyAdapter = uuidAdapter,
 				device_idAdapter = uuidAdapter,
 			),
@@ -73,19 +73,19 @@ internal class AppConfigDatabaseFactory(
 				specializationAdapter = specializationAdapter,
 			),
 			match_modelAdapter = Match_model.Adapter(
-				dateAdapter = offsetDateAdapter,
+				dateAdapter = zonedDateAdapter,
 				match_statistics_idAdapter = matchReportIdAdapter,
 				idAdapter = matchIdAdapter,
 				stateAdapter = EnumColumnAdapter(),
 				tour_idAdapter = tourIdAdapter,
 			),
 			point_modelAdapter = Point_model.Adapter(
-				end_timeAdapter = offsetDateAdapter,
-				start_timeAdapter = offsetDateAdapter,
+				end_timeAdapter = zonedDateAdapter,
+				start_timeAdapter = zonedDateAdapter,
 			),
 			set_modelAdapter = Set_model.Adapter(
-				end_timeAdapter = offsetDateAdapter,
-				start_timeAdapter = offsetDateAdapter,
+				end_timeAdapter = zonedDateAdapter,
+				start_timeAdapter = zonedDateAdapter,
 				match_statistics_idAdapter = matchReportIdAdapter,
 				durationAdapter = durationAdapter,
 			),

@@ -1,16 +1,17 @@
 package com.kamilh.interactors
 
+import com.kamilh.datetime.LocalDate
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
 import com.kamilh.storage.*
-import com.kamilh.utils.offsetDateTime
 import com.kamilh.utils.testAppDispatchers
+import com.kamilh.utils.zonedDateTime
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import java.time.LocalDate
+import kotlin.time.Duration.Companion.days
 
 class UpdateMatchesInteractorTest {
 
@@ -90,7 +91,7 @@ class UpdateMatchesInteractorTest {
     @Test
     fun `last's match date is saved as a the end of tour`() = runTest {
         // GIVEN
-        val dates = (0..2).map { index -> offsetDateTime().minusDays(index.toLong()) }
+        val dates = (0..2).map { index -> zonedDateTime().minus(index.days) }
         val getAllMatches = dates.map { date -> savedOf(endTime = date) }
         var onUpdate: Pair<Tour, LocalDate>? = null
         val params = paramsOf()
@@ -159,7 +160,7 @@ class UpdateMatchesInteractorTest {
     @Test
     fun `interactor returns NextMatch success when there is some Scheduled match`() = runTest {
         // GIVEN
-        val dates = (0..2).map { index -> offsetDateTime().minusDays(index.toLong()) }
+        val dates = (0..2).map { index -> zonedDateTime().minus(index.days) }
         val getAllMatches = dates.map { date -> scheduledOf(date = date) }
 
         // WHEN

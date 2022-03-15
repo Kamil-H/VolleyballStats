@@ -2,12 +2,12 @@ package com.kamilh.storage
 
 import com.kamilh.databse.MatchQueries
 import com.kamilh.databse.TourQueries
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
-import java.time.OffsetDateTime
 
 interface MatchStorage {
 
@@ -68,21 +68,21 @@ class SqlMatchStorage(
 
     private val mapper: (
         id: MatchId,
-        date: OffsetDateTime?,
+        date: ZonedDateTime?,
         match_statistics_id: MatchReportId?,
         state: MatchState,
         home_id: TeamId?,
         away_id: TeamId?,
-        end_time: OffsetDateTime?,
+        end_time: ZonedDateTime?,
         winner_team_id: TeamId?
     ) -> AllMatchesItem = {
             id: MatchId,
-            date: OffsetDateTime?,
+            date: ZonedDateTime?,
             match_statistics_id: MatchReportId?,
             state: MatchState,
             home_id: TeamId?,
             away_id: TeamId?,
-            end_time: OffsetDateTime?,
+            end_time: ZonedDateTime?,
             winner_team_id: TeamId? ->
         if (end_time != null && winner_team_id != null && match_statistics_id != null) {
             AllMatchesItem.Saved(

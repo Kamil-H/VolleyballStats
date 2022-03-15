@@ -1,6 +1,10 @@
 package com.kamilh.storage
 
 import com.kamilh.databse.*
+import com.kamilh.datetime.Clock
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.common.adapters.*
 import com.kamilh.utils.testClock
@@ -10,17 +14,13 @@ import org.junit.After
 import org.junit.Before
 import storage.AppConfigDatabaseFactory
 import storage.DatabaseFactory
-import storage.common.adapters.OffsetDateAdapter
-import java.time.Clock
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
+import storage.common.adapters.ZonedDateTimeAdapter
 import java.util.*
 import kotlin.time.Duration
 
 abstract class DatabaseTest(
     private val uuidAdapter: ColumnAdapter<UUID, String> = UuidAdapter(),
-    private val offsetDateAdapter: ColumnAdapter<OffsetDateTime, String> = OffsetDateAdapter(),
+    private val zonedDateTimeAdapter: ColumnAdapter<ZonedDateTime, String> = ZonedDateTimeAdapter(),
     private val urlAdapter: ColumnAdapter<Url, String> = UrlAdapter(),
     private val teamIdAdapter: ColumnAdapter<TeamId, Long> = TeamIdAdapter(),
     private val playerIdAdapter: ColumnAdapter<PlayerId, Long> = PlayerIdAdapter(),
@@ -65,7 +65,7 @@ abstract class DatabaseTest(
         databaseFactory = AppConfigDatabaseFactory(
             appConfig = TestAppConfig(),
             uuidAdapter = uuidAdapter,
-            offsetDateAdapter = offsetDateAdapter,
+            zonedDateAdapter = zonedDateTimeAdapter,
             urlAdapter = urlAdapter,
             teamIdAdapter = teamIdAdapter,
             playerIdAdapter = playerIdAdapter,
