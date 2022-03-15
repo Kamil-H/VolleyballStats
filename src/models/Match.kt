@@ -2,7 +2,7 @@ package com.kamilh.models
 
 import com.kamilh.datetime.ZonedDateTime
 
-sealed class AllMatchesItem {
+sealed class Match {
 
     abstract val id: MatchId
     abstract val date: ZonedDateTime?
@@ -11,32 +11,32 @@ sealed class AllMatchesItem {
 
     data class PotentiallyFinished(
         override val id: MatchId,
-        override val date: ZonedDateTime?,
+        override val date: ZonedDateTime,
         override val home: TeamId,
         override val away: TeamId,
-    ) : AllMatchesItem()
+    ) : Match()
 
     data class Scheduled(
         override val id: MatchId,
         override val date: ZonedDateTime,
         override val home: TeamId,
         override val away: TeamId,
-    ) : AllMatchesItem()
+    ) : Match()
 
     data class NotScheduled(
         override val id: MatchId,
         override val date: ZonedDateTime?,
         override val home: TeamId,
         override val away: TeamId,
-    ) : AllMatchesItem()
+    ) : Match()
 
-    data class Saved(
+    data class Finished(
         override val id: MatchId,
-        override val date: ZonedDateTime?,
+        override val date: ZonedDateTime,
         override val home: TeamId,
         override val away: TeamId,
         val matchReportId: MatchReportId,
         val winnerId: TeamId,
         val endTime: ZonedDateTime,
-    ) : AllMatchesItem()
+    ) : Match()
 }

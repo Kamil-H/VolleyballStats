@@ -1,14 +1,15 @@
 package com.kamilh.storage
 
 import app.cash.turbine.test
+import com.kamilh.datetime.LocalDate
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
+import com.kamilh.utils.localDate
+import com.kamilh.utils.localDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import com.kamilh.datetime.LocalDate
-import com.kamilh.datetime.LocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class SqlSqlTourStorageTest : DatabaseTest() {
@@ -126,9 +127,9 @@ class SqlSqlTourStorageTest : DatabaseTest() {
         // GIVEN
         val tourYear = seasonOf()
         val league = leagueOf(division = 1)
-        val updatedAt = LocalDateTime.now(clock).minus(1.days)
+        val updatedAt = localDateTime().minus(1.days)
         val tour = tourOf(season = tourYear, league = league, updatedAt = updatedAt)
-        val endTime = LocalDate.now(clock)
+        val endTime = localDate()
 
         // WHEN
         configure(leagues = listOf(league), tours = listOf(tour))

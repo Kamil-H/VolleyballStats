@@ -38,7 +38,7 @@ class UpdateMatchesInteractorTest {
     @Test
     fun `interactor returns TourNotFound error when getAllMatches returns empty list`() = runTest {
         // GIVEN
-        val getAllMatches = listOf(savedOf())
+        val getAllMatches = listOf(finishedOf())
         val insertOrUpdate = InsertMatchesResult.failure<Unit, InsertMatchesError>(InsertMatchesError.TourNotFound)
 
         // WHEN
@@ -56,7 +56,7 @@ class UpdateMatchesInteractorTest {
     @Test
     fun `interactor returns NoMatchesInTour error when repository's getAllMatches returns empty list`() = runTest {
         // GIVEN
-        val getAllMatches = emptyList<AllMatchesItem>()
+        val getAllMatches = emptyList<Match>()
         val insertOrUpdate = InsertMatchesResult.failure<Unit, InsertMatchesError>(InsertMatchesError.TourNotFound)
 
         // WHEN
@@ -74,7 +74,7 @@ class UpdateMatchesInteractorTest {
     @Test
     fun `interactor returns SeasonCompleted success when all matches are saved`() = runTest {
         // GIVEN
-        val getAllMatches = listOf(savedOf())
+        val getAllMatches = listOf(finishedOf())
 
         // WHEN
         val result = interactor(
@@ -92,7 +92,7 @@ class UpdateMatchesInteractorTest {
     fun `last's match date is saved as a the end of tour`() = runTest {
         // GIVEN
         val dates = (0..2).map { index -> zonedDateTime().minus(index.days) }
-        val getAllMatches = dates.map { date -> savedOf(endTime = date) }
+        val getAllMatches = dates.map { date -> finishedOf(endTime = date) }
         var onUpdate: Pair<Tour, LocalDate>? = null
         val params = paramsOf()
 
@@ -180,7 +180,7 @@ class UpdateMatchesInteractorTest {
     @Test
     fun `interactor returns NothingToSchedule success when there is no Scheduled match`() = runTest {
         // GIVEN
-        val getAllMatches = listOf(potentiallyFinishedOf(), notScheduledOf(), savedOf())
+        val getAllMatches = listOf(potentiallyFinishedOf(), notScheduledOf(), finishedOf())
 
         // WHEN
         val result = interactor(

@@ -5,10 +5,10 @@ import com.kamilh.utils.zonedDateTime
 
 fun potentiallyFinishedOf(
     id: MatchId = matchIdOf(),
-    date: ZonedDateTime? = null,
+    date: ZonedDateTime = zonedDateTime(),
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
-): AllMatchesItem.PotentiallyFinished = AllMatchesItem.PotentiallyFinished(
+): Match.PotentiallyFinished = Match.PotentiallyFinished(
     id = id,
     date = date,
     home = home,
@@ -20,7 +20,7 @@ fun scheduledOf(
     date: ZonedDateTime = zonedDateTime(),
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
-): AllMatchesItem.Scheduled = AllMatchesItem.Scheduled(
+): Match.Scheduled = Match.Scheduled(
     id = id,
     date = date,
     home = home,
@@ -32,22 +32,22 @@ fun notScheduledOf(
     date: ZonedDateTime? = null,
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
-): AllMatchesItem.NotScheduled = AllMatchesItem.NotScheduled(
+): Match.NotScheduled = Match.NotScheduled(
     id = id,
     date = date,
     home = home,
     away = away,
 )
 
-fun savedOf(
+fun finishedOf(
     id: MatchId = matchIdOf(),
-    date: ZonedDateTime? = null,
+    date: ZonedDateTime = zonedDateTime(),
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
     matchReportId: MatchReportId = matchReportIdOf(),
     winnerId: TeamId = teamIdOf(),
     endTime: ZonedDateTime = zonedDateTime(),
-): AllMatchesItem.Saved = AllMatchesItem.Saved(
+): Match.Finished = Match.Finished(
     id = id,
     date = date,
     home = home,

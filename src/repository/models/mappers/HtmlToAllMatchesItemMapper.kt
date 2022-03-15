@@ -1,7 +1,7 @@
 package com.kamilh.repository.models.mappers
 
 import com.kamilh.datetime.ZonedDateTime
-import com.kamilh.models.AllMatchesItem
+import com.kamilh.models.Match
 import com.kamilh.models.MatchId
 import com.kamilh.models.TeamId
 import com.kamilh.repository.extensions.toPolishLeagueLocalDate
@@ -11,10 +11,10 @@ import repository.parsing.ParseResult
 /**
  * <div class="gameresult clickable" onclick="location.href='/games/id/1101019.html';"> <span class="green">3</span><span class="doubledot">:</span><span class="red">0</span></div>
  */
-class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<AllMatchesItem>> {
+class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Match>> {
 
-    override fun map(html: String): ParseResult<List<AllMatchesItem>> = htmlParser.parse(html) {
-        val allMatchesItems = mutableListOf<AllMatchesItem>()
+    override fun map(html: String): ParseResult<List<Match>> = htmlParser.parse(html) {
+        val matches = mutableListOf<Match>()
         getElementsByClass("row text-center gridtable games alter")
             .forEach { element ->
                 var homeTeamId: TeamId? = null
@@ -41,29 +41,29 @@ class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMappe
                 id ?: error("Can't extract id from: $clickable")
 
                 val matchId = MatchId(id)
-                val allMatchesItem = when {
-                    isPotentiallyFinished -> AllMatchesItem.PotentiallyFinished(
+                val match = when {
+                    isPotentiallyFinished -> Match.PotentiallyFinished(
                         id = matchId,
                         date = date!!,
                         home = homeTeamId!!,
                         away = awayTeamId!!,
                     )
-                    date == null || date.isMidnight() -> AllMatchesItem.NotScheduled(
+                    date == null || date.isMidnight() -> Match.NotScheduled(
                         id = matchId,
                         date = date,
                         home = homeTeamId!!,
                         away = awayTeamId!!,
                     )
-                    else -> AllMatchesItem.Scheduled(
+                    else -> Match.Scheduled(
                         id = matchId,
                         date = date,
                         home = homeTeamId!!,
                         away = awayTeamId!!,
                     )
                 }
-                allMatchesItems.add(allMatchesItem)
+                matches.add(match)
             }
-        allMatchesItems
+        matches
     }
 
     private fun ZonedDateTime.isMidnight(): Boolean = hour == 0 && minute == 0

@@ -46,18 +46,18 @@ class UpdateMatchesInteractor(
             val insertResult = matchStorage.insertOrUpdate(matches, tour.id)
             when (insertResult.error) {
                 InsertMatchesError.TourNotFound -> return Result.failure(UpdateMatchesError.TourNotFound)
-                is InsertMatchesError.TryingToInsertSavedItems, null -> { }
+                is InsertMatchesError.TryingToInsertFinishedItems, null -> { }
             }
         }
         val allMatches = matchStorage.getAllMatches(tour.id).first()
-        val allMatchesSaved = allMatches.all { it is AllMatchesItem.Saved }
-        if (allMatches.isNotEmpty() && allMatchesSaved) {
-            val lastSaved = allMatches.filterIsInstance<AllMatchesItem.Saved>().maxByOrNull { it.endTime }!!
-            finishTour(tour, lastSaved)
+        val allMatchesFinished = allMatches.all { it is Match.Finished }
+        if (allMatches.isNotEmpty() && allMatchesFinished) {
+            val lastFinished = allMatches.filterIsInstance<Match.Finished>().maxByOrNull { it.endTime }!!
+            finishTour(tour, lastFinished)
             return Result.success(UpdateMatchesSuccess.SeasonCompleted)
         }
 
-        val potentiallyFinished = allMatches.filterIsInstance<AllMatchesItem.PotentiallyFinished>()
+        val potentiallyFinished = allMatches.filterIsInstance<Match.PotentiallyFinished>()
         if (potentiallyFinished.isNotEmpty()) {
             val error = updateMatchReports(UpdateMatchReportParams(tour, potentiallyFinished)).mapError {
                 when (it) {
@@ -71,7 +71,7 @@ class UpdateMatchesInteractor(
             }
         }
 
-        val scheduled = allMatches.filterIsInstance<AllMatchesItem.Scheduled>().minByOrNull { it.date }
+        val scheduled = allMatches.filterIsInstance<Match.Scheduled>().minByOrNull { it.date }
         return if (scheduled != null) {
             Result.success(UpdateMatchesSuccess.NextMatch(scheduled.date))
         } else {
@@ -79,7 +79,7 @@ class UpdateMatchesInteractor(
         }
     }
 
-    private suspend fun finishTour(tour: Tour, lastMatch: AllMatchesItem.Saved) {
+    private suspend fun finishTour(tour: Tour, lastMatch: Match.Finished) {
         tourStorage.update(tour, lastMatch.endTime.toLocalDate())
     }
 }

@@ -5,6 +5,7 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.storage.*
 import com.kamilh.utils.CurrentDate
+import com.kamilh.utils.localDateTime
 import com.kamilh.utils.testClock
 import com.kamilh.utils.zonedDateTime
 import kotlinx.coroutines.flow.flow
@@ -437,6 +438,6 @@ class SynchronizerTest {
     }
 
     private fun assertDate(date: LocalDateTime?) {
-        assert(LocalDateTime.now(testClock).plus(1.hours) == date)
+        assert(localDateTime().plus(1.hours) == date)
     }
 }
