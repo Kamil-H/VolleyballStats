@@ -8,7 +8,7 @@ import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -40,7 +40,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns TourNotFound when there is no tour in the database`() = runBlocking {
+    fun `insert returns TourNotFound when there is no tour in the database`() = runTest {
         // GIVEN
         val tourId = tourIdOf()
 
@@ -54,7 +54,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns Success when there is a tour in the database`() = runBlocking {
+    fun `insert returns Success when there is a tour in the database`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -70,7 +70,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert select returns Saved when there is MatchReport associated with the Match`() = runBlocking {
+    fun `insert select returns Saved when there is MatchReport associated with the Match`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -92,7 +92,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert NotScheduled works properly`() = runBlocking {
+    fun `insert NotScheduled works properly`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -110,7 +110,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert PotentiallyFinished works properly`() = runBlocking {
+    fun `insert PotentiallyFinished works properly`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -128,7 +128,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert Scheduled works properly`() = runBlocking {
+    fun `insert Scheduled works properly`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -147,7 +147,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert Saved returns error`() = runBlocking {
+    fun `insert Saved returns error`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -168,7 +168,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert updates a value properly`() = runBlocking {
+    fun `insert updates a value properly`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -201,7 +201,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert updates a match that already has associated MatchReport value properly`() = runBlocking {
+    fun `insert updates a match that already has associated MatchReport value properly`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -258,7 +258,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert more matches works properly`() = runBlocking {
+    fun `insert more matches works properly`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -275,7 +275,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert multiple finished matches works properly`() = runBlocking {
+    fun `insert multiple finished matches works properly`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()

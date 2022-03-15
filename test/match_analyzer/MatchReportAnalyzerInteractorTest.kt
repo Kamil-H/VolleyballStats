@@ -9,8 +9,8 @@ import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.storage.TeamStorage
 import com.kamilh.storage.teamStorageOf
 import com.kamilh.utils.testAppDispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import match_analyzer.lineupOf
@@ -43,7 +43,7 @@ class MatchReportAnalyzerInteractorTest {
     )
 
     @Test
-    fun `test that Exception is thrown when there are more Sets in Scout than in ScoutData`() = runBlockingTest {
+    fun `test that Exception is thrown when there are more Sets in Scout than in ScoutData`() = runTest {
         // GIVEN
         val matchReport = matchReportOf(
             scout = scoutOf(
@@ -63,7 +63,7 @@ class MatchReportAnalyzerInteractorTest {
     }
 
     @Test
-    fun `test that Exception is thrown when there are no such Home team in the Storage`() = runBlockingTest {
+    fun `test that Exception is thrown when there are no such Home team in the Storage`() = runTest {
         // GIVEN
         val home = "home"
         val matchReport = matchReportOf(
@@ -86,7 +86,7 @@ class MatchReportAnalyzerInteractorTest {
     }
 
     @Test
-    fun `test that Exception is thrown when there are no such Away team in the Storage`() = runBlockingTest {
+    fun `test that Exception is thrown when there are no such Away team in the Storage`() = runTest {
         // GIVEN
         val home = "home"
         val homeTeam = teamOf(name = home)
@@ -113,7 +113,7 @@ class MatchReportAnalyzerInteractorTest {
     }
 
     @Test
-    fun `test values are calculated properly`() = runBlocking {
+    fun `test values are calculated properly`() = runTest {
         // GIVEN
         val matchReportId = 2101911L
         val fileName = "$matchReportId.json"

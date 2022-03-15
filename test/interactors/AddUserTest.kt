@@ -7,14 +7,14 @@ import com.kamilh.models.User
 import com.kamilh.models.appDispatchersOf
 import com.kamilh.storage.*
 import com.kamilh.utils.UuidCreator
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.util.*
 
 class AddUserTest {
 
     @Test
-    fun `test if userStorage insertResult is Failure and Error is SubscriptionKeyAlreadyInUse then Result is SubscriptionKeyAlreadyInUse`() = runBlockingTest {
+    fun `test if userStorage insertResult is Failure and Error is SubscriptionKeyAlreadyInUse then Result is SubscriptionKeyAlreadyInUse`() = runTest {
         // GIVEN
         val insertResult: InsertUserResult = Result.failure(InsertUserError.SubscriptionKeyAlreadyInUse)
 
@@ -31,7 +31,7 @@ class AddUserTest {
     }
 
     @Test
-    fun `test if userStorage insertResult is Failure and Error is DeviceIdAlreadyInUse then Result is DeviceIdAlreadyInUse`() = runBlockingTest {
+    fun `test if userStorage insertResult is Failure and Error is DeviceIdAlreadyInUse then Result is DeviceIdAlreadyInUse`() = runTest {
         // GIVEN
         val insertResult: InsertUserResult = Result.failure(InsertUserError.DeviceIdAlreadyInUse)
 
@@ -48,7 +48,7 @@ class AddUserTest {
     }
 
     @Test
-    fun `test if userStorage insertResult is Success then Result is Success`() = runBlockingTest {
+    fun `test if userStorage insertResult is Success then Result is Success`() = runTest {
         // GIVEN
         val uuid = UUID.randomUUID()
         val insertResult: InsertUserResult = Result.success(Unit)

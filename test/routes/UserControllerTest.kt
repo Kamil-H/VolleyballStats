@@ -12,13 +12,13 @@ import com.kamilh.storage.nullUUID
 import com.kamilh.storage.subscriptionKeyOf
 import com.kamilh.storage.userOf
 import io.ktor.http.*
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class UserControllerTest {
 
     @Test
-    fun `test that getUser returns Failure NotFound when getUser returns null`() = runBlockingTest {
+    fun `test that getUser returns Failure NotFound when getUser returns null`() = runTest {
         // GIVEN
         val getUserResult = null
 
@@ -31,7 +31,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test that getUser returns Failure Forbidden when getUser returns user but subscription key is null`() = runBlockingTest {
+    fun `test that getUser returns Failure Forbidden when getUser returns user but subscription key is null`() = runTest {
         // GIVEN
         val getUserResult = userOf()
 
@@ -44,7 +44,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test that getUser returns Success when getUser returns user and subscription key is not null`() = runBlockingTest {
+    fun `test that getUser returns Success when getUser returns user and subscription key is not null`() = runTest {
         // GIVEN
         val getUserResult = userOf()
 
@@ -56,7 +56,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test that addUser returns Failure BadRequest when passed deviceId is null`() = runBlockingTest {
+    fun `test that addUser returns Failure BadRequest when passed deviceId is null`() = runTest {
         // GIVEN
         val deviceId = null
 
@@ -69,7 +69,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test that addUser returns Failure BadRequest when passed deviceId is not null, but is incorrect UUID`() = runBlockingTest {
+    fun `test that addUser returns Failure BadRequest when passed deviceId is not null, but is incorrect UUID`() = runTest {
         // GIVEN
         val deviceId = ""
 
@@ -82,7 +82,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test that addUser returns Failure Conflict when addUser returns Error`() = runBlockingTest {
+    fun `test that addUser returns Failure Conflict when addUser returns Error`() = runTest {
         // GIVEN
         val deviceId = nullUUID().toString()
         val addUserResult: AddUserResult = AddUserResult.failure(AddUserError.UserAlreadyExists)
@@ -96,7 +96,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test that addUser returns Failure when getUser returns Failure`() = runBlockingTest {
+    fun `test that addUser returns Failure when getUser returns Failure`() = runTest {
         // GIVEN
         val deviceId = nullUUID().toString()
         val addUserResult: AddUserResult = AddUserResult.failure(AddUserError.UserAlreadyExists)
@@ -113,7 +113,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `test that addUser returns Success when addUser returns Success`() = runBlockingTest {
+    fun `test that addUser returns Success when addUser returns Success`() = runTest {
         // GIVEN
         val deviceId = nullUUID().toString()
         val subscriptionKey = subscriptionKeyOf()

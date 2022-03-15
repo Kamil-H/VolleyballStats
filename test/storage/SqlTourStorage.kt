@@ -5,7 +5,7 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import com.kamilh.datetime.LocalDate
 import com.kamilh.datetime.LocalDateTime
@@ -29,7 +29,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert inserts tour when league is in database`() = runBlockingTest {
+    fun `insert inserts tour when league is in database`() = runTest {
         // GIVEN
         val league = leagueOf()
         val tour = tourOf(league = league)
@@ -45,7 +45,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert returns LeagueNotFound error when no league is in the database`() = runBlockingTest {
+    fun `insert returns LeagueNotFound error when no league is in the database`() = runTest {
         // GIVEN
         val tour = tourOf()
 
@@ -60,7 +60,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert returns TourAlreadyExists error when no trying to insert a tour with the same TourYear`() = runBlockingTest {
+    fun `insert returns TourAlreadyExists error when no trying to insert a tour with the same TourYear`() = runTest {
         // GIVEN
         val league = leagueOf()
         val tourYear = seasonOf()
@@ -78,7 +78,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getAllByLeague returns empty list when no entries in the database`() = runBlockingTest {
+    fun `getAllByLeague returns empty list when no entries in the database`() = runTest {
         // GIVEN
         val league = leagueOf()
 
@@ -92,7 +92,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getAllByLeague returns not empty list when there are entries in the database`() = runBlockingTest {
+    fun `getAllByLeague returns not empty list when there are entries in the database`() = runTest {
         // GIVEN
         val league = leagueOf(division = 1)
         val tour = tourOf(league = league)
@@ -107,7 +107,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getByTourYearAndLeague returns empty list when no entries in the database`() = runBlockingTest {
+    fun `getByTourYearAndLeague returns empty list when no entries in the database`() = runTest {
         // GIVEN
         val tourId = tourIdOf()
         val league = leagueOf(division = 1)
@@ -122,7 +122,7 @@ class SqlSqlTourStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `updateWinner updates winner_id, end_time and updated_at correctly`() = runBlockingTest {
+    fun `updateWinner updates winner_id, end_time and updated_at correctly`() = runTest {
         // GIVEN
         val tourYear = seasonOf()
         val league = leagueOf(division = 1)

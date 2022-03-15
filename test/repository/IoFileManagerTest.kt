@@ -2,7 +2,7 @@ package com.kamilh.repository
 
 import com.kamilh.models.appDispatchersOf
 import com.kamilh.utils.ExceptionLogger
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -23,7 +23,7 @@ class IoFileManagerTest {
         )
 
     @Test
-    fun `file is getting created with correct content when Extension is null`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is null`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -45,7 +45,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `file is getting created with correct content when Extension is Html`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is Html`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -68,7 +68,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `file is getting created with correct content when Extension is Json`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is Json`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -91,7 +91,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `file is getting created with correct content when Extension is Text`() = runBlockingTest {
+    fun `file is getting created with correct content when Extension is Text`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -114,7 +114,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `file is not getting created when directory is wrong`() = runBlockingTest {
+    fun `file is not getting created when directory is wrong`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -136,7 +136,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `it's possible to ready content when Extension is null`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is null`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -157,7 +157,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `it's possible to ready content when Extension is Html`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is Html`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -178,7 +178,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `it's possible to ready content when Extension is Json`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is Json`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -199,7 +199,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `it's possible to ready content when Extension is Text`() = runBlockingTest {
+    fun `it's possible to ready content when Extension is Text`() = runTest {
         // GIVEN
         val content = "content"
         val fileName = "fileName"
@@ -220,7 +220,7 @@ class IoFileManagerTest {
     }
 
     @Test
-    fun `it's not possible to ready content when file doesn't exists`() = runBlockingTest {
+    fun `it's not possible to ready content when file doesn't exists`() = runTest {
         // GIVEN
         val fileName = "fileName"
         val directory = temporaryFolder.root.absolutePath

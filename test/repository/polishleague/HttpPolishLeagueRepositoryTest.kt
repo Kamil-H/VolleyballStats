@@ -10,7 +10,7 @@ import com.kamilh.repository.models.matchResponseOf
 import com.kamilh.repository.parsing.ParseErrorHandler
 import com.kamilh.utils.cache.Cache
 import com.kamilh.utils.cache.cacheOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import models.PlayerWithDetails
 import org.junit.Test
 import repository.parsing.ParseError
@@ -58,7 +58,7 @@ class HttpPolishLeagueRepositoryTest {
         )
 
     @Test
-    fun `test that when httpClient getAllTeams returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllTeams returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
         val parseResult = emptyList<Team>()
         val networkResult = networkSuccessOf("")
@@ -76,7 +76,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllTeams returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllTeams returns Failure and mapper returns Success, Failure is getting returned`() = runTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -94,7 +94,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllTeams returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllTeams returns Success and mapper returns Failure, Failure is getting returned`() = runTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -117,7 +117,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `getAllPlayers by tour returns value from cache when it's available`() = runBlocking {
+    fun `getAllPlayers by tour returns value from cache when it's available`() = runTest {
         // GIVEN
         val cached = listOf(teamPlayerOf())
 
@@ -132,7 +132,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers by tour returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers by tour returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
         val parseResult = emptyList<TeamPlayer>()
         val networkResult = networkSuccessOf("")
@@ -153,7 +153,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers by tour returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers by tour returns Failure and mapper returns Success, Failure is getting returned`() = runTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -174,7 +174,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers by tour returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers by tour returns Success and mapper returns Failure, Failure is getting returned`() = runTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -200,7 +200,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `getAllPlayers returns value from cache when it's available`() = runBlocking {
+    fun `getAllPlayers returns value from cache when it's available`() = runTest {
         // GIVEN
         val cached = listOf(playerOf())
 
@@ -215,7 +215,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
         val parseResult = emptyList<Player>()
         val networkResult = networkSuccessOf("")
@@ -236,7 +236,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers returns Failure and mapper returns Success, Failure is getting returned`() = runTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -257,7 +257,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllPlayers returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllPlayers returns Success and mapper returns Failure, Failure is getting returned`() = runTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -283,7 +283,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllMatches returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllMatches returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
         val parseResult = emptyList<AllMatchesItem>()
         val networkResult = networkSuccessOf("")
@@ -301,7 +301,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllMatches returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllMatches returns Failure and mapper returns Success, Failure is getting returned`() = runTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -319,7 +319,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getAllMatches returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getAllMatches returns Success and mapper returns Failure, Failure is getting returned`() = runTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -342,7 +342,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getMatchReportId returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getMatchReportId returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
         val parseResult = matchReportIdOf()
         val networkResult = networkSuccessOf("")
@@ -360,7 +360,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getMatchReportId returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getMatchReportId returns Failure and mapper returns Success, Failure is getting returned`() = runTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -378,7 +378,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getMatchReportId returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getMatchReportId returns Success and mapper returns Failure, Failure is getting returned`() = runTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -401,7 +401,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is empty then Success is returned and response is getting saved`() = runBlocking {
+    fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is empty then Success is returned and response is getting saved`() = runTest {
         // GIVEN
         val matchReportId = matchReportIdOf()
         val tour = seasonOf()
@@ -427,7 +427,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is not empty then saved value is returned`() = runBlocking {
+    fun `test that when MatchReportEndpoint returns Success and MatchResponseStorage is not empty then saved value is returned`() = runTest {
         // GIVEN
         val matchReportId = matchReportIdOf()
         val tour = seasonOf()
@@ -446,7 +446,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when MatchReportEndpoint returns Failure and MatchResponseStorage is not empty then saved value is returned`() = runBlocking {
+    fun `test that when MatchReportEndpoint returns Failure and MatchResponseStorage is not empty then saved value is returned`() = runTest {
         // GIVEN
         val matchReportId = matchReportIdOf()
         val tour = seasonOf()
@@ -465,7 +465,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getPlayerDetails returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getPlayerDetails returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
         val parseResult = playerDetailsOf()
         val networkResult = networkSuccessOf("")
@@ -483,7 +483,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getPlayerDetails returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getPlayerDetails returns Failure and mapper returns Success, Failure is getting returned`() = runTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -501,7 +501,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getPlayerDetails returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getPlayerDetails returns Success and mapper returns Failure, Failure is getting returned`() = runTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -524,7 +524,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getPlayerWithDetails returns Success and mapper returns Success, Success is getting returned`() = runBlocking {
+    fun `test that when httpClient getPlayerWithDetails returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
         val parseResult = playerWithDetailsOf()
         val networkResult = networkSuccessOf("")
@@ -542,7 +542,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getPlayerWithDetails returns Failure and mapper returns Success, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getPlayerWithDetails returns Failure and mapper returns Success, Failure is getting returned`() = runTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
@@ -560,7 +560,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that when httpClient getPlayerWithDetails returns Success and mapper returns Failure, Failure is getting returned`() = runBlocking {
+    fun `test that when httpClient getPlayerWithDetails returns Success and mapper returns Failure, Failure is getting returned`() = runTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
@@ -583,7 +583,7 @@ class HttpPolishLeagueRepositoryTest {
     }
 
     @Test
-    fun `test that getTours returns value from the cache`() = runBlocking {
+    fun `test that getTours returns value from the cache`() = runTest {
         // GIVEN
         val cachedValue = listOf(tourOf())
 

@@ -6,13 +6,13 @@ import com.kamilh.storage.UserStorage
 import com.kamilh.storage.nullUUID
 import com.kamilh.storage.subscriptionKeyOf
 import com.kamilh.storage.userOf
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class GetUserTest {
 
     @Test
-    fun `test if userStorage getUserResult returns null then null is returned`() = runBlockingTest {
+    fun `test if userStorage getUserResult returns null then null is returned`() = runTest {
         // GIVEN
         val getUserResult = null
 
@@ -28,7 +28,7 @@ class GetUserTest {
     }
 
     @Test
-    fun `test if userStorage getUserResult returns User then User is returned`() = runBlockingTest {
+    fun `test if userStorage getUserResult returns User then User is returned`() = runTest {
         // GIVEN
         val getUserResult = userOf()
 

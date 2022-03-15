@@ -8,7 +8,7 @@ import com.kamilh.storage.common.QueryRunner
 import com.kamilh.utils.localDateTime
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.util.*
 import kotlin.test.assertEquals
@@ -24,7 +24,7 @@ class SqlUserStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `test if user is getting inserted`() = runBlockingTest {
+    fun `test if user is getting inserted`() = runTest {
         // GIVEN
         val user = insertUserOf()
 
@@ -37,7 +37,7 @@ class SqlUserStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `test if user is getting not inserted when user with the same subscriptionKey is already added`() = runBlockingTest {
+    fun `test if user is getting not inserted when user with the same subscriptionKey is already added`() = runTest {
         // GIVEN
         val firstUser = insertUserOf(deviceId = nullUUID())
         val secondUser = insertUserOf(deviceId = UUID.randomUUID())
@@ -53,7 +53,7 @@ class SqlUserStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `test if user is getting not inserted when user with the same device_id is already added`() = runBlockingTest {
+    fun `test if user is getting not inserted when user with the same device_id is already added`() = runTest {
         // GIVEN
         val deviceId = UUID.randomUUID()
         val firstUser = insertUserOf(
@@ -76,7 +76,7 @@ class SqlUserStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `test if user is returned when it's available in database`() = runBlockingTest {
+    fun `test if user is returned when it's available in database`() = runTest {
         // GIVEN
         val subscriptionKey = nullUUID()
         val user = insertUserOf(subscriptionKey = subscriptionKey)
@@ -90,7 +90,7 @@ class SqlUserStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `test if null is returned when it's not available in database`() = runBlockingTest {
+    fun `test if null is returned when it's not available in database`() = runTest {
         // GIVEN
         val subscriptionKey = subscriptionKeyOf(nullUUID())
 
@@ -102,7 +102,7 @@ class SqlUserStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `test if null is returned when searched id is not available in database`() = runBlockingTest {
+    fun `test if null is returned when searched id is not available in database`() = runTest {
         // GIVEN
         val subscriptionKey = UUID.randomUUID()
         val user = insertUserOf(subscriptionKey = subscriptionKey)

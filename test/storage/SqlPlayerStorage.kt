@@ -6,7 +6,7 @@ import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.utils.localDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import models.PlayerWithDetails
 import org.junit.Test
 import kotlin.time.Duration.Companion.days
@@ -35,7 +35,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert returns TourNotFound when no tour in the database`() = runBlockingTest {
+    fun `insert returns TourNotFound when no tour in the database`() = runTest {
         // GIVEN
         val player = playerWithDetailsOf()
         val tourId = tourIdOf()
@@ -48,7 +48,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert returns Success when no players to add`() = runBlockingTest {
+    fun `insert returns Success when no players to add`() = runTest {
         // GIVEN
         val tourId = tourIdOf()
 
@@ -60,7 +60,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert returns Success when correct team and tour is in the database`() = runBlockingTest {
+    fun `insert returns Success when correct team and tour is in the database`() = runTest {
         // GIVEN
         val tour = tourOf()
         val teamId = teamIdOf(1)
@@ -84,7 +84,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert returns Errors when team is not in the database`() = runBlockingTest {
+    fun `insert returns Errors when team is not in the database`() = runTest {
         // GIVEN
         val league = leagueOf()
         val tourYear = seasonOf()
@@ -111,7 +111,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert returns Errors when player is already in the database`() = runBlockingTest {
+    fun `insert returns Errors when player is already in the database`() = runTest {
         // GIVEN
         val league = leagueOf()
         val tourYear = seasonOf()
@@ -142,7 +142,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getAllPlayers returns a correct data`() = runBlockingTest {
+    fun `getAllPlayers returns a correct data`() = runTest {
         // GIVEN
         val league = leagueOf()
         val tourYear = seasonOf()

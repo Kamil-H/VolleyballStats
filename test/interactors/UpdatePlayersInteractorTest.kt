@@ -9,7 +9,7 @@ import com.kamilh.storage.InsertPlayerResult
 import com.kamilh.storage.PlayerStorage
 import com.kamilh.storage.playerStorageOf
 import com.kamilh.utils.testAppDispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class UpdatePlayersInteractorTest {
@@ -31,7 +31,7 @@ class UpdatePlayersInteractorTest {
     )
 
     @Test
-    fun `interactor returns Network when getAllPlayers returns error`() = runBlocking {
+    fun `interactor returns Network when getAllPlayers returns error`() = runTest {
         // GIVEN
         val error = networkErrorOf()
 
@@ -50,7 +50,7 @@ class UpdatePlayersInteractorTest {
     }
 
     @Test
-    fun `interactor returns Network when getPlayerDetails returns error`() = runBlocking {
+    fun `interactor returns Network when getPlayerDetails returns error`() = runTest {
         // GIVEN
         val error = networkErrorOf()
 
@@ -70,7 +70,7 @@ class UpdatePlayersInteractorTest {
     }
 
     @Test
-    fun `interactor returns Success when getAllPlayers returns empty list`() = runBlocking {
+    fun `interactor returns Success when getAllPlayers returns empty list`() = runTest {
         // GIVEN
         val getAllPlayersByTour = emptyList<TeamPlayer>()
 
@@ -86,7 +86,7 @@ class UpdatePlayersInteractorTest {
     }
 
     @Test
-    fun `interactor returns Success when all returns Success`() = runBlocking {
+    fun `interactor returns Success when all returns Success`() = runTest {
         // GIVEN
         val playerDetails = playerDetailsOf()
 
@@ -106,7 +106,7 @@ class UpdatePlayersInteractorTest {
     }
 
     @Test
-    fun `interactor returns Insert error when insert returns error`() = runBlocking {
+    fun `interactor returns Insert error when insert returns error`() = runTest {
         // GIVEN
         val error = InsertPlayerError.TourNotFound
 

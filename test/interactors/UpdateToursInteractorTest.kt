@@ -6,7 +6,7 @@ import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
 import com.kamilh.storage.*
 import com.kamilh.utils.testAppDispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class UpdateToursInteractorTest {
@@ -26,7 +26,7 @@ class UpdateToursInteractorTest {
     private fun paramsOf(league: League = leagueOf()): UpdateToursParams = UpdateToursParams(league = league)
 
     @Test
-    fun `interactor returns Network when getAllTours returns error`() = runBlocking {
+    fun `interactor returns Network when getAllTours returns error`() = runTest {
         // GIVEN
         val error = networkErrorOf()
 
@@ -45,7 +45,7 @@ class UpdateToursInteractorTest {
     }
 
     @Test
-    fun `interactor returns Success when all returns Success`() = runBlocking {
+    fun `interactor returns Success when all returns Success`() = runTest {
         // GIVEN
         val tour = tourOf()
 
@@ -62,7 +62,7 @@ class UpdateToursInteractorTest {
     }
 
     @Test
-    fun `interactor returns Success getAllTeams return empty list`() = runBlocking {
+    fun `interactor returns Success getAllTeams return empty list`() = runTest {
         // GIVEN
         val tours = emptyList<Tour>()
 
@@ -79,7 +79,7 @@ class UpdateToursInteractorTest {
     }
 
     @Test
-    fun `interactor tries to insert tour twice when insert league fails`() = runBlocking {
+    fun `interactor tries to insert tour twice when insert league fails`() = runTest {
         // GIVEN
         val tour = tourOf()
         var callCount = 0
@@ -102,7 +102,7 @@ class UpdateToursInteractorTest {
     }
 
     @Test
-    fun `interactor returns Success when insert tour returns TourAlreadyExists`() = runBlocking {
+    fun `interactor returns Success when insert tour returns TourAlreadyExists`() = runTest {
         // GIVEN
         val tour = tourOf()
 

@@ -1,11 +1,11 @@
 package com.kamilh.storage
 
-import app.cash.turbine.test
 import com.kamilh.match_analyzer.*
 import com.kamilh.match_analyzer.strategies.*
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.utils.testAppDispatchers
+import kotlinx.coroutines.flow.first
 
 abstract class StatisticsStorageTest : DatabaseTest() {
 
@@ -124,9 +124,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
 
         // THEN
         val result = matchStatisticsQueries.selectAll().executeAsList()
-        storage.getAllMatchStatistics(tour.id).test {
-            assert(awaitItem().first() == matchStatistics)
-        }
+        assert(storage.getAllMatchStatistics(tour.id).first().first() == matchStatistics)
         assert(result.isNotEmpty())
         insertResult.assertSuccess()
         return matchStatistics

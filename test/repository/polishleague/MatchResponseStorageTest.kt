@@ -8,7 +8,7 @@ import com.kamilh.repository.FileMetadata
 import com.kamilh.repository.fileManagerOf
 import com.kamilh.repository.models.MatchResponse
 import com.kamilh.repository.models.matchResponseOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.Test
@@ -25,7 +25,7 @@ class MatchResponseStorageTest {
         )
 
     @Test
-    fun `test if storage get returns null when FileManager returns null`() = runBlocking {
+    fun `test if storage get returns null when FileManager returns null`() = runTest {
         // GIVEN
         val fileManagerReturns = null
 
@@ -39,7 +39,7 @@ class MatchResponseStorageTest {
     }
 
     @Test
-    fun `test if storage get returns correct value when FileManager returns MatchReport JSON`() = runBlocking {
+    fun `test if storage get returns correct value when FileManager returns MatchReport JSON`() = runTest {
         // GIVEN
         val saved = matchResponseOf()
         val fileManagerReturns = json.encodeToString(saved)
@@ -54,7 +54,7 @@ class MatchResponseStorageTest {
     }
 
     @Test
-    fun `test if storage isSaved returns false when FileManager returns null`() = runBlocking {
+    fun `test if storage isSaved returns false when FileManager returns null`() = runTest {
         // GIVEN
         val fileManagerReturns = null
 
@@ -68,7 +68,7 @@ class MatchResponseStorageTest {
     }
 
     @Test
-    fun `test if storage isSaved returns true when FileManager returns value`() = runBlocking {
+    fun `test if storage isSaved returns true when FileManager returns value`() = runTest {
         // GIVEN
         val saved = matchResponseOf()
         val fileManagerReturns = json.encodeToString(saved)
@@ -83,7 +83,7 @@ class MatchResponseStorageTest {
     }
 
     @Test
-    fun `test if MatchResponse is saved in the correct directory and under correct name`() = runBlocking {
+    fun `test if MatchResponse is saved in the correct directory and under correct name`() = runTest {
         // GIVEN
         val matchId = 10
         val tour = 2020

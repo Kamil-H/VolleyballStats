@@ -8,7 +8,7 @@ import com.kamilh.models.httprequest.HttpRequest
 import com.kamilh.models.httprequest.UrlRequest
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.AfterTest
 import kotlin.test.assertTrue
@@ -34,7 +34,7 @@ class KtorHttpClientTest {
     }
 
     @Test
-    fun `test if execute Endpoint returns Success when Ktor responds with OK`() = runBlocking {
+    fun `test if execute Endpoint returns Success when Ktor responds with OK`() = runTest {
         // GIVEN
         val endpoint = endpointOf<Unit>()
 
@@ -46,7 +46,7 @@ class KtorHttpClientTest {
     }
 
     @Test
-    fun `test if execute UrlRequest returns Success when Ktor responds with OK`() = runBlocking {
+    fun `test if execute UrlRequest returns Success when Ktor responds with OK`() = runTest {
         // GIVEN
         val endpoint = urlRequestOf<Unit>()
 
@@ -58,7 +58,7 @@ class KtorHttpClientTest {
     }
 
     @Test
-    fun `test if execute Endpoint returns Failure when Ktor responds with BadRequest`() = runBlocking {
+    fun `test if execute Endpoint returns Failure when Ktor responds with BadRequest`() = runTest {
         // GIVEN
         val endpoint = endpointOf<Unit>()
 
@@ -71,7 +71,7 @@ class KtorHttpClientTest {
     }
 
     @Test
-    fun `test if execute UrlRequest returns Failure when Ktor responds with BadRequest`() = runBlocking {
+    fun `test if execute UrlRequest returns Failure when Ktor responds with BadRequest`() = runTest {
         // GIVEN
         val endpoint = urlRequestOf<Unit>()
 
@@ -84,7 +84,7 @@ class KtorHttpClientTest {
     }
 
     @Test
-    fun `test if execute Endpoint returns Failure when Ktor throws Exception`() = runBlocking {
+    fun `test if execute Endpoint returns Failure when Ktor throws Exception`() = runTest {
         // GIVEN
         val endpoint = endpointOf<Unit>()
 
@@ -97,7 +97,7 @@ class KtorHttpClientTest {
     }
 
     @Test
-    fun `test if execute UrlRequest returns Failure when Ktor throws Exception`() = runBlocking {
+    fun `test if execute UrlRequest returns Failure when Ktor throws Exception`() = runTest {
         // GIVEN
         val endpoint = urlRequestOf<Unit>()
 

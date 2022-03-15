@@ -5,7 +5,7 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class TeamStorageTest : DatabaseTest() {
@@ -30,7 +30,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `TourNotFound error returned when no tour in database`() = runBlockingTest {
+    fun `TourNotFound error returned when no tour in database`() = runTest {
         // GIVEN
         val team = teamOf()
         val tourId = tourIdOf()
@@ -45,7 +45,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `Success is returned when there are no teams to insert`() = runBlockingTest {
+    fun `Success is returned when there are no teams to insert`() = runTest {
         // GIVEN
         val tourId = tourIdOf()
 
@@ -57,7 +57,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `Success is returned when there are teams to insert and tour and league exists`() = runBlockingTest {
+    fun `Success is returned when there are teams to insert and tour and league exists`() = runTest {
         // GIVEN
         val season = seasonOf()
         val tour = tourOf(season = season)
@@ -72,7 +72,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `TourTeamAlreadyExists with correct teamId is returned even though it happens as first`() = runBlockingTest {
+    fun `TourTeamAlreadyExists with correct teamId is returned even though it happens as first`() = runTest {
         // GIVEN
         val tourYear = seasonOf()
         val tour = tourOf(season = tourYear)
@@ -92,7 +92,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `TourTeamAlreadyExists with correct teamId is returned when this not happens as first`() = runBlockingTest {
+    fun `TourTeamAlreadyExists with correct teamId is returned when this not happens as first`() = runTest {
         // GIVEN
         val tourYear = seasonOf()
         val tour = tourOf(season = tourYear)
@@ -113,7 +113,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `TourTeamAlreadyExists with correct teamId is returned when trying to add the same team multiple times`() = runBlockingTest {
+    fun `TourTeamAlreadyExists with correct teamId is returned when trying to add the same team multiple times`() = runTest {
         // GIVEN
         val tourYear = seasonOf()
         val tour = tourOf(season = tourYear)
@@ -133,7 +133,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getAllTeams returns empty list when no entries in the database`() = runBlockingTest {
+    fun `getAllTeams returns empty list when no entries in the database`() = runTest {
         // GIVEN
         val league = leagueOf()
         val tourId = tourIdOf()
@@ -148,7 +148,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getAllByLeague returns not empty list when there are entries in the database`() = runBlockingTest {
+    fun `getAllByLeague returns not empty list when there are entries in the database`() = runTest {
         // GIVEN
         val league = leagueOf(division = 1)
         val tourYear = seasonOf()
@@ -165,7 +165,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getTeam returns not null value when there is team with provided name`() = runBlockingTest {
+    fun `getTeam returns not null value when there is team with provided name`() = runTest {
         // GIVEN
         val league = leagueOf(division = 1)
         val tourYear = seasonOf()
@@ -183,7 +183,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getTeam returns null value when there is no team with provided name`() = runBlockingTest {
+    fun `getTeam returns null value when there is no team with provided name`() = runTest {
         // GIVEN
         val league = leagueOf(division = 1)
         val tourYear = seasonOf()
@@ -201,7 +201,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getTeam returns not null value when there is no team with provided name, but there is with provided code`() = runBlockingTest {
+    fun `getTeam returns not null value when there is no team with provided name, but there is with provided code`() = runTest {
         // GIVEN
         val league = leagueOf(division = 1)
         val tourYear = seasonOf()
@@ -220,7 +220,7 @@ class TeamStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `getTeam returns null value when no entries in the database`() = runBlockingTest {
+    fun `getTeam returns null value when no entries in the database`() = runTest {
         // GIVEN
         val league = leagueOf(division = 1)
         val tourYear = seasonOf()

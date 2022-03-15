@@ -24,7 +24,7 @@ class MatchReportPreparerInteractorTest {
         appDispatchers = appDispatchers,
         matchReportAnalyzer = matchReportAnalyzer,
         matchStatisticsStorage = matchStatisticsStorage,
-        wrongPlayerFixer = fixWrongPlayers,
+        fixWrongPlayers = fixWrongPlayers,
     )
 
     private fun paramsOf(

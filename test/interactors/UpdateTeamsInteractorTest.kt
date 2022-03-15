@@ -9,7 +9,7 @@ import com.kamilh.storage.InsertTeamResult
 import com.kamilh.storage.TeamStorage
 import com.kamilh.storage.teamStorageOf
 import com.kamilh.utils.testAppDispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class UpdateTeamsInteractorTest {
@@ -31,7 +31,7 @@ class UpdateTeamsInteractorTest {
     )
 
     @Test
-    fun `interactor returns Network when getAllTeams returns error`() = runBlocking {
+    fun `interactor returns Network when getAllTeams returns error`() = runTest {
         // GIVEN
         val error = networkErrorOf()
 
@@ -50,7 +50,7 @@ class UpdateTeamsInteractorTest {
     }
 
     @Test
-    fun `interactor returns Success when all returns Success`() = runBlocking {
+    fun `interactor returns Success when all returns Success`() = runTest {
         // GIVEN
         val team = teamOf()
 
@@ -67,7 +67,7 @@ class UpdateTeamsInteractorTest {
     }
 
     @Test
-    fun `interactor returns Success getAllTeams return empty list`() = runBlocking {
+    fun `interactor returns Success getAllTeams return empty list`() = runTest {
         // GIVEN
         val teams = emptyList<Team>()
 
@@ -84,7 +84,7 @@ class UpdateTeamsInteractorTest {
     }
 
     @Test
-    fun `interactor returns Insert error when insert returns error`() = runBlocking {
+    fun `interactor returns Insert error when insert returns error`() = runTest {
         // GIVEN
         val error = InsertTeamError.TourNotFound
 

@@ -1,7 +1,7 @@
 package com.kamilh.authorization
 
 import com.kamilh.storage.nullUUID
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -20,7 +20,7 @@ class HeadersAuthorizationTest {
     )
 
     @Test
-    fun `test if returned result is InvalidSubscriptionKey when SubscriptionKey is not valid`() = runBlockingTest {
+    fun `test if returned result is InvalidSubscriptionKey when SubscriptionKey is not valid`() = runTest {
         // GIVEN
         val subscriptionKeyIsValid = false
         val accessTokenIsValid = true
@@ -39,7 +39,7 @@ class HeadersAuthorizationTest {
     }
 
     @Test
-    fun `test if returned result is InvalidAccessToken when SubscriptionKey is not valid`() = runBlockingTest {
+    fun `test if returned result is InvalidAccessToken when SubscriptionKey is not valid`() = runTest {
         // GIVEN
         val subscriptionKeyIsValid = true
         val accessTokenIsValid = false
@@ -58,7 +58,7 @@ class HeadersAuthorizationTest {
     }
 
     @Test
-    fun `test if returned result is Authorized when credentials are valid`() = runBlockingTest {
+    fun `test if returned result is Authorized when credentials are valid`() = runTest {
         // GIVEN
         val subscriptionKeyIsValid = true
         val accessTokenIsValid = true

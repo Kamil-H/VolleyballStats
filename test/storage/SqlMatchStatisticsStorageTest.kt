@@ -4,19 +4,20 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import org.junit.Test
 
 class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
 
     @Test
-    fun `insert and select works properly`() = runBlocking {
+    fun `insert and select works properly`() = runTest {
         load(matchReportId = matchReportIdOf(2101911L))
-        Unit
+        yield()
     }
 
     @Test
-    fun `insert returns TourNotFound when there is no such tour`() = runBlocking {
+    fun `insert returns TourNotFound when there is no such tour`() = runTest {
         // GIVEN
         val tourId = tourIdOf()
         val matchId = matchIdOf()
@@ -32,7 +33,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns TeamNotFound when there is no such team`() = runBlocking {
+    fun `insert returns TeamNotFound when there is no such team`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -53,7 +54,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert updates Home's team code`() = runBlocking {
+    fun `insert updates Home's team code`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -89,7 +90,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert updates Away's team code`() = runBlocking {
+    fun `insert updates Away's team code`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -127,7 +128,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns NoPlayersInTeams when one of the teams doesn't have players`() = runBlocking {
+    fun `insert returns NoPlayersInTeams when one of the teams doesn't have players`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -161,7 +162,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns PlayerNotFound when some player is not in the database`() = runBlocking {
+    fun `insert returns PlayerNotFound when some player is not in the database`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -203,7 +204,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns updates Player's information`() = runBlocking {
+    fun `insert returns updates Player's information`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -266,7 +267,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns Success when there is at least one player in each team`() = runBlocking {
+    fun `insert returns Success when there is at least one player in each team`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()

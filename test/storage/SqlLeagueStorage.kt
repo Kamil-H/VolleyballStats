@@ -1,7 +1,7 @@
 package com.kamilh.storage
 
 import com.kamilh.models.*
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class SqlLeagueStorageTest : DatabaseTest() {
@@ -14,7 +14,7 @@ class SqlLeagueStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `insert works correctly`() = runBlockingTest {
+    fun `insert works correctly`() = runTest {
         // GIVEN
         val league = leagueOf()
 
@@ -28,7 +28,7 @@ class SqlLeagueStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `it's not possible to insert two same leagues`() = runBlockingTest {
+    fun `it's not possible to insert two same leagues`() = runTest {
         // GIVEN
         val league = leagueOf()
 
@@ -44,7 +44,7 @@ class SqlLeagueStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `it's possible to insert two leagues with different division`() = runBlockingTest {
+    fun `it's possible to insert two leagues with different division`() = runTest {
         // GIVEN
         val league = leagueOf(division = 0)
         val league1 = leagueOf(division = 1)
@@ -59,7 +59,7 @@ class SqlLeagueStorageTest : DatabaseTest() {
     }
 
     @Test
-    fun `it's possible to insert two leagues with different country`() = runBlockingTest {
+    fun `it's possible to insert two leagues with different country`() = runTest {
         // GIVEN
         val league = leagueOf(country = countryOf("PL"))
         val league1 = leagueOf(country = countryOf("US"))
