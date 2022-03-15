@@ -24,7 +24,7 @@ class MatchReportPreparerInteractor(
     appDispatchers: AppDispatchers,
     private val matchReportAnalyzer: MatchReportAnalyzer,
     private val matchStatisticsStorage: MatchStatisticsStorage,
-    private val wrongPlayerFixer: WrongPlayerFixer,
+    private val fixWrongPlayers: FixWrongPlayers,
 ) : MatchReportPreparer(appDispatchers) {
 
     override suspend fun doWork(params: MatchReportPreparerParams): MatchReportPreparerResult =
@@ -123,7 +123,7 @@ class MatchReportPreparerInteractor(
     private suspend fun MatchReportTeam.fixPlayers(
         playersNotFound: List<Pair<PlayerId, TeamId>>,
         tour: Tour,
-    ): MatchReportTeam = wrongPlayerFixer(
+    ): MatchReportTeam = fixWrongPlayers(
         WrongPlayerFixerParams(
             team = this,
             playersNotFound = playersNotFound,

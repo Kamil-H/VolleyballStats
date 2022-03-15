@@ -15,13 +15,13 @@ import org.junit.Test
 import utils.Logger
 import utils.Severity
 
-class WrongPlayerFixerInteractorTest {
+class FixWrongPlayersInteractorTest {
 
     private fun interactor(
         appDispatchers: AppDispatchers = testAppDispatchers,
         playerStorage: PlayerStorage = playerStorageOf(),
         polishLeagueRepository: PolishLeagueRepository = polishLeagueRepositoryOf(),
-    ): WrongPlayerFixerInteractor = WrongPlayerFixerInteractor(
+    ): FixWrongPlayersInteractor = FixWrongPlayersInteractor(
         appDispatchers = appDispatchers,
         playerStorage = playerStorage,
         polishLeagueRepository = polishLeagueRepository,
@@ -300,7 +300,7 @@ class WrongPlayerFixerInteractorTest {
 fun wrongPlayerFixerOf(
     appDispatchers: AppDispatchers = testAppDispatchers,
     invoke: MatchReportTeam = matchReportTeamOf(),
-): WrongPlayerFixer = object : WrongPlayerFixer(appDispatchers) {
+): FixWrongPlayers = object : FixWrongPlayers(appDispatchers) {
 
     override suspend fun doWork(params: WrongPlayerFixerParams): MatchReportTeam = invoke
 }

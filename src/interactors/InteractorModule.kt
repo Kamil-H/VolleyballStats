@@ -29,8 +29,8 @@ val interactorModule = DI.Module(name = MODULE_NAME) {
     bind<UpdateTours>() with provider {
         UpdateToursInteractor(instance(), instance(), instance(), instance())
     }
-    bind<WrongPlayerFixer>() with provider {
-        WrongPlayerFixerInteractor(instance(), instance(), instance())
+    bind<FixWrongPlayers>() with provider {
+        FixWrongPlayersInteractor(instance(), instance(), instance())
     }
     bind<MatchReportPreparer>() with provider {
         MatchReportPreparerInteractor(instance(), instance(), instance(), instance())

@@ -19,12 +19,12 @@ class MatchReportPreparerInteractorTest {
         appDispatchers: AppDispatchers = testAppDispatchers,
         matchReportAnalyzer: MatchReportAnalyzer = matchReportAnalyzerOf(),
         matchStatisticsStorage: MatchStatisticsStorage = matchStatisticsStorageOf(),
-        wrongPlayerFixer: WrongPlayerFixer = wrongPlayerFixerOf(),
+        fixWrongPlayers: FixWrongPlayers = wrongPlayerFixerOf(),
     ): MatchReportPreparerInteractor = MatchReportPreparerInteractor(
         appDispatchers = appDispatchers,
         matchReportAnalyzer = matchReportAnalyzer,
         matchStatisticsStorage = matchStatisticsStorage,
-        wrongPlayerFixer = wrongPlayerFixer,
+        wrongPlayerFixer = fixWrongPlayers,
     )
 
     private fun paramsOf(
@@ -105,7 +105,7 @@ class MatchReportPreparerInteractorTest {
         val result = interactor(
             matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(matchStatisticsOf())),
             matchStatisticsStorage = matchStatisticsStorageOf(insert = insert),
-            wrongPlayerFixer = wrongPlayerFixerOf(invoke = fixedMatchReportTeam)
+            fixWrongPlayers = wrongPlayerFixerOf(invoke = fixedMatchReportTeam)
         )(paramsOf(matches = matches))
 
         // THEN
