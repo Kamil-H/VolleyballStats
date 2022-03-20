@@ -31,7 +31,7 @@ class FixWrongPlayersInteractorTest {
         team: MatchReportTeam = matchReportTeamOf(),
         playersNotFound: List<Pair<PlayerId, TeamId>> = emptyList(),
         tour: Tour = tourOf(),
-    ): WrongPlayerFixerParams = WrongPlayerFixerParams(
+    ): FixWrongPlayersParams = FixWrongPlayersParams(
         team = team,
         playersNotFound = playersNotFound,
         tour = tour,
@@ -302,5 +302,5 @@ fun wrongPlayerFixerOf(
     invoke: MatchReportTeam = matchReportTeamOf(),
 ): FixWrongPlayers = object : FixWrongPlayers(appDispatchers) {
 
-    override suspend fun doWork(params: WrongPlayerFixerParams): MatchReportTeam = invoke
+    override suspend fun doWork(params: FixWrongPlayersParams): MatchReportTeam = invoke
 }

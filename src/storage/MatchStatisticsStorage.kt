@@ -39,7 +39,6 @@ class SqlMatchStatisticsStorage(
     private val tourTeamQueries: TourTeamQueries,
     private val matchStatisticsQueries: MatchStatisticsQueries,
     private val playQueries: PlayQueries,
-    private val playerQueries: PlayerQueries,
     private val playAttackQueries: PlayAttackQueries,
     private val playBlockQueries: PlayBlockQueries,
     private val playDigQueries: PlayDigQueries,
@@ -142,7 +141,7 @@ class SqlMatchStatisticsStorage(
     }
 
     private fun insert(
-        matchPlayers: List<MatchPlayer>,
+        matchPlayers: List<PlayerId>,
         matchReportId: MatchReportId,
         tourTeamId: Long,
         teamId: TeamId,
@@ -150,14 +149,8 @@ class SqlMatchStatisticsStorage(
     ): List<Pair<PlayerId, TeamId>> =
         matchPlayers.mapNotNull { matchPlayer ->
             try {
-                playerQueries.updateInfo(
-                    first_name = matchPlayer.firstName,
-                    last_name = matchPlayer.lastName,
-                    is_foreign = matchPlayer.isForeign,
-                    id = matchPlayer.id,
-                )
                 val id = teamPlayerQueries.selectTeamPlayerByPlayerId(
-                    player_id = matchPlayer.id,
+                    player_id = matchPlayer,
                     tour_team_id = tourTeamId,
                 ).executeAsOne()
                 matchAppearanceQueries.insert(
@@ -165,10 +158,10 @@ class SqlMatchStatisticsStorage(
                     player_id = id,
                     match_statistics_id = matchReportId,
                 )
-                onPlayerInserted(matchPlayer.id, id)
+                onPlayerInserted(matchPlayer, id)
                 null
             } catch (exception: Exception) {
-                matchPlayer.id to teamId
+                matchPlayer to teamId
             }
         }
 
@@ -287,14 +280,7 @@ class SqlMatchStatisticsStorage(
                 MatchTeam(
                     teamId = it.first().team_id,
                     code = it.first().code!!,
-                    players = it.map { player ->
-                        MatchPlayer(
-                            id = player.player_id,
-                            firstName = player.first_name!!,
-                            isForeign = player.is_foreign,
-                            lastName = player.last_name!!,
-                        )
-                    }
+                    players = it.map { player -> player.player_id}
                 )
             }
 

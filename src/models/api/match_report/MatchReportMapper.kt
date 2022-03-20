@@ -52,15 +52,7 @@ class MatchReportMapper : ResponseMapper<MatchStatistics, MatchReportResponse> {
         MatchTeamResponse(
             teamId = teamId,
             code = code,
-            players = players.map { it.toResponse() },
-        )
-
-    private fun MatchPlayer.toResponse(): MatchPlayerResponse =
-        MatchPlayerResponse(
-            id = id,
-            firstName = firstName,
-            isForeign = isForeign,
-            lastName = lastName,
+            players = players,
         )
 
     private fun Score.toResponse(): ScoreResponse =
@@ -199,15 +191,7 @@ class MatchReportMapper : ResponseMapper<MatchStatistics, MatchReportResponse> {
         MatchTeam(
             teamId = teamId,
             code = code,
-            players = players.map { it.toDomain() },
-        )
-
-    private fun MatchPlayerResponse.toDomain(): MatchPlayer =
-        MatchPlayer(
-            id = id,
-            firstName = firstName,
-            isForeign = isForeign,
-            lastName = lastName,
+            players = players,
         )
 
     private fun ScoreResponse.toDomain(): Score =

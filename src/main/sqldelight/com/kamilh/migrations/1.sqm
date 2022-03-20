@@ -58,9 +58,6 @@ CREATE TABLE IF NOT EXISTS tour_team_model (
 
 CREATE TABLE IF NOT EXISTS player_model (
     id INTEGER AS PlayerId PRIMARY KEY NOT NULL,
-    first_name TEXT DEFAULT NULL,
-    last_name TEXT DEFAULT NULL,
-    is_foreign INTEGER AS Boolean DEFAULT NULL,
     name TEXT NOT NULL,
     birth_date TEXT AS LocalDate NOT NULL,
     height INTEGER AS Int,

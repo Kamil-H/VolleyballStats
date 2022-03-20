@@ -162,7 +162,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
         SqlMatchStatisticsStorage(
             instance(), instance(), instance(), instance(), instance(), instance(), instance(),
             instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance()
+            instance(), instance(), instance()
         )
     }
 

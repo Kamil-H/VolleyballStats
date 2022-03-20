@@ -3,8 +3,7 @@ INSERT INTO match_appearance_model (tour_team_id, player_id, match_statistics_id
 VALUES (?, ?, ?);
 
 selectAllAppearancesByTour:
-SELECT map.match_statistics_id, map.tour_team_id, ttm.team_id AS team_id,
-tm.code, pm.id AS player_id, pm.first_name AS first_name, pm.last_name AS last_name, pm.is_foreign AS is_foreign
+SELECT map.match_statistics_id, map.tour_team_id, ttm.team_id AS team_id, tm.code, pm.id AS player_id
 FROM match_appearance_model map
 LEFT JOIN
 team_player_model tpm ON map.player_id = tpm.id,

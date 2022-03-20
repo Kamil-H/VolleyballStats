@@ -229,12 +229,12 @@ class MatchReportAnalyzerInteractor(
                 home = MatchTeam(
                     teamId = home.id,
                     code = matchReport.matchTeams.home.code,
-                    players = matchReport.matchTeams.home.players.map { it.toMatchPlayer() },
+                    players = matchReport.matchTeams.home.players.map { it.id },
                 ),
                 away = MatchTeam(
                     teamId = away.id,
                     code = matchReport.matchTeams.away.code,
-                    players = matchReport.matchTeams.away.players.map { it.toMatchPlayer() },
+                    players = matchReport.matchTeams.away.players.map { it.id },
                 ),
                 mvp = when (matchReport.scout.mvp.team) {
                     TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.mvp.number)
@@ -313,12 +313,4 @@ class MatchReportAnalyzerInteractor(
             TeamType.Home -> TeamType.Away
             TeamType.Away -> TeamType.Home
         }
-
-    private fun MatchReportPlayer.toMatchPlayer(): MatchPlayer =
-        MatchPlayer(
-            id = id,
-            firstName = firstName,
-            isForeign = isForeign,
-            lastName = lastName,
-        )
 }

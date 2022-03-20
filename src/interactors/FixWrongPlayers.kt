@@ -8,9 +8,9 @@ import com.kamilh.utils.findSimilarity
 import models.PlayerWithDetails
 import utils.Logger
 
-typealias FixWrongPlayers = Interactor<WrongPlayerFixerParams, MatchReportTeam>
+typealias FixWrongPlayers = Interactor<FixWrongPlayersParams, MatchReportTeam>
 
-data class WrongPlayerFixerParams(
+data class FixWrongPlayersParams(
     val team: MatchReportTeam,
     val playersNotFound: List<Pair<PlayerId, TeamId>>,
     val tour: Tour,
@@ -22,7 +22,7 @@ class FixWrongPlayersInteractor(
     private val polishLeagueRepository: PolishLeagueRepository,
 ) : FixWrongPlayers(appDispatchers) {
 
-    override suspend fun doWork(params: WrongPlayerFixerParams): MatchReportTeam {
+    override suspend fun doWork(params: FixWrongPlayersParams): MatchReportTeam {
         val allPlayers = polishLeagueRepository.getAllPlayers().value ?: emptyList()
         val allTeamPlayers = polishLeagueRepository.getAllPlayers(params.tour.season).value ?: emptyList()
 

@@ -173,11 +173,11 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val matchStatistics = matchStatisticsOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
-                players = listOf(matchPlayerOf(id = playerId)),
+                players = listOf(playerId),
             ),
             away = matchTeamOf(
                 teamId = awayTeamId,
-                players = listOf(matchPlayerOf())
+                players = listOf(playerIdOf())
             ),
         )
         insert(league)
@@ -204,69 +204,6 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert returns updates Player's information`() = runTest {
-        // GIVEN
-        val season = seasonOf()
-        val league = leagueOf()
-        val tour = tourOf(league = league, season = season)
-        val homeTeamId = teamIdOf(1)
-        val awayTeamId = teamIdOf(2)
-        val playerId = playerIdOf(1)
-        val firstName = "firstName"
-        val lastName = "lastName"
-        val isForeign = false
-        val matchStatistics = matchStatisticsOf(
-            home = matchTeamOf(
-                teamId = homeTeamId,
-                players = listOf(
-                    matchPlayerOf(
-                        id = playerId,
-                        firstName = firstName,
-                        lastName = lastName,
-                        isForeign = isForeign,
-                    ),
-                ),
-            ),
-            away = matchTeamOf(
-                teamId = awayTeamId,
-                players = listOf(matchPlayerOf())
-            ),
-        )
-        insert(league)
-        insert(tour)
-        insert(
-            InsertTeam(
-                team = teamOf(id = homeTeamId),
-                tour = tour,
-            ),
-            InsertTeam(
-                team = teamOf(id = awayTeamId),
-                tour = tour,
-            )
-        )
-        insert(
-            InsertPlayer(
-                player = playerWithDetailsOf(
-                    teamPlayer = teamPlayerOf(
-                        id = playerId,
-                        team = homeTeamId,
-                    ),
-                ),
-                tour = tour,
-            )
-        )
-
-        // WHEN
-        storage.insert(matchStatistics, tour.id, matchIdOf())
-
-        // THEN
-        val player = playerQueries.selectPlayerById(playerId).executeAsOne()
-        assert(player.first_name == firstName)
-        assert(player.last_name == lastName)
-        assert(player.is_foreign == isForeign)
-    }
-
-    @Test
     fun `insert returns Success when there is at least one player in each team`() = runTest {
         // GIVEN
         val season = seasonOf()
@@ -279,11 +216,11 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val matchStatistics = matchStatisticsOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
-                players = listOf(matchPlayerOf(id = playerId)),
+                players = listOf(playerId),
             ),
             away = matchTeamOf(
                 teamId = awayTeamId,
-                players = listOf(matchPlayerOf(id = awayPlayerId))
+                players = listOf(awayPlayerId)
             ),
             mvp = playerId,
         )

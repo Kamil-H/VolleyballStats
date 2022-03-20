@@ -124,7 +124,7 @@ class MatchReportPreparerInteractor(
         playersNotFound: List<Pair<PlayerId, TeamId>>,
         tour: Tour,
     ): MatchReportTeam = fixWrongPlayers(
-        WrongPlayerFixerParams(
+        FixWrongPlayersParams(
             team = this,
             playersNotFound = playersNotFound,
             tour = tour,

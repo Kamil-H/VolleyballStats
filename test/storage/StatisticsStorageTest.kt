@@ -17,7 +17,6 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             tourTeamQueries = tourTeamQueries,
             matchStatisticsQueries = matchStatisticsQueries,
             playQueries = playQueries,
-            playerQueries = playerQueries,
             playAttackQueries = playAttackQueries,
             playBlockQueries = playBlockQueries,
             playDigQueries = playDigQueries,

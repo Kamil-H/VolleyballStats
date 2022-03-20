@@ -61,7 +61,7 @@ class ScoreResponse(
 class MatchTeamResponse(
     val teamId: TeamId,
     val code: String,
-    val players: List<MatchPlayerResponse>,
+    val players: List<PlayerId>,
 )
 
 @Serializable
@@ -72,14 +72,6 @@ class LineupResponse(
     val p4: PlayerId,
     val p5: PlayerId,
     val p6: PlayerId,
-)
-
-@Serializable
-class MatchPlayerResponse(
-    val id: PlayerId,
-    val firstName: String,
-    val isForeign: Boolean?,
-    val lastName: String,
 )
 
 @Serializable

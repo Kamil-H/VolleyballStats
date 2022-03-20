@@ -29,23 +29,11 @@ fun matchStatisticsOf(
 fun matchTeamOf(
     teamId: TeamId = teamIdOf(),
     code: String = "",
-    players: List<MatchPlayer> = emptyList(),
+    players: List<PlayerId> = emptyList(),
 ): MatchTeam = MatchTeam(
     teamId = teamId,
     code = code,
     players = players,
-)
-
-fun matchPlayerOf(
-    id: PlayerId = playerIdOf(),
-    firstName: String = "",
-    isForeign: Boolean? = null,
-    lastName: String = "",
-): MatchPlayer = MatchPlayer(
-    id = id,
-    firstName = firstName,
-    isForeign = isForeign,
-    lastName = lastName,
 )
 
 fun matchSetOf(

@@ -284,7 +284,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val teams = (1..size*size).map { index ->
             matchTeamOf(
                 teamId = teamIdOf(index.toLong()),
-                players = listOf(matchPlayerOf()),
+                players = listOf(playerIdOf()),
             )
         }.toMutableList()
         teams.map { matchTeam ->
