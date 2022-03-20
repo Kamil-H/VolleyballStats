@@ -1,4 +1,4 @@
-package com.kamilh.models.api
+package com.kamilh.models.api.user
 
 import kotlinx.serialization.Serializable
 

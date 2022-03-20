@@ -3,6 +3,8 @@ package com.kamilh.storage
 import com.kamilh.databse.PlayerQueries
 import com.kamilh.databse.TeamPlayerQueries
 import com.kamilh.databse.TourTeamQueries
+import com.kamilh.datetime.LocalDate
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.errors.SqlError
@@ -11,16 +13,14 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import models.PlayerWithDetails
-import com.kamilh.datetime.LocalDate
-import com.kamilh.datetime.LocalDateTime
 
 interface PlayerStorage {
 
     suspend fun insert(players: List<PlayerWithDetails>, tourId: TourId): InsertPlayerResult
 
-    suspend fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>>
+    fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>>
 
-    suspend fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>>
+    fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>>
 }
 
 typealias InsertPlayerResult = Result<Unit, InsertPlayerError>
@@ -96,22 +96,18 @@ class SqlPlayerStorage(
             exception
         }
 
-    override suspend fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>> =
-        queryRunner.run {
-            teamPlayerQueries.selectPlayersByTeam(
-                team_id = teamId,
-                tour_id = tourId,
-                mapper = mapper,
-            ).asFlow().mapToList(queryRunner.dispatcher)
-        }
+    override fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>> =
+        teamPlayerQueries.selectPlayersByTeam(
+            team_id = teamId,
+            tour_id = tourId,
+            mapper = mapper,
+        ).asFlow().mapToList(queryRunner.dispatcher)
 
-    override suspend fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>> =
-        queryRunner.run {
-            teamPlayerQueries.selectPlayers(
-                tour_id = tourId,
-                mapper = mapper,
-            ).asFlow().mapToList(queryRunner.dispatcher)
-        }
+    override fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>> =
+        teamPlayerQueries.selectPlayers(
+            tour_id = tourId,
+            mapper = mapper,
+        ).asFlow().mapToList(queryRunner.dispatcher)
 
     private val mapper: (
         image_url: Url?,

@@ -17,6 +17,8 @@ interface TourStorage {
 
     suspend fun insert(tour: Tour): InsertTourResult
 
+    fun getAll(): Flow<List<Tour>>
+
     suspend fun getAllByLeague(league: League): Flow<List<Tour>>
 
     suspend fun getByTourId(tourId: TourId): Flow<Tour?>
@@ -63,6 +65,9 @@ class SqlTourStorage(
             throw exception
         }
     }
+
+    override fun getAll(): Flow<List<Tour>> =
+        tourQueries.selectAllWithLeageue(mapper).asFlow().mapToList(queryRunner.dispatcher)
 
     override suspend fun getAllByLeague(league: League): Flow<List<Tour>> =
         tourQueries.selectAllByLeague(league.country, league.division, mapper).asFlow().mapToList(queryRunner.dispatcher)

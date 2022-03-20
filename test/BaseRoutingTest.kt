@@ -1,15 +1,11 @@
 package com.kamilh
 
 import com.kamilh.authorization.credentialsValidatorOf
-import com.kamilh.models.Result
-import com.kamilh.models.api.UserResponse
-import com.kamilh.storage.nullUUID
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.junit.Test
 import org.kodein.di.DI
 
 open class BaseRoutingTest {

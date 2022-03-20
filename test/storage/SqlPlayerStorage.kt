@@ -191,6 +191,6 @@ fun playerStorageOf(
 ): PlayerStorage = object : PlayerStorage {
     override suspend fun insert(players: List<PlayerWithDetails>, tourId: TourId): InsertPlayerResult =
         insert(players, tourId)
-    override suspend fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>> = getAllPlayersByTeam
-    override suspend fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>> = getAllPlayers
+    override fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>> = getAllPlayersByTeam
+    override fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>> = getAllPlayers
 }

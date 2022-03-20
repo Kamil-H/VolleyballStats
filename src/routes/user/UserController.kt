@@ -7,7 +7,7 @@ import com.kamilh.interactors.GetUser
 import com.kamilh.interactors.GetUserParams
 import com.kamilh.models.Result
 import com.kamilh.models.User
-import com.kamilh.models.api.UserResponse
+import com.kamilh.models.api.user.UserResponse
 import com.kamilh.utils.toUUID
 import io.ktor.http.*
 import routes.CallError

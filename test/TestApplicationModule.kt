@@ -5,7 +5,7 @@ import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.authorization.credentialsValidatorOf
 import com.kamilh.models.Result
 import com.kamilh.models.TestAppConfig
-import com.kamilh.models.api.UserResponse
+import com.kamilh.models.api.user.UserResponse
 import com.kamilh.routes.user.UserController
 import com.kamilh.storage.common.adapters.*
 import kotlinx.serialization.json.Json

@@ -3,7 +3,7 @@ package com.kamilh.routes
 import com.kamilh.BaseRoutingTest
 import com.kamilh.authorization.credentialsValidatorOf
 import com.kamilh.models.Result
-import com.kamilh.models.api.UserResponse
+import com.kamilh.models.api.user.UserResponse
 import com.kamilh.storage.nullUUID
 import com.kamilh.testApplicationModule
 import com.kamilh.userControllerOf
