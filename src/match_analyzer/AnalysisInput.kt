@@ -1,15 +1,9 @@
 package com.kamilh.match_analyzer
 
 import com.kamilh.models.*
-import com.kamilh.datetime.LocalDateTime
 
 data class AnalysisInput(
     val plays: List<Play>,
-    val matchId: MatchReportId,
-    val set: Int,
-    val score: Score,
-    val rallyStartTime: LocalDateTime,
-    val rallyEndTime: LocalDateTime,
 ) {
 
     data class Play(

@@ -49,7 +49,7 @@ class MatchReportPreparerInteractor(
         tour: Tour,
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
-        matchReportAnalyzer(MatchReportAnalyzerParams(matchReport, tour))
+        matchReportAnalyzer(MatchReportAnalyzerParams(matchId, matchReport, tour))
             .flatMapError {
                 Logger.i("AnalyzeMatchReport failure: ${it.message}")
                 // Ignoring analyze error. It should be reported and proceeded further
@@ -79,11 +79,10 @@ class MatchReportPreparerInteractor(
         matchStatisticsStorage.insert(
             matchStatistics = matchStatistics,
             tourId = tour.id,
-            matchId = matchId,
         ).flatMapError {
             when (it) {
                 is InsertMatchStatisticsError.PlayerNotFound -> {
-                    Logger.i("matchId: ${matchId}, matchReportId: ${matchStatistics.matchReportId}, playerIds: ${it.playerIds}")
+                    Logger.i("matchId: ${matchId}, matchReportId: ${matchStatistics.matchId}, playerIds: ${it.playerIds}")
                     if (tryFixPlayerOnError) {
                         tryUpdatePlayers(
                             matchReport = matchReport,

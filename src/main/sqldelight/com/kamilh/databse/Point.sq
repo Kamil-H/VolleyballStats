@@ -27,7 +27,7 @@ team_player_model away_p3 ON away_lineup.p3 = away_p3.id,
 team_player_model away_p4 ON away_lineup.p4 = away_p4.id,
 team_player_model away_p5 ON away_lineup.p5 = away_p5.id,
 team_player_model away_p6 ON away_lineup.p6 = away_p6.id
-WHERE set_model.match_statistics_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?)
+WHERE set_model.match_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?)
 ORDER BY point_model.home_score AND point_model.away_score;
 
 lastInsertRowId:

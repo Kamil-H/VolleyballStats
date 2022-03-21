@@ -1,12 +1,12 @@
 insert:
-INSERT INTO set_model (number, home_score, away_score, start_time, end_time, duration, match_statistics_id)
+INSERT INTO set_model (number, home_score, away_score, start_time, end_time, duration, match_id)
 VALUES (?, ?, ?, ?, ?, ?, ?);
 
 selectAll:
 SELECT * FROM set_model;
 
 selectAllBySetsTourId:
-SELECT * FROM set_model WHERE match_statistics_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+SELECT * FROM set_model WHERE match_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
 
 lastInsertRowId:
 SELECT last_insert_rowid();

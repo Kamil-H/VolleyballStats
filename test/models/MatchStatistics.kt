@@ -7,7 +7,7 @@ import com.kamilh.utils.zonedDateTime
 import kotlin.time.Duration
 
 fun matchStatisticsOf(
-    matchReportId: MatchReportId = matchReportIdOf(),
+    matchId: MatchId = matchIdOf(),
     sets: List<MatchSet> = emptyList(),
     home: MatchTeam = matchTeamOf(),
     away: MatchTeam = matchTeamOf(),
@@ -16,7 +16,7 @@ fun matchStatisticsOf(
     updatedAt: LocalDateTime = localDateTime(),
     phase: Phase = Phase.PlayOff,
 ): MatchStatistics = MatchStatistics(
-    matchReportId = matchReportId,
+    matchId = matchId,
     sets = sets,
     home = home,
     away = away,

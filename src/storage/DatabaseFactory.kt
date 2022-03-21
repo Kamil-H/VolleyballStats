@@ -35,7 +35,6 @@ internal class AppConfigDatabaseFactory(
 	localDateTimeAdapter: ColumnAdapter<LocalDateTime, String>,
 	seasonAdapter: ColumnAdapter<Season, Long>,
 	specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long>,
-	matchReportIdAdapter: ColumnAdapter<MatchReportId, Long>,
 	durationAdapter: ColumnAdapter<Duration, Long>,
 	positionAdapter: ColumnAdapter<PlayerPosition, Long>,
 	matchIdAdapter: ColumnAdapter<MatchId, Long>,
@@ -74,7 +73,6 @@ internal class AppConfigDatabaseFactory(
 			),
 			match_modelAdapter = Match_model.Adapter(
 				dateAdapter = zonedDateAdapter,
-				match_statistics_idAdapter = matchReportIdAdapter,
 				idAdapter = matchIdAdapter,
 				stateAdapter = EnumColumnAdapter(),
 				tour_idAdapter = tourIdAdapter,
@@ -86,7 +84,7 @@ internal class AppConfigDatabaseFactory(
 			set_modelAdapter = Set_model.Adapter(
 				end_timeAdapter = zonedDateAdapter,
 				start_timeAdapter = zonedDateAdapter,
-				match_statistics_idAdapter = matchReportIdAdapter,
+				match_idAdapter = matchIdAdapter,
 				durationAdapter = durationAdapter,
 			),
 			tour_modelAdapter = Tour_model.Adapter(
@@ -104,10 +102,10 @@ internal class AppConfigDatabaseFactory(
 				idAdapter = teamIdAdapter,
 			),
 			match_appearance_modelAdapter = Match_appearance_model.Adapter(
-				match_statistics_idAdapter = matchReportIdAdapter,
+				match_idAdapter = matchIdAdapter,
 			),
 			match_statistics_modelAdapter = Match_statistics_model.Adapter(
-				idAdapter = matchReportIdAdapter,
+				idAdapter = matchIdAdapter,
 				phaseAdapter = EnumColumnAdapter(),
 				updated_atAdapter = localDateTimeAdapter,
 				tour_idAdapter = tourIdAdapter,

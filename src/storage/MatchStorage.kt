@@ -69,7 +69,6 @@ class SqlMatchStorage(
     private val mapper: (
         id: MatchId,
         date: ZonedDateTime?,
-        match_statistics_id: MatchReportId?,
         state: MatchState,
         home_id: TeamId?,
         away_id: TeamId?,
@@ -78,18 +77,16 @@ class SqlMatchStorage(
     ) -> Match = {
             id: MatchId,
             date: ZonedDateTime?,
-            match_statistics_id: MatchReportId?,
             state: MatchState,
             home_id: TeamId?,
             away_id: TeamId?,
             end_time: ZonedDateTime?,
             winner_team_id: TeamId? ->
-        if (end_time != null && winner_team_id != null && match_statistics_id != null) {
+        if (end_time != null && winner_team_id != null) {
             Match.Finished(
                 id = id,
                 endTime = end_time,
                 winnerId = winner_team_id,
-                matchReportId = match_statistics_id,
                 away = away_id!!,
                 home = home_id!!,
                 date = date!!,

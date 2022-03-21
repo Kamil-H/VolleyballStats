@@ -15,6 +15,7 @@ typealias MatchReportAnalyzer = Interactor<MatchReportAnalyzerParams, MatchRepor
 typealias MatchReportAnalyzerResult = Result<MatchStatistics, MatchReportAnalyzerError>
 
 data class MatchReportAnalyzerParams(
+    val matchId: MatchId,
     val matchReport: MatchReport,
     val tour: Tour,
 )
@@ -41,22 +42,22 @@ class MatchReportAnalyzerInteractor(
 ) : MatchReportAnalyzer(appDispatchers) {
 
     override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult {
-        val (matchReport: MatchReport, tour: Tour) = params
-        val matchId = matchReport.matchId
+        val (matchId: MatchId, matchReport: MatchReport, tour: Tour) = params
+        val matchReportId = matchReport.matchId
 
         if (matchReport.scout.sets.size > matchReport.scoutData.size) {
-            return Result.failure(MatchReportAnalyzerError.WrongSetsCount(matchId))
+            return Result.failure(MatchReportAnalyzerError.WrongSetsCount(matchReportId))
         }
 
         val home = getTeam(matchReport.matchTeams.home, tour)
         val away = getTeam(matchReport.matchTeams.away, tour)
 
         if (home == null) {
-            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.home.name, tour.season))
+            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchReportId, matchReport.matchTeams.home.name, tour.season))
         }
 
         if (away == null) {
-            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchId, matchReport.matchTeams.away.name, tour.season))
+            return Result.failure(MatchReportAnalyzerError.TeamNotFound(matchReportId, matchReport.matchTeams.away.name, tour.season))
         }
 
         val toTeam: TeamType.() -> Team = {
@@ -70,8 +71,8 @@ class MatchReportAnalyzerInteractor(
         val scoutData = matchReport.scoutData
 
         val matchSets = sets.mapIndexed { setIndex, set ->
-            val homeLineup = set.startingLineup.homeLineupMutator(matchId, matchReport.matchTeams, Rotation.P1)
-            val awayLineup = set.startingLineup.awayLineupMutator(matchId, matchReport.matchTeams, Rotation.P1)
+            val homeLineup = set.startingLineup.homeLineupMutator(matchReportId, matchReport.matchTeams, Rotation.P1)
+            val awayLineup = set.startingLineup.awayLineupMutator(matchReportId, matchReport.matchTeams, Rotation.P1)
             val setScoutData = scoutData[setIndex]
 
             var score = Score(home = 0, away = 0)
@@ -99,15 +100,15 @@ class MatchReportAnalyzerInteractor(
                             val data = dataToAnalyze?.copy(plays = dataToAnalyze.plays.filter { it.player != 0 })
 
                             if (data == null || data.plays.isEmpty()) {
-                                analyzeErrorReporter.report(AnalyzeError.NoScoutDataForScore(matchId, score, setIndex + 1, tour.season))
+                                analyzeErrorReporter.report(AnalyzeError.NoScoutDataForScore(matchReportId, score, setIndex + 1, tour.season))
                             } else if (data.plays.firstOrNull()?.skill != Skill.Serve) {
-                                analyzeErrorReporter.report(AnalyzeError.ActionStartNotFromService(matchId, score, setIndex + 1))
+                                analyzeErrorReporter.report(AnalyzeError.ActionStartNotFromService(matchReportId, score, setIndex + 1))
                             } else {
                                 val input = AnalysisInput(
                                     plays = data.plays.mapNotNull { play ->
                                         val player = when (play.team) {
-                                            TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, play.player)
-                                            TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, play.player)
+                                            TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchReportId, play.player)
+                                            TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, play.player)
                                         } ?: return@mapNotNull null
                                         AnalysisInput.Play(
                                             id = play.id,
@@ -128,7 +129,7 @@ class MatchReportAnalyzerInteractor(
                                                         PlayerPosition.P1, PlayerPosition.P5, PlayerPosition.P6, null -> {
                                                             analyzeErrorReporter.report(
                                                                 AnalyzeError.BlockNotInFirstLine(
-                                                                    matchId, play.team.toTeam(), tour.season, play.player,
+                                                                    matchReportId, play.team.toTeam(), tour.season, play.player,
                                                                     this, player, score, setIndex + 1, event.startTime
                                                                 )
                                                             )
@@ -137,7 +138,7 @@ class MatchReportAnalyzerInteractor(
                                                 }
                                                 if (this == null) {
                                                     analyzeErrorReporter.report(
-                                                        AnalyzeError.PlayerNotInGame(matchId, play.team.toTeam(), tour.season,
+                                                        AnalyzeError.PlayerNotInGame(matchReportId, play.team.toTeam(), tour.season,
                                                             play.player, player, score, setIndex + 1, event.startTime
                                                         )
                                                     )
@@ -145,11 +146,6 @@ class MatchReportAnalyzerInteractor(
                                             }
                                         )
                                     },
-                                    matchId = matchId,
-                                    set = setIndex + 1,
-                                    score = score,
-                                    rallyStartTime = event.startTime,
-                                    rallyEndTime = event.endTime,
                                 )
                                 points.add(
                                     MatchPoint(
@@ -180,24 +176,24 @@ class MatchReportAnalyzerInteractor(
                     }
                     is Event.Libero -> {
                         when (event.team) {
-                            TeamType.Home -> homeLineup.libero(matchId, event, matchReport.matchTeams.home)
-                            TeamType.Away -> awayLineup.libero(matchId, event, matchReport.matchTeams.away)
+                            TeamType.Home -> homeLineup.libero(matchReportId, event, matchReport.matchTeams.home)
+                            TeamType.Away -> awayLineup.libero(matchReportId, event, matchReport.matchTeams.away)
                         }.apply {
                             if (!this) {
                                 analyzeErrorReporter.report(
-                                    AnalyzeError.WrongLibero(matchId, score, setIndex + 1, event, event.team.toTeam())
+                                    AnalyzeError.WrongLibero(matchReportId, score, setIndex + 1, event, event.team.toTeam())
                                 )
                             }
                         }
                     }
                     is Event.Substitution -> {
                         when (event.team) {
-                            TeamType.Home -> homeLineup.substitution(matchId, event, matchReport.matchTeams.home)
-                            TeamType.Away -> awayLineup.substitution(matchId, event, matchReport.matchTeams.away)
+                            TeamType.Home -> homeLineup.substitution(matchReportId, event, matchReport.matchTeams.home)
+                            TeamType.Away -> awayLineup.substitution(matchReportId, event, matchReport.matchTeams.away)
                         }.apply {
                             if (!this) {
                                 analyzeErrorReporter.report(
-                                    AnalyzeError.WrongSubstitution(matchId, score, setIndex + 1, event, event.team.toTeam())
+                                    AnalyzeError.WrongSubstitution(matchReportId, score, setIndex + 1, event, event.team.toTeam())
                                 )
                             }
                         }
@@ -209,7 +205,7 @@ class MatchReportAnalyzerInteractor(
             }
             if (score != set.score) {
                 analyzeErrorReporter.report(
-                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchId, calculatedScore = score, expectedScore = set.score, tour.season)
+                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchReportId, calculatedScore = score, expectedScore = set.score, tour.season)
                 )
             }
             MatchSet(
@@ -224,7 +220,7 @@ class MatchReportAnalyzerInteractor(
 
         return Result.success(
             MatchStatistics(
-                matchReportId = matchId,
+                matchId = matchId,
                 sets = matchSets,
                 home = MatchTeam(
                     teamId = home.id,
@@ -237,12 +233,12 @@ class MatchReportAnalyzerInteractor(
                     players = matchReport.matchTeams.away.players.map { it.id },
                 ),
                 mvp = when (matchReport.scout.mvp.team) {
-                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.mvp.number)
-                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.mvp.number)
+                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchReportId, matchReport.scout.mvp.number)
+                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.mvp.number)
                 }!!,
                 bestPlayer = when (matchReport.scout.bestPlayer?.team) {
-                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
-                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchId, matchReport.scout.bestPlayer.number)
+                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer.number)
+                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer.number)
                     else -> null
                 },
                 phase = matchReport.phase,

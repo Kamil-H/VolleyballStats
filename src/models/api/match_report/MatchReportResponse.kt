@@ -4,7 +4,7 @@
     TeamIdSerializer::class,
     LocalDateTimeSerializer::class,
     ZonedDateTimeSerializer::class,
-    MatchReportIdSerializer::class,
+    MatchIdSerializer::class,
     DurationSerializer::class,
 )
 
@@ -20,7 +20,7 @@ import kotlin.time.Duration
 
 @Serializable
 class MatchReportResponse(
-    val matchReportId: MatchReportId,
+    val matchId: MatchId,
     val sets: List<MatchSetResponse>,
     val home: MatchTeamResponse,
     val away: MatchTeamResponse,

@@ -44,7 +44,6 @@ fun finishedOf(
     date: ZonedDateTime = zonedDateTime(),
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
-    matchReportId: MatchReportId = matchReportIdOf(),
     winnerId: TeamId = teamIdOf(),
     endTime: ZonedDateTime = zonedDateTime(),
 ): Match.Finished = Match.Finished(
@@ -52,7 +51,6 @@ fun finishedOf(
     date = date,
     home = home,
     away = away,
-    matchReportId = matchReportId,
     winnerId = winnerId,
     endTime = endTime,
 )

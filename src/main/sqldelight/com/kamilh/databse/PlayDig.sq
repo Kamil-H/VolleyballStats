@@ -20,7 +20,7 @@ LEFT JOIN
 team_player_model attacker_player_id ON attacker_player_id.id = dig.attacker_id
 LEFT JOIN
 team_player_model rebounder_player_id ON rebounder_player_id.id = dig.rebounder_id
-WHERE set_model.match_statistics_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+WHERE set_model.match_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
 
 selectDigStats:
 SELECT

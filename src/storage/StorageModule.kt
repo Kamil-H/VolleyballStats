@@ -32,7 +32,6 @@ val storageModule = DI.Module(name = MODULE_NAME) {
     bind<ColumnAdapter<LocalDateTime, String>>() with provider { LocalDateTimeAdapter() }
     bind<ColumnAdapter<Season, Long>>() with provider { TourYearAdapter() }
     bind<ColumnAdapter<TeamPlayer.Specialization, Long>>() with provider { SpecializationAdapter() }
-    bind<ColumnAdapter<MatchReportId, Long>>() with provider { MatchReportIdAdapter() }
     bind<ColumnAdapter<Duration, Long>>() with provider { DurationAdapter() }
     bind<ColumnAdapter<PlayerPosition, Long>>() with provider { PositionAdapter() }
     bind<ColumnAdapter<MatchId, Long>>() with provider { MatchIdAdapter() }
@@ -40,7 +39,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
 
     bind<DatabaseFactory>() with singleton {
         AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
+            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
     }
 
     bind<UserQueries>() with singleton {
@@ -162,7 +161,7 @@ val storageModule = DI.Module(name = MODULE_NAME) {
         SqlMatchStatisticsStorage(
             instance(), instance(), instance(), instance(), instance(), instance(), instance(),
             instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance()
+            instance(), instance()
         )
     }
 

@@ -18,7 +18,7 @@ team_player_model team_player ON play_model.player_id = team_player.id,
 tour_team_model team ON team_player.tour_team_id = team.id
 LEFT JOIN
 team_player_model attacker_player_id ON attacker_player_id.id = attacker_id
-WHERE set_model.match_statistics_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+WHERE set_model.match_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
 
 selectSetStats:
 SELECT

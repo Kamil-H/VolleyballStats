@@ -35,8 +35,8 @@ class MatchReportPreparerInteractorTest {
         tour = tour,
     )
 
-    private fun insertCallbackOf(callback: () -> InsertMatchStatisticsResult): (matchStatistics: MatchStatistics, tourId: TourId, matchId: MatchId) -> InsertMatchStatisticsResult =
-        { _, _, _ -> callback() }
+    private fun insertCallbackOf(callback: () -> InsertMatchStatisticsResult): (matchStatistics: MatchStatistics, tourId: TourId) -> InsertMatchStatisticsResult =
+        { _, _ -> callback() }
 
     @Test
     fun `interactor returns Success when empty matches list is passed`() = runTest {

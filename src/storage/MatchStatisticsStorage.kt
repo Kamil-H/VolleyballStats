@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 
 interface MatchStatisticsStorage {
 
-    suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId, matchId: MatchId): InsertMatchStatisticsResult
+    suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult
 
     suspend fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>>
 
@@ -50,11 +50,10 @@ class SqlMatchStatisticsStorage(
     private val pointLineupQueries: PointLineupQueries,
     private val setQueries: SetQueries,
     private val matchAppearanceQueries: MatchAppearanceQueries,
-    private val matchQueries: MatchQueries,
     private val tourQueries: TourQueries,
 ) : MatchStatisticsStorage {
 
-    override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId, matchId: MatchId): InsertMatchStatisticsResult = queryRunner.runTransaction {
+    override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult = queryRunner.runTransaction {
         tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertMatchStatisticsError>(InsertMatchStatisticsError.TourNotFound)
 
         val homeTeamId = tourTeamQueries.selectId(matchStatistics.home.teamId, tourId).executeAsOneOrNull()
@@ -72,14 +71,14 @@ class SqlMatchStatisticsStorage(
         val playerIdCache = mutableMapOf<PlayerId, Long>()
         val playersNotFound = insert(
             matchPlayers = matchStatistics.home.players,
-            matchReportId = matchStatistics.matchReportId,
+            matchId = matchStatistics.matchId,
             tourTeamId = homeTeamId,
             teamId = matchStatistics.home.teamId,
         ) { playerId, id ->
             playerIdCache[playerId] = id
         } + insert(
             matchPlayers = matchStatistics.away.players,
-            matchReportId = matchStatistics.matchReportId,
+            matchId = matchStatistics.matchId,
             tourTeamId = awayTeamId,
             teamId = matchStatistics.away.teamId,
         ) { playerId, id ->
@@ -91,7 +90,7 @@ class SqlMatchStatisticsStorage(
         }
 
         matchStatisticsQueries.insert(
-            id = matchStatistics.matchReportId,
+            id = matchStatistics.matchId,
             home = homeTeamId,
             away = awayTeamId,
             mvp = playerIdCache[matchStatistics.mvp]!!,
@@ -109,7 +108,7 @@ class SqlMatchStatisticsStorage(
                 start_time = matchSet.startTime,
                 end_time = matchSet.endTime,
                 duration = matchSet.duration,
-                match_statistics_id = matchStatistics.matchReportId,
+                match_id = matchStatistics.matchId,
             )
             val setId = setQueries.lastInsertRowId().executeAsOne()
             matchSet.points.forEach { matchPoint ->
@@ -133,16 +132,12 @@ class SqlMatchStatisticsStorage(
                 }
             }
         }
-        matchQueries.updateMatchReport(
-            id = matchId,
-            match_statistics_id = matchStatistics.matchReportId,
-        )
         InsertMatchStatisticsResult.success(Unit)
     }
 
     private fun insert(
         matchPlayers: List<PlayerId>,
-        matchReportId: MatchReportId,
+        matchId: MatchId,
         tourTeamId: Long,
         teamId: TeamId,
         onPlayerInserted: (PlayerId, Long) -> Unit,
@@ -156,7 +151,7 @@ class SqlMatchStatisticsStorage(
                 matchAppearanceQueries.insert(
                     tour_team_id = tourTeamId,
                     player_id = id,
-                    match_statistics_id = matchReportId,
+                    match_id = matchId,
                 )
                 onPlayerInserted(matchPlayer, id)
                 null
@@ -257,7 +252,7 @@ class SqlMatchStatisticsStorage(
         return combine(stats, matchAppearances, sets, points, playActions) { stats, matchAppearances, sets, points, playActions ->
             stats.map { selectAllStats ->
                 MatchStatistics(
-                    matchReportId = selectAllStats.id,
+                    matchId = selectAllStats.id,
                     sets = sets.toMatchSet(selectAllStats.id, points, playActions),
                     home = matchAppearances.toMatchTeam(selectAllStats.home, selectAllStats.id),
                     away = matchAppearances.toMatchTeam(selectAllStats.away, selectAllStats.id),
@@ -274,8 +269,8 @@ class SqlMatchStatisticsStorage(
         TODO("Not yet implemented")
     }
 
-    private fun List<SelectAllAppearancesByTour>.toMatchTeam(tourTeamId: Long, matchReportId: MatchReportId): MatchTeam =
-        filter { it.tour_team_id == tourTeamId && it.match_statistics_id == matchReportId }
+    private fun List<SelectAllAppearancesByTour>.toMatchTeam(tourTeamId: Long, matchId: MatchId): MatchTeam =
+        filter { it.tour_team_id == tourTeamId && it.match_id == matchId }
             .let {
                 MatchTeam(
                     teamId = it.first().team_id,
@@ -285,11 +280,11 @@ class SqlMatchStatisticsStorage(
             }
 
     private fun List<Set_model>.toMatchSet(
-        matchReportId: MatchReportId,
+        matchId: MatchId,
         points: List<SelectAllPointsByTourId>,
         playActions: List<PlayActionWrapper>,
     ): List<MatchSet> =
-        filter { it.match_statistics_id == matchReportId }
+        filter { it.match_id == matchId }
             .map { setModel ->
                 MatchSet(
                     number = setModel.number,

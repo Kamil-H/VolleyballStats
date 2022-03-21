@@ -72,7 +72,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
     }
 
     @Test
-    fun `insert select returns Saved when there is MatchReport associated with the Match`() = runTest {
+    fun `insert select Saved when there is MatchReport associated with the Match`() = runTest {
         // GIVEN
         val season = seasonOf()
         val league = leagueOf()
@@ -90,7 +90,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val lastSet = matchStatistics.sets.last()
         assert(result.winnerId == if (lastSet.score.home > lastSet.score.away) matchStatistics.home.teamId else matchStatistics.away.teamId)
         assert(result.endTime == lastSet.endTime)
-        assert(result.matchReportId == matchStatistics.matchReportId)
+        assert(result.id == matchStatistics.matchId)
     }
 
     @Test
@@ -208,7 +208,6 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val tour = configure()
         val matchId = matchIdOf(2)
         val match = potentiallyFinishedOf(id = matchId)
-        val matchReportId = matchReportIdOf(1)
 
         // WHEN
         matchStorage.insertOrUpdate(listOf(match), tour.id)
@@ -220,7 +219,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
 
         // WHEN
         matchStatisticsQueries.insert(
-            id = matchReportId,
+            id = matchId,
             home = 0,
             away = 0,
             mvp = 0,
@@ -236,11 +235,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             start_time = zonedDateTime(),
             end_time = zonedDateTime(),
             duration = Duration.ZERO,
-            match_statistics_id = matchReportId,
-        )
-        matchQueries.updateMatchReport(
-            id = matchId,
-            match_statistics_id = matchReportId,
+            match_id = matchId,
         )
         matchStorage.insertOrUpdate(listOf(match), tour.id)
 
@@ -249,7 +244,6 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val newExpectedValue = selectAllMatchesByTourOf(
             id = matchId,
             state = MatchState.PotentiallyFinished,
-            match_statistics_id = matchReportId,
             date = zonedDateTime(),
             end_time = zonedDateTime(),
             winner_team_id = null,
@@ -308,7 +302,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             matchStatisticsOf(
                 away = teams.removeFirst(),
                 home = teams.removeFirst(),
-                matchReportId = matchReportIdOf(index.toLong()),
+                matchId = matchIdOf(index.toLong()),
                 sets = (1..index + 3).map { setIndex ->
                     matchSetOf(
                         number = setIndex,
@@ -322,7 +316,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         // WHEN
         matchStorage.insertOrUpdate(matches, tour.id)
         matchStats.forEachIndexed { index, matchStatistics ->
-            storage.insert(matchStatistics, tour.id, matches[index].id)
+            storage.insert(matchStatistics, tour.id)
         }
 
         // THEN
@@ -330,7 +324,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         assert(value.size == matches.size)
         value.forEachIndexed { index, selectAllMatchesByTour ->
             if (index == 0 || index == 1) {
-                assert(selectAllMatchesByTour.match_statistics_id == matchStats[index].matchReportId)
+                assert(selectAllMatchesByTour.id == matchStats[index].matchId)
                 assert(selectAllMatchesByTour.end_time == matchStats[index].sets.last().endTime)
                 assert(selectAllMatchesByTour.winner_team_id == matchStats[index].away.teamId)
             } else {
@@ -349,7 +343,6 @@ private fun selectAllMatchesByTourOf(
     id: MatchId = matchIdOf(),
     state: MatchState = MatchState.Scheduled,
     date: ZonedDateTime? = zonedDateTime(),
-    match_statistics_id: MatchReportId? = null,
     end_time: ZonedDateTime? = null,
     winner_team_id: TeamId? = null,
     home_id: TeamId = teamIdOf(),
@@ -357,7 +350,6 @@ private fun selectAllMatchesByTourOf(
 ): SelectAllMatchesByTour = SelectAllMatchesByTour(
     id = id,
     date = date,
-    match_statistics_id = match_statistics_id,
     end_time = end_time,
     state = state,
     winner_team_id = winner_team_id,

@@ -28,7 +28,6 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             pointLineupQueries = pointLineupQueries,
             setQueries = setQueries,
             matchAppearanceQueries = matchAppearanceQueries,
-            matchQueries = matchQueries,
             tourQueries = tourQueries,
         )
     }
@@ -116,10 +115,10 @@ abstract class StatisticsStorageTest : DatabaseTest() {
                 )
             )
         }
-        val matchStatistics = analyzer(MatchReportAnalyzerParams(matchReport, tour)).value!!
+        val matchStatistics = analyzer(MatchReportAnalyzerParams(matchId, matchReport, tour)).value!!
 
         // WHEN
-        val insertResult = storage.insert(matchStatistics, tour.id, matchId)
+        val insertResult = storage.insert(matchStatistics, tour.id)
 
         // THEN
         val result = matchStatisticsQueries.selectAll().executeAsList()

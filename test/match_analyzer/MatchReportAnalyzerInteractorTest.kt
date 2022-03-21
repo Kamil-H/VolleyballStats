@@ -10,7 +10,6 @@ import com.kamilh.storage.TeamStorage
 import com.kamilh.storage.teamStorageOf
 import com.kamilh.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import match_analyzer.lineupOf
@@ -37,7 +36,9 @@ class MatchReportAnalyzerInteractorTest {
     private fun paramsOf(
         matchReport: MatchReport = matchReportOf(),
         tour: Tour = tourOf(),
+        matchId: MatchId = matchIdOf(),
     ): MatchReportAnalyzerParams = MatchReportAnalyzerParams(
+        matchId = matchId,
         matchReport = matchReport,
         tour = tour,
     )
@@ -130,14 +131,15 @@ class MatchReportAnalyzerInteractorTest {
                 )
             )
         )
+        val matchId = matchIdOf(1)
 
         // WHEN
-        val result = analyzer(teamStorage = teamStorage)(paramsOf(matchReport, tourOf()))
+        val result = analyzer(teamStorage = teamStorage)(paramsOf(matchReport, tourOf(), matchId))
         require(result is Result.Success)
         val matchStatistics = result.value
 
         // THEN
-        assert(matchStatistics.matchReportId.value == matchReportId)
+        assert(matchStatistics.matchId == matchId)
         assert(matchStatistics.home.teamId.value == 0L)
         assert(matchStatistics.away.teamId.value == 1L)
         assert(matchStatistics.mvp.value == 22573L)

@@ -35,7 +35,6 @@ sealed class Match {
         override val date: ZonedDateTime,
         override val home: TeamId,
         override val away: TeamId,
-        val matchReportId: MatchReportId,
         val winnerId: TeamId,
         val endTime: ZonedDateTime,
     ) : Match()

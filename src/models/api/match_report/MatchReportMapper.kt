@@ -7,7 +7,7 @@ class MatchReportMapper : ResponseMapper<MatchStatistics, MatchReportResponse> {
 
     override fun to(from: MatchStatistics): MatchReportResponse =
         MatchReportResponse(
-            matchReportId = from.matchReportId,
+            matchId = from.matchId,
             sets = from.sets.map { it.toResponse() },
             home = from.home.toResponse(),
             away = from.away.toResponse(),
@@ -146,7 +146,7 @@ class MatchReportMapper : ResponseMapper<MatchStatistics, MatchReportResponse> {
 
     override fun from(from: MatchReportResponse): MatchStatistics =
         MatchStatistics(
-            matchReportId = from.matchReportId,
+            matchId = from.matchId,
             sets = from.sets.map { it.toDomain() },
             home = from.home.toDomain(),
             away = from.away.toDomain(),
