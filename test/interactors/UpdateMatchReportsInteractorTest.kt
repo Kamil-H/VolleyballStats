@@ -23,7 +23,7 @@ class UpdateMatchReportsTest {
 
     private fun paramsOf(
         tour: Tour = tourOf(),
-        matches: List<Match.PotentiallyFinished> = emptyList(),
+        matches: List<MatchInfo.PotentiallyFinished> = emptyList(),
     ): UpdateMatchReportParams = UpdateMatchReportParams(
         tour = tour,
         matches = matches,
@@ -32,7 +32,7 @@ class UpdateMatchReportsTest {
     @Test
     fun `interactor returns Success when list of matches is empty`() = runTest {
         // GIVEN
-        val matches = emptyList<Match.PotentiallyFinished>()
+        val matches = emptyList<MatchInfo.PotentiallyFinished>()
 
         // WHEN
         val result = interactor()(paramsOf(matches = matches))

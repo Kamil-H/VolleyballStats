@@ -13,6 +13,8 @@ value class Instant internal constructor(internal val instant: IslandInstant) : 
     override fun compareTo(other: Instant): Int =
         instant.compareTo(other.instant)
 
+    override fun toString(): String = instant.toString()
+
     companion object {
         fun parse(dateString: String): Instant =
             Instant(dateString.toInstant())

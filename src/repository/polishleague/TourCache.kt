@@ -32,7 +32,6 @@ class InMemoryTourCache : TourCache {
                 league = League.POLISH_LEAGUE,
                 startDate = startDate,
                 endDate = null,
-                winnerId = null,
                 updatedAt = CurrentDate.localDateTime,
             )
         }

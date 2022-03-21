@@ -15,7 +15,7 @@ interface PolishLeagueRepository {
 
     suspend fun getAllPlayers(season: Season): NetworkResult<List<TeamPlayer>>
 
-    suspend fun getAllMatches(season: Season): NetworkResult<List<Match>>
+    suspend fun getAllMatches(season: Season): NetworkResult<List<MatchInfo>>
 
     suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId>
 
@@ -36,7 +36,7 @@ class HttpPolishLeagueRepository(
     private val htmlToTeamMapper: HtmlMapper<List<Team>>,
     private val htmlToTeamPlayerMapper: HtmlMapper<List<TeamPlayer>>,
     private val htmlToPlayerMapper: HtmlMapper<List<Player>>,
-    private val htmlToMatchMapper: HtmlMapper<List<Match>>,
+    private val htmlToMatchInfoMapper: HtmlMapper<List<MatchInfo>>,
     private val htmlToMatchReportId: HtmlMapper<MatchReportId>,
     private val htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails>,
     private val htmlToPlayerWithDetailsMapper: HtmlMapper<PlayerWithDetails>,
@@ -70,8 +70,8 @@ class HttpPolishLeagueRepository(
         cache.set(key, it)
     }
 
-    override suspend fun getAllMatches(season: Season): NetworkResult<List<Match>> =
-        httpClient.execute(polishLeagueApi.getAllMatches(season)).parseHtml(htmlToMatchMapper::map)
+    override suspend fun getAllMatches(season: Season): NetworkResult<List<MatchInfo>> =
+        httpClient.execute(polishLeagueApi.getAllMatches(season)).parseHtml(htmlToMatchInfoMapper::map)
 
     override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> =
         httpClient.execute(polishLeagueApi.getMatch(matchId)).parseHtml(htmlToMatchReportId::map)

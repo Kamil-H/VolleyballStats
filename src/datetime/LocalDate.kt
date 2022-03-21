@@ -17,6 +17,8 @@ value class LocalDate internal constructor(private val date: Date) : Comparable<
     override fun compareTo(other: LocalDate): Int =
         date.compareTo(other.date)
 
+    override fun toString(): String = date.toString()
+
     companion object {
         fun of(year: Int, month: Int, day: Int): LocalDate =
             LocalDate(Date(year, month, day))

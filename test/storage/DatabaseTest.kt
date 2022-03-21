@@ -113,7 +113,6 @@ abstract class DatabaseTest(
                 division = tour.league.division,
                 start_date = tour.startDate,
                 end_date = tour.endDate,
-                winner_id = tour.winnerId,
                 updated_at = tour.updatedAt,
             )
         }

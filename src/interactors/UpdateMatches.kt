@@ -4,10 +4,11 @@ import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertMatchStatisticsError
-import com.kamilh.storage.InsertMatchesError
 import com.kamilh.storage.MatchStorage
 import com.kamilh.storage.TourStorage
+import com.kamilh.utils.CurrentDate
 import kotlinx.coroutines.flow.first
+import kotlin.time.Duration.Companion.days
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
 
@@ -38,26 +39,34 @@ class UpdateMatchesInteractor(
 
     override suspend fun doWork(params: UpdateMatchesParams): UpdateMatchesResult {
         val tour = params.tour
-        val matches = polishLeagueRepository.getAllMatches(tour.season).value
-        if (matches != null) {
-            if (matches.isEmpty()) {
-                return Result.failure(UpdateMatchesError.NoMatchesInTour)
-            }
-            val insertResult = matchStorage.insertOrUpdate(matches, tour.id)
-            when (insertResult.error) {
-                InsertMatchesError.TourNotFound -> return Result.failure(UpdateMatchesError.TourNotFound)
-                is InsertMatchesError.TryingToInsertFinishedItems, null -> { }
-            }
+
+        val matchResult = polishLeagueRepository.getAllMatches(tour.season)
+        val matchError = matchResult.error
+        if (matchError != null) {
+            return Result.failure(UpdateMatchesError.Network(matchError))
         }
-        val allMatches = matchStorage.getAllMatches(tour.id).first()
-        val allMatchesFinished = allMatches.all { it is Match.Finished }
-        if (allMatches.isNotEmpty() && allMatchesFinished) {
-            val lastFinished = allMatches.filterIsInstance<Match.Finished>().maxByOrNull { it.endTime }!!
-            finishTour(tour, lastFinished)
+
+        val matches = matchResult.value!!
+        if (matches.isEmpty()) {
+            return Result.failure(UpdateMatchesError.NoMatchesInTour)
+        }
+
+        val insertResult = matchStorage.insertOrUpdate(matches.map { it.toMatch() }, tour.id)
+        val insertError = insertResult.error
+        if (insertError != null) {
+            return Result.failure(UpdateMatchesError.TourNotFound)
+        }
+
+        val savedMatches = matchStorage.getAllMatches(tour.id).first()
+        val allMatchesFinished = savedMatches.all { it.hasReport }
+        val lastFinished = savedMatches.filter { it.date != null }.maxByOrNull { it.date!! }?.date
+        val lastMatchOlderThanOffset = lastFinished?.plus(TOUR_CONSIDERED_FINISHED_OFFSET)?.let { CurrentDate.zonedDateTime > it } ?: false
+        if (savedMatches.isNotEmpty() && allMatchesFinished && lastMatchOlderThanOffset) {
+            finishTour(tour, lastFinished!!)
             return Result.success(UpdateMatchesSuccess.SeasonCompleted)
         }
 
-        val potentiallyFinished = allMatches.filterIsInstance<Match.PotentiallyFinished>()
+        val potentiallyFinished = matches.filterIsInstance<MatchInfo.PotentiallyFinished>()
         if (potentiallyFinished.isNotEmpty()) {
             val error = updateMatchReports(UpdateMatchReportParams(tour, potentiallyFinished)).mapError {
                 when (it) {
@@ -71,7 +80,7 @@ class UpdateMatchesInteractor(
             }
         }
 
-        val scheduled = allMatches.filterIsInstance<Match.Scheduled>().minByOrNull { it.date }
+        val scheduled = matches.filterIsInstance<MatchInfo.Scheduled>().minByOrNull { it.date }
         return if (scheduled != null) {
             Result.success(UpdateMatchesSuccess.NextMatch(scheduled.date))
         } else {
@@ -79,7 +88,14 @@ class UpdateMatchesInteractor(
         }
     }
 
-    private suspend fun finishTour(tour: Tour, lastMatch: Match.Finished) {
-        tourStorage.update(tour, lastMatch.endTime.toLocalDate())
+    private suspend fun finishTour(tour: Tour, dateTime: ZonedDateTime) {
+        tourStorage.update(tour, dateTime.toLocalDate())
+    }
+
+    private fun MatchInfo.toMatch(): Match =
+        Match(id = id, date = date, home = home, away = away, hasReport = false)
+
+    companion object {
+        private val TOUR_CONSIDERED_FINISHED_OFFSET = 14.days
     }
 }

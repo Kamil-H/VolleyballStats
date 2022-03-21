@@ -11,7 +11,6 @@ package com.kamilh.models.api.tour
 import com.kamilh.datetime.LocalDate
 import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.Season
-import com.kamilh.models.TeamId
 import com.kamilh.models.TourId
 import com.kamilh.models.api.adapters.*
 import com.kamilh.models.api.league.LeagueResponse
@@ -26,6 +25,5 @@ class TourResponse(
     val league: LeagueResponse,
     val startDate: LocalDate,
     val endDate: LocalDate?,
-    val winnerId: TeamId?,
     val updatedAt: LocalDateTime,
 )

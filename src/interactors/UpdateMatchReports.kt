@@ -10,7 +10,7 @@ typealias UpdateMatchReports = Interactor<UpdateMatchReportParams, UpdateMatchRe
 
 data class UpdateMatchReportParams(
     val tour: Tour,
-    val matches: List<Match.PotentiallyFinished>,
+    val matches: List<MatchInfo.PotentiallyFinished>,
 )
 
 typealias UpdateMatchReportResult = Result<Unit, UpdateMatchReportError>

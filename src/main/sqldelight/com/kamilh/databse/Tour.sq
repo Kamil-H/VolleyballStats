@@ -1,12 +1,12 @@
 insert:
-INSERT INTO tour_model (id, name, season, league_id, start_date, end_date, winner_id, updated_at) VALUES (
-?, ?,?, (SELECT (id) FROM league_model WHERE country = ? AND division = ?),?,?,?,?);
+INSERT INTO tour_model (id, name, season, league_id, start_date, end_date, updated_at) VALUES (
+?, ?,?, (SELECT (id) FROM league_model WHERE country = ? AND division = ?),?,?,?);
 
 selectAll:
 SELECT * FROM tour_model;
 
 selectAllWithLeageue:
-SELECT tour_model.id, name, season, start_date, end_date, winner_id, updated_at, league_model.country, league_model.division FROM tour_model
+SELECT tour_model.id, name, season, start_date, end_date, updated_at, league_model.country, league_model.division FROM tour_model
 INNER JOIN league_model;
 
 selectId:
@@ -15,12 +15,12 @@ WHERE season = :season
 AND league_id == (SELECT id FROM league_model WHERE division == :division AND country == :country);
 
 selectAllByLeague:
-SELECT tour_model.id, name, season, start_date, end_date, winner_id, updated_at, league_model.country, league_model.division FROM tour_model
+SELECT tour_model.id, name, season, start_date, end_date, updated_at, league_model.country, league_model.division FROM tour_model
 INNER JOIN league_model
 WHERE league_id = (SELECT (id) FROM league_model WHERE country = :country AND division = :division);
 
 selectById:
-SELECT tour_model.id, name, season, start_date, end_date, winner_id, updated_at, league_model.country, league_model.division FROM tour_model
+SELECT tour_model.id, name, season, start_date, end_date, updated_at, league_model.country, league_model.division FROM tour_model
 INNER JOIN league_model
 WHERE tour_model.id = :tour_id;
 

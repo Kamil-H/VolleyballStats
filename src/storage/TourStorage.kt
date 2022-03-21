@@ -49,7 +49,6 @@ class SqlTourStorage(
                 division = tour.league.division,
                 start_date = tour.startDate,
                 end_date = tour.endDate,
-                winner_id = tour.winnerId,
                 updated_at = tour.updatedAt,
             )
         }
@@ -93,7 +92,6 @@ class SqlTourStorage(
         season: Season,
         start_date: LocalDate,
         end_date: LocalDate?,
-        winner_id: TeamId?,
         updated_at: LocalDateTime,
         country: Country,
         division: Int,
@@ -103,7 +101,6 @@ class SqlTourStorage(
             season: Season,
             start_date: LocalDate,
             end_date: LocalDate?,
-            winner_id: TeamId?,
             updated_at: LocalDateTime,
             country: Country,
             division: Int, ->
@@ -114,7 +111,6 @@ class SqlTourStorage(
             league = League(country, division),
             startDate = start_date,
             endDate = end_date,
-            winnerId = winner_id,
             updatedAt = updated_at
         )
     }

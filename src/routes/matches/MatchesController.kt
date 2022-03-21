@@ -26,7 +26,7 @@ class MatchesControllerImpl(
     private val tourIdCache: TourIdCache,
     private val matchStorage: MatchStorage,
     private val matchStatisticsStorage: MatchStatisticsStorage,
-    private val matchMapper: ResponseMapper<Match, MatchResponse>,
+    private val matchInfoMapper: ResponseMapper<Match, MatchResponse>,
     private val matchReportMapper: ResponseMapper<MatchStatistics, MatchReportResponse>,
 ) : MatchesController {
 
@@ -34,7 +34,7 @@ class MatchesControllerImpl(
 
     override suspend fun getMatches(tourId: String?): CallResult<List<MatchResponse>> =
         tourIdCache.tourIdFrom(tourId) {
-            CallResult.success(allMatchesFlow(it).first().map(matchMapper::to))
+            CallResult.success(allMatchesFlow(it).first().map(matchInfoMapper::to))
         }
 
     override suspend fun getMatchReport(matchId: String?): CallResult<MatchReportResponse> {

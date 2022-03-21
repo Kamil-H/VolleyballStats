@@ -39,7 +39,7 @@ val repositoryModule = DI.Module(name = MODULE_NAME) {
     bind<HtmlMapper<List<TeamPlayer>>>() with provider { HtmlToTeamPlayerMapper(instance()) }
     bind<HtmlMapper<List<Player>>>() with provider { HtmlToPlayerMapper(instance()) }
     bind<HtmlMapper<MatchReportId>>() with provider { HtmlToMatchReportId() }
-    bind<HtmlMapper<List<Match>>>() with provider { HtmlToAllMatchesItemMapper(instance()) }
+    bind<HtmlMapper<List<MatchInfo>>>() with provider { HtmlToAllMatchesItemMapper(instance()) }
     bind<HtmlMapper<PlayerDetails>>() with provider { HtmlToPlayerDetailsMapper(instance()) }
     bind<HtmlMapper<PlayerWithDetails>>() with provider { HtmlToPlayerWithDetailsMapper(instance()) }
     bindProvider { MatchResponseToMatchReportMapper() }

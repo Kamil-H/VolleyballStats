@@ -26,7 +26,7 @@ class HttpPolishLeagueRepositoryTest {
         htmlToTeamMapper: HtmlMapper<List<Team>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToPlayerMapper: HtmlMapper<List<Player>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToTeamPlayerMapper: HtmlMapper<List<TeamPlayer>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
-        htmlToMatchMapper: HtmlMapper<List<Match>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
+        htmlToMatchInfoMapper: HtmlMapper<List<MatchInfo>> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToMatchReportId: HtmlMapper<MatchReportId> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
         htmlToPlayerWithDetailsMapper: HtmlMapper<PlayerWithDetails> = htmlMapperOf(parseFailureOf(htmlParseErrorOf())),
@@ -44,7 +44,7 @@ class HttpPolishLeagueRepositoryTest {
             htmlToTeamMapper = htmlToTeamMapper,
             htmlToPlayerMapper = htmlToPlayerMapper,
             htmlToTeamPlayerMapper = htmlToTeamPlayerMapper,
-            htmlToMatchMapper = htmlToMatchMapper,
+            htmlToMatchInfoMapper = htmlToMatchInfoMapper,
             htmlToPlayerWithDetailsMapper = htmlToPlayerWithDetailsMapper,
             htmlToMatchReportId = htmlToMatchReportId,
             matchReportEndpoint = matchReportEndpoint,
@@ -285,14 +285,14 @@ class HttpPolishLeagueRepositoryTest {
     @Test
     fun `test that when httpClient getAllMatches returns Success and mapper returns Success, Success is getting returned`() = runTest {
         // GIVEN
-        val parseResult = emptyList<Match>()
+        val parseResult = emptyList<MatchInfo>()
         val networkResult = networkSuccessOf("")
         val mapperResult = htmlMapperOf(parseSuccessOf(parseResult))
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
-            htmlToMatchMapper = mapperResult,
+            htmlToMatchInfoMapper = mapperResult,
         ).getAllMatches(season = seasonOf())
 
         // THEN
@@ -305,12 +305,12 @@ class HttpPolishLeagueRepositoryTest {
         // GIVEN
         val networkError = networkErrorOf()
         val networkResult = networkFailureOf<String>(networkError)
-        val mapperResult = htmlMapperOf(parseSuccessOf(emptyList<Match>()))
+        val mapperResult = htmlMapperOf(parseSuccessOf(emptyList<MatchInfo>()))
 
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
-            htmlToMatchMapper = mapperResult,
+            htmlToMatchInfoMapper = mapperResult,
         ).getAllMatches(season = seasonOf())
 
         // THEN
@@ -323,13 +323,13 @@ class HttpPolishLeagueRepositoryTest {
         // GIVEN
         val parseError = htmlParseErrorOf()
         val networkResult = networkSuccessOf("")
-        val mapperResult = htmlMapperOf(parseFailureOf<List<Match>>(parseError))
+        val mapperResult = htmlMapperOf(parseFailureOf<List<MatchInfo>>(parseError))
 
         var parseErrorToHandle: ParseError? = null
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
-            htmlToMatchMapper = mapperResult,
+            htmlToMatchInfoMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
         ).getAllMatches(season = seasonOf())
 
@@ -629,7 +629,7 @@ fun polishLeagueRepositoryOf(
     getAllTeams: NetworkResult<List<Team>> = networkFailureOf(networkErrorOf()),
     getAllPlayersByTour: NetworkResult<List<TeamPlayer>> = networkFailureOf(networkErrorOf()),
     getAllPlayers: NetworkResult<List<Player>> = networkFailureOf(networkErrorOf()),
-    getAllMatches: NetworkResult<List<Match>> = networkFailureOf(networkErrorOf()),
+    getAllMatches: NetworkResult<List<MatchInfo>> = networkFailureOf(networkErrorOf()),
     getMatchReportId: NetworkResult<MatchReportId> = networkFailureOf(networkErrorOf()),
     getMatchReport: NetworkResult<MatchReport> = networkFailureOf(networkErrorOf()),
     getPlayerDetails: NetworkResult<PlayerDetails> = networkFailureOf(networkErrorOf()),
@@ -639,7 +639,7 @@ fun polishLeagueRepositoryOf(
     override suspend fun getAllTeams(season: Season): NetworkResult<List<Team>> = getAllTeams
     override suspend fun getAllPlayers(season: Season): NetworkResult<List<TeamPlayer>> = getAllPlayersByTour
     override suspend fun getAllPlayers(): NetworkResult<List<Player>> = getAllPlayers
-    override suspend fun getAllMatches(season: Season): NetworkResult<List<Match>> = getAllMatches
+    override suspend fun getAllMatches(season: Season): NetworkResult<List<MatchInfo>> = getAllMatches
     override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> = getMatchReportId
     override suspend fun getMatchReport(matchReportId: MatchReportId, season: Season): NetworkResult<MatchReport> = getMatchReport
     override suspend fun getPlayerDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerDetails> = getPlayerDetails

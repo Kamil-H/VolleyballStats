@@ -14,7 +14,6 @@ class TourMapper(private val leagueMapper: LeagueMapper) : ResponseMapper<Tour, 
             league = leagueMapper.to(from.league),
             startDate = from.startDate,
             endDate = from.endDate,
-            winnerId = from.winnerId,
             updatedAt = from.updatedAt,
         )
 
@@ -26,7 +25,6 @@ class TourMapper(private val leagueMapper: LeagueMapper) : ResponseMapper<Tour, 
             league = leagueMapper.from(from.league),
             startDate = from.startDate,
             endDate = from.endDate,
-            winnerId = from.winnerId,
             updatedAt = from.updatedAt,
         )
 }

@@ -8,6 +8,8 @@ import io.islandtime.clock.Clock as IslandClock
 @JvmInline
 value class Clock internal constructor(internal val clock: IslandClock) {
 
+    override fun toString(): String = clock.toString()
+
     companion object {
         fun systemDefault(): Clock =
             Clock(SystemClock())

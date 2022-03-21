@@ -13,7 +13,6 @@ fun tourOf(
     league: League = leagueOf(),
     startDate: LocalDate = localDate(),
     endDate: LocalDate? = null,
-    winnerId: TeamId? = teamIdOf(),
     updatedAt: LocalDateTime = localDateTime(),
 ): Tour = Tour(
     id = id,
@@ -22,6 +21,5 @@ fun tourOf(
     league = league,
     startDate = startDate,
     endDate = endDate,
-    winnerId = winnerId,
     updatedAt = updatedAt,
 )

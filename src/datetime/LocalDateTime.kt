@@ -26,6 +26,8 @@ value class LocalDateTime internal constructor(private val dateTime: DateTime) :
     override fun compareTo(other: LocalDateTime): Int =
         dateTime.compareTo(other.dateTime)
 
+    override fun toString(): String = dateTime.toString()
+
     companion object {
         private const val POLISH_ZONE_ID = "Europe/Warsaw"
 

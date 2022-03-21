@@ -20,9 +20,6 @@ typealias InsertMatchesResult = Result<Unit, InsertMatchesError>
 
 sealed class InsertMatchesError(override val message: String) : Error {
     object TourNotFound : InsertMatchesError("TourNotFound")
-    class TryingToInsertFinishedItems(val finished: List<Match.Finished>) : InsertMatchesError(
-        "TryingToInsertFinishedItems(finished=${finished.joinToString { it.id.toString() }})"
-    )
 }
 
 enum class MatchState {
@@ -38,20 +35,9 @@ class SqlMatchStorage(
     override suspend fun insertOrUpdate(matches: List<Match>, tourId: TourId): InsertMatchesResult =
         queryRunner.runTransaction {
             tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertMatchesError>(InsertMatchesError.TourNotFound)
-            val finished = matches.filterIsInstance<Match.Finished>()
-            if (finished.isNotEmpty()) {
-                return@runTransaction InsertMatchesResult.failure<Unit, InsertMatchesError>(InsertMatchesError.TryingToInsertFinishedItems(finished))
-            }
             matches.forEach { match ->
-                val state = when (match) {
-                    is Match.NotScheduled -> MatchState.NotScheduled
-                    is Match.PotentiallyFinished -> MatchState.PotentiallyFinished
-                    is Match.Scheduled -> MatchState.Scheduled
-                    else -> error("Shouldn't try to save Saved")
-                }
                 matchQueries.insert(
                     id = match.id,
-                    state = state,
                     date = match.date,
                     tour_id = tourId,
                     home_id = match.home,
@@ -67,42 +53,14 @@ class SqlMatchStorage(
         matchQueries.selectAllMatchesByTour(tourId, mapper).asFlow().mapToList()
 
     private val mapper: (
-        id: MatchId,
-        date: ZonedDateTime?,
-        state: MatchState,
-        home_id: TeamId?,
-        away_id: TeamId?,
-        end_time: ZonedDateTime?,
-        winner_team_id: TeamId?
-    ) -> Match = {
-            id: MatchId,
-            date: ZonedDateTime?,
-            state: MatchState,
-            home_id: TeamId?,
-            away_id: TeamId?,
-            end_time: ZonedDateTime?,
-            winner_team_id: TeamId? ->
-        if (end_time != null && winner_team_id != null) {
-            Match.Finished(
-                id = id,
-                endTime = end_time,
-                winnerId = winner_team_id,
-                away = away_id!!,
-                home = home_id!!,
-                date = date!!,
-            )
-        } else {
-            when (state) {
-                MatchState.PotentiallyFinished -> Match.PotentiallyFinished(
-                    id = id, away = away_id!!, home = home_id!!, date = date!!,
-                )
-                MatchState.Scheduled -> Match.Scheduled(
-                    id = id, away = away_id!!, home = home_id!!, date = date!!,
-                )
-                MatchState.NotScheduled -> Match.NotScheduled(
-                    id = id, away = away_id!!, home = home_id!!, date = date,
-                )
-            }
-        }
+        id: MatchId, date: ZonedDateTime?, home_id: TeamId, away_id: TeamId, match_statistics_id: MatchId?,
+    ) -> Match = { id: MatchId, date: ZonedDateTime?, home_id: TeamId, away_id: TeamId, match_statistics_id: MatchId? ->
+        Match(
+            id = id,
+            date = date,
+            home = home_id,
+            away = away_id,
+            hasReport = match_statistics_id != null,
+        )
     }
 }

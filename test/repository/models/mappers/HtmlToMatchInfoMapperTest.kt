@@ -1,6 +1,6 @@
 package repository.models.mappers
 
-import com.kamilh.models.Match
+import com.kamilh.models.MatchInfo
 import com.kamilh.models.MatchId
 import com.kamilh.models.Result
 import com.kamilh.repository.extensions.toPolishLeagueLocalDate
@@ -8,7 +8,7 @@ import com.kamilh.repository.models.mappers.HtmlToAllMatchesItemMapper
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
 
-class HtmlToMatchMapperTest {
+class HtmlToMatchInfoMapperTest {
 
     private val mapper = HtmlToAllMatchesItemMapper(htmlParser = JsoupHtmlParser())
     private val dateString = "03.06.2021, 16:17"
@@ -30,7 +30,7 @@ class HtmlToMatchMapperTest {
         // THEN
         require(mapped is Result.Success)
         val first = mapped.value.first()
-        require(first is Match.PotentiallyFinished)
+        require(first is MatchInfo.PotentiallyFinished)
         assert(first.id == MatchId(idString.toLong()))
     }
 
@@ -52,7 +52,7 @@ class HtmlToMatchMapperTest {
         // THEN
         require(mapped is Result.Success)
         val first = mapped.value.first()
-        require(first is Match.Scheduled)
+        require(first is MatchInfo.Scheduled)
         assert(first.date == date)
         assert(first.id == MatchId(idString.toLong()))
     }
@@ -75,7 +75,7 @@ class HtmlToMatchMapperTest {
         // THEN
         require(mapped is Result.Success)
         val first = mapped.value.first()
-        require(first is Match.NotScheduled)
+        require(first is MatchInfo.NotScheduled)
         assert(first.id == MatchId(idString.toLong()))
     }
 

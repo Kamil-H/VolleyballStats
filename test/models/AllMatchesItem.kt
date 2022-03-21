@@ -8,7 +8,7 @@ fun potentiallyFinishedOf(
     date: ZonedDateTime = zonedDateTime(),
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
-): Match.PotentiallyFinished = Match.PotentiallyFinished(
+): MatchInfo.PotentiallyFinished = MatchInfo.PotentiallyFinished(
     id = id,
     date = date,
     home = home,
@@ -20,7 +20,7 @@ fun scheduledOf(
     date: ZonedDateTime = zonedDateTime(),
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
-): Match.Scheduled = Match.Scheduled(
+): MatchInfo.Scheduled = MatchInfo.Scheduled(
     id = id,
     date = date,
     home = home,
@@ -32,7 +32,7 @@ fun notScheduledOf(
     date: ZonedDateTime? = null,
     home: TeamId = teamIdOf(),
     away: TeamId = teamIdOf(),
-): Match.NotScheduled = Match.NotScheduled(
+): MatchInfo.NotScheduled = MatchInfo.NotScheduled(
     id = id,
     date = date,
     home = home,
@@ -46,7 +46,7 @@ fun finishedOf(
     away: TeamId = teamIdOf(),
     winnerId: TeamId = teamIdOf(),
     endTime: ZonedDateTime = zonedDateTime(),
-): Match.Finished = Match.Finished(
+): MatchInfo.Finished = MatchInfo.Finished(
     id = id,
     date = date,
     home = home,

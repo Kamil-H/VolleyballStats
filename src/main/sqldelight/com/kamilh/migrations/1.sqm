@@ -35,11 +35,9 @@ CREATE TABLE IF NOT EXISTS tour_model (
   league_id INTEGER NOT NULL,
   start_date TEXT AS LocalDate NOT NULL,
   end_date TEXT AS LocalDate,
-  winner_id INTEGER AS TeamId,
   updated_at TEXT AS LocalDateTime NOT NULL,
   UNIQUE(season, league_id),
-  FOREIGN KEY (league_id) REFERENCES league_model(id),
-  FOREIGN KEY (winner_id) REFERENCES team_model(id)
+  FOREIGN KEY (league_id) REFERENCES league_model(id)
 );
 
 CREATE TABLE IF NOT EXISTS tour_team_model (
@@ -235,7 +233,6 @@ CREATE TABLE IF NOT EXISTS play_set_model (
 
 CREATE TABLE IF NOT EXISTS match_model (
   id INTEGER AS MatchId PRIMARY KEY,
-  state TEXT AS MatchState NOT NULL,
   date TEXT AS ZonedDateTime,
   tour_id INTEGER AS TourId NOT NULL,
   home INTEGER NOT NULL,

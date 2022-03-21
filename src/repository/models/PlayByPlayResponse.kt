@@ -2,11 +2,11 @@
 
 package com.kamilh.repository.models
 
-import com.kamilh.utils.LocalDateTimeSerializer
+import com.kamilh.datetime.LocalDateTime
+import com.kamilh.models.api.adapters.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.JsonObject
-import com.kamilh.datetime.LocalDateTime
 
 @Serializable
 class PlayByPlayResponse(
@@ -75,6 +75,14 @@ class SettingsResponse(
     val decidingSetWin: Int,
     val regularSetWin: Int,
     val winningScore: Int,
+    val maxForeign: Int? = null,
+    val maxSubstitution: Int? = null,
+    val maxVideoChallenge: Int? = null,
+    val maxTimeout: Int? = null,
+    val timeoutLength: Int? = null,
+    val technicalTimeouts: List<String>? = null,
+    val squadSizeForSecondLibero: Int? = null,
+    val technicalTimeoutLength: Int? = null,
 )
 
 @Serializable

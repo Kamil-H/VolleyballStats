@@ -74,7 +74,6 @@ internal class AppConfigDatabaseFactory(
 			match_modelAdapter = Match_model.Adapter(
 				dateAdapter = zonedDateAdapter,
 				idAdapter = matchIdAdapter,
-				stateAdapter = EnumColumnAdapter(),
 				tour_idAdapter = tourIdAdapter,
 			),
 			point_modelAdapter = Point_model.Adapter(
@@ -92,7 +91,6 @@ internal class AppConfigDatabaseFactory(
 				start_dateAdapter = localDateAdapter,
                 seasonAdapter = seasonAdapter,
                 updated_atAdapter = localDateTimeAdapter,
-                winner_idAdapter = teamIdAdapter,
 				idAdapter = tourIdAdapter,
 			),
 			league_modelAdapter = League_model.Adapter(

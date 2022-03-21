@@ -10,7 +10,6 @@ data class Tour(
     val league: League,
     val startDate: LocalDate,
     val endDate: LocalDate?,
-    val winnerId: TeamId?,
     val updatedAt: LocalDateTime,
 ) {
     val isFinished = endDate != null

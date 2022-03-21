@@ -30,6 +30,8 @@ value class ZonedDateTime internal constructor(private val zonedDateTime: Island
     override fun compareTo(other: ZonedDateTime): Int =
         zonedDateTime.compareTo(other.zonedDateTime)
 
+    override fun toString(): String = zonedDateTime.toString()
+
     companion object {
         fun parse(dateString: String): ZonedDateTime =
             ZonedDateTime(dateString.toZonedDateTime())
