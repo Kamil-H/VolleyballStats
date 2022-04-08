@@ -24,9 +24,7 @@ import repository.parsing.ParseResult
 class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<TeamPlayer>> {
 
     override fun map(html: String): ParseResult<List<TeamPlayer>> = htmlParser.parse(html) {
-        val elements = getElementById("hiddenPlayersListAllBuffer")
-        val players = mutableListOf<TeamPlayer>()
-        elements.children().forEach {
+        getElementById("hiddenPlayersListAllBuffer").children().map {
             val positionId = it.attr("data-playerposition").toInt()
             val teamId = it.attr("data-teamsid").toLong()
             val thumbnailPlayer = it.getElementsByClass("thumbnail player")
@@ -36,20 +34,18 @@ class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<Li
             val imageUrl = image.attr("src")
             val name = image.attr("alt")
 
-            players.add(
-                TeamPlayer(
-                    id = PlayerId(id.extractPlayerId()!!),
-                    name = name,
-                    imageUrl = Url.createOrNull(imageUrl),
-                    team = TeamId(teamId),
-                    specialization = TeamPlayer.Specialization.create(positionId),
-                    updatedAt = CurrentDate.localDateTime,
-                )
+            TeamPlayer(
+                id = PlayerId(id.extractPlayerId()!!),
+                name = name,
+                imageUrl = Url.createOrNull(imageUrl),
+                team = TeamId(teamId),
+                specialization = TeamPlayer.Specialization.create(positionId),
+                updatedAt = CurrentDate.localDateTime,
             )
+        }.apply {
+            if (isEmpty()) {
+                throw EmptyResultException()
+            }
         }
-        if (players.isEmpty()) {
-            throw EmptyResultException()
-        }
-        players
     }
 }

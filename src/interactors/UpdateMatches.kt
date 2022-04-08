@@ -66,7 +66,10 @@ class UpdateMatchesInteractor(
             return Result.success(UpdateMatchesSuccess.SeasonCompleted)
         }
 
-        val potentiallyFinished = matches.filterIsInstance<MatchInfo.PotentiallyFinished>()
+        val savedMatchWithReportIds = savedMatches.filter { it.hasReport }.map { it.id }
+        val potentiallyFinished = matches
+            .filterIsInstance<MatchInfo.PotentiallyFinished>()
+            .filter { !savedMatchWithReportIds.contains(it.id) }
         if (potentiallyFinished.isNotEmpty()) {
             val error = updateMatchReports(UpdateMatchReportParams(tour, potentiallyFinished)).mapError {
                 when (it) {

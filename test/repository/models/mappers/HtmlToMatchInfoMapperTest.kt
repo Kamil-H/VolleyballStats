@@ -1,8 +1,9 @@
 package repository.models.mappers
 
-import com.kamilh.models.MatchInfo
 import com.kamilh.models.MatchId
+import com.kamilh.models.MatchInfo
 import com.kamilh.models.Result
+import com.kamilh.models.assertSuccess
 import com.kamilh.repository.extensions.toPolishLeagueLocalDate
 import com.kamilh.repository.models.mappers.HtmlToAllMatchesItemMapper
 import com.kamilh.repository.parsing.JsoupHtmlParser
@@ -150,6 +151,20 @@ class HtmlToMatchInfoMapperTest {
         // THEN
         require(mapped is Result.Failure)
     }
+
+    @Test
+    fun `empty list returned when parsing html without TeamIds`() {
+        // GIVEN
+        val html = noTeamsHtml
+
+        // WHEN
+        val mapped = mapper.map(html)
+
+        // THEN
+        mapped.assertSuccess {
+            assert(this.isEmpty())
+        }
+    }
 }
 
 private fun html(dateString: String, idString: String, green: String): String =
@@ -179,3 +194,30 @@ private fun html(dateString: String, idString: String, green: String): String =
     
 </div>
         """.trimIndent()
+
+private val noTeamsHtml: String =
+    """
+<div class="row text-center gridtable games alter" data-type="mecz" data-id="0"> 
+ <div class="col-xs-2  col-sm-2 col-md-2 col-lg-2 tablecell text-left"> 
+  <div class="date khanded"></div> 
+ </div> 
+ <div class="hidden-xs col-sm-1 col-md-1 col-lg-1  tablecell ">
+  <a href="#" onclick="javascript: return false;"><img src="//img.siatkarskaliga.pl/placehold/nieznane_logo_100.png" class="img-responsive" alt=""></a>
+ </div> 
+ <div class="col-xs-3  col-sm-2 col-md-2 col-lg-2  tablecell "> 
+  <h2><a href="#" onclick="javascript: return false;">1dr.FZ</a></h2> 
+ </div> 
+ <div class="col-xs-2  col-sm-2 col-md-2 col-lg-2  tablecell  gameresultcontainer "> 
+  <div class="gameresult clickable" onclick="location.href='/games/id/1102022/tour/2021.html';"> <span class="">0</span><span class="doubledot">:</span><span class="">0</span> 
+  </div> 
+ </div> 
+ <div class="col-xs-3  col-sm-2 col-md-2 col-lg-2  tablecell "> 
+  <h2><a href="#" onclick="javascript: return false;">8dr.FZ</a></h2> 
+ </div> 
+ <div class="hidden-xs col-sm-1 col-md-1 col-lg-1  tablecell ">
+  <a href="#" onclick="javascript: return false;"><img src="//img.siatkarskaliga.pl/placehold/nieznane_logo_100.png" class="img-responsive" alt=""></a>
+ </div> 
+ <div class="col-xs-2  col-sm-2 col-md-2 col-lg-2  tablecell text-right"> <a class="btn btn-default btm-margins" href="/games/id/1102022/tour/2021.html">więcej</a> 
+ </div> 
+</div>
+    """.trimIndent()

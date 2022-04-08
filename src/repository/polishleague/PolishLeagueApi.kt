@@ -9,14 +9,14 @@ import com.kamilh.models.httprequest.UrlRequest
 
 class PolishLeagueApi {
 
-    fun getPlayers(tour: Season): HttpRequest<String> =
+    fun getPlayers(season: Season): HttpRequest<String> =
         UrlRequest.getHtml(
-            Url.create("https://www.plusliga.pl/players/tour/${tour.value}.html?memo={\"players\":{\"mainFilter\":\"letter\",\"subFilter\":\"all\"}}")
+            Url.create("https://www.plusliga.pl/players/tour/${season.value}.html?memo={\"players\":{\"mainFilter\":\"letter\",\"subFilter\":\"all\"}}")
         )
 
-    fun getTeams(tour: Season): HttpRequest<String> =
+    fun getTeams(season: Season): HttpRequest<String> =
         UrlRequest.getHtml(
-            Url.create("https://www.plusliga.pl/teams/tour/${tour.value}.html")
+            Url.create("https://www.plusliga.pl/teams/tour/${season.value}.html")
         )
 
     fun getMatch(matchId: MatchId): HttpRequest<String> =
@@ -24,19 +24,19 @@ class PolishLeagueApi {
             Url.create("https://www.plusliga.pl/games/id/${matchId.value}.html")
         )
 
-    fun getAllMatches(tour: Season): HttpRequest<String> =
+    fun getAllMatches(season: Season): HttpRequest<String> =
         UrlRequest.getHtml(
-            Url.create("https://www.plusliga.pl/games/tour/${tour.value}.html?memo={\"games\":{\"faza\":1,\"runda\":1}}")
+            Url.create("https://www.plusliga.pl/games/tour/${season.value}.html?memo={\"games\":{\"faza\":all,\"runda\":all}}")
         )
 
-    fun getPlayerDetails(tour: Season, playerId: PlayerId): HttpRequest<String> =
+    fun getPlayerDetails(season: Season, playerId: PlayerId): HttpRequest<String> =
         UrlRequest.getHtml(
-            Url.create("https://www.plusliga.pl/players/id/${playerId.value}/tour/${tour.value}.html")
+            Url.create("https://www.plusliga.pl/players/id/${playerId.value}/tour/${season.value}.html")
         )
 
-    fun getPlayerWithDetails(tour: Season, playerId: PlayerId): HttpRequest<String> =
+    fun getPlayerWithDetails(season: Season, playerId: PlayerId): HttpRequest<String> =
         UrlRequest.getHtml(
-            Url.create("https://www.plusliga.pl/players/id/${playerId.value}/tour/${tour.value}.html")
+            Url.create("https://www.plusliga.pl/players/id/${playerId.value}/tour/${season.value}.html")
         )
 
     fun getAllPlayers(): HttpRequest<String> =

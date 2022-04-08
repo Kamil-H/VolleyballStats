@@ -23,11 +23,10 @@ import repository.parsing.ParseResult
 class HtmlToTeamMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Team>> {
 
     override fun map(html: String): ParseResult<List<Team>> = htmlParser.parse(html) {
-        val teams = mutableListOf<Team>()
-        getElementsByClass("thumbnail teamlist").forEach {
+        getElementsByClass("thumbnail teamlist").flatMap {
             val teamImageUrl = it.select("img").attr("src")
             val teamListLogo = it.getElementsByClass("teamlistlogo")
-            teamListLogo.forEach { element ->
+            teamListLogo.map { element ->
                 val a = element.select("a")
                 val id = a.attr("href").extractTeamId()
 
@@ -35,20 +34,18 @@ class HtmlToTeamMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Tea
                 val image = img.attr("src")
                 val name = img.attr("alt")
 
-                teams.add(
-                    Team(
-                        id = TeamId(id!!),
-                        name = name,
-                        teamImageUrl = Url.create(teamImageUrl),
-                        logoUrl = Url.create(image),
-                        updatedAt = CurrentDate.localDateTime,
-                    )
+                Team(
+                    id = TeamId(id!!),
+                    name = name,
+                    teamImageUrl = Url.create(teamImageUrl),
+                    logoUrl = Url.create(image),
+                    updatedAt = CurrentDate.localDateTime,
                 )
             }
+        }.apply {
+            if (isEmpty()) {
+                throw EmptyResultException()
+            }
         }
-        if (teams.isEmpty()) {
-            throw EmptyResultException()
-        }
-        teams
     }
 }

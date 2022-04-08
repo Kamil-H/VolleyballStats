@@ -22,25 +22,21 @@ import repository.parsing.ParseResult
 class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Player>> {
 
     override fun map(html: String): ParseResult<List<Player>> = htmlParser.parse(html) {
-        val elements = getElementById("hiddenPlayersListAllBuffer")
-        val players = mutableListOf<Player>()
-        elements.children().forEach {
+        getElementById("hiddenPlayersListAllBuffer").children().mapNotNull {
             val thumbnailPlayer = it.getElementsByClass("thumbnail player")
 
             val id = thumbnailPlayer.select("a").attr("href")
             val image = thumbnailPlayer.select("img")
             val name = image.attr("alt")
 
-            players.add(
-                Player(
-                    id = PlayerId(id.extractPlayerId()!!),
-                    name = name,
-                )
+            Player(
+                id = PlayerId(id.extractPlayerId()!!),
+                name = name,
             )
+        }.apply {
+            if (isEmpty()) {
+                throw EmptyResultException()
+            }
         }
-        if (players.isEmpty()) {
-            throw EmptyResultException()
-        }
-        players
     }
 }
