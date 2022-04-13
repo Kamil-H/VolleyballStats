@@ -7,18 +7,13 @@ import com.kamilh.storage.common.QueryRunner
 import com.squareup.sqldelight.Query
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 interface MatchStatisticsStorage {
 
     suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult
 
-    suspend fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>>
-
-    suspend fun getMatchStatistics(matchReportId: MatchReportId): MatchStatistics?
+    fun getAllMatchStatistics(): Flow<List<MatchStatistics>>
 }
 
 typealias InsertMatchStatisticsResult = Result<Unit, InsertMatchStatisticsError>
@@ -233,7 +228,7 @@ class SqlMatchStatisticsStorage(
 
     private fun <T: Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
 
-    override suspend fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>> {
+    private fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>> {
         val stats = matchStatisticsQueries.selectAllStatsByTourId(tourId).mapQuery()
         val matchAppearances = matchAppearanceQueries.selectAllAppearancesByTour(tourId).mapQuery()
         val sets = setQueries.selectAllBySetsTourId(tourId).mapQuery()
@@ -265,9 +260,12 @@ class SqlMatchStatisticsStorage(
         }
     }
 
-    override suspend fun getMatchStatistics(matchReportId: MatchReportId): MatchStatistics? {
-        TODO("Not yet implemented")
-    }
+    override fun getAllMatchStatistics(): Flow<List<MatchStatistics>> =
+        tourQueries.selectAllTourIds().mapQuery().flatMapLatest { tourIds ->
+            combine(tourIds.map { getAllMatchStatistics(it) }) { matches ->
+                matches.flatMap { it }
+            }
+        }
 
     private fun List<SelectAllAppearancesByTour>.toMatchTeam(tourTeamId: Long, matchId: MatchId): MatchTeam =
         filter { it.tour_team_id == tourTeamId && it.match_id == matchId }

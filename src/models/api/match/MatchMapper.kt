@@ -6,9 +6,20 @@ import com.kamilh.models.api.ResponseMapper
 class MatchMapper : ResponseMapper<Match, MatchResponse> {
 
     override fun to(from: Match): MatchResponse =
-        MatchResponse()
+        MatchResponse(
+            id = from.id,
+            date = from.date,
+            home = from.home,
+            away = from.away,
+            hasReport = from.hasReport,
+        )
 
-    override fun from(from: MatchResponse): Match {
-        TODO("Not yet implemented")
-    }
+    override fun from(from: MatchResponse): Match =
+        Match(
+            id = from.id,
+            date = from.date,
+            home = from.home,
+            away = from.away,
+            hasReport = from.hasReport,
+        )
 }

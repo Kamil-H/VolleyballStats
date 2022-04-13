@@ -26,10 +26,16 @@ data class CallError(
                 message = "The parameter [$queryParam] is required."
             )
 
-        fun wrongParameterType(queryParam: String, correctType: String): CallError =
+        fun missingParameterInPath(): CallError =
             CallError(
                 status = HttpStatusCode.BadRequest,
-                message = "Passed [$queryParam] is of wrong type. It should suppose to be $correctType."
+                message = "The parameter is missing in the path."
+            )
+
+        fun wrongParameterType(param: String, correctType: String): CallError =
+            CallError(
+                status = HttpStatusCode.BadRequest,
+                message = "Passed [$param] is of wrong type. It is suppose to be $correctType."
             )
 
         fun wrongTourId(tourId: TourId): CallError =

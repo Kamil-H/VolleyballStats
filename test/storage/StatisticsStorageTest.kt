@@ -122,7 +122,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
 
         // THEN
         val result = matchStatisticsQueries.selectAll().executeAsList()
-        assert(storage.getAllMatchStatistics(tour.id).first().first() == matchStatistics)
+        assert(storage.getAllMatchStatistics().first().first() == matchStatistics)
         assert(result.isNotEmpty())
         insertResult.assertSuccess()
         return matchStatistics

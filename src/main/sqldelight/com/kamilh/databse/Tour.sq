@@ -5,6 +5,9 @@ INSERT INTO tour_model (id, name, season, league_id, start_date, end_date, updat
 selectAll:
 SELECT * FROM tour_model;
 
+selectAllTourIds:
+SELECT id FROM tour_model;
+
 selectAllWithLeageue:
 SELECT tour_model.id, name, season, start_date, end_date, updated_at, league_model.country, league_model.division FROM tour_model
 INNER JOIN league_model;

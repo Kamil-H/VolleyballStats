@@ -269,12 +269,9 @@ fun matchStatisticsStorageOf(
         InsertMatchStatisticsResult.success(Unit)
     },
     getAllMatchStatistics: Flow<List<MatchStatistics>> = flowOf(emptyList()),
-    getMatchStatistics: MatchStatistics? = null,
 ): MatchStatisticsStorage = object : MatchStatisticsStorage {
     override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult =
         insert(matchStatistics, tourId)
 
-    override suspend fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>> = getAllMatchStatistics
-
-    override suspend fun getMatchStatistics(matchReportId: MatchReportId): MatchStatistics? = getMatchStatistics
+    override fun getAllMatchStatistics(): Flow<List<MatchStatistics>> = getAllMatchStatistics
 }
