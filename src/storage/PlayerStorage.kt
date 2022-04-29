@@ -1,5 +1,6 @@
 package com.kamilh.storage
 
+import com.kamilh.Singleton
 import com.kamilh.databse.PlayerQueries
 import com.kamilh.databse.TeamPlayerQueries
 import com.kamilh.databse.TourTeamQueries
@@ -12,6 +13,7 @@ import com.kamilh.storage.common.errors.createSqlError
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
+import me.tatarka.inject.annotations.Inject
 import models.PlayerWithDetails
 
 interface PlayerStorage {
@@ -32,6 +34,8 @@ sealed class InsertPlayerError(override val message: String) : Error {
     )
 }
 
+@Inject
+@Singleton
 class SqlPlayerStorage(
     private val queryRunner: QueryRunner,
     private val playerQueries: PlayerQueries,

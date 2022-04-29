@@ -9,6 +9,7 @@ import com.kamilh.storage.TourStorage
 import com.kamilh.utils.CurrentDate
 import kotlinx.coroutines.flow.first
 import kotlin.time.Duration.Companion.days
+import me.tatarka.inject.annotations.Inject
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
 
@@ -29,6 +30,7 @@ sealed class UpdateMatchesError(override val message: String) : Error {
     class Insert(val error: InsertMatchStatisticsError) : UpdateMatchesError("Insert(error: ${error.message})")
 }
 
+@Inject
 class UpdateMatchesInteractor(
     appDispatchers: AppDispatchers,
     private val tourStorage: TourStorage,

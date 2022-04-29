@@ -3,6 +3,7 @@ package com.kamilh.interactors
 import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.models.AppDispatchers
 import com.kamilh.storage.UserStorage
+import me.tatarka.inject.annotations.Inject
 
 typealias SubscriptionKeyValidator = Interactor<SubscriptionKeyValidatorParams, SubscriptionKeyValidatorResult>
 
@@ -14,6 +15,7 @@ enum class SubscriptionKeyValidatorResult {
     Valid, Invalid
 }
 
+@Inject
 class SubscriptionKeyValidatorInteractor(
     appDispatchers: AppDispatchers,
     private val userStorage: UserStorage,

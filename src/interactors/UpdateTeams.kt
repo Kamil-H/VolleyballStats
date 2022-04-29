@@ -4,6 +4,7 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertTeamError
 import com.kamilh.storage.TeamStorage
+import me.tatarka.inject.annotations.Inject
 
 typealias UpdateTeams = Interactor<UpdateTeamsParams, UpdateTeamsResult>
 
@@ -16,6 +17,7 @@ sealed class UpdateTeamsError(override val message: String? = null) : Error {
     class Storage(val insertTeamError: InsertTeamError) : UpdateTeamsError("Storage(insertTeamError: ${insertTeamError.message})")
 }
 
+@Inject
 class UpdateTeamsInteractor(
     appDispatchers: AppDispatchers,
     private val polishLeagueRepository: PolishLeagueRepository,

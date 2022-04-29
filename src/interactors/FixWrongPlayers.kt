@@ -4,9 +4,10 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertPlayerError
 import com.kamilh.storage.PlayerStorage
+import com.kamilh.utils.Logger
 import com.kamilh.utils.findSimilarity
+import me.tatarka.inject.annotations.Inject
 import models.PlayerWithDetails
-import utils.Logger
 
 typealias FixWrongPlayers = Interactor<FixWrongPlayersParams, MatchReportTeam>
 
@@ -16,6 +17,7 @@ data class FixWrongPlayersParams(
     val tour: Tour,
 )
 
+@Inject
 class FixWrongPlayersInteractor(
     appDispatchers: AppDispatchers,
     private val playerStorage: PlayerStorage,

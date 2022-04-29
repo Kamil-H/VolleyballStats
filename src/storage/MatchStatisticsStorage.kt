@@ -1,6 +1,7 @@
 package com.kamilh.storage
 
 import com.kamilh.Set_model
+import com.kamilh.Singleton
 import com.kamilh.databse.*
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
@@ -8,6 +9,7 @@ import com.squareup.sqldelight.Query
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.*
+import me.tatarka.inject.annotations.Inject
 
 interface MatchStatisticsStorage {
 
@@ -27,6 +29,8 @@ sealed class InsertMatchStatisticsError(override val message: String?) : Error {
     )
 }
 
+@Inject
+@Singleton
 class SqlMatchStatisticsStorage(
     private val queryRunner: QueryRunner,
     private val teamQueries: TeamQueries,
@@ -48,87 +52,92 @@ class SqlMatchStatisticsStorage(
     private val tourQueries: TourQueries,
 ) : MatchStatisticsStorage {
 
-    override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult = queryRunner.runTransaction {
-        tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertMatchStatisticsError>(InsertMatchStatisticsError.TourNotFound)
+    override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult =
+        queryRunner.runTransaction {
+            tourQueries.selectById(tourId).executeAsOneOrNull()
+                ?: return@runTransaction Result.failure<Unit, InsertMatchStatisticsError>(InsertMatchStatisticsError.TourNotFound)
 
-        val homeTeamId = tourTeamQueries.selectId(matchStatistics.home.teamId, tourId).executeAsOneOrNull()
-            ?: return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TeamNotFound(matchStatistics.home.teamId))
-        teamQueries.updateCode(matchStatistics.home.code, matchStatistics.home.teamId)
+            val homeTeamId = tourTeamQueries.selectId(matchStatistics.home.teamId, tourId).executeAsOneOrNull()
+                ?: return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TeamNotFound(
+                    matchStatistics.home.teamId))
+            teamQueries.updateCode(matchStatistics.home.code, matchStatistics.home.teamId)
 
-        val awayTeamId = tourTeamQueries.selectId(matchStatistics.away.teamId, tourId).executeAsOneOrNull()
-            ?: return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TeamNotFound(matchStatistics.away.teamId))
-        teamQueries.updateCode(matchStatistics.away.code, matchStatistics.away.teamId)
+            val awayTeamId = tourTeamQueries.selectId(matchStatistics.away.teamId, tourId).executeAsOneOrNull()
+                ?: return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TeamNotFound(
+                    matchStatistics.away.teamId))
+            teamQueries.updateCode(matchStatistics.away.code, matchStatistics.away.teamId)
 
-        if (matchStatistics.home.players.isEmpty() || matchStatistics.away.players.isEmpty()) {
-            return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.NoPlayersInTeams)
-        }
+            if (matchStatistics.home.players.isEmpty() || matchStatistics.away.players.isEmpty()) {
+                return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.NoPlayersInTeams)
+            }
 
-        val playerIdCache = mutableMapOf<PlayerId, Long>()
-        val playersNotFound = insert(
-            matchPlayers = matchStatistics.home.players,
-            matchId = matchStatistics.matchId,
-            tourTeamId = homeTeamId,
-            teamId = matchStatistics.home.teamId,
-        ) { playerId, id ->
-            playerIdCache[playerId] = id
-        } + insert(
-            matchPlayers = matchStatistics.away.players,
-            matchId = matchStatistics.matchId,
-            tourTeamId = awayTeamId,
-            teamId = matchStatistics.away.teamId,
-        ) { playerId, id ->
-            playerIdCache[playerId] = id
-        }
+            val playerIdCache = mutableMapOf<PlayerId, Long>()
+            val playersNotFound = insert(
+                matchPlayers = matchStatistics.home.players,
+                matchId = matchStatistics.matchId,
+                tourTeamId = homeTeamId,
+                teamId = matchStatistics.home.teamId,
+            ) { playerId, id ->
+                playerIdCache[playerId] = id
+            } + insert(
+                matchPlayers = matchStatistics.away.players,
+                matchId = matchStatistics.matchId,
+                tourTeamId = awayTeamId,
+                teamId = matchStatistics.away.teamId,
+            ) { playerId, id ->
+                playerIdCache[playerId] = id
+            }
 
-        if (playersNotFound.isNotEmpty()) {
-            return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.PlayerNotFound(playersNotFound))
-        }
+            if (playersNotFound.isNotEmpty()) {
+                return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.PlayerNotFound(
+                    playersNotFound))
+            }
 
-        matchStatisticsQueries.insert(
-            id = matchStatistics.matchId,
-            home = homeTeamId,
-            away = awayTeamId,
-            mvp = playerIdCache[matchStatistics.mvp]!!,
-            best_player = playerIdCache[matchStatistics.bestPlayer],
-            tour_id = tourId,
-            updated_at = matchStatistics.updatedAt,
-            phase = matchStatistics.phase,
-        )
-
-        matchStatistics.sets.forEach { matchSet ->
-            setQueries.insert(
-                number = matchSet.number,
-                home_score = matchSet.score.home,
-                away_score = matchSet.score.away,
-                start_time = matchSet.startTime,
-                end_time = matchSet.endTime,
-                duration = matchSet.duration,
-                match_id = matchStatistics.matchId,
+            matchStatisticsQueries.insert(
+                id = matchStatistics.matchId,
+                home = homeTeamId,
+                away = awayTeamId,
+                mvp = playerIdCache[matchStatistics.mvp]!!,
+                best_player = playerIdCache[matchStatistics.bestPlayer],
+                tour_id = tourId,
+                updated_at = matchStatistics.updatedAt,
+                phase = matchStatistics.phase,
             )
-            val setId = setQueries.lastInsertRowId().executeAsOne()
-            matchSet.points.forEach { matchPoint ->
-                pointQueries.insert(
-                    home_score = matchPoint.score.home,
-                    away_score = matchPoint.score.away,
-                    start_time = matchPoint.startTime,
-                    end_time = matchPoint.endTime,
-                    point = when (matchPoint.point) {
-                        matchStatistics.home.teamId -> homeTeamId
-                        matchStatistics.away.teamId -> awayTeamId
-                        else -> error("It should never happen")
-                    },
-                    home_lineup = pointLineupQueries.insert(matchPoint.homeLineup, playerIdCache),
-                    away_lineup = pointLineupQueries.insert(matchPoint.awayLineup, playerIdCache),
-                    set_id = setId,
+
+            matchStatistics.sets.forEach { matchSet ->
+                setQueries.insert(
+                    number = matchSet.number,
+                    home_score = matchSet.score.home,
+                    away_score = matchSet.score.away,
+                    start_time = matchSet.startTime,
+                    end_time = matchSet.endTime,
+                    duration = matchSet.duration,
+                    match_id = matchStatistics.matchId,
                 )
-                val pointId = pointQueries.lastInsertRowId().executeAsOne()
-                matchPoint.playActions.forEachIndexed { index, playAction ->
-                    insert(index, playAction, pointId, playerIdCache)
+                val setId = setQueries.lastInsertRowId().executeAsOne()
+                matchSet.points.forEach { matchPoint ->
+                    pointQueries.insert(
+                        home_score = matchPoint.score.home,
+                        away_score = matchPoint.score.away,
+                        start_time = matchPoint.startTime,
+                        end_time = matchPoint.endTime,
+                        point = when (matchPoint.point) {
+                            matchStatistics.home.teamId -> homeTeamId
+                            matchStatistics.away.teamId -> awayTeamId
+                            else -> error("It should never happen")
+                        },
+                        home_lineup = pointLineupQueries.insert(matchPoint.homeLineup, playerIdCache),
+                        away_lineup = pointLineupQueries.insert(matchPoint.awayLineup, playerIdCache),
+                        set_id = setId,
+                    )
+                    val pointId = pointQueries.lastInsertRowId().executeAsOne()
+                    matchPoint.playActions.forEachIndexed { index, playAction ->
+                        insert(index, playAction, pointId, playerIdCache)
+                    }
                 }
             }
+            InsertMatchStatisticsResult.success(Unit)
         }
-        InsertMatchStatisticsResult.success(Unit)
-    }
 
     private fun insert(
         matchPlayers: List<PlayerId>,
@@ -226,7 +235,7 @@ class SqlMatchStatisticsStorage(
         }
     }
 
-    private fun <T: Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
+    private fun <T : Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
 
     private fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>> {
         val stats = matchStatisticsQueries.selectAllStatsByTourId(tourId).mapQuery()
@@ -237,14 +246,21 @@ class SqlMatchStatisticsStorage(
         val attacks = playAttackQueries.selectAllAttacksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
         val blocks = playBlockQueries.selectAllBlocksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
         val digs = playDigQueries.selectAllDigsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val freeballs = playFreeballQueries.selectAllFreeballsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val freeballs =
+            playFreeballQueries.selectAllFreeballsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
         val serves = playServeQueries.selectAllServesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val receives = playReceiveQueries.selectAllReceivesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val receives =
+            playReceiveQueries.selectAllReceivesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
         val playSets = playSetQueries.selectAllSetsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
 
-        val playActions = combine(attacks, blocks, digs, freeballs, receives, serves, playSets) { list -> list.flatMap { it } }
+        val playActions =
+            combine(attacks, blocks, digs, freeballs, receives, serves, playSets) { list -> list.flatMap { it } }
 
-        return combine(stats, matchAppearances, sets, points, playActions) { stats, matchAppearances, sets, points, playActions ->
+        return combine(stats,
+            matchAppearances,
+            sets,
+            points,
+            playActions) { stats, matchAppearances, sets, points, playActions ->
             stats.map { selectAllStats ->
                 MatchStatistics(
                     matchId = selectAllStats.id,
@@ -273,7 +289,7 @@ class SqlMatchStatisticsStorage(
                 MatchTeam(
                     teamId = it.first().team_id,
                     code = it.first().code!!,
-                    players = it.map { player -> player.player_id}
+                    players = it.map { player -> player.player_id }
                 )
             }
 

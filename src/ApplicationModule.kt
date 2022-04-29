@@ -1,47 +1,57 @@
 package com.kamilh
 
-import com.kamilh.authorization.authorizationModule
-import com.kamilh.interactors.interactorModule
-import com.kamilh.match_analyzer.matchAnalyzerModule
+import com.kamilh.authorization.AuthorizationModule
+import com.kamilh.authorization.StorageBasedCredentialsValidator
+import com.kamilh.interactors.InteractorModule
+import com.kamilh.match_analyzer.MatchAnalyzerModule
 import com.kamilh.models.AppConfig
-import com.kamilh.models.config
-import com.kamilh.repository.repositoryModule
-import com.kamilh.routes.routesModule
-import com.kamilh.storage.storageModule
-import com.kamilh.utils.utilsModule
-import io.ktor.application.*
+import com.kamilh.models.AppDispatchers
+import com.kamilh.repository.RepositoryModule
+import com.kamilh.routes.user.UserControllerImpl
+import com.kamilh.storage.StorageModule
+import com.kamilh.utils.UtilModule
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
-import org.kodein.di.*
-import java.time.Clock
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
+import me.tatarka.inject.annotations.Scope
 
-private const val MODULE_NAME = "DI_APPLICATION_MODULE"
-fun applicationModule(scope: CoroutineScope, appConfig: AppConfig? = null) = DI.Module(name = MODULE_NAME) {
-    bind<Json>() with provider {
+@Scope
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+annotation class Singleton
+
+@Component
+@Singleton
+abstract class AppModule(
+    private val scope: CoroutineScope,
+    private val appConfig: AppConfig,
+) : UtilModule, RepositoryModule, StorageModule, InteractorModule, MatchAnalyzerModule, AuthorizationModule {
+
+    abstract val applicationInitializer: ApplicationInitializer
+    abstract val initializer: TestApplicationInitializer
+    abstract val userController: UserControllerImpl
+    abstract val credentialsValidator: StorageBasedCredentialsValidator
+
+    @Singleton
+    @Provides
+    fun json(): Json =
         Json {
             prettyPrint = true
         }
-    }
-    bind<CoroutineScope>() with provider { scope }
 
-    bindProvider {
-        if (appConfig == null) {
-            val app by di.instance<Application>()
-            app.config()
-        } else {
-            appConfig
-        }
-    }
+    @Provides
+    fun coroutineScope(): CoroutineScope = scope
 
-    bind<Clock>() with singleton {
-        Clock.systemDefaultZone()
-    }
+    @Provides
+    fun appConfig(): AppConfig = appConfig
 
-    import(utilsModule)
-    import(routesModule)
-    import(storageModule)
-    import(repositoryModule)
-    import(interactorModule)
-    import(authorizationModule)
-    import(matchAnalyzerModule)
+    @Singleton
+    @Provides
+    fun appDispatchers(): AppDispatchers =
+        AppDispatchers(
+            io = Dispatchers.IO,
+            main = Dispatchers.Main,
+            default = Dispatchers.Default,
+        )
 }

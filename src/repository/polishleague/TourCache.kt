@@ -6,6 +6,7 @@ import com.kamilh.models.Season
 import com.kamilh.models.Tour
 import com.kamilh.models.TourId
 import com.kamilh.utils.CurrentDate
+import me.tatarka.inject.annotations.Inject
 
 interface TourCache {
 
@@ -16,6 +17,7 @@ interface TourCache {
  * Simple cache that holds information of the currently supported Tours. It's like that until I find a better way to
  * implement it.
  */
+@Inject
 class InMemoryTourCache : TourCache {
 
     private val tours = listOf(

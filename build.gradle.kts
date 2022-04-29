@@ -3,6 +3,11 @@ plugins {
     kotlin(Dependencies.Plugins.jvm) version Dependencies.kotlinVersion
     kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
     id(Dependencies.Plugins.sqlDelight) version Dependencies.sqlDelightVersion
+    id("com.google.devtools.ksp") version "1.6.10-1.0.3"
+}
+
+sourceSets.main {
+    java.srcDirs("build/generated/ksp/main/kotlin")
 }
 
 group = Constants.packageName
@@ -64,6 +69,9 @@ dependencies {
     implementation(Dependencies.Jsoup.jsoup)
 
     implementation(Dependencies.DateTime.dateTime)
+
+    ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.4.1")
+    implementation("me.tatarka.inject:kotlin-inject-runtime:0.4.1")
 
     testImplementation(Dependencies.Coroutines.Test.test)
     testImplementation(Dependencies.Ktor.Test.server)

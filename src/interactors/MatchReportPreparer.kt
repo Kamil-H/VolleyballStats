@@ -5,7 +5,8 @@ import com.kamilh.match_analyzer.MatchReportAnalyzerParams
 import com.kamilh.models.*
 import com.kamilh.storage.InsertMatchStatisticsError
 import com.kamilh.storage.MatchStatisticsStorage
-import utils.Logger
+import com.kamilh.utils.Logger
+import me.tatarka.inject.annotations.Inject
 
 typealias MatchReportPreparer = Interactor<MatchReportPreparerParams, MatchReportPreparerResult>
 
@@ -20,6 +21,7 @@ sealed class MatchReportPreparerError(override val message: String) : Error {
     class Insert(val error: InsertMatchStatisticsError) : MatchReportPreparerError("Insert(error=${error.message})")
 }
 
+@Inject
 class MatchReportPreparerInteractor(
     appDispatchers: AppDispatchers,
     private val matchReportAnalyzer: MatchReportAnalyzer,

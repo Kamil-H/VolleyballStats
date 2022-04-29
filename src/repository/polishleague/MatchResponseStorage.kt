@@ -1,13 +1,14 @@
 package com.kamilh.repository.polishleague
 
-import com.kamilh.repository.FileManager
-import com.kamilh.repository.FileMetadata
 import com.kamilh.models.MatchReportId
 import com.kamilh.models.Season
+import com.kamilh.repository.FileManager
+import com.kamilh.repository.FileMetadata
 import com.kamilh.repository.models.MatchResponse
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import me.tatarka.inject.annotations.Inject
 
 interface MatchResponseStorage {
 
@@ -18,6 +19,7 @@ interface MatchResponseStorage {
     suspend fun isSaved(matchReportId: MatchReportId, tour: Season): Boolean
 }
 
+@Inject
 class FileBasedMatchResponseStorage(
     private val json: Json,
     private val fileManager: FileManager,

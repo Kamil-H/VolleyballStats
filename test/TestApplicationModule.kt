@@ -4,32 +4,17 @@ import com.kamilh.authorization.CredentialsValidator
 import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.authorization.credentialsValidatorOf
 import com.kamilh.models.Result
-import com.kamilh.models.TestAppConfig
 import com.kamilh.models.api.user.UserResponse
+import com.kamilh.routes.RoutesModule
 import com.kamilh.routes.user.UserController
-import com.kamilh.storage.common.adapters.*
-import kotlinx.serialization.json.Json
-import org.kodein.di.*
 import routes.CallResult
-import storage.AppConfigDatabaseFactory
-import storage.DatabaseFactory
-import storage.common.adapters.ZonedDateTimeAdapter
 
-private const val MODULE_NAME = "DI_TEST_APPLICATION_MODULE"
-fun testApplicationModule(
+fun routesModuleOf(
     userController: UserController = userControllerOf(),
     credentialsValidator: CredentialsValidator = credentialsValidatorOf(),
-) = DI.Module(name = MODULE_NAME) {
-
-    bindProvider { TestAppConfig() }
-    bind<Json>() with provider { Json }
-    bind<DatabaseFactory>() with provider { AppConfigDatabaseFactory(instance(), UuidAdapter(), ZonedDateTimeAdapter(),
-        UrlAdapter(), TeamIdAdapter(), PlayerIdAdapter(), CountryAdapter(), LocalDateAdapter(), LocalDateTimeAdapter(),
-        TourYearAdapter(), SpecializationAdapter(), DurationAdapter(), PositionAdapter(),
-        MatchIdAdapter(), TourIdAdapter())
-    }
-    bind<UserController>() with provider { userController }
-    bind<CredentialsValidator>() with provider { credentialsValidator }
+): RoutesModule = object : RoutesModule {
+    override val userController: UserController = userController
+    override val credentialsValidator: CredentialsValidator = credentialsValidator
 }
 
 fun userResponseOf(

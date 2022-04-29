@@ -5,6 +5,7 @@ import com.kamilh.models.TeamId
 import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.utils.CurrentDate
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
 
@@ -20,6 +21,7 @@ import repository.parsing.ParseResult
     </div>
 </div>
  */
+@Inject
 class HtmlToTeamMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Team>> {
 
     override fun map(html: String): ParseResult<List<Team>> = htmlParser.parse(html) {

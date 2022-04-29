@@ -3,6 +3,7 @@ package com.kamilh.repository.models.mappers
 import com.kamilh.models.Player
 import com.kamilh.models.PlayerId
 import com.kamilh.repository.parsing.HtmlParser
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.EmptyResultException
 import repository.parsing.ParseResult
 
@@ -19,6 +20,7 @@ import repository.parsing.ParseResult
     </div>
 </div>
  */
+@Inject
 class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Player>> {
 
     override fun map(html: String): ParseResult<List<Player>> = htmlParser.parse(html) {

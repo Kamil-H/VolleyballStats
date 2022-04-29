@@ -5,6 +5,7 @@ import com.kamilh.datetime.parsePolishLeagueDate
 import com.kamilh.models.PlayerDetails
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.utils.CurrentDate
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.ParseResult
 
 /**
@@ -21,6 +22,7 @@ import repository.parsing.ParseResult
 (...)
 <div class="playernumber">Numer<span>6</span></div>
  */
+@Inject
 class HtmlToPlayerDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper<PlayerDetails> {
 
     override fun map(html: String): ParseResult<PlayerDetails> = htmlParser.parse(html) {

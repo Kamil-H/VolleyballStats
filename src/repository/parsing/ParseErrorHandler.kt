@@ -1,16 +1,20 @@
 package com.kamilh.repository.parsing
 
+import com.kamilh.Singleton
 import com.kamilh.repository.FileManager
 import com.kamilh.repository.FileMetadata
 import com.kamilh.utils.CurrentDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.ParseError
 
 fun interface ParseErrorHandler {
     fun handle(parseError: ParseError)
 }
 
+@Inject
+@Singleton
 class SavableParseErrorHandler(
     private val scope: CoroutineScope,
     private val fileManager: FileManager,

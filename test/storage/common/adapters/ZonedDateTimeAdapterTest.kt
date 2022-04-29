@@ -2,7 +2,6 @@ package com.kamilh.storage.common.adapters
 
 import com.kamilh.utils.zonedDateTime
 import org.junit.Test
-import storage.common.adapters.ZonedDateTimeAdapter
 
 class ZonedDateTimeAdapterTest {
 

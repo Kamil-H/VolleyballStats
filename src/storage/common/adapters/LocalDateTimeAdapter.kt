@@ -2,8 +2,10 @@ package com.kamilh.storage.common.adapters
 
 import com.kamilh.datetime.LocalDateTime
 import com.squareup.sqldelight.ColumnAdapter
+import me.tatarka.inject.annotations.Inject
 
-internal class LocalDateTimeAdapter : ColumnAdapter<LocalDateTime, String> {
+@Inject
+class LocalDateTimeAdapter : ColumnAdapter<LocalDateTime, String> {
 
     override fun decode(databaseValue: String): LocalDateTime =
         LocalDateTime.parse(databaseValue)

@@ -1,7 +1,8 @@
 package com.kamilh.match_analyzer
 
-import com.kamilh.models.*
 import com.kamilh.datetime.LocalDateTime
+import com.kamilh.models.*
+import me.tatarka.inject.annotations.Inject
 
 sealed class AnalyzeError {
 
@@ -76,6 +77,7 @@ interface AnalyzeErrorReporter {
     fun report(analyzeError: AnalyzeError)
 }
 
+@Inject
 class PrintingAnalyzeErrorReporter : AnalyzeErrorReporter {
 
     override fun report(analyzeError: AnalyzeError) {

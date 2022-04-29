@@ -7,6 +7,7 @@ import com.kamilh.storage.InsertPlayerError
 import com.kamilh.storage.PlayerStorage
 import kotlinx.coroutines.coroutineScope
 import models.PlayerWithDetails
+import me.tatarka.inject.annotations.Inject
 
 typealias UpdatePlayers = Interactor<UpdatePlayersParams, UpdatePlayersResult>
 
@@ -19,6 +20,7 @@ sealed class UpdatePlayersError(override val message: String) : Error {
     class Storage(val insertPlayerError: InsertPlayerError) : UpdatePlayersError("Storage(insertPlayerError: ${insertPlayerError.message})")
 }
 // TODO: Change implementation for mobile app
+@Inject
 class UpdatePlayersInteractor(
     appDispatchers: AppDispatchers,
     private val polishLeagueRepository: PolishLeagueRepository,

@@ -4,13 +4,9 @@ import com.kamilh.authorization.HeaderCredentials
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.routing.*
-import org.kodein.di.instance
-import org.kodein.di.ktor.di
 import routes.respond
 
-fun Routing.userRoutes() {
-
-    val controller by di().instance<UserController>()
+fun Routing.userRoutes(controller: UserController) {
 
     route("user") {
         post("register") {

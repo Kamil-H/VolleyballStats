@@ -4,11 +4,13 @@ import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.*
 import com.kamilh.utils.CurrentDate
+import com.kamilh.utils.Logger
 import kotlinx.coroutines.flow.first
-import utils.Logger
+import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
+@Inject
 class Synchronizer(
     private val tourStorage: TourStorage,
     private val teamStorage: TeamStorage,

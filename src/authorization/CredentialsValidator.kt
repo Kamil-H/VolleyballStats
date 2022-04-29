@@ -3,7 +3,8 @@ package com.kamilh.authorization
 import com.kamilh.interactors.SubscriptionKeyValidator
 import com.kamilh.interactors.SubscriptionKeyValidatorParams
 import com.kamilh.interactors.SubscriptionKeyValidatorResult
-import storage.AccessTokenValidator
+import com.kamilh.storage.AccessTokenValidator
+import me.tatarka.inject.annotations.Inject
 
 interface CredentialsValidator {
 
@@ -12,6 +13,7 @@ interface CredentialsValidator {
     suspend fun isValid(accessToken: AccessToken): Boolean
 }
 
+@Inject
 class StorageBasedCredentialsValidator(
     private val subscriptionKeyValidator: SubscriptionKeyValidator,
     private val accessTokenValidator: AccessTokenValidator,

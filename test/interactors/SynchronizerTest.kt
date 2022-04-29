@@ -4,18 +4,13 @@ import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.*
 import com.kamilh.repository.polishleague.networkErrorOf
 import com.kamilh.storage.*
-import com.kamilh.utils.CurrentDate
-import com.kamilh.utils.localDateTime
-import com.kamilh.utils.testClock
-import com.kamilh.utils.zonedDateTime
+import com.kamilh.utils.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import models.PlayerWithDetails
 import org.junit.Before
 import org.junit.Test
-import utils.Logger
-import utils.Severity
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
@@ -364,7 +359,8 @@ class SynchronizerTest {
         interactor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchStatisticsError.PlayerNotFound(emptyList())))
+                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchStatisticsError.PlayerNotFound(
+                    emptyList())))
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true

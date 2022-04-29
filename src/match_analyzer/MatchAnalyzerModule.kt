@@ -1,23 +1,25 @@
 package com.kamilh.match_analyzer
 
 import com.kamilh.match_analyzer.strategies.*
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.instance
-import org.kodein.di.provider
+import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Provides
 
-private const val MODULE_NAME = "DI_MATCH_ANALYZER_MODULE"
-val matchAnalyzerModule = DI.Module(name = MODULE_NAME) {
+@Component
+interface MatchAnalyzerModule {
 
-    bind<List<PlayActionStrategy<*>>>() with provider {
-        listOf(AttackStrategy(), BlockStrategy(), DigStrategy(), FreeballStrategy(), ReceiveStrategy(), ServeStrategy(), SetStrategy())
-    }
+    @Provides
+    fun strategies(
+        attackStrategy: AttackStrategy, blockStrategy: BlockStrategy, digStrategy: DigStrategy, freeballStrategy: FreeballStrategy,
+        receiveStrategy: ReceiveStrategy, serveStrategy: ServeStrategy, setStrategy: SetStrategy,
+    ): List<PlayActionStrategy<*>> =
+        listOf(attackStrategy, blockStrategy, digStrategy, freeballStrategy, receiveStrategy, serveStrategy, setStrategy)
 
-    bind<MatchReportAnalyzer>() with provider {
-        MatchReportAnalyzerInteractor(instance(), instance(), instance(), instance(), instance())
-    }
+    val MatchReportAnalyzerInteractor.bind: MatchReportAnalyzer
+        @Provides get() = this
 
-    bind<EventsPreparer>() with provider { EventsPreparerImpl() }
+    val EventsPreparerImpl.bind: EventsPreparer
+        @Provides get() = this
 
-    bind<AnalyzeErrorReporter>() with provider { PrintingAnalyzeErrorReporter() }
+    val PrintingAnalyzeErrorReporter.bind : AnalyzeErrorReporter
+        @Provides get() = this
 }

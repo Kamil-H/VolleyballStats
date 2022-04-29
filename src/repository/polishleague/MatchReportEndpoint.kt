@@ -11,6 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.ParseError
 
 interface MatchReportEndpoint {
@@ -18,6 +19,7 @@ interface MatchReportEndpoint {
     suspend fun getMatchReport(matchReportId: MatchReportId, tour: Season): NetworkResult<MatchResponse>
 }
 
+@Inject
 class WebSocketMatchReportEndpoint(
     private val json: Json,
     private val httpClient: HttpClient,

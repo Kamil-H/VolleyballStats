@@ -4,7 +4,9 @@ import com.kamilh.match_analyzer.AnalysisInput
 import com.kamilh.match_analyzer.generalInfo
 import com.kamilh.models.PlayAction
 import com.kamilh.models.Skill
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class SetStrategy : PlayActionStrategy<PlayAction.Set> {
 
     override fun check(input: AnalysisInput): List<PlayAction.Set> =

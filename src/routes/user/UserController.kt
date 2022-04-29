@@ -10,6 +10,7 @@ import com.kamilh.models.User
 import com.kamilh.models.api.user.UserResponse
 import com.kamilh.utils.toUUID
 import io.ktor.http.*
+import me.tatarka.inject.annotations.Inject
 import routes.CallError
 import routes.CallResult
 
@@ -19,6 +20,7 @@ interface UserController {
     suspend fun addUser(deviceId: String?): CallResult<UserResponse>
 }
 
+@Inject
 class UserControllerImpl(
     private val getUser: GetUser,
     private val addUser: AddUser,

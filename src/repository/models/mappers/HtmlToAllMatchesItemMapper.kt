@@ -6,11 +6,13 @@ import com.kamilh.models.MatchInfo
 import com.kamilh.models.TeamId
 import com.kamilh.repository.extensions.toPolishLeagueLocalDate
 import com.kamilh.repository.parsing.HtmlParser
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.ParseResult
 
 /**
  * <div class="gameresult clickable" onclick="location.href='/games/id/1101019.html';"> <span class="green">3</span><span class="doubledot">:</span><span class="red">0</span></div>
  */
+@Inject
 class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<MatchInfo>> {
 
     override fun map(html: String): ParseResult<List<MatchInfo>> = htmlParser.parse(html) {

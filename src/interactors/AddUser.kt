@@ -6,6 +6,7 @@ import com.kamilh.storage.InsertUser
 import com.kamilh.storage.UserStorage
 import com.kamilh.utils.CurrentDate
 import com.kamilh.utils.UuidCreator
+import me.tatarka.inject.annotations.Inject
 import java.util.*
 
 typealias AddUser = Interactor<AddUserParams, AddUserResult>
@@ -20,6 +21,7 @@ enum class AddUserError(override val message: String? = null): Error {
     UserAlreadyExists
 }
 
+@Inject
 class AddUserInteractor(
     appDispatchers: AppDispatchers,
     private val userStorage: UserStorage,

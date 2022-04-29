@@ -2,7 +2,9 @@ package com.kamilh.storage.common.adapters
 
 import com.kamilh.models.MatchId
 import com.squareup.sqldelight.ColumnAdapter
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class MatchIdAdapter : ColumnAdapter<MatchId, Long> {
     override fun decode(databaseValue: Long): MatchId = MatchId(databaseValue)
 

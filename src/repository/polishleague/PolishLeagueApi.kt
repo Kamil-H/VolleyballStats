@@ -6,7 +6,9 @@ import com.kamilh.models.Season
 import com.kamilh.models.Url
 import com.kamilh.models.httprequest.HttpRequest
 import com.kamilh.models.httprequest.UrlRequest
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class PolishLeagueApi {
 
     fun getPlayers(season: Season): HttpRequest<String> =

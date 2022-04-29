@@ -1,5 +1,6 @@
 package com.kamilh.storage
 
+import com.kamilh.Singleton
 import com.kamilh.databse.TourQueries
 import com.kamilh.datetime.LocalDate
 import com.kamilh.datetime.LocalDateTime
@@ -12,6 +13,7 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
+import me.tatarka.inject.annotations.Inject
 
 interface TourStorage {
 
@@ -34,6 +36,8 @@ enum class InsertTourError: Error {
     override val message: String = name
 }
 
+@Inject
+@Singleton
 class SqlTourStorage(
     private val queryRunner: QueryRunner,
     private val tourQueries: TourQueries,

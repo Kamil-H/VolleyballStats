@@ -9,6 +9,7 @@ import com.kamilh.models.TeamPlayer
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.utils.CurrentDate
 import models.PlayerWithDetails
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.ParseResult
 
 /**
@@ -50,6 +51,7 @@ import repository.parsing.ParseResult
 <a class="btn btn-default" href="/players.html">powrót</a>
 <a class="btn btn-default" style="float:right;" href='/statsPlayers/id/30339.html'>Statystyki zawodnika</a>
  */
+@Inject
 class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper<PlayerWithDetails> {
 
     override fun map(html: String): ParseResult<PlayerWithDetails> = htmlParser.parse(html) {

@@ -1,22 +1,28 @@
 package com.kamilh
 
 import com.kamilh.authorization.credentialsValidatorOf
+import com.kamilh.models.TestAppConfig
+import com.kamilh.routes.RoutesModule
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.kodein.di.DI
 
 open class BaseRoutingTest {
 
-    protected val json: Json = Json {  }
+    protected val json: Json = Json
 
     protected fun testRoute(
         request: Request,
-        testApplicationModule: DI.Module = testApplicationModule(),
+        routesModule: RoutesModule = routesModuleOf(),
     ) : TestApplicationCall =
-        withTestApplication({ module(testApplicationModule) }) {
+        withTestApplication({
+            module(
+                appConfig = TestAppConfig(),
+                routesModule = routesModule,
+            )
+        }) {
             handleRequest {
                 uri = request.uri
                 method = request.method
@@ -48,7 +54,7 @@ open class BaseRoutingTest {
                     "StatsApi-Access-Token" to "Access",
                 )
             ),
-            testApplicationModule = testApplicationModule(
+            routesModule = routesModuleOf(
                 credentialsValidator = credentialsValidator,
             )
         )
@@ -73,7 +79,7 @@ open class BaseRoutingTest {
                     "StatsApi-Access-Token" to "Access",
                 )
             ),
-            testApplicationModule = testApplicationModule(
+            routesModule = routesModuleOf(
                 credentialsValidator = credentialsValidator,
             )
         )

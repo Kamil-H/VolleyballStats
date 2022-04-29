@@ -3,7 +3,9 @@ package com.kamilh.repository.models.mappers
 import com.kamilh.models.*
 import com.kamilh.models.Set
 import com.kamilh.repository.models.*
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class MatchResponseToMatchReportMapper {
 
     fun map(from: MatchResponse): MatchReport =

@@ -6,6 +6,7 @@ import com.kamilh.repository.models.mappers.HtmlMapper
 import com.kamilh.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.repository.parsing.ParseErrorHandler
 import com.kamilh.utils.cache.Cache
+import me.tatarka.inject.annotations.Inject
 import models.PlayerWithDetails
 import repository.parsing.ParseResult
 
@@ -30,6 +31,7 @@ interface PolishLeagueRepository {
     suspend fun getAllPlayers(): NetworkResult<List<Player>>
 }
 
+@Inject
 class HttpPolishLeagueRepository(
     private val httpClient: HttpClient,
     private val polishLeagueApi: PolishLeagueApi,

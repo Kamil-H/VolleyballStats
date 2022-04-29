@@ -1,9 +1,11 @@
 package com.kamilh.storage
 
+import com.kamilh.Singleton
 import com.kamilh.databse.SelectByTourYearAndName
 import com.kamilh.databse.TeamQueries
 import com.kamilh.databse.TourQueries
 import com.kamilh.databse.TourTeamQueries
+import com.kamilh.datetime.LocalDateTime
 import com.kamilh.models.*
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.errors.SqlError
@@ -11,7 +13,7 @@ import com.kamilh.storage.common.errors.createSqlError
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
-import com.kamilh.datetime.LocalDateTime
+import me.tatarka.inject.annotations.Inject
 
 interface TeamStorage {
 
@@ -31,6 +33,8 @@ sealed class InsertTeamError(override val message: String) : Error {
     )
 }
 
+@Inject
+@Singleton
 class SqlTeamStorage(
     private val queryRunner: QueryRunner,
     private val teamQueries: TeamQueries,

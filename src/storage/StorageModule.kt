@@ -1,5 +1,6 @@
 package com.kamilh.storage
 
+import com.kamilh.Singleton
 import com.kamilh.databse.*
 import com.kamilh.datetime.LocalDate
 import com.kamilh.datetime.LocalDateTime
@@ -9,163 +10,194 @@ import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.TransacterQueryRunner
 import com.kamilh.storage.common.adapters.*
 import com.squareup.sqldelight.ColumnAdapter
-import org.kodein.di.*
-import storage.AccessTokenValidator
-import storage.AppConfigDatabaseFactory
-import storage.DatabaseFactory
-import storage.InMemoryAccessTokenValidator
-import storage.common.adapters.ZonedDateTimeAdapter
+import me.tatarka.inject.annotations.Provides
 import java.util.*
 import kotlin.time.Duration
 
-private const val MODULE_NAME = "DI_STORAGE_MODULE"
-val storageModule = DI.Module(name = MODULE_NAME) {
-    bind<AccessTokenValidator>() with provider { InMemoryAccessTokenValidator() }
+interface StorageModule {
 
-    bind<ColumnAdapter<UUID, String>>() with provider { UuidAdapter() }
-    bind<ColumnAdapter<ZonedDateTime, String>>() with provider { ZonedDateTimeAdapter() }
-    bind<ColumnAdapter<Url, String>>() with provider { UrlAdapter() }
-    bind<ColumnAdapter<TeamId, Long>>() with provider { TeamIdAdapter() }
-    bind<ColumnAdapter<PlayerId, Long>>() with provider { PlayerIdAdapter() }
-    bind<ColumnAdapter<Country, String>>() with provider { CountryAdapter() }
-    bind<ColumnAdapter<LocalDate, String>>() with provider { LocalDateAdapter() }
-    bind<ColumnAdapter<LocalDateTime, String>>() with provider { LocalDateTimeAdapter() }
-    bind<ColumnAdapter<Season, Long>>() with provider { TourYearAdapter() }
-    bind<ColumnAdapter<TeamPlayer.Specialization, Long>>() with provider { SpecializationAdapter() }
-    bind<ColumnAdapter<Duration, Long>>() with provider { DurationAdapter() }
-    bind<ColumnAdapter<PlayerPosition, Long>>() with provider { PositionAdapter() }
-    bind<ColumnAdapter<MatchId, Long>>() with provider { MatchIdAdapter() }
-    bind<ColumnAdapter<TourId, Long>>() with provider { TourIdAdapter() }
+    val AppConfigDatabaseFactory.bind: DatabaseFactory
+        @Provides get() = this
 
-    bind<DatabaseFactory>() with singleton {
-        AppConfigDatabaseFactory(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
-    }
-
-    bind<UserQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
+    @Singleton
+    @Provides
+    fun userQueries(database: DatabaseFactory): UserQueries =
         database.database.userQueries
-    }
 
-    bind<TeamQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
+    @Singleton
+    @Provides
+    fun teamQueries(database: DatabaseFactory): TeamQueries =
         database.database.teamQueries
-    }
 
-    bind<TourTeamQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
+    @Singleton
+    @Provides
+    fun tourTeamQueries(database: DatabaseFactory): TourTeamQueries =
         database.database.tourTeamQueries
-    }
-    bind<TourQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.tourQueries
-    }
-    bind<LeagueQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.leagueQueries
-    }
-    bind<TeamPlayerQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.teamPlayerQueries
-    }
-    bind<MatchStatisticsQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.matchStatisticsQueries
-    }
-    bind<PlayQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playQueries
-    }
-    bind<PlayerQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playerQueries
-    }
-    bind<PlayAttackQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playAttackQueries
-    }
-    bind<PlayBlockQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playBlockQueries
-    }
-    bind<PlayDigQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playDigQueries
-    }
-    bind<PlayFreeballQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playFreeballQueries
-    }
-    bind<PlayReceiveQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playReceiveQueries
-    }
-    bind<PlayServeQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playServeQueries
-    }
-    bind<PlaySetQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.playSetQueries
-    }
-    bind<PointQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.pointQueries
-    }
-    bind<PointLineupQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.pointLineupQueries
-    }
-    bind<SetQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.setQueries
-    }
-    bind<MatchAppearanceQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.matchAppearanceQueries
-    }
-    bind<MatchQueries>() with singleton {
-        val database by di.instance<DatabaseFactory>()
-        database.database.matchQueries
-    }
 
-    bind<QueryRunner>() with singleton {
-        val database by di.instance<DatabaseFactory>()
+    @Singleton
+    @Provides
+    fun tourQueries(database: DatabaseFactory): TourQueries =
+        database.database.tourQueries
+
+    @Singleton
+    @Provides
+    fun leagueQueries(database: DatabaseFactory): LeagueQueries =
+        database.database.leagueQueries
+
+    @Singleton
+    @Provides
+    fun teamPlayerQueries(database: DatabaseFactory): TeamPlayerQueries =
+        database.database.teamPlayerQueries
+
+    @Singleton
+    @Provides
+    fun matchStatisticsQueries(database: DatabaseFactory): MatchStatisticsQueries =
+        database.database.matchStatisticsQueries
+
+    @Singleton
+    @Provides
+    fun playQueries(database: DatabaseFactory): PlayQueries =
+        database.database.playQueries
+
+    @Singleton
+    @Provides
+    fun playerQueries(database: DatabaseFactory): PlayerQueries =
+        database.database.playerQueries
+
+    @Singleton
+    @Provides
+    fun playAttackQueries(database: DatabaseFactory): PlayAttackQueries =
+        database.database.playAttackQueries
+
+    @Singleton
+    @Provides
+    fun playBlockQueries(database: DatabaseFactory): PlayBlockQueries =
+        database.database.playBlockQueries
+
+    @Singleton
+    @Provides
+    fun playDigQueries(database: DatabaseFactory): PlayDigQueries =
+        database.database.playDigQueries
+
+    @Singleton
+    @Provides
+    fun playFreeballQueries(database: DatabaseFactory): PlayFreeballQueries =
+        database.database.playFreeballQueries
+
+    @Singleton
+    @Provides
+    fun playReceiveQueries(database: DatabaseFactory): PlayReceiveQueries =
+        database.database.playReceiveQueries
+
+    @Singleton
+    @Provides
+    fun playServeQueries(database: DatabaseFactory): PlayServeQueries =
+        database.database.playServeQueries
+
+    @Singleton
+    @Provides
+    fun playSetQueries(database: DatabaseFactory): PlaySetQueries =
+        database.database.playSetQueries
+
+    @Singleton
+    @Provides
+    fun pointQueries(database: DatabaseFactory): PointQueries =
+        database.database.pointQueries
+
+    @Singleton
+    @Provides
+    fun pointLineupQueries(database: DatabaseFactory): PointLineupQueries =
+        database.database.pointLineupQueries
+
+    @Singleton
+    @Provides
+    fun setQueries(database: DatabaseFactory): SetQueries =
+        database.database.setQueries
+
+    @Singleton
+    @Provides
+    fun matchAppearanceQueries(database: DatabaseFactory): MatchAppearanceQueries =
+        database.database.matchAppearanceQueries
+
+    @Singleton
+    @Provides
+    fun matchQueries(database: DatabaseFactory): MatchQueries =
+        database.database.matchQueries
+
+    @Singleton
+    @Provides
+    fun queryRunner(database: DatabaseFactory, appDispatchers: AppDispatchers): QueryRunner =
         TransacterQueryRunner(
             transacter = database.database,
-            appDispatchers = instance(),
+            appDispatchers = appDispatchers,
         )
-    }
 
-    bind<UserStorage>() with provider {
-        SqlUserStorage(instance(), instance())
-    }
+    val UuidAdapter.bind: ColumnAdapter<UUID, String>
+        @Provides get() = this
 
-    bind<TeamStorage>() with singleton {
-        SqlTeamStorage(instance(), instance(), instance(), instance())
-    }
+    val ZonedDateTimeAdapter.bind: ColumnAdapter<ZonedDateTime, String>
+        @Provides get() = this
 
-    bind<TourStorage>() with singleton {
-        SqlTourStorage(instance(), instance())
-    }
+    val UrlAdapter.bind: ColumnAdapter<Url, String>
+        @Provides get() = this
 
-    bind<PlayerStorage>() with singleton {
-        SqlPlayerStorage(instance(), instance(), instance(), instance())
-    }
+    val TeamIdAdapter.bind: ColumnAdapter<TeamId, Long>
+        @Provides get() = this
 
-    bind<LeagueStorage>() with singleton {
-        SqlLeagueStorage(instance(), instance())
-    }
+    val PlayerIdAdapter.bind: ColumnAdapter<PlayerId, Long>
+        @Provides get() = this
 
-    bind<MatchStatisticsStorage>() with singleton {
-        SqlMatchStatisticsStorage(
-            instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance()
-        )
-    }
+    val CountryAdapter.bind: ColumnAdapter<Country, String>
+        @Provides get() = this
 
-    bind<MatchStorage>() with singleton {
-        SqlMatchStorage(instance(), instance(), instance())
-    }
+    val LocalDateAdapter.bind: ColumnAdapter<LocalDate, String>
+        @Provides get() = this
+
+    val LocalDateTimeAdapter.bind: ColumnAdapter<LocalDateTime, String>
+        @Provides get() = this
+
+    val SeasonAdapter.bind: ColumnAdapter<Season, Long>
+        @Provides get() = this
+
+    val SpecializationAdapter.bind: ColumnAdapter<TeamPlayer.Specialization, Long>
+        @Provides get() = this
+
+    val MatchReportIdAdapter.bind: ColumnAdapter<MatchReportId, Long>
+        @Provides get() = this
+
+    val DurationAdapter.bind: ColumnAdapter<Duration, Long>
+        @Provides get() = this
+
+    val PositionAdapter.bind: ColumnAdapter<PlayerPosition, Long>
+        @Provides get() = this
+
+    val MatchIdAdapter.bind: ColumnAdapter<MatchId, Long>
+        @Provides get() = this
+
+    val TourIdAdapter.bind: ColumnAdapter<TourId, Long>
+        @Provides get() = this
+
+    val InMemoryAccessTokenValidator.bind: AccessTokenValidator
+        @Provides get() = this
+
+    val SqlLeagueStorage.bind: LeagueStorage
+        @Provides get() = this
+
+    val SqlMatchStatisticsStorage.bind: MatchStatisticsStorage
+        @Provides get() = this
+
+    val SqlMatchStorage.bind: MatchStorage
+        @Provides get() = this
+
+    val SqlPlayerStorage.bind: PlayerStorage
+        @Provides get() = this
+
+    val SqlUserStorage.bind: UserStorage
+        @Provides get() = this
+
+    val SqlTourStorage.bind: TourStorage
+        @Provides get() = this
+
+    val SqlTeamStorage.bind: TeamStorage
+        @Provides get() = this
 }

@@ -4,8 +4,8 @@ import com.kamilh.BaseRoutingTest
 import com.kamilh.authorization.credentialsValidatorOf
 import com.kamilh.models.Result
 import com.kamilh.models.api.user.UserResponse
+import com.kamilh.routesModuleOf
 import com.kamilh.storage.nullUUID
-import com.kamilh.testApplicationModule
 import com.kamilh.userControllerOf
 import com.kamilh.userResponseOf
 import io.ktor.http.*
@@ -27,7 +27,7 @@ class UserRouteTest : BaseRoutingTest() {
                 uri = "/user/register",
                 method = HttpMethod.Post,
             ),
-            testApplicationModule = testApplicationModule(
+            routesModule = routesModuleOf(
                 userController = userControllerOf(
                     addUserResult = addUserResult,
                 )
@@ -49,7 +49,7 @@ class UserRouteTest : BaseRoutingTest() {
                 uri = "/user",
                 method = HttpMethod.Get,
             ),
-            testApplicationModule = testApplicationModule(
+            routesModule = routesModuleOf(
                 credentialsValidator = credentialsValidatorOf(subscriptionKeyIsValid = false)
             )
         )
@@ -89,7 +89,7 @@ class UserRouteTest : BaseRoutingTest() {
                     "StatsApi-Access-Token" to "Access",
                 )
             ),
-            testApplicationModule = testApplicationModule(
+            routesModule = routesModuleOf(
                 credentialsValidator = credentialsValidatorOf(
                     subscriptionKeyIsValid = true,
                     accessTokenIsValid = true,

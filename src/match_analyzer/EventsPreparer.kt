@@ -1,12 +1,14 @@
 package com.kamilh.match_analyzer
 
 import com.kamilh.models.Event
+import me.tatarka.inject.annotations.Inject
 
 interface EventsPreparer {
 
     fun prepare(events: List<Event>): List<Event>
 }
 
+@Inject
 class EventsPreparerImpl : EventsPreparer {
 
     override fun prepare(events: List<Event>): List<Event> {

@@ -1,6 +1,7 @@
 package com.kamilh.repository.models.mappers
 
 import com.kamilh.models.MatchReportId
+import me.tatarka.inject.annotations.Inject
 import repository.parsing.ParseError
 import repository.parsing.ParseResult
 
@@ -9,6 +10,7 @@ import repository.parsing.ParseResult
     (...)
     <iframe class="widget-ppp widget-pbp" src="https://widgets.volleystation.com/app/widget/play-by-play/2103711?home_image=https://dl.siatkarskaliga.pl/410999/inline/scalecrop=250x250/182736/Grupa-Azoty-ZAKSA-K%C4%99dzierzyn-Ko%C5%BAle_logotyp.png&away_image=https://dl.siatkarskaliga.pl/412482/inline/scalecrop=250x250/d8f9c2/slepsk.png&side_force=home"></iframe>
  */
+@Inject
 class HtmlToMatchReportId : HtmlMapper<MatchReportId> {
 
     override fun map(html: String): ParseResult<MatchReportId> {

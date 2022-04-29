@@ -5,6 +5,7 @@ import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertTourError
 import com.kamilh.storage.LeagueStorage
 import com.kamilh.storage.TourStorage
+import me.tatarka.inject.annotations.Inject
 
 typealias UpdateTours = Interactor<UpdateToursParams, UpdateToursResult>
 
@@ -16,6 +17,7 @@ sealed class UpdateToursError(override val message: String) : Error {
     class Network(val networkError: NetworkError) : UpdateToursError("Network(networkError: ${networkError.message})")
 }
 
+@Inject
 class UpdateToursInteractor(
     appDispatchers: AppDispatchers,
     private val polishLeagueRepository: PolishLeagueRepository,

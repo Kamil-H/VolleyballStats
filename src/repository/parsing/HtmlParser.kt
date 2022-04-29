@@ -1,6 +1,7 @@
 package com.kamilh.repository.parsing
 
 import com.kamilh.models.Result
+import me.tatarka.inject.annotations.Inject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import repository.parsing.ParseError
@@ -10,6 +11,7 @@ interface HtmlParser {
     fun <T> parse(html: String, mapper: Document.() -> T?): ParseResult<T>
 }
 
+@Inject
 class JsoupHtmlParser : HtmlParser {
 
     override fun <T> parse(html: String, mapper: Document.() -> T?): ParseResult<T> = try {

@@ -3,6 +3,7 @@ package com.kamilh.repository
 import com.kamilh.models.AppDispatchers
 import com.kamilh.utils.ExceptionLogger
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -13,6 +14,7 @@ interface FileManager {
     suspend fun getTextContent(fileMetadata: FileMetadata): String?
 }
 
+@Inject
 class IoFileManager(
     private val appDispatchers: AppDispatchers,
     private val exceptionLogger: ExceptionLogger,

@@ -1,34 +1,24 @@
 package com.kamilh.utils
 
-import com.kamilh.models.AppDispatchers
-import kotlinx.coroutines.Dispatchers
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.provider
+import com.kamilh.Singleton
+import me.tatarka.inject.annotations.Provides
 import org.slf4j.LoggerFactory
-import utils.Log4JLogger
-import utils.Logger
-import utils.PlatformLogger
 
-private const val MODULE_NAME = "DI_UTILS_MODULE"
-val utilsModule = DI.Module(name = MODULE_NAME) {
-    bind<AppDispatchers>() with provider {
-        AppDispatchers(
-            io = Dispatchers.IO,
-            main = Dispatchers.Main,
-            default = Dispatchers.Default,
-        )
-    }
-    bind<UuidCreator>() with provider {
-        JavaUtilUuidCreator()
-    }
-    bind<UuidValidator>() with provider {
-        JavaUtilUuidValidator()
-    }
-    bind<ExceptionLogger>() with provider {
-        ConsoleExceptionLogger()
-    }
-    bind<PlatformLogger>() with provider {
-        Log4JLogger(LoggerFactory.getLogger(Logger.TAG))
-    }
+interface UtilModule {
+
+    @Provides
+    @Singleton
+    fun logger(): org.slf4j.Logger = LoggerFactory.getLogger(Logger.TAG)
+
+    val Log4JLogger.bind: PlatformLogger
+        @Provides get() = this
+
+    val ConsoleExceptionLogger.bind: ExceptionLogger
+        @Provides get() = this
+
+    val JavaUtilUuidCreator.bind: UuidCreator
+        @Provides get() = this
+
+    val JavaUtilUuidValidator.bind: UuidValidator
+        @Provides get() = this
 }

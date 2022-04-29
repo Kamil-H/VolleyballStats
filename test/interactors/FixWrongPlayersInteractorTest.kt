@@ -7,13 +7,13 @@ import com.kamilh.repository.polishleague.polishLeagueRepositoryOf
 import com.kamilh.storage.InsertPlayerResult
 import com.kamilh.storage.PlayerStorage
 import com.kamilh.storage.playerStorageOf
+import com.kamilh.utils.Logger
+import com.kamilh.utils.Severity
 import com.kamilh.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
 import models.PlayerWithDetails
 import org.junit.Before
 import org.junit.Test
-import utils.Logger
-import utils.Severity
 
 class FixWrongPlayersInteractorTest {
 

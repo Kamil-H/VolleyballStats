@@ -1,5 +1,6 @@
 package com.kamilh.storage
 
+import com.kamilh.Singleton
 import com.kamilh.databse.LeagueQueries
 import com.kamilh.models.Error
 import com.kamilh.models.League
@@ -7,6 +8,7 @@ import com.kamilh.models.Result
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.errors.SqlError
 import com.kamilh.storage.common.errors.createSqlError
+import me.tatarka.inject.annotations.Inject
 
 interface LeagueStorage {
 
@@ -21,6 +23,8 @@ enum class InsertLeagueError: Error {
     override val message: String = name
 }
 
+@Inject
+@Singleton
 class SqlLeagueStorage(
     private val queryRunner: QueryRunner,
     private val leagueQueries: LeagueQueries,

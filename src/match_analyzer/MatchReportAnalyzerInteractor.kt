@@ -6,7 +6,8 @@ import com.kamilh.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.models.*
 import com.kamilh.storage.TeamStorage
 import com.kamilh.utils.CurrentDate
-import utils.Logger
+import com.kamilh.utils.Logger
+import me.tatarka.inject.annotations.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -33,6 +34,7 @@ sealed class MatchReportAnalyzerError(override val message: String) : Error {
     )
 }
 
+@Inject
 class MatchReportAnalyzerInteractor(
     appDispatchers: AppDispatchers,
     private val teamStorage: TeamStorage,

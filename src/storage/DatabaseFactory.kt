@@ -1,14 +1,16 @@
-package storage
+package com.kamilh.storage
 
 import com.kamilh.*
 import com.kamilh.datetime.LocalDate
 import com.kamilh.datetime.LocalDateTime
 import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
+import com.kamilh.storage.common.adapters.*
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
+import me.tatarka.inject.annotations.Inject
 import java.util.*
 import kotlin.time.Duration
 
@@ -23,7 +25,9 @@ interface SqlDriverCreator {
 	fun create(): SqlDriver
 }
 
-internal class AppConfigDatabaseFactory(
+@Inject
+@Singleton
+class AppConfigDatabaseFactory(
 	appConfig: AppConfig,
 	uuidAdapter: ColumnAdapter<UUID, String>,
 	zonedDateAdapter: ColumnAdapter<ZonedDateTime, String>,

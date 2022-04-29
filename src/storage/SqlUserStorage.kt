@@ -1,5 +1,6 @@
 package com.kamilh.storage
 
+import com.kamilh.Singleton
 import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.databse.UserQueries
 import com.kamilh.models.Result
@@ -7,7 +8,10 @@ import com.kamilh.models.User
 import com.kamilh.storage.common.QueryRunner
 import com.kamilh.storage.common.errors.SqlError
 import com.kamilh.storage.common.errors.createSqlError
+import me.tatarka.inject.annotations.Inject
 
+@Inject
+@Singleton
 class SqlUserStorage(
     private val queryRunner: QueryRunner,
     private val userQueries: UserQueries,

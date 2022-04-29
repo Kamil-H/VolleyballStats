@@ -12,9 +12,6 @@ import com.squareup.sqldelight.ColumnAdapter
 import models.PlayerWithDetails
 import org.junit.After
 import org.junit.Before
-import storage.AppConfigDatabaseFactory
-import storage.DatabaseFactory
-import storage.common.adapters.ZonedDateTimeAdapter
 import java.util.*
 import kotlin.time.Duration
 
@@ -27,7 +24,7 @@ abstract class DatabaseTest(
     private val countryAdapter: ColumnAdapter<Country, String> = CountryAdapter(),
     private val localDateAdapter: ColumnAdapter<LocalDate, String> = LocalDateAdapter(),
     private val localDateTimeAdapter: ColumnAdapter<LocalDateTime, String> = LocalDateTimeAdapter(),
-    private val tourYearAdapter: ColumnAdapter<Season, Long> = TourYearAdapter(),
+    private val seasonAdapter: ColumnAdapter<Season, Long> = SeasonAdapter(),
     private val specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long> = SpecializationAdapter(),
     private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
     private val positionAdapter: ColumnAdapter<PlayerPosition, Long> = PositionAdapter(),
@@ -71,7 +68,7 @@ abstract class DatabaseTest(
             countryAdapter = countryAdapter,
             localDateAdapter = localDateAdapter,
             localDateTimeAdapter = localDateTimeAdapter,
-            seasonAdapter = tourYearAdapter,
+            seasonAdapter = seasonAdapter,
             specializationAdapter = specializationAdapter,
             durationAdapter = durationAdapter,
             positionAdapter = positionAdapter,

@@ -6,7 +6,9 @@ import com.kamilh.match_analyzer.generalInfo
 import com.kamilh.models.Effect
 import com.kamilh.models.PlayAction
 import com.kamilh.models.Skill
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class AttackStrategy : PlayActionStrategy<PlayAction.Attack> {
 
     override fun check(input: AnalysisInput): List<PlayAction.Attack> =

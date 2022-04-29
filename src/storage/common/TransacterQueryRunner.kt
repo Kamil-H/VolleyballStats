@@ -4,6 +4,7 @@ import com.kamilh.models.AppDispatchers
 import com.squareup.sqldelight.Transacter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 
 interface QueryRunner {
     val dispatcher: CoroutineDispatcher
@@ -13,6 +14,7 @@ interface QueryRunner {
     suspend fun <T> runTransaction(body: () -> T): T
 }
 
+@Inject
 class TransacterQueryRunner(
     appDispatchers: AppDispatchers,
     private val transacter: Transacter,

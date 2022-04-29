@@ -4,7 +4,9 @@ import com.kamilh.extensions.divideExcluding
 import com.kamilh.match_analyzer.AnalysisInput
 import com.kamilh.match_analyzer.generalInfo
 import com.kamilh.models.PlayAction
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class FreeballStrategy : PlayActionStrategy<PlayAction.Freeball> {
 
     override fun check(input: AnalysisInput): List<PlayAction.Freeball> =

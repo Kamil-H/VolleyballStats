@@ -1,5 +1,6 @@
 package com.kamilh.storage
 
+import com.kamilh.Singleton
 import com.kamilh.databse.MatchQueries
 import com.kamilh.databse.TourQueries
 import com.kamilh.datetime.ZonedDateTime
@@ -8,6 +9,7 @@ import com.kamilh.storage.common.QueryRunner
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
+import me.tatarka.inject.annotations.Inject
 
 interface MatchStorage {
 
@@ -26,6 +28,8 @@ enum class MatchState {
     PotentiallyFinished, Scheduled, NotScheduled
 }
 
+@Inject
+@Singleton
 class SqlMatchStorage(
     private val queryRunner: QueryRunner,
     private val matchQueries: MatchQueries,

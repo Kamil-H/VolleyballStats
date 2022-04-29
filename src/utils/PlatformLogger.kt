@@ -1,10 +1,13 @@
-package utils
+package com.kamilh.utils
+
+import me.tatarka.inject.annotations.Inject
 
 fun interface PlatformLogger {
 
     fun log(severity: Severity, tag: String, message: String)
 }
 
+@Inject
 class Log4JLogger(private val logger: org.slf4j.Logger) : PlatformLogger {
 
     override fun log(severity: Severity, tag: String, message: String) {

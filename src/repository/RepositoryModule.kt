@@ -1,5 +1,6 @@
 package com.kamilh.repository
 
+import com.kamilh.Singleton
 import com.kamilh.models.*
 import com.kamilh.repository.models.mappers.*
 import com.kamilh.repository.parsing.HtmlParser
@@ -7,77 +8,80 @@ import com.kamilh.repository.parsing.JsoupHtmlParser
 import com.kamilh.repository.parsing.ParseErrorHandler
 import com.kamilh.repository.parsing.SavableParseErrorHandler
 import com.kamilh.repository.polishleague.*
+import com.kamilh.utils.cache.Cache
 import com.kamilh.utils.cache.ExpirableCache
 import com.kamilh.utils.cache.LocalDateTimeCacheValidator
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.websocket.*
+import me.tatarka.inject.annotations.Provides
 import models.PlayerWithDetails
-import org.kodein.di.*
-import com.kamilh.datetime.LocalDateTime
-import kotlin.time.Duration.Companion.hours
 import io.ktor.client.HttpClient as Ktor
 
-private val playersCacheValidity = 6.hours
-private const val MODULE_NAME = "DI_REPOSITORY_MODULE"
-val repositoryModule = DI.Module(name = MODULE_NAME) {
-    bind<Ktor>() with provider {
+interface RepositoryModule {
+
+    @Provides
+    @Singleton
+    fun ktor(): Ktor =
         Ktor(CIO) {
             install(JsonFeature) {
                 serializer = defaultSerializer()
             }
             install(WebSockets)
         }
-    }
 
-    bind<HttpClient>() with provider {
-        KtorHttpClient(instance(), instance())
-    }
+    @Provides
+    @Singleton
+    fun allPlayersCache(): Cache<Unit, List<Player>> =
+        ExpirableCache(LocalDateTimeCacheValidator())
 
-    bindProvider { PolishLeagueApi() }
-    bind<HtmlMapper<List<Team>>>() with provider { HtmlToTeamMapper(instance()) }
-    bind<HtmlMapper<List<TeamPlayer>>>() with provider { HtmlToTeamPlayerMapper(instance()) }
-    bind<HtmlMapper<List<Player>>>() with provider { HtmlToPlayerMapper(instance()) }
-    bind<HtmlMapper<MatchReportId>>() with provider { HtmlToMatchReportId() }
-    bind<HtmlMapper<List<MatchInfo>>>() with provider { HtmlToAllMatchesItemMapper(instance()) }
-    bind<HtmlMapper<PlayerDetails>>() with provider { HtmlToPlayerDetailsMapper(instance()) }
-    bind<HtmlMapper<PlayerWithDetails>>() with provider { HtmlToPlayerWithDetailsMapper(instance()) }
-    bindProvider { MatchResponseToMatchReportMapper() }
+    @Provides
+    @Singleton
+    fun allPlayersByTourCache(): Cache<Season, List<TeamPlayer>> =
+        ExpirableCache(LocalDateTimeCacheValidator())
 
-    bind<HtmlParser>() with provider {
-        JsoupHtmlParser()
-    }
+    val KtorHttpClient.bind: HttpClient
+        @Provides get() = this
 
-    bind<FileManager>() with provider {
-        IoFileManager(instance(), instance())
-    }
+    val IoFileManager.bind: FileManager
+        @Provides get() = this
 
-    bind<ParseErrorHandler>() with provider {
-        SavableParseErrorHandler(instance(), instance())
-    }
+    val WebSocketMatchReportEndpoint.bind: MatchReportEndpoint
+        @Provides get() = this
 
-    bind<MatchReportEndpoint>() with provider {
-        WebSocketMatchReportEndpoint(instance(), instance(), instance())
-    }
+    val FileBasedMatchResponseStorage.bind: MatchResponseStorage
+        @Provides get() = this
 
-    bind<TourCache>() with provider {
-        InMemoryTourCache()
-    }
+    val HttpPolishLeagueRepository.bind: PolishLeagueRepository
+        @Provides get() = this
 
-    bind<ExpirableCache<Unit, List<Player>, LocalDateTime>>() with singleton {
-        ExpirableCache(LocalDateTimeCacheValidator(cacheExpiration = playersCacheValidity))
-    }
+    val InMemoryTourCache.bind: TourCache
+        @Provides get() = this
 
-    bind<ExpirableCache<Season, List<TeamPlayer>, LocalDateTime>>() with singleton {
-        ExpirableCache(LocalDateTimeCacheValidator(cacheExpiration = playersCacheValidity))
-    }
+    val JsoupHtmlParser.bind: HtmlParser
+        @Provides get() = this
 
-    bind<PolishLeagueRepository>() with provider {
-        HttpPolishLeagueRepository(instance(), instance(), instance(), instance(), instance(), instance(), instance(),
-            instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance(), instance())
-    }
+    val SavableParseErrorHandler.bind: ParseErrorHandler
+        @Provides get() = this
 
-    bind<MatchResponseStorage>() with provider {
-        FileBasedMatchResponseStorage(instance(), instance())
-    }
+    val HtmlToTeamMapper.bind: HtmlMapper<List<Team>>
+        @Provides get() = this
+
+    val HtmlToTeamPlayerMapper.bind: HtmlMapper<List<TeamPlayer>>
+        @Provides get() = this
+
+    val HtmlToPlayerMapper.bind: HtmlMapper<List<Player>>
+        @Provides get() = this
+
+    val HtmlToAllMatchesItemMapper.bind: HtmlMapper<List<MatchInfo>>
+        @Provides get() = this
+
+    val HtmlToMatchReportId.bind: HtmlMapper<MatchReportId>
+        @Provides get() = this
+
+    val HtmlToPlayerDetailsMapper.bind: HtmlMapper<PlayerDetails>
+        @Provides get() = this
+
+    val HtmlToPlayerWithDetailsMapper.bind: HtmlMapper<PlayerWithDetails>
+        @Provides get() = this
 }

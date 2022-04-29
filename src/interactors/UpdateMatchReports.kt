@@ -5,6 +5,7 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertMatchStatisticsError
 import kotlinx.coroutines.coroutineScope
+import me.tatarka.inject.annotations.Inject
 
 typealias UpdateMatchReports = Interactor<UpdateMatchReportParams, UpdateMatchReportResult>
 
@@ -20,6 +21,7 @@ sealed class UpdateMatchReportError(override val message: String) : Error {
     class Insert(val error: InsertMatchStatisticsError) : UpdateMatchReportError("Insert(error=${error.message}")
 }
 
+@Inject
 class UpdateMatchReportInteractor(
     appDispatchers: AppDispatchers,
     private val polishLeagueRepository: PolishLeagueRepository,
