@@ -11,7 +11,7 @@ import com.kamilh.utils.Logger
 import com.kamilh.utils.Severity
 import com.kamilh.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 import org.junit.Before
 import org.junit.Test
 

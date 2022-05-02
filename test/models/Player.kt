@@ -4,7 +4,6 @@ import com.kamilh.datetime.LocalDate
 import com.kamilh.datetime.LocalDateTime
 import com.kamilh.utils.localDate
 import com.kamilh.utils.localDateTime
-import models.PlayerWithDetails
 
 fun playerOf(
     id: PlayerId = playerIdOf(),

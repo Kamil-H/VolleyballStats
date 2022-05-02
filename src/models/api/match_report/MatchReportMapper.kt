@@ -2,7 +2,9 @@ package com.kamilh.models.api.match_report
 
 import com.kamilh.models.*
 import com.kamilh.models.api.ResponseMapper
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class MatchReportMapper : ResponseMapper<MatchStatistics, MatchReportResponse> {
 
     override fun to(from: MatchStatistics): MatchReportResponse =

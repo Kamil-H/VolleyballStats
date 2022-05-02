@@ -3,7 +3,9 @@ package com.kamilh.models.api.tour
 import com.kamilh.models.Tour
 import com.kamilh.models.api.ResponseMapper
 import com.kamilh.models.api.league.LeagueMapper
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class TourMapper(private val leagueMapper: LeagueMapper) : ResponseMapper<Tour, TourResponse> {
 
     override fun to(from: Tour): TourResponse =

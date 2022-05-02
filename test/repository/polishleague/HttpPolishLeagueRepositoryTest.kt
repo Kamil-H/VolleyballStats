@@ -11,7 +11,7 @@ import com.kamilh.repository.parsing.ParseErrorHandler
 import com.kamilh.utils.cache.Cache
 import com.kamilh.utils.cache.cacheOf
 import kotlinx.coroutines.test.runTest
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 import org.junit.Test
 import repository.parsing.ParseError
 import repository.parsing.ParseResult

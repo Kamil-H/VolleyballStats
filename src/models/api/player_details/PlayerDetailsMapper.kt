@@ -2,7 +2,9 @@ package com.kamilh.models.api.player_details
 
 import com.kamilh.models.PlayerDetails
 import com.kamilh.models.api.ResponseMapper
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class PlayerDetailsMapper : ResponseMapper<PlayerDetails, PlayerDetailsResponse> {
 
     override fun to(from: PlayerDetails): PlayerDetailsResponse =

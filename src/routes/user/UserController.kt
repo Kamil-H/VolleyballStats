@@ -1,5 +1,6 @@
 package com.kamilh.routes.user
 
+import com.kamilh.Singleton
 import com.kamilh.authorization.SubscriptionKey
 import com.kamilh.interactors.AddUser
 import com.kamilh.interactors.AddUserParams
@@ -21,6 +22,7 @@ interface UserController {
 }
 
 @Inject
+@Singleton
 class UserControllerImpl(
     private val getUser: GetUser,
     private val addUser: AddUser,

@@ -15,7 +15,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.websocket.*
 import me.tatarka.inject.annotations.Provides
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 import io.ktor.client.HttpClient as Ktor
 
 interface RepositoryModule {

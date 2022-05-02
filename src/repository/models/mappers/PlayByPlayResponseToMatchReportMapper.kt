@@ -390,7 +390,9 @@ class MatchResponseToMatchReportMapper {
         private const val VIDEO_CHALLENGE_SCORE_CHANGE_REPEAT_LAST = "repeatLast"
         private const val VIDEO_CHALLENGE_SCORE_CHANGE_NO_CHANGE = "noChange"
 
-        private val PHASE_PLAYOFF = listOf("Play Off", "Finał", "Play Off - 1/4 finału", "PLAY OFF - 1/4 finału", "PO")
+        private val PHASE_PLAYOFF = listOf(
+            "Play Off", "Finał", "Play Off - 1/4 finału", "PLAY OFF - 1/4 finału", "PO", "PLAY OFF  - 1/4 finału"
+        )
         private val PHASE_REGULAR_SEASON = listOf("FZ", "ZAS", "Faza Zasadnicza")
     }
 }

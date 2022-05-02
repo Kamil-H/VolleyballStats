@@ -3,13 +3,9 @@ package com.kamilh.routes.teams
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.routing.*
-import org.kodein.di.instance
-import org.kodein.di.ktor.di
 import routes.respond
 
-fun Routing.teams() {
-
-    val controller by di().instance<TeamsControllerImpl>()
+fun Routing.teams(controller: TeamsController) {
 
     route("teams") {
         authenticate {

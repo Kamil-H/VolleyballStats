@@ -8,7 +8,7 @@ import com.kamilh.models.TeamId
 import com.kamilh.models.TeamPlayer
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.utils.CurrentDate
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 import me.tatarka.inject.annotations.Inject
 import repository.parsing.ParseResult
 

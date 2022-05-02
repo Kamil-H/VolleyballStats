@@ -6,6 +6,10 @@ import com.kamilh.models.config
 import com.kamilh.routes.AppRoutesModule
 import com.kamilh.routes.RoutesModule
 import com.kamilh.routes.create
+import com.kamilh.routes.matches.matches
+import com.kamilh.routes.players.players
+import com.kamilh.routes.teams.teams
+import com.kamilh.routes.tours.tours
 import com.kamilh.routes.user.userRoutes
 import com.kamilh.storage.DatabaseFactory
 import io.ktor.application.*
@@ -21,7 +25,7 @@ import me.tatarka.inject.annotations.Inject
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
-@kotlin.jvm.JvmOverloads
+@JvmOverloads
 fun Application.module(
     appConfig: AppConfig = this.config(),
     routesModule: RoutesModule? = null,
@@ -65,7 +69,13 @@ class ApplicationInitializer(
         }
 
         install(Routing) {
-            userRoutes(routesModule.userController)
+            with(routesModule) {
+                userRoutes(userController)
+                matches(matchesController)
+                players(playersController)
+                teams(teamsController)
+                tours(toursController)
+            }
         }
 
         environment.monitor.subscribe(ApplicationStopped) {

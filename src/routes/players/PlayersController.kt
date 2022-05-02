@@ -1,5 +1,7 @@
 package com.kamilh.routes.players
 
+import com.kamilh.Singleton
+import com.kamilh.models.PlayerWithDetails
 import com.kamilh.models.TourId
 import com.kamilh.models.api.ResponseMapper
 import com.kamilh.models.api.player_with_details.PlayerWithDetailsResponse
@@ -7,7 +9,7 @@ import com.kamilh.routes.TourIdCache
 import com.kamilh.storage.PlayerStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import models.PlayerWithDetails
+import me.tatarka.inject.annotations.Inject
 import routes.CallResult
 import utils.SafeMap
 import utils.safeMapOf
@@ -17,6 +19,8 @@ interface PlayersController {
     suspend fun getPlayersWithDetails(tourId: String?): CallResult<List<PlayerWithDetailsResponse>>
 }
 
+@Inject
+@Singleton
 class PlayersControllerImpl(
     private val tourIdCache: TourIdCache,
     private val playerStorage: PlayerStorage,

@@ -9,7 +9,7 @@ import com.kamilh.models.*
 import com.kamilh.storage.common.adapters.*
 import com.kamilh.utils.testClock
 import com.squareup.sqldelight.ColumnAdapter
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 import org.junit.After
 import org.junit.Before
 import java.util.*

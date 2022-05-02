@@ -3,13 +3,9 @@ package com.kamilh.routes.players
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.routing.*
-import org.kodein.di.instance
-import org.kodein.di.ktor.di
 import routes.respond
 
-fun Routing.players() {
-
-    val controller by di().instance<PlayersController>()
+fun Routing.players(controller: PlayersController) {
 
     route("players") {
         authenticate {

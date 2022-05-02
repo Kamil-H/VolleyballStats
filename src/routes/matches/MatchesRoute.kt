@@ -3,13 +3,9 @@ package com.kamilh.routes.matches
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.routing.*
-import org.kodein.di.instance
-import org.kodein.di.ktor.di
 import routes.respond
 
-fun Routing.matches() {
-
-    val controller by di().instance<MatchesController>()
+fun Routing.matches(controller: MatchesController) {
 
     route("matches") {
         authenticate {

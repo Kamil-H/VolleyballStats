@@ -2,7 +2,9 @@ package com.kamilh.models.api.team
 
 import com.kamilh.models.Team
 import com.kamilh.models.api.ResponseMapper
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class TeamMapper : ResponseMapper<Team, TeamResponse> {
 
     override fun to(from: Team): TeamResponse =

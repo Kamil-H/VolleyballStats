@@ -6,7 +6,7 @@ import com.kamilh.repository.polishleague.PolishLeagueRepository
 import com.kamilh.storage.InsertPlayerError
 import com.kamilh.storage.PlayerStorage
 import kotlinx.coroutines.coroutineScope
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 import me.tatarka.inject.annotations.Inject
 
 typealias UpdatePlayers = Interactor<UpdatePlayersParams, UpdatePlayersResult>

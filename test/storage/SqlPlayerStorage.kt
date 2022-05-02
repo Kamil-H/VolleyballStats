@@ -7,7 +7,7 @@ import com.kamilh.utils.localDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 import org.junit.Test
 import kotlin.time.Duration.Companion.days
 

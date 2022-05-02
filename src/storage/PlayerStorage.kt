@@ -14,7 +14,7 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 
 interface PlayerStorage {
 

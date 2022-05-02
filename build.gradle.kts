@@ -3,7 +3,7 @@ plugins {
     kotlin(Dependencies.Plugins.jvm) version Dependencies.kotlinVersion
     kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
     id(Dependencies.Plugins.sqlDelight) version Dependencies.sqlDelightVersion
-    id("com.google.devtools.ksp") version "1.6.10-1.0.3"
+    id(Dependencies.Plugins.ksp) version Dependencies.kspVersion
 }
 
 sourceSets.main {
@@ -56,8 +56,6 @@ dependencies {
     implementation(Dependencies.Ktor.cio)
     implementation(Dependencies.Ktor.logging)
 
-    implementation(Dependencies.Kodein.server)
-
     implementation(Dependencies.Logback.classic)
 
     implementation(Dependencies.SqlDelight.driver)
@@ -70,8 +68,8 @@ dependencies {
 
     implementation(Dependencies.DateTime.dateTime)
 
-    ksp("me.tatarka.inject:kotlin-inject-compiler-ksp:0.4.1")
-    implementation("me.tatarka.inject:kotlin-inject-runtime:0.4.1")
+    ksp(Dependencies.KotlinInject.compiler)
+    implementation(Dependencies.KotlinInject.runtime)
 
     testImplementation(Dependencies.Coroutines.Test.test)
     testImplementation(Dependencies.Ktor.Test.server)

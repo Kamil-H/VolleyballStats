@@ -6,11 +6,13 @@ object Constants {
 object Dependencies {
     const val kotlinVersion = "1.6.10"
     const val sqlDelightVersion = "1.5.3"
+    const val kspVersion = "1.6.10-1.0.3"
 
     object Plugins {
         const val jvm = "jvm"
         const val serialization = "plugin.serialization"
         const val sqlDelight = "com.squareup.sqldelight"
+        const val ksp = "com.google.devtools.ksp"
     }
 
     object Kotlin {
@@ -51,9 +53,10 @@ object Dependencies {
         }
     }
 
-    object Kodein {
-        private const val version = "7.5.0"
-        const val server = "org.kodein.di:kodein-di-framework-ktor-server-jvm:$version"
+    object KotlinInject {
+        private const val version = "0.4.1"
+        const val runtime = "me.tatarka.inject:kotlin-inject-runtime:$version"
+        const val compiler = "me.tatarka.inject:kotlin-inject-compiler-ksp:$version"
     }
 
     object SqlDelight {

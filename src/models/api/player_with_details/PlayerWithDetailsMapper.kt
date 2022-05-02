@@ -5,8 +5,10 @@ import com.kamilh.models.TeamPlayer
 import com.kamilh.models.api.ResponseMapper
 import com.kamilh.models.api.player_details.PlayerDetailsResponse
 import com.kamilh.models.api.team_player.TeamPlayerResponse
-import models.PlayerWithDetails
+import me.tatarka.inject.annotations.Inject
+import com.kamilh.models.PlayerWithDetails
 
+@Inject
 class PlayerWithDetailsMapper(
     private val teamPlayerMapper: ResponseMapper<TeamPlayer, TeamPlayerResponse>,
     private val playerDetailsMapper: ResponseMapper<PlayerDetails, PlayerDetailsResponse>,

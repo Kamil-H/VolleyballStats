@@ -1,5 +1,6 @@
 package com.kamilh.routes.teams
 
+import com.kamilh.Singleton
 import com.kamilh.models.Team
 import com.kamilh.models.TourId
 import com.kamilh.models.api.ResponseMapper
@@ -8,6 +9,7 @@ import com.kamilh.routes.TourIdCache
 import com.kamilh.storage.TeamStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import me.tatarka.inject.annotations.Inject
 import routes.CallResult
 import utils.SafeMap
 import utils.safeMapOf
@@ -17,6 +19,8 @@ interface TeamsController {
     suspend fun getTeams(tourId: String?): CallResult<List<TeamResponse>>
 }
 
+@Inject
+@Singleton
 class TeamsControllerImpl(
     private val tourIdCache: TourIdCache,
     private val teamStorage: TeamStorage,

@@ -6,7 +6,14 @@ import com.kamilh.interactors.InteractorModule
 import com.kamilh.match_analyzer.MatchAnalyzerModule
 import com.kamilh.models.AppConfig
 import com.kamilh.models.AppDispatchers
+import com.kamilh.models.api.MappersModule
 import com.kamilh.repository.RepositoryModule
+import com.kamilh.routes.TourIdCache
+import com.kamilh.routes.TourIdCacheImpl
+import com.kamilh.routes.matches.MatchesControllerImpl
+import com.kamilh.routes.players.PlayersControllerImpl
+import com.kamilh.routes.teams.TeamsControllerImpl
+import com.kamilh.routes.tours.ToursControllerImpl
 import com.kamilh.routes.user.UserControllerImpl
 import com.kamilh.storage.StorageModule
 import com.kamilh.utils.UtilModule
@@ -26,12 +33,19 @@ annotation class Singleton
 abstract class AppModule(
     private val scope: CoroutineScope,
     private val appConfig: AppConfig,
-) : UtilModule, RepositoryModule, StorageModule, InteractorModule, MatchAnalyzerModule, AuthorizationModule {
+) : UtilModule, RepositoryModule, StorageModule, InteractorModule, MatchAnalyzerModule, AuthorizationModule, MappersModule {
 
     abstract val applicationInitializer: ApplicationInitializer
     abstract val initializer: TestApplicationInitializer
     abstract val userController: UserControllerImpl
     abstract val credentialsValidator: StorageBasedCredentialsValidator
+    abstract val matchesController: MatchesControllerImpl
+    abstract val playersController: PlayersControllerImpl
+    abstract val teamsController: TeamsControllerImpl
+    abstract val toursController: ToursControllerImpl
+
+    val TourIdCacheImpl.bind: TourIdCache
+        @Provides get() = this
 
     @Singleton
     @Provides

@@ -7,7 +7,7 @@ import com.kamilh.storage.PlayerStorage
 import com.kamilh.utils.Logger
 import com.kamilh.utils.findSimilarity
 import me.tatarka.inject.annotations.Inject
-import models.PlayerWithDetails
+import com.kamilh.models.PlayerWithDetails
 
 typealias FixWrongPlayers = Interactor<FixWrongPlayersParams, MatchReportTeam>
 

@@ -1,7 +1,4 @@
-package models
-
-import com.kamilh.models.PlayerDetails
-import com.kamilh.models.TeamPlayer
+package com.kamilh.models
 
 data class PlayerWithDetails(
     val teamPlayer: TeamPlayer,

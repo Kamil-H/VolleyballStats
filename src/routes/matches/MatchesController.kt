@@ -1,5 +1,6 @@
 package com.kamilh.routes.matches
 
+import com.kamilh.Singleton
 import com.kamilh.models.*
 import com.kamilh.models.api.ResponseMapper
 import com.kamilh.models.api.match.MatchResponse
@@ -10,6 +11,7 @@ import com.kamilh.storage.MatchStatisticsStorage
 import com.kamilh.storage.MatchStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import me.tatarka.inject.annotations.Inject
 import routes.CallError
 import routes.CallResult
 import utils.SafeMap
@@ -22,6 +24,8 @@ interface MatchesController {
     suspend fun getMatchReport(matchId: String?): CallResult<MatchReportResponse>
 }
 
+@Inject
+@Singleton
 class MatchesControllerImpl(
     matchStatisticsStorage: MatchStatisticsStorage,
     private val tourIdCache: TourIdCache,
