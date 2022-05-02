@@ -4,9 +4,9 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.6.10"
+    const val kotlinVersion = "1.6.21"
     const val sqlDelightVersion = "1.5.3"
-    const val kspVersion = "1.6.10-1.0.3"
+    const val kspVersion = "1.6.21-1.0.5"
 
     object Plugins {
         const val jvm = "jvm"
