@@ -1,6 +1,6 @@
 package com.kamilh.authorization
 
-import io.ktor.auth.*
+import io.ktor.server.auth.*
 import java.util.*
 
 inline class SubscriptionKey(val value: UUID)

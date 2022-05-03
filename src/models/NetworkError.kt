@@ -1,6 +1,7 @@
 package com.kamilh.models
 
-import io.ktor.client.features.*
+import io.ktor.client.plugins.*
+import io.ktor.http.*
 import io.ktor.utils.io.errors.*
 
 sealed class NetworkError(override val message: String) : Error {
@@ -22,13 +23,16 @@ sealed class NetworkError(override val message: String) : Error {
         object RequestTimeout: HttpError("RequestTimeout")
         object Conflict: HttpError("Conflict")
         class Other(val status: Int): HttpError("Other(status: $status)")
-        class UnexpectedException(val responseException: ResponseException) : HttpError(
+        class UnexpectedException(val responseException: ResponseException?) : HttpError(
             "UnexpectedException(responseException: $responseException)"
         )
 
         companion object {
             fun handle(responseException: ResponseException): HttpError =
-                when (responseException.response.status.value) {
+                handle(status = responseException.response.status, responseException = responseException)
+
+            fun handle(status: HttpStatusCode, responseException: ResponseException? = null): HttpError =
+                when (status.value) {
                     400 -> BadRequestException
                     401 -> UnauthorizedException
                     403 -> ForbiddenException
@@ -38,7 +42,7 @@ sealed class NetworkError(override val message: String) : Error {
                     407 -> ProxyAuthenticationRequired
                     408 -> RequestTimeout
                     409 -> Conflict
-                    in 410..499 -> Other(responseException.response.status.value)
+                    in 410..499 -> Other(status.value)
                     in 500..599 -> InternalServerErrorException
                     else -> UnexpectedException(responseException)
                 }

@@ -44,17 +44,19 @@ dependencies {
     implementation(Dependencies.Kotlin.stdlib)
     implementation(Dependencies.Coroutines.core)
 
-    implementation(Dependencies.Ktor.netty)
-    implementation(Dependencies.Ktor.core)
-    implementation(Dependencies.Ktor.hostCommon)
-    implementation(Dependencies.Ktor.auth)
     implementation(Dependencies.Ktor.serialization)
-    implementation(Dependencies.Ktor.clientSerialization)
-    implementation(Dependencies.Ktor.json)
-    implementation(Dependencies.Ktor.jvm)
-    implementation(Dependencies.Ktor.websockets)
-    implementation(Dependencies.Ktor.cio)
-    implementation(Dependencies.Ktor.logging)
+    implementation(Dependencies.Ktor.Server.netty)
+    implementation(Dependencies.Ktor.Server.core)
+    implementation(Dependencies.Ktor.Server.hostCommon)
+    implementation(Dependencies.Ktor.Server.auth)
+    implementation(Dependencies.Ktor.Server.statusPages)
+    implementation(Dependencies.Ktor.Server.contentNegotiate)
+
+    implementation(Dependencies.Ktor.Client.contentNegotiate)
+    implementation(Dependencies.Ktor.Client.jvm)
+    implementation(Dependencies.Ktor.Client.websockets)
+    implementation(Dependencies.Ktor.Client.cio)
+    implementation(Dependencies.Ktor.Client.logging)
 
     implementation(Dependencies.Logback.classic)
 
@@ -72,8 +74,8 @@ dependencies {
     implementation(Dependencies.KotlinInject.runtime)
 
     testImplementation(Dependencies.Coroutines.Test.test)
-    testImplementation(Dependencies.Ktor.Test.server)
-    testImplementation(Dependencies.Ktor.Test.client)
+    testImplementation(Dependencies.Ktor.Server.test)
+    testImplementation(Dependencies.Ktor.Client.test)
     testImplementation(Dependencies.JUnit5.jupiter)
     testImplementation(Dependencies.JUnit5.engine)
     testImplementation(Dependencies.JUnit5.params)
@@ -89,4 +91,14 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.time.ExperimentalTime"
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
     kotlinOptions.jvmTarget = "11"
+}
+
+// To enable exhaustive when statements - can be removed after Kotlin 1.7 is released
+kotlin {
+    sourceSets.all {
+        languageSettings.apply {
+            languageVersion = "1.6"
+            progressiveMode = true
+        }
+    }
 }

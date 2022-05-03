@@ -20,22 +20,29 @@ object Dependencies {
     }
 
     object Ktor {
-        private const val version = "1.6.3"
-        const val netty = "io.ktor:ktor-server-netty:$version"
-        const val core = "io.ktor:ktor-server-core:$version"
-        const val hostCommon = "io.ktor:ktor-server-host-common:$version"
-        const val auth = "io.ktor:ktor-auth:$version"
-        const val serialization = "io.ktor:ktor-serialization:$version"
-        const val clientSerialization = "io.ktor:ktor-client-serialization:$version"
-        const val json = "io.ktor:ktor-client-json:$version"
-        const val jvm = "io.ktor:ktor-client-apache:$version"
-        const val websockets = "io.ktor:ktor-client-websockets:$version"
-        const val cio = "io.ktor:ktor-client-cio:$version"
-        const val logging = "io.ktor:ktor-client-logging:$version"
+        private const val version = "2.0.1"
 
-        object Test {
-            const val server = "io.ktor:ktor-server-tests:$version"
-            const val client = "io.ktor:ktor-client-tests:$version"
+        const val serialization = "io.ktor:ktor-serialization-kotlinx-json:$version"
+
+        object Server {
+            const val netty = "io.ktor:ktor-server-netty:$version"
+            const val core = "io.ktor:ktor-server-core:$version"
+            const val hostCommon = "io.ktor:ktor-server-host-common:$version"
+            const val auth = "io.ktor:ktor-server-auth:$version"
+            const val statusPages = "io.ktor:ktor-server-status-pages:$version"
+            const val contentNegotiate = "io.ktor:ktor-server-content-negotiation:$version"
+
+            const val test = "io.ktor:ktor-server-tests:$version"
+        }
+
+        object Client {
+            const val contentNegotiate = "io.ktor:ktor-client-content-negotiation:$version"
+            const val jvm = "io.ktor:ktor-client-apache:$version"
+            const val websockets = "io.ktor:ktor-client-websockets:$version"
+            const val cio = "io.ktor:ktor-client-cio:$version"
+            const val logging = "io.ktor:ktor-client-logging:$version"
+
+            const val test = "io.ktor:ktor-client-tests:$version"
         }
     }
 

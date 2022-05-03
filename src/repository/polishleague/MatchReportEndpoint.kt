@@ -5,8 +5,8 @@ import com.kamilh.repository.models.MatchResponse
 import com.kamilh.repository.models.PlayByPlayResponse
 import com.kamilh.repository.parsing.ParseErrorHandler
 import io.ktor.client.*
-import io.ktor.client.features.websocket.*
-import io.ktor.http.cio.websocket.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString

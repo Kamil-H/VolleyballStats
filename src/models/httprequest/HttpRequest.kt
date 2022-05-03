@@ -1,10 +1,9 @@
 package com.kamilh.models.httprequest
 
-import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.content.*
 import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.util.reflect.*
 
 sealed class HttpRequest<T> {
     abstract val responseType: TypeInfo
@@ -19,7 +18,6 @@ sealed class HttpRequest<T> {
     }
 }
 
-@OptIn(InternalAPI::class)
 fun HttpRequest.Body.toRequestBody(requestBuilder: HttpRequestBuilder): Any =
     when (this) {
         is HttpRequest.Body.Json -> {

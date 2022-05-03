@@ -1,9 +1,9 @@
 package com.kamilh.routes.user
 
 import com.kamilh.authorization.HeaderCredentials
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.routing.*
 import routes.respond
 
 fun Routing.userRoutes(controller: UserController) {

@@ -1,6 +1,6 @@
 package com.kamilh.authorization
 
-import io.ktor.request.*
+import io.ktor.server.request.*
 
 fun ApplicationRequest.subscriptionKeyHeader(): String? = call.request.header(SUBSCRIPTION_KEY_HEADER)
 

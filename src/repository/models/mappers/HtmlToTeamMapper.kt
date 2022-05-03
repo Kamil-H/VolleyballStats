@@ -39,8 +39,8 @@ class HtmlToTeamMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Tea
                 Team(
                     id = TeamId(id!!),
                     name = name,
-                    teamImageUrl = Url.create(teamImageUrl),
-                    logoUrl = Url.create(image),
+                    teamImageUrl = Url.createOrNull(teamImageUrl)!!,
+                    logoUrl = Url.createOrNull(image)!!,
                     updatedAt = CurrentDate.localDateTime,
                 )
             }

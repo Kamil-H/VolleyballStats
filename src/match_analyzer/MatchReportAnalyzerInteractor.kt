@@ -203,6 +203,7 @@ class MatchReportAnalyzerInteractor(
                     is Event.ManualChange -> {
                         Logger.i("ManualChange EventScore: ${event.score}, CurrentScore: $score")
                     }
+                    else -> { }
                 }
             }
             if (score != set.score) {

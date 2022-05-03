@@ -9,7 +9,9 @@ value class Url private constructor(val value: String) {
         fun create(urlString: String): Url = Url(io.ktor.http.Url(urlString).toString())
 
         fun createOrNull(urlString: String): Url? =
-            try {
+            if (urlString.isBlank()) {
+                null
+            } else try {
                 create(urlString)
             } catch (_: URLParserException) {
                 null

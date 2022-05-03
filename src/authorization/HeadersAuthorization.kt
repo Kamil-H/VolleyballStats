@@ -1,45 +1,17 @@
 package com.kamilh.authorization
 
 import com.kamilh.utils.toUUID
-import io.ktor.application.*
-import io.ktor.auth.*
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.auth.*
+import io.ktor.server.response.*
 
-fun Authentication.Configuration.headers(name: String? = null, credentialsValidator: CredentialsValidator) {
-    val provider = HeadersAuthorization(
-        configuration = HeadersAuthorization.Configuration(name),
-        credentialsValidator = credentialsValidator
+fun AuthenticationConfig.headers(name: String? = null, credentialsValidator: CredentialsValidator) {
+    register(
+        HeadersAuthorization(
+            configuration = HeadersAuthorization.Configuration(name),
+            credentialsValidator = credentialsValidator
+        )
     )
-
-    provider.pipeline.intercept(AuthenticationPipeline.RequestAuthentication) { context ->
-        val subscriptionKey = call.request.subscriptionKeyHeader()
-        val accessToken = call.request.accessTokenHeader()
-
-        val result = when {
-            subscriptionKey == null -> HeaderAuthorizationResult.NoSubscriptionKey
-            accessToken == null -> HeaderAuthorizationResult.NoAccessToken
-            else -> provider.validate(subscriptionKey, accessToken)
-        }
-
-        val cause = when(result) {
-            HeaderAuthorizationResult.NoSubscriptionKey, HeaderAuthorizationResult.NoAccessToken -> AuthenticationFailedCause.NoCredentials
-            HeaderAuthorizationResult.InvalidSubscriptionKey, HeaderAuthorizationResult.InvalidAccessToken -> AuthenticationFailedCause.InvalidCredentials
-            is HeaderAuthorizationResult.Authorized -> null
-        }
-
-        if (cause != null) {
-            context.challenge(headersAuthenticationChallengeKey, cause) {
-                call.respond(status = HttpStatusCode.Forbidden, result.message)
-                it.complete()
-            }
-        }
-
-        if (result is HeaderAuthorizationResult.Authorized) {
-            context.principal(result.headerCredentials)
-        }
-    }
-    register(provider)
 }
 
 class HeadersAuthorization(
@@ -47,7 +19,7 @@ class HeadersAuthorization(
     private val credentialsValidator: CredentialsValidator,
 ): AuthenticationProvider(configuration) {
 
-    class Configuration(name: String? = null): AuthenticationProvider.Configuration(name)
+    class Configuration(name: String? = null): Config(name)
 
     suspend fun validate(subscriptionKeyString: String, accessTokenString: String): HeaderAuthorizationResult {
         val subscriptionKey = subscriptionKeyString.toUUID()?.let(::SubscriptionKey)
@@ -62,6 +34,35 @@ class HeadersAuthorization(
                     accessToken = accessToken,
                 )
             )
+        }
+    }
+
+    override suspend fun onAuthenticate(context: AuthenticationContext) {
+        val call = context.call
+        val subscriptionKey = call.request.subscriptionKeyHeader()
+        val accessToken = call.request.accessTokenHeader()
+
+        val result = when {
+            subscriptionKey == null -> HeaderAuthorizationResult.NoSubscriptionKey
+            accessToken == null -> HeaderAuthorizationResult.NoAccessToken
+            else -> validate(subscriptionKey, accessToken)
+        }
+
+        val cause = when(result) {
+            HeaderAuthorizationResult.NoSubscriptionKey, HeaderAuthorizationResult.NoAccessToken -> AuthenticationFailedCause.NoCredentials
+            HeaderAuthorizationResult.InvalidSubscriptionKey, HeaderAuthorizationResult.InvalidAccessToken -> AuthenticationFailedCause.InvalidCredentials
+            is HeaderAuthorizationResult.Authorized -> null
+        }
+
+        if (cause != null) {
+            context.challenge(headersAuthenticationChallengeKey, cause) { challenge, call ->
+                call.respond(status = HttpStatusCode.Forbidden, result.message)
+                challenge.complete()
+            }
+        }
+
+        if (result is HeaderAuthorizationResult.Authorized) {
+            context.principal(result.headerCredentials)
         }
     }
 }

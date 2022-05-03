@@ -4,8 +4,10 @@ import com.kamilh.models.NetworkError
 import com.kamilh.models.NetworkResult
 import com.kamilh.models.httprequest.HttpRequest
 import com.kamilh.utils.ExceptionLogger
+import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.http.*
 import me.tatarka.inject.annotations.Inject
 import io.ktor.client.HttpClient as Ktor
 
@@ -21,10 +23,17 @@ class KtorHttpClient(
 
     override suspend fun <T> execute(httpRequest: HttpRequest<T>): NetworkResult<T> =
         try {
-            val response: T = ktor.request<HttpResponse>(httpRequest.toHttpRequest()).call.receive(httpRequest.responseType) as T
-            NetworkResult.success(response)
+            val callResult = ktor.request(httpRequest.toHttpRequest())
+            if (callResult.status.isSuccess()) {
+                val response: T = callResult.body(httpRequest.responseType)
+                NetworkResult.success(response)
+            } else {
+                throw ResponseException(callResult, NO_RESPONSE_TEXT)
+            }
         } catch (exception: Exception) {
             exceptionLogger.log(exception)
             NetworkResult.failure(NetworkError.createFrom(exception))
         }
 }
+
+private const val NO_RESPONSE_TEXT: String = "<no response text provided>"

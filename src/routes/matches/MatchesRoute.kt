@@ -1,8 +1,8 @@
 package com.kamilh.routes.matches
 
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.routing.*
 import routes.respond
 
 fun Routing.matches(controller: MatchesController) {

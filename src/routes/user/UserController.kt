@@ -9,6 +9,8 @@ import com.kamilh.interactors.GetUserParams
 import com.kamilh.models.Result
 import com.kamilh.models.User
 import com.kamilh.models.api.user.UserResponse
+import com.kamilh.models.flatMap
+import com.kamilh.models.mapError
 import com.kamilh.utils.toUUID
 import io.ktor.http.*
 import me.tatarka.inject.annotations.Inject
@@ -42,12 +44,9 @@ class UserControllerImpl(
             null -> Result.failure(deviceIdNotFound)
             else -> when (val uuid = deviceId.toUUID()) {
                 null -> Result.failure(wrongDeviceId)
-                else -> when (val result = addUser(AddUserParams(uuid))) {
-                    is Result.Success -> getUser(result.value)
-                    is Result.Failure -> {
-                        Result.failure(userAlreadyExists)
-                    }
-                }
+                else -> addUser(AddUserParams(uuid))
+                    .flatMap { getUser(it) }
+                    .mapError { userAlreadyExists }
             }
         }
 }

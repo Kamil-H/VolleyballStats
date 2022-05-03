@@ -12,13 +12,14 @@ import com.kamilh.routes.teams.teams
 import com.kamilh.routes.tours.tours
 import com.kamilh.routes.user.userRoutes
 import com.kamilh.storage.DatabaseFactory
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.serialization.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
 
@@ -61,8 +62,9 @@ class ApplicationInitializer(
             )
         }
 
+        // TODO: detect 404 and usage of wrong method (eg. POST instead of GET)
         install(StatusPages) {
-            exception<Throwable> { cause ->
+            exception<Throwable> { call, cause ->
                 cause.printStackTrace()
                 call.respond(HttpStatusCode.InternalServerError)
             }

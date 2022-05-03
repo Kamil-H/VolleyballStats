@@ -1,8 +1,8 @@
 package com.kamilh.models.httprequest
 
-import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.util.reflect.*
 
 data class Endpoint<T>(
     val baseUrl: String,
@@ -34,7 +34,7 @@ data class Endpoint<T>(
             method = this@Endpoint.method
             queryParams.forEach { parameter(it.key, it.value) }
             this@Endpoint.body?.let {
-                body = it.toRequestBody(this)
+                setBody(it.toRequestBody(this))
             }
         }
 }

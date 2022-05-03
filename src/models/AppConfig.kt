@@ -1,7 +1,7 @@
 package com.kamilh.models
 
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
-import io.ktor.application.*
+import io.ktor.server.application.*
 
 data class AppConfig(
     val serverConfig: ServerConfig,

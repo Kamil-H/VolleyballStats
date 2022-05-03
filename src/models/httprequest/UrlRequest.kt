@@ -1,9 +1,9 @@
 package com.kamilh.models.httprequest
 
 import com.kamilh.models.Url
-import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.util.reflect.*
 
 data class UrlRequest<T>(
     val url: Url,
@@ -27,7 +27,7 @@ data class UrlRequest<T>(
             url(URLBuilder(this@UrlRequest.url.value).build())
             method = this@UrlRequest.method
             this@UrlRequest.body?.let {
-                body = it.toRequestBody(this)
+                setBody(it.toRequestBody(this))
             }
         }
 }

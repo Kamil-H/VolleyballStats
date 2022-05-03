@@ -12,20 +12,21 @@ import com.kamilh.utils.cache.Cache
 import com.kamilh.utils.cache.ExpirableCache
 import com.kamilh.utils.cache.LocalDateTimeCacheValidator
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Provides
-import com.kamilh.models.PlayerWithDetails
 import io.ktor.client.HttpClient as Ktor
 
 interface RepositoryModule {
 
     @Provides
     @Singleton
-    fun ktor(): Ktor =
+    fun ktor(json: Json): Ktor =
         Ktor(CIO) {
-            install(JsonFeature) {
-                serializer = defaultSerializer()
+            install(ContentNegotiation) {
+                json(json = json)
             }
             install(WebSockets)
         }
