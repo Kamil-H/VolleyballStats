@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import com.kamilh.models.PlayerWithDetails
 import org.junit.Test
+import storage.testQueryRunner
 import kotlin.time.Duration.Companion.days
 
 class SqlPlayerStorageTest : DatabaseTest() {

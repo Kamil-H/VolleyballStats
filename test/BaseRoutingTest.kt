@@ -41,7 +41,6 @@ open class BaseRoutingTest {
     fun testThatEndpointNeedsSubscriptionKey(uri: String, method: HttpMethod) {
         // GIVEN
         val credentialsValidator = credentialsValidatorOf(
-            subscriptionKeyIsValid = false,
             accessTokenIsValid = false,
         )
 
@@ -66,7 +65,6 @@ open class BaseRoutingTest {
     fun testThatEndpointNeedsAccessToken(uri: String, method: HttpMethod) {
         // GIVEN
         val credentialsValidator = credentialsValidatorOf(
-            subscriptionKeyIsValid = false,
             accessTokenIsValid = false,
         )
 

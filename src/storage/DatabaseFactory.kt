@@ -5,13 +5,11 @@ import com.kamilh.datetime.LocalDate
 import com.kamilh.datetime.LocalDateTime
 import com.kamilh.datetime.ZonedDateTime
 import com.kamilh.models.*
-import com.kamilh.storage.common.adapters.*
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import me.tatarka.inject.annotations.Inject
-import java.util.*
 import kotlin.time.Duration
 
 interface DatabaseFactory {
@@ -29,7 +27,6 @@ interface SqlDriverCreator {
 @Singleton
 class AppConfigDatabaseFactory(
 	appConfig: AppConfig,
-	uuidAdapter: ColumnAdapter<UUID, String>,
 	zonedDateAdapter: ColumnAdapter<ZonedDateTime, String>,
 	urlAdapter: ColumnAdapter<Url, String>,
 	teamIdAdapter: ColumnAdapter<TeamId, Long>,
@@ -52,11 +49,6 @@ class AppConfigDatabaseFactory(
 	override val database: Database by lazy {
 		Database(
 			driver = driver,
-			user_modelAdapter = User_model.Adapter(
-				created_dateAdapter = localDateTimeAdapter,
-				subscription_keyAdapter = uuidAdapter,
-				device_idAdapter = uuidAdapter,
-			),
 			tour_team_modelAdapter = Tour_team_model.Adapter(
 				image_urlAdapter = urlAdapter,
 				logo_urlAdapter = urlAdapter,

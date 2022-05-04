@@ -6,6 +6,8 @@ import com.kamilh.models.*
 import com.kamilh.repository.polishleague.seasonOf
 import com.kamilh.utils.testAppDispatchers
 import kotlinx.coroutines.flow.first
+import storage.TestQueryRunner
+import storage.testQueryRunner
 
 abstract class StatisticsStorageTest : DatabaseTest() {
 

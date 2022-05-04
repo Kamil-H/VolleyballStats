@@ -25,16 +25,7 @@ interface InteractorModule {
     val UpdateToursInteractor.bind: UpdateTours
         @Provides get() = this
 
-    val AddUserInteractor.bind: AddUser
-        @Provides get() = this
-
-    val GetUserInteractor.bind: GetUser
-        @Provides get() = this
-
     val MatchReportPreparerInteractor.bind: MatchReportPreparer
-        @Provides get() = this
-
-    val SubscriptionKeyValidatorInteractor.bind: SubscriptionKeyValidator
         @Provides get() = this
 
     val UpdateMatchReportInteractor.bind: UpdateMatchReports

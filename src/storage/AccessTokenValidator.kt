@@ -1,6 +1,6 @@
 package com.kamilh.storage
 
-import com.kamilh.authorization.AccessToken
+import com.kamilh.models.AccessToken
 import me.tatarka.inject.annotations.Inject
 
 interface AccessTokenValidator {

@@ -9,14 +9,11 @@ import com.kamilh.models.*
 import com.kamilh.storage.common.adapters.*
 import com.kamilh.utils.testClock
 import com.squareup.sqldelight.ColumnAdapter
-import com.kamilh.models.PlayerWithDetails
 import org.junit.After
 import org.junit.Before
-import java.util.*
 import kotlin.time.Duration
 
 abstract class DatabaseTest(
-    private val uuidAdapter: ColumnAdapter<UUID, String> = UuidAdapter(),
     private val zonedDateTimeAdapter: ColumnAdapter<ZonedDateTime, String> = ZonedDateTimeAdapter(),
     private val urlAdapter: ColumnAdapter<Url, String> = UrlAdapter(),
     private val teamIdAdapter: ColumnAdapter<TeamId, Long> = TeamIdAdapter(),
@@ -34,7 +31,6 @@ abstract class DatabaseTest(
 
     private lateinit var databaseFactory: DatabaseFactory
     protected val clock: Clock = testClock
-    protected val userQueries: UserQueries by lazy { databaseFactory.database.userQueries }
     protected val teamQueries: TeamQueries by lazy { databaseFactory.database.teamQueries }
     protected val tourTeamQueries: TourTeamQueries by lazy { databaseFactory.database.tourTeamQueries }
     protected val tourQueries: TourQueries by lazy { databaseFactory.database.tourQueries }
@@ -60,7 +56,6 @@ abstract class DatabaseTest(
     fun setup() {
         databaseFactory = AppConfigDatabaseFactory(
             appConfig = TestAppConfig(),
-            uuidAdapter = uuidAdapter,
             zonedDateAdapter = zonedDateTimeAdapter,
             urlAdapter = urlAdapter,
             teamIdAdapter = teamIdAdapter,

@@ -6,14 +6,10 @@ import com.kamilh.routes.matches.MatchesController
 import com.kamilh.routes.players.PlayersController
 import com.kamilh.routes.teams.TeamsController
 import com.kamilh.routes.tours.ToursController
-import com.kamilh.routes.user.UserController
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
 interface RoutesModule {
-
-    val userController: UserController
-        @Provides get
 
     val credentialsValidator: CredentialsValidator
         @Provides get
@@ -33,8 +29,6 @@ interface RoutesModule {
 
 @Component
 abstract class AppRoutesModule(appModule: AppModule) : RoutesModule {
-
-    override val userController: UserController = appModule.userController
 
     override val credentialsValidator: CredentialsValidator = appModule.credentialsValidator
 

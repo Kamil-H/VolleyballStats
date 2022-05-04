@@ -11,18 +11,12 @@ import com.kamilh.storage.common.TransacterQueryRunner
 import com.kamilh.storage.common.adapters.*
 import com.squareup.sqldelight.ColumnAdapter
 import me.tatarka.inject.annotations.Provides
-import java.util.*
 import kotlin.time.Duration
 
 interface StorageModule {
 
     val AppConfigDatabaseFactory.bind: DatabaseFactory
         @Provides get() = this
-
-    @Singleton
-    @Provides
-    fun userQueries(database: DatabaseFactory): UserQueries =
-        database.database.userQueries
 
     @Singleton
     @Provides
@@ -132,9 +126,6 @@ interface StorageModule {
             appDispatchers = appDispatchers,
         )
 
-    val UuidAdapter.bind: ColumnAdapter<UUID, String>
-        @Provides get() = this
-
     val ZonedDateTimeAdapter.bind: ColumnAdapter<ZonedDateTime, String>
         @Provides get() = this
 
@@ -190,9 +181,6 @@ interface StorageModule {
         @Provides get() = this
 
     val SqlPlayerStorage.bind: PlayerStorage
-        @Provides get() = this
-
-    val SqlUserStorage.bind: UserStorage
         @Provides get() = this
 
     val SqlTourStorage.bind: TourStorage

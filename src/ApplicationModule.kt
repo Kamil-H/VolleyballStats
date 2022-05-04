@@ -14,7 +14,6 @@ import com.kamilh.routes.matches.MatchesControllerImpl
 import com.kamilh.routes.players.PlayersControllerImpl
 import com.kamilh.routes.teams.TeamsControllerImpl
 import com.kamilh.routes.tours.ToursControllerImpl
-import com.kamilh.routes.user.UserControllerImpl
 import com.kamilh.storage.StorageModule
 import com.kamilh.utils.UtilModule
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +36,6 @@ abstract class AppModule(
 
     abstract val applicationInitializer: ApplicationInitializer
     abstract val initializer: TestApplicationInitializer
-    abstract val userController: UserControllerImpl
     abstract val credentialsValidator: StorageBasedCredentialsValidator
     abstract val matchesController: MatchesControllerImpl
     abstract val playersController: PlayersControllerImpl

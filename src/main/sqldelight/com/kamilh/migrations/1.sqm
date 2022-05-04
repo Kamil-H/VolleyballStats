@@ -242,13 +242,6 @@ CREATE TABLE IF NOT EXISTS match_model (
   FOREIGN KEY (tour_id) REFERENCES tour_model(id)
 );
 
-CREATE TABLE IF NOT EXISTS user_model (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  subscription_key TEXT AS UUID NOT NULL UNIQUE,
-  device_id TEXT AS UUID NOT NULL UNIQUE,
-  created_date TEXT AS LocalDateTime NOT NULL
-);
-
 CREATE VIEW IF NOT EXISTS attack_view AS
 SELECT player.*, team_player.*, player_team.name AS team_name, player_team.id AS player_team,
 (CASE WHEN player_team.id = match_statistics_model.home THEN match_statistics_model.away ELSE match_statistics_model.home END) AS opponent_team_id,

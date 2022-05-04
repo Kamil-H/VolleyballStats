@@ -7,12 +7,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import storage.TestQueryRunner
+import storage.testQueryRunner
 
 class TeamStorageTest : DatabaseTest() {
 
     private val storage: SqlTeamStorage by lazy {
         SqlTeamStorage(
-            queryRunner = TestQueryRunner(),
+            queryRunner = testQueryRunner,
             teamQueries = teamQueries,
             tourTeamQueries = tourTeamQueries,
             tourQueries = tourQueries,

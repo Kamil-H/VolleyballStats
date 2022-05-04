@@ -1,6 +1,7 @@
 package com.kamilh.authorization
 
-import com.kamilh.utils.toUUID
+import com.kamilh.models.AccessToken
+import com.kamilh.models.onFailure
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -17,52 +18,31 @@ fun AuthenticationConfig.headers(name: String? = null, credentialsValidator: Cre
 class HeadersAuthorization(
     configuration: Configuration,
     private val credentialsValidator: CredentialsValidator,
-): AuthenticationProvider(configuration) {
+) : AuthenticationProvider(configuration) {
 
-    class Configuration(name: String? = null): Config(name)
+    class Configuration(name: String? = null) : Config(name)
 
-    suspend fun validate(subscriptionKeyString: String, accessTokenString: String): HeaderAuthorizationResult {
-        val subscriptionKey = subscriptionKeyString.toUUID()?.let(::SubscriptionKey)
-        val accessToken = AccessToken(accessTokenString)
-        return when {
-            subscriptionKey == null -> HeaderAuthorizationResult.InvalidSubscriptionKey
-            !credentialsValidator.isValid(subscriptionKey) -> HeaderAuthorizationResult.InvalidSubscriptionKey
-            !credentialsValidator.isValid(accessToken) -> HeaderAuthorizationResult.InvalidAccessToken
-            else -> HeaderAuthorizationResult.Authorized(
-                HeaderCredentials(
-                    subscriptionKey = subscriptionKey,
-                    accessToken = accessToken,
-                )
-            )
+    private suspend fun validate(accessToken: AccessToken): HeaderAuthorizationResult =
+        when {
+            !credentialsValidator.isValid(accessToken) -> HeaderAuthorizationResult.failure(HeaderAuthorizationError.InvalidAccessToken)
+            else -> HeaderAuthorizationResult.success(Unit)
         }
-    }
 
     override suspend fun onAuthenticate(context: AuthenticationContext) {
         val call = context.call
-        val subscriptionKey = call.request.subscriptionKeyHeader()
-        val accessToken = call.request.accessTokenHeader()
 
-        val result = when {
-            subscriptionKey == null -> HeaderAuthorizationResult.NoSubscriptionKey
-            accessToken == null -> HeaderAuthorizationResult.NoAccessToken
-            else -> validate(subscriptionKey, accessToken)
-        }
-
-        val cause = when(result) {
-            HeaderAuthorizationResult.NoSubscriptionKey, HeaderAuthorizationResult.NoAccessToken -> AuthenticationFailedCause.NoCredentials
-            HeaderAuthorizationResult.InvalidSubscriptionKey, HeaderAuthorizationResult.InvalidAccessToken -> AuthenticationFailedCause.InvalidCredentials
-            is HeaderAuthorizationResult.Authorized -> null
-        }
-
-        if (cause != null) {
+        when (val accessToken = call.request.accessTokenHeader()) {
+            null -> HeaderAuthorizationResult.failure(HeaderAuthorizationError.NoAccessToken)
+            else -> validate(accessToken)
+        }.onFailure {
+            val cause = when (it) {
+                HeaderAuthorizationError.NoAccessToken -> AuthenticationFailedCause.NoCredentials
+                HeaderAuthorizationError.InvalidAccessToken -> AuthenticationFailedCause.InvalidCredentials
+            }
             context.challenge(headersAuthenticationChallengeKey, cause) { challenge, call ->
-                call.respond(status = HttpStatusCode.Forbidden, result.message)
+                call.respond(status = HttpStatusCode.Forbidden, it.message)
                 challenge.complete()
             }
-        }
-
-        if (result is HeaderAuthorizationResult.Authorized) {
-            context.principal(result.headerCredentials)
         }
     }
 }

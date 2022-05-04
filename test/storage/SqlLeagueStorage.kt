@@ -3,12 +3,13 @@ package com.kamilh.storage
 import com.kamilh.models.*
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import storage.testQueryRunner
 
 class SqlLeagueStorageTest : DatabaseTest() {
 
     private val storage: SqlLeagueStorage by lazy {
         SqlLeagueStorage(
-            queryRunner = TestQueryRunner(),
+            queryRunner = testQueryRunner,
             leagueQueries = leagueQueries,
         )
     }

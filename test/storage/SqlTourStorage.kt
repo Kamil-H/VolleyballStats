@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import storage.testQueryRunner
 import kotlin.time.Duration.Companion.days
 
 class SqlSqlTourStorageTest : DatabaseTest() {

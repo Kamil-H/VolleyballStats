@@ -10,7 +10,6 @@ import com.kamilh.routes.matches.matches
 import com.kamilh.routes.players.players
 import com.kamilh.routes.teams.teams
 import com.kamilh.routes.tours.tours
-import com.kamilh.routes.user.userRoutes
 import com.kamilh.storage.DatabaseFactory
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -72,7 +71,6 @@ class ApplicationInitializer(
 
         install(Routing) {
             with(routesModule) {
-                userRoutes(userController)
                 matches(matchesController)
                 players(playersController)
                 teams(teamsController)
