@@ -7,4 +7,7 @@ interface AuthorizationModule {
 
     val HeadersAuthorization.bind: AuthenticationProvider
         @Provides get() = this
+
+    val AppConfigAccessTokenValidator.bind: AccessTokenValidator
+        @Provides get() = this
 }

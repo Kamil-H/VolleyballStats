@@ -1,14 +1,15 @@
 package com.kamilh
 
+import com.kamilh.authorization.AccessTokenValidator
 import com.kamilh.authorization.headers
-import com.kamilh.models.AppConfig
 import com.kamilh.models.config
-import com.kamilh.routes.AppRoutesModule
-import com.kamilh.routes.RoutesModule
-import com.kamilh.routes.create
+import com.kamilh.routes.matches.MatchesController
 import com.kamilh.routes.matches.matches
+import com.kamilh.routes.players.PlayersController
 import com.kamilh.routes.players.players
+import com.kamilh.routes.teams.TeamsController
 import com.kamilh.routes.teams.teams
+import com.kamilh.routes.tours.ToursController
 import com.kamilh.routes.tours.tours
 import com.kamilh.storage.DatabaseFactory
 import io.ktor.http.*
@@ -27,31 +28,27 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 @JvmOverloads
 fun Application.module(
-    appConfig: AppConfig = this.config(),
-    routesModule: RoutesModule? = null,
+    appModule: AppModule = AppModule::class.create(scope = this, appConfig = this.config()),
 ) {
-
-    val appModule = AppModule::class.create(
-        scope = this,
-        appConfig = appConfig,
-    )
-    appModule.applicationInitializer.init(
-        application = this,
-        routesModule = routesModule ?: AppRoutesModule::class.create(appModule),
-    )
+    appModule.applicationInitializer.init(application = this)
 }
 
 @Inject
 class ApplicationInitializer(
     private val databaseFactory: DatabaseFactory,
     private val json: Json,
+    private val accessTokenValidator: AccessTokenValidator,
+    private val matchesController: MatchesController,
+    private val playersController: PlayersController,
+    private val teamsController: TeamsController,
+    private val toursController: ToursController,
 ) {
 
-    fun init(application: Application, routesModule: RoutesModule) = with(application) {
+    fun init(application: Application) = with(application) {
         databaseFactory.connect()
 
         install(Authentication) {
-            headers(credentialsValidator = routesModule.credentialsValidator)
+            headers(accessTokenValidator = accessTokenValidator)
         }
 
         install(ContentNegotiation) {
@@ -70,12 +67,10 @@ class ApplicationInitializer(
         }
 
         install(Routing) {
-            with(routesModule) {
-                matches(matchesController)
-                players(playersController)
-                teams(teamsController)
-                tours(toursController)
-            }
+            matches(matchesController)
+            players(playersController)
+            teams(teamsController)
+            tours(toursController)
         }
 
         environment.monitor.subscribe(ApplicationStopped) {

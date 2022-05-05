@@ -1,42 +1,26 @@
 package com.kamilh.routes
 
-import com.kamilh.AppModule
-import com.kamilh.authorization.CredentialsValidator
 import com.kamilh.routes.matches.MatchesController
+import com.kamilh.routes.matches.MatchesControllerImpl
 import com.kamilh.routes.players.PlayersController
+import com.kamilh.routes.players.PlayersControllerImpl
 import com.kamilh.routes.teams.TeamsController
+import com.kamilh.routes.teams.TeamsControllerImpl
 import com.kamilh.routes.tours.ToursController
-import me.tatarka.inject.annotations.Component
+import com.kamilh.routes.tours.ToursControllerImpl
 import me.tatarka.inject.annotations.Provides
 
 interface RoutesModule {
 
-    val credentialsValidator: CredentialsValidator
-        @Provides get
+    val MatchesControllerImpl.bind: MatchesController
+        @Provides get() = this
 
-    val matchesController: MatchesController
-        @Provides get
+    val PlayersControllerImpl.bind: PlayersController
+        @Provides get() = this
 
-    val playersController: PlayersController
-        @Provides get
+    val TeamsControllerImpl.bind: TeamsController
+        @Provides get() = this
 
-    val teamsController: TeamsController
-        @Provides get
-
-    val toursController: ToursController
-        @Provides get
-}
-
-@Component
-abstract class AppRoutesModule(appModule: AppModule) : RoutesModule {
-
-    override val credentialsValidator: CredentialsValidator = appModule.credentialsValidator
-
-    override val matchesController: MatchesController = appModule.matchesController
-
-    override val playersController: PlayersController = appModule.playersController
-
-    override val teamsController: TeamsController = appModule.teamsController
-
-    override val toursController: ToursController = appModule.toursController
+    val ToursControllerImpl.bind: ToursController
+        @Provides get() = this
 }

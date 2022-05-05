@@ -168,9 +168,6 @@ interface StorageModule {
     val TourIdAdapter.bind: ColumnAdapter<TourId, Long>
         @Provides get() = this
 
-    val InMemoryAccessTokenValidator.bind: AccessTokenValidator
-        @Provides get() = this
-
     val SqlLeagueStorage.bind: LeagueStorage
         @Provides get() = this
 

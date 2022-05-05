@@ -1,19 +1,17 @@
 package com.kamilh
 
 import com.kamilh.authorization.AuthorizationModule
-import com.kamilh.authorization.StorageBasedCredentialsValidator
 import com.kamilh.interactors.InteractorModule
 import com.kamilh.match_analyzer.MatchAnalyzerModule
 import com.kamilh.models.AppConfig
 import com.kamilh.models.AppDispatchers
 import com.kamilh.models.api.MappersModule
 import com.kamilh.repository.RepositoryModule
+import com.kamilh.routes.Api
+import com.kamilh.routes.RoutesModule
 import com.kamilh.routes.TourIdCache
 import com.kamilh.routes.TourIdCacheImpl
-import com.kamilh.routes.matches.MatchesControllerImpl
-import com.kamilh.routes.players.PlayersControllerImpl
-import com.kamilh.routes.teams.TeamsControllerImpl
-import com.kamilh.routes.tours.ToursControllerImpl
+import com.kamilh.storage.DatabaseFactory
 import com.kamilh.storage.StorageModule
 import com.kamilh.utils.UtilModule
 import kotlinx.coroutines.CoroutineScope
@@ -32,15 +30,11 @@ annotation class Singleton
 abstract class AppModule(
     private val scope: CoroutineScope,
     private val appConfig: AppConfig,
-) : UtilModule, RepositoryModule, StorageModule, InteractorModule, MatchAnalyzerModule, AuthorizationModule, MappersModule {
+) : UtilModule, RepositoryModule, StorageModule, InteractorModule, MatchAnalyzerModule, AuthorizationModule,
+    MappersModule, RoutesModule {
 
     abstract val applicationInitializer: ApplicationInitializer
     abstract val initializer: TestApplicationInitializer
-    abstract val credentialsValidator: StorageBasedCredentialsValidator
-    abstract val matchesController: MatchesControllerImpl
-    abstract val playersController: PlayersControllerImpl
-    abstract val teamsController: TeamsControllerImpl
-    abstract val toursController: ToursControllerImpl
 
     val TourIdCacheImpl.bind: TourIdCache
         @Provides get() = this
@@ -66,4 +60,12 @@ abstract class AppModule(
             main = Dispatchers.Main,
             default = Dispatchers.Default,
         )
+}
+
+@Component
+abstract class TestComponent(@Component val parent: AppModule) {
+    abstract val databaseFactory: DatabaseFactory
+
+    val api: Api
+        @Provides get() = Api(baseUrl = "")
 }

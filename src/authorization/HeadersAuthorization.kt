@@ -6,25 +6,25 @@ import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 
-fun AuthenticationConfig.headers(name: String? = null, credentialsValidator: CredentialsValidator) {
+fun AuthenticationConfig.headers(name: String? = null, accessTokenValidator: AccessTokenValidator) {
     register(
         HeadersAuthorization(
             configuration = HeadersAuthorization.Configuration(name),
-            credentialsValidator = credentialsValidator
+            accessTokenValidator = accessTokenValidator,
         )
     )
 }
 
 class HeadersAuthorization(
     configuration: Configuration,
-    private val credentialsValidator: CredentialsValidator,
+    private val accessTokenValidator: AccessTokenValidator,
 ) : AuthenticationProvider(configuration) {
 
     class Configuration(name: String? = null) : Config(name)
 
     private suspend fun validate(accessToken: AccessToken): HeaderAuthorizationResult =
         when {
-            !credentialsValidator.isValid(accessToken) -> HeaderAuthorizationResult.failure(HeaderAuthorizationError.InvalidAccessToken)
+            !accessTokenValidator.isValid(accessToken) -> HeaderAuthorizationResult.failure(HeaderAuthorizationError.InvalidAccessToken)
             else -> HeaderAuthorizationResult.success(Unit)
         }
 
