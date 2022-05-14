@@ -42,7 +42,7 @@ class ServerApplicationTestBuilder(applicationTestBuilder: ApplicationTestBuilde
             config = ApplicationConfig("application-test.conf")
         }
         applicationTestBuilder.application {
-            module(appModule)
+            module(inTest = true, appModule = appModule)
             start()
             environment.monitor.subscribe(ApplicationStopped) {
                 stop()
