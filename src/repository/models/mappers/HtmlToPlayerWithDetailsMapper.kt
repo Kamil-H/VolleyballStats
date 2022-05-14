@@ -10,7 +10,7 @@ import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.utils.CurrentDate
 import com.kamilh.models.PlayerWithDetails
 import me.tatarka.inject.annotations.Inject
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.ParseResult
 
 /**
 <div class="col-xs-9 col-sm-8 col-md-8 col-lg-9">

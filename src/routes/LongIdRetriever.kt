@@ -1,8 +1,5 @@
 package com.kamilh.routes
 
-import routes.CallError
-import routes.CallResult
-
 inline fun <T> String?.retrieveLongId(queryParamName: String? = null, idCreator: (Long) -> T): CallResult<T> {
     this ?: return CallResult.failure(
         if (queryParamName != null) {

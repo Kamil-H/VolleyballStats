@@ -10,9 +10,9 @@ import com.kamilh.storage.TeamStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
-import routes.CallResult
-import utils.SafeMap
-import utils.safeMapOf
+import com.kamilh.routes.CallResult
+import com.kamilh.utils.SafeMap
+import com.kamilh.utils.safeMapOf
 
 interface TeamsController {
 

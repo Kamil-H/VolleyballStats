@@ -6,8 +6,8 @@ import com.kamilh.models.Url
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.utils.CurrentDate
 import me.tatarka.inject.annotations.Inject
-import repository.parsing.EmptyResultException
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.EmptyResultException
+import com.kamilh.repository.parsing.ParseResult
 
 /**
 <div class="thumbnail teamlist">

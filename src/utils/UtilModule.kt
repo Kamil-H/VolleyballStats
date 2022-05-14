@@ -15,10 +15,4 @@ interface UtilModule {
 
     val ConsoleExceptionLogger.bind: ExceptionLogger
         @Provides get() = this
-
-    val JavaUtilUuidCreator.bind: UuidCreator
-        @Provides get() = this
-
-    val JavaUtilUuidValidator.bind: UuidValidator
-        @Provides get() = this
 }

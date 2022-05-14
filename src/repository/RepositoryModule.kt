@@ -13,6 +13,7 @@ import com.kamilh.utils.cache.ExpirableCache
 import com.kamilh.utils.cache.LocalDateTimeCacheValidator
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
@@ -27,6 +28,14 @@ interface RepositoryModule {
         Ktor(CIO) {
             install(ContentNegotiation) {
                 json(json = json)
+            }
+            install(Logging) {
+                level = LogLevel.HEADERS
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        com.kamilh.utils.Logger.d(message = message)
+                    }
+                }
             }
             install(WebSockets)
         }

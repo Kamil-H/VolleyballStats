@@ -1,4 +1,4 @@
-package repository.parsing
+package com.kamilh.repository.parsing
 
 import com.kamilh.models.Error
 import com.kamilh.models.Result

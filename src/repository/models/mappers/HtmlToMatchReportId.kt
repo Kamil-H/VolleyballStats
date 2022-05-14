@@ -2,8 +2,8 @@ package com.kamilh.repository.models.mappers
 
 import com.kamilh.models.MatchReportId
 import me.tatarka.inject.annotations.Inject
-import repository.parsing.ParseError
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.ParseError
+import com.kamilh.repository.parsing.ParseResult
 
 /**
     <a class="btn btn-default btm-margins" href="https://www.plusliga.pl/games/action/downloadStats/matchId/2103711.html">Statystyki meczu</a>

@@ -391,7 +391,11 @@ class MatchResponseToMatchReportMapper {
         private const val VIDEO_CHALLENGE_SCORE_CHANGE_NO_CHANGE = "noChange"
 
         private val PHASE_PLAYOFF = listOf(
-            "Play Off", "Finał", "Play Off - 1/4 finału", "PLAY OFF - 1/4 finału", "PO", "PLAY OFF  - 1/4 finału"
+            "Play Off", "Finał", "Play Off - 1/4 finału", "PLAY OFF - 1/4 finału", "PO", "PLAY OFF  - 1/4 finału",
+            "o 11-12 miejsce", "Play Off - o 5-6 miejsce", "Play off - 1/4 finału", "PLAY OFF - 1/2 finału", "o 9-10 miejsce",
+            "o 11--12 miejsce", "PLAY OFF  - o miejsca 1-2", "PLAY OFF  - 1/2 finału", "Play Off 1/4 finału", "Mecz o 1-2 miejsce",
+            "PLAY -OFF o miejsca 3-4", "PLAY-OFF,  o miejsca 3-4", "O miejsce 5-6", "Play Off - o 9-10 miejsce", "Play- Off - 1/2 Finału",
+            "Play Off o 3 -- 4 miejsce", "Play off o miejsce 5", "O 3. miejsce",
         )
         private val PHASE_REGULAR_SEASON = listOf("FZ", "ZAS", "Faza Zasadnicza")
     }

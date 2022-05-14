@@ -1,4 +1,4 @@
-package utils
+package com.kamilh.utils
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

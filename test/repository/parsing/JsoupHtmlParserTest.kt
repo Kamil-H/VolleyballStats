@@ -3,7 +3,6 @@ package com.kamilh.repository.parsing
 import com.kamilh.models.Result
 import org.jsoup.nodes.Document
 import org.junit.Test
-import repository.parsing.ParseError
 
 class JsoupHtmlParserTest {
 

@@ -5,7 +5,7 @@ import com.kamilh.models.TeamPlayer
 import com.kamilh.repository.models.mappers.HtmlToTeamPlayerMapper
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
-import repository.parsing.EmptyResultException
+import com.kamilh.repository.parsing.EmptyResultException
 
 class HtmlToTeamPlayerMapperTest {
 

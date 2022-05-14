@@ -5,9 +5,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 selectAll:
 SELECT * FROM match_statistics_model;
 
-selectAllById:
-SELECT * FROM match_statistics_model WHERE id = ?;
-
 selectAllStatsByTourId:
 SELECT match_statistics_model.id, mvp_model.player_id AS mvp, best_player_model.player_id AS best_player,
 match_statistics_model.updated_at, phase, home, away

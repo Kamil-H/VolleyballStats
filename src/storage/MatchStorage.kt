@@ -24,10 +24,6 @@ sealed class InsertMatchesError(override val message: String) : Error {
     object TourNotFound : InsertMatchesError("TourNotFound")
 }
 
-enum class MatchState {
-    PotentiallyFinished, Scheduled, NotScheduled
-}
-
 @Inject
 @Singleton
 class SqlMatchStorage(
@@ -38,7 +34,7 @@ class SqlMatchStorage(
 
     override suspend fun insertOrUpdate(matches: List<Match>, tourId: TourId): InsertMatchesResult =
         queryRunner.runTransaction {
-            tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertMatchesError>(InsertMatchesError.TourNotFound)
+            tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction InsertMatchesResult.failure(InsertMatchesError.TourNotFound)
             matches.forEach { match ->
                 matchQueries.insert(
                     id = match.id,

@@ -8,8 +8,6 @@ import com.kamilh.storage.TourStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
-import routes.CallError
-import routes.CallResult
 
 interface TourIdCache {
 

@@ -3,7 +3,7 @@ package com.kamilh.repository.models.mappers
 import com.kamilh.models.Result
 import com.kamilh.repository.parsing.JsoupHtmlParser
 import org.junit.Test
-import repository.parsing.EmptyResultException
+import com.kamilh.repository.parsing.EmptyResultException
 
 class HtmlToPlayerMapperTest {
 

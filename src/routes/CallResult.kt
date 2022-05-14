@@ -1,4 +1,4 @@
-package routes
+package com.kamilh.routes
 
 import com.kamilh.models.*
 import io.ktor.http.*

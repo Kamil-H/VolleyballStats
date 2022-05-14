@@ -15,4 +15,4 @@ point_model ON point_model.id = play_model.point_id,
 set_model ON set_model.id = point_model.set_id,
 team_player_model team_player ON play_model.player_id = team_player.id,
 tour_team_model team ON team_player.tour_team_id = team.id
-WHERE set_model.match_id = (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+WHERE set_model.match_id IN (SELECT id FROM match_statistics_model WHERE tour_id = ?);

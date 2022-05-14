@@ -4,8 +4,8 @@ import com.kamilh.models.Player
 import com.kamilh.models.PlayerId
 import com.kamilh.repository.parsing.HtmlParser
 import me.tatarka.inject.annotations.Inject
-import repository.parsing.EmptyResultException
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.EmptyResultException
+import com.kamilh.repository.parsing.ParseResult
 
 /**
 <div id="hiddenPlayersListAllBuffer">

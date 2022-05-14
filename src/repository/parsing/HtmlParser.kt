@@ -4,8 +4,6 @@ import com.kamilh.models.Result
 import me.tatarka.inject.annotations.Inject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import repository.parsing.ParseError
-import repository.parsing.ParseResult
 
 interface HtmlParser {
     fun <T> parse(html: String, mapper: Document.() -> T?): ParseResult<T>

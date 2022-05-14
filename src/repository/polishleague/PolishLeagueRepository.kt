@@ -8,7 +8,7 @@ import com.kamilh.repository.parsing.ParseErrorHandler
 import com.kamilh.utils.cache.Cache
 import me.tatarka.inject.annotations.Inject
 import com.kamilh.models.PlayerWithDetails
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.ParseResult
 
 interface PolishLeagueRepository {
 

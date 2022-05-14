@@ -1,7 +1,7 @@
 package com.kamilh.models
 
-import repository.parsing.ParseError
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.ParseError
+import com.kamilh.repository.parsing.ParseResult
 
 fun <T, E: Error> successOf(t: T): Result<T, E> = Result.success(t)
 fun <T, E: Error> failureOf(e: E): Result<T, E> = Result.failure(e)

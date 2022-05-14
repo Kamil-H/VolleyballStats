@@ -153,9 +153,6 @@ interface StorageModule {
     val SpecializationAdapter.bind: ColumnAdapter<TeamPlayer.Specialization, Long>
         @Provides get() = this
 
-    val MatchReportIdAdapter.bind: ColumnAdapter<MatchReportId, Long>
-        @Provides get() = this
-
     val DurationAdapter.bind: ColumnAdapter<Duration, Long>
         @Provides get() = this
 

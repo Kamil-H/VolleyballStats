@@ -8,7 +8,7 @@ import com.kamilh.storage.TourStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
-import routes.CallResult
+import com.kamilh.routes.CallResult
 
 interface ToursController {
 

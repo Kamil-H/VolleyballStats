@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
-import repository.parsing.ParseError
+import com.kamilh.repository.parsing.ParseError
 
 interface MatchReportEndpoint {
 

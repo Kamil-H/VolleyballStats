@@ -3,7 +3,7 @@ package com.kamilh.routes.teams
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-import routes.respond
+import com.kamilh.routes.respond
 
 fun Routing.teams(controller: TeamsController) {
 

@@ -13,8 +13,8 @@ import com.kamilh.utils.cache.cacheOf
 import kotlinx.coroutines.test.runTest
 import com.kamilh.models.PlayerWithDetails
 import org.junit.Test
-import repository.parsing.ParseError
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.ParseError
+import com.kamilh.repository.parsing.ParseResult
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 

@@ -6,7 +6,7 @@ import com.kamilh.models.PlayerDetails
 import com.kamilh.repository.parsing.HtmlParser
 import com.kamilh.utils.CurrentDate
 import me.tatarka.inject.annotations.Inject
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.ParseResult
 
 /**
 <div class="row">

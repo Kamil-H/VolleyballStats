@@ -1,6 +1,6 @@
 package com.kamilh.repository.models.mappers
 
-import repository.parsing.ParseResult
+import com.kamilh.repository.parsing.ParseResult
 
 fun interface HtmlMapper<T> {
 

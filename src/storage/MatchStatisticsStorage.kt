@@ -278,8 +278,12 @@ class SqlMatchStatisticsStorage(
 
     override fun getAllMatchStatistics(): Flow<List<MatchStatistics>> =
         tourQueries.selectAllTourIds().mapQuery().flatMapLatest { tourIds ->
-            combine(tourIds.map { getAllMatchStatistics(it) }) { matches ->
-                matches.flatMap { it }
+            if (tourIds.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                combine(tourIds.map { getAllMatchStatistics(it) }) { matches ->
+                    matches.flatMap { it }
+                }
             }
         }
 
