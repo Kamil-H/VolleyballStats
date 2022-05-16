@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.storage
 
-import com.kamilh.Set_model
+import com.kamilh.volleyballstats.Set_model
 import com.kamilh.volleyballstats.databse.*
 import com.kamilh.volleyballstats.Singleton
 import com.kamilh.volleyballstats.models.*

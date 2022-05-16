@@ -1,6 +1,6 @@
 object Constants {
     const val version = "0.0.1"
-    const val packageName = "com.kamilh"
+    const val packageName = "com.kamilh.volleyballstats"
 }
 
 object Dependencies {

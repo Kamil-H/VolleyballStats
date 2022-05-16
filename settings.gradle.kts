@@ -4,4 +4,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "backend"
+rootProject.name = "volleyball-stats"
+include("server")
