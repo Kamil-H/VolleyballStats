@@ -2,6 +2,7 @@ package com.kamilh.volleyballstats.datetime
 
 import io.islandtime.clock.now
 import io.islandtime.toZonedDateTime
+import kotlin.jvm.JvmInline
 import kotlin.time.Duration
 import io.islandtime.ZonedDateTime as IslandZonedDateTime
 

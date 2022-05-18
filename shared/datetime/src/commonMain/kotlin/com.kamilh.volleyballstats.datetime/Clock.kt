@@ -3,6 +3,7 @@ package com.kamilh.volleyballstats.datetime
 import io.islandtime.TimeZone
 import io.islandtime.clock.FixedClock
 import io.islandtime.clock.SystemClock
+import kotlin.jvm.JvmInline
 import io.islandtime.clock.Clock as IslandClock
 
 @JvmInline

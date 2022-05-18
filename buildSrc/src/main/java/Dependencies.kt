@@ -13,6 +13,7 @@ object Dependencies {
         const val serialization = "plugin.serialization"
         const val sqlDelight = "com.squareup.sqldelight"
         const val ksp = "com.google.devtools.ksp"
+        const val multiplatform = "multiplatform"
     }
 
     object Kotlin {

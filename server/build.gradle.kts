@@ -32,6 +32,7 @@ sqldelight {
 }
 
 dependencies {
+    implementation(project(":shared:datetime"))
     implementation(Dependencies.Kotlin.stdlib)
     implementation(Dependencies.Coroutines.core)
 
@@ -58,8 +59,6 @@ dependencies {
     implementation(Dependencies.Turbine.turbine)
 
     implementation(Dependencies.Jsoup.jsoup)
-
-    implementation(Dependencies.DateTime.dateTime)
 
     ksp(Dependencies.KotlinInject.compiler)
     implementation(Dependencies.KotlinInject.runtime)

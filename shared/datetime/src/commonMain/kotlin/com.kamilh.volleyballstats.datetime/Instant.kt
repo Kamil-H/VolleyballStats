@@ -1,6 +1,7 @@
 package com.kamilh.volleyballstats.datetime
 
 import io.islandtime.toInstant
+import kotlin.jvm.JvmInline
 import kotlin.time.Duration
 import io.islandtime.Instant as IslandInstant
 

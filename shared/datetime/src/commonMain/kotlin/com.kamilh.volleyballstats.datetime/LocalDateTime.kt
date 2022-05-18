@@ -6,6 +6,7 @@ import io.islandtime.at
 import io.islandtime.clock.now
 import io.islandtime.parser.*
 import io.islandtime.toDateTime
+import kotlin.jvm.JvmInline
 import kotlin.time.Duration
 
 @JvmInline

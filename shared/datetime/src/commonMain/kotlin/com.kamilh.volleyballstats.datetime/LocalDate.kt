@@ -7,6 +7,7 @@ import io.islandtime.parser.dayOfMonth
 import io.islandtime.parser.monthNumber
 import io.islandtime.parser.year
 import io.islandtime.toDate
+import kotlin.jvm.JvmInline
 
 @JvmInline
 value class LocalDate internal constructor(private val date: Date) : Comparable<LocalDate> {
