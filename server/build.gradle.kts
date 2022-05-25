@@ -1,13 +1,10 @@
 plugins {
-    application
-    kotlin(Dependencies.Plugins.jvm) version Dependencies.kotlinVersion
-    kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
-    id(Dependencies.Plugins.sqlDelight) version Dependencies.sqlDelightVersion
-    id(Dependencies.Plugins.ksp) version Dependencies.kspVersion
+    id("org.gradle.application")
+    id("com.squareup.sqldelight")
+    id("com.google.devtools.ksp")
+    kotlin("jvm")
+    kotlin("plugin.serialization")
 }
-
-group = Constants.packageName
-version = Constants.version
 
 sourceSets.main {
     java.srcDirs("build/generated/ksp/main/kotlin")
@@ -17,15 +14,9 @@ application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
-buildscript {
-    dependencies {
-        classpath(Dependencies.SqlDelight.plugin)
-    }
-}
-
 sqldelight {
     database(name = "Database") {
-        packageName = Constants.packageName
+        packageName = "com.kamilh.volleyballstats"
         dialect = "sqlite:3.25"
         deriveSchemaFromMigrations = true
     }
@@ -33,42 +24,42 @@ sqldelight {
 
 dependencies {
     implementation(project(":shared:datetime"))
-    implementation(Dependencies.Kotlin.stdlib)
-    implementation(Dependencies.Coroutines.core)
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlinx.coroutines.core)
 
-    implementation(Dependencies.Ktor.serialization)
-    implementation(Dependencies.Ktor.Server.netty)
-    implementation(Dependencies.Ktor.Server.core)
-    implementation(Dependencies.Ktor.Server.hostCommon)
-    implementation(Dependencies.Ktor.Server.auth)
-    implementation(Dependencies.Ktor.Server.statusPages)
-    implementation(Dependencies.Ktor.Server.contentNegotiate)
+    implementation(libs.ktor.serialization)
+    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.hostCommon)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.statusPages)
+    implementation(libs.ktor.server.contentNegotiate)
 
-    implementation(Dependencies.Ktor.Client.contentNegotiate)
-    implementation(Dependencies.Ktor.Client.jvm)
-    implementation(Dependencies.Ktor.Client.websockets)
-    implementation(Dependencies.Ktor.Client.cio)
-    implementation(Dependencies.Ktor.Client.logging)
+    implementation(libs.ktor.client.contentNegotiate)
+    implementation(libs.ktor.client.jvm)
+    implementation(libs.ktor.client.websockets)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
 
-    implementation(Dependencies.Logback.classic)
+    implementation(libs.logback.classic)
 
-    implementation(Dependencies.SqlDelight.driver)
-    implementation(Dependencies.SqlDelight.coroutinesExtension)
-    implementation(Dependencies.SQLiteDriver.jdbc)
+    implementation(libs.sqldelight.driver)
+    implementation(libs.sqldelight.coroutines.jvm)
+    implementation(libs.sqlite.jdbc)
 
-    implementation(Dependencies.Turbine.turbine)
+    implementation(libs.turbine)
 
-    implementation(Dependencies.Jsoup.jsoup)
+    implementation(libs.jsoup)
 
-    ksp(Dependencies.KotlinInject.compiler)
-    implementation(Dependencies.KotlinInject.runtime)
+    ksp(libs.inject.compiler)
+    implementation(libs.inject.runtime)
 
-    testImplementation(Dependencies.Coroutines.Test.test)
-    testImplementation(Dependencies.Ktor.Server.test)
-    testImplementation(Dependencies.Ktor.Client.test)
-    testImplementation(Dependencies.JUnit5.jupiter)
-    testImplementation(Dependencies.JUnit5.engine)
-    testImplementation(Dependencies.JUnit5.params)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.ktor.server.test)
+    testImplementation(libs.ktor.client.test)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.engine)
+    testImplementation(libs.junit.params)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
