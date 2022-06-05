@@ -1,6 +1,10 @@
 package com.kamilh.volleyballstats.match_analyzer.strategies
 
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Skill
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.models.analysisInputOf
+import com.kamilh.volleyballstats.models.analysisInputPlayOf
 import org.junit.Test
 
 class BlockStrategyTest {

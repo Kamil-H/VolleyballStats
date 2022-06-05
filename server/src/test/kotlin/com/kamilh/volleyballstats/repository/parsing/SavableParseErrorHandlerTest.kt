@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.repository.FileMetadata
 import com.kamilh.volleyballstats.repository.fileManagerOf
 import com.kamilh.volleyballstats.repository.polishleague.htmlParseErrorOf
 import com.kamilh.volleyballstats.repository.polishleague.jsonParseErrorOf
-import com.kamilh.volleyballstats.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.utils.testClock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

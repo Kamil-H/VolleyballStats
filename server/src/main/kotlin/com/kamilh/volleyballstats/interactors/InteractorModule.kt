@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.Logger
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 

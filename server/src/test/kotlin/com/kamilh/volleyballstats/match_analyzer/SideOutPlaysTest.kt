@@ -1,8 +1,8 @@
 package com.kamilh.volleyballstats.match_analyzer
 
+import com.kamilh.volleyballstats.domain.models.Skill
+import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.match_analyzer.strategies.sideOutPlays
-import com.kamilh.volleyballstats.models.Skill
-import com.kamilh.volleyballstats.models.TeamId
 import com.kamilh.volleyballstats.models.analysisInputOf
 import com.kamilh.volleyballstats.models.analysisInputPlayOf
 import org.junit.Test

@@ -1,6 +1,5 @@
 plugins {
     id("org.gradle.application")
-    id("com.squareup.sqldelight")
     id("com.google.devtools.ksp")
     kotlin("jvm")
     kotlin("plugin.serialization")
@@ -14,16 +13,12 @@ application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
-sqldelight {
-    database(name = "Database") {
-        packageName = "com.kamilh.volleyballstats"
-        dialect = "sqlite:3.25"
-        deriveSchemaFromMigrations = true
-    }
-}
-
 dependencies {
+    implementation(project(":shared:domain"))
     implementation(project(":shared:datetime"))
+    implementation(project(":shared:storage"))
+    implementation(project(":shared:network"))
+    implementation(project(":shared:api"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
 
@@ -43,8 +38,7 @@ dependencies {
 
     implementation(libs.logback.classic)
 
-    implementation(libs.sqldelight.driver)
-    implementation(libs.sqldelight.coroutines.jvm)
+    implementation(libs.sqldelight.driver.jvm)
     implementation(libs.sqlite.jdbc)
 
     implementation(libs.turbine)
@@ -60,6 +54,9 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.engine)
     testImplementation(libs.junit.params)
+    testImplementation(project(":shared:domain:test"))
+    testImplementation(project(":shared:storage:test"))
+    testImplementation(project(":shared:network:test"))
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

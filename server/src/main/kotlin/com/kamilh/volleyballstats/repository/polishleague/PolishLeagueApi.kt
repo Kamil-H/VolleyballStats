@@ -1,11 +1,11 @@
 package com.kamilh.volleyballstats.repository.polishleague
 
-import com.kamilh.volleyballstats.models.MatchId
-import com.kamilh.volleyballstats.models.PlayerId
-import com.kamilh.volleyballstats.models.Season
-import com.kamilh.volleyballstats.models.Url
-import com.kamilh.volleyballstats.models.httprequest.HttpRequest
-import com.kamilh.volleyballstats.models.httprequest.UrlRequest
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.models.Url
+import com.kamilh.volleyballstats.network.httprequest.HttpRequest
+import com.kamilh.volleyballstats.network.httprequest.UrlRequest
 import me.tatarka.inject.annotations.Inject
 
 @Inject

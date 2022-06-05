@@ -1,5 +1,8 @@
 package com.kamilh.volleyballstats.models
 
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.playerIdOf
+import com.kamilh.volleyballstats.domain.teamIdOf
 import com.kamilh.volleyballstats.match_analyzer.AnalysisInput
 import java.util.*
 

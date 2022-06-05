@@ -1,6 +1,7 @@
 package com.kamilh.volleyballstats.models
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.models.*
 
 data class MatchReport(
     val id: String,

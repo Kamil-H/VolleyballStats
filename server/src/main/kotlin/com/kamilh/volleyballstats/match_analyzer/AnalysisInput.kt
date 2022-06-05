@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.match_analyzer
 
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.models.*
 
 data class AnalysisInput(
     val plays: List<Play>,

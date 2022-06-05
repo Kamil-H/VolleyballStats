@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.repository
 
-import com.kamilh.volleyballstats.models.appDispatchersOf
-import com.kamilh.volleyballstats.utils.ExceptionLogger
+import com.kamilh.volleyballstats.domain.appDispatchersOf
+import com.kamilh.volleyballstats.domain.utils.ExceptionLogger
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test

@@ -2,6 +2,7 @@ package com.kamilh.volleyballstats.routes
 
 import com.kamilh.volleyballstats.AppModule
 import com.kamilh.volleyballstats.TestComponent
+import com.kamilh.volleyballstats.api.ApiConstants
 import com.kamilh.volleyballstats.create
 import com.kamilh.volleyballstats.models.TEST_ACCESS_TOKEN
 import com.kamilh.volleyballstats.models.TestAppConfig
@@ -34,7 +35,7 @@ class ServerApplicationTestBuilder(applicationTestBuilder: ApplicationTestBuilde
             }
         }
     }
-    val api: Api = testComponent.api
+    val api: com.kamilh.volleyballstats.api.Api = testComponent.api
     val mappers: TestComponent.Mappers = testComponent.mappers
 
     init {
@@ -73,7 +74,7 @@ class ServerApplicationTestBuilder(applicationTestBuilder: ApplicationTestBuilde
     }
 
     fun HttpRequestBuilder.authorize(): HttpRequestBuilder = apply {
-        header("StatsApi-Access-Token", TEST_ACCESS_TOKEN.value)
+        header(ApiConstants.HEADER_ACCESS_TOKEN, TEST_ACCESS_TOKEN.value)
     }
 }
 

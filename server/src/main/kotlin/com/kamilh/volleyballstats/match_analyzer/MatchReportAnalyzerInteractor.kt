@@ -1,12 +1,15 @@
 package com.kamilh.volleyballstats.match_analyzer
 
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.Score
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.extensions.divideExcluding
 import com.kamilh.volleyballstats.interactors.Interactor
 import com.kamilh.volleyballstats.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.storage.TeamStorage
-import com.kamilh.volleyballstats.utils.CurrentDate
-import com.kamilh.volleyballstats.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.Logger
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -98,7 +101,7 @@ class MatchReportAnalyzerInteractor(
                             }
                         point?.let { team ->
                             score = score.increment(team)
-                            val dataToAnalyze = setScoutData.firstOrNull { it.score == score }
+                            val dataToAnalyze = setScoutData.firstOrNull { it.score.away == score.away && it.score.home == score.home }
                             val data = dataToAnalyze?.copy(plays = dataToAnalyze.plays.filter { it.player != 0 })
 
                             if (data == null || data.plays.isEmpty()) {
@@ -206,9 +209,9 @@ class MatchReportAnalyzerInteractor(
                     else -> { }
                 }
             }
-            if (score != set.score) {
+            if (score.away != set.score.away && score.home != set.score.home) {
                 analyzeErrorReporter.report(
-                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchReportId, calculatedScore = score, expectedScore = set.score, tour.season)
+                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchReportId, calculatedScore = score, expectedScore = Score(home = set.score.home, away = set.score.away), tour.season)
                 )
             }
             MatchSet(
@@ -240,8 +243,8 @@ class MatchReportAnalyzerInteractor(
                     TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.mvp.number)
                 }!!,
                 bestPlayer = when (matchReport.scout.bestPlayer?.team) {
-                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer.number)
-                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer.number)
+                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer!!.number)
+                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer!!.number)
                     else -> null
                 },
                 phase = matchReport.phase,

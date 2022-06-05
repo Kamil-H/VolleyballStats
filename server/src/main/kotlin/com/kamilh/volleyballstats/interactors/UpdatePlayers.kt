@@ -1,12 +1,14 @@
 package com.kamilh.volleyballstats.interactors
 
+import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.extensions.mapAsync
-import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.storage.InsertPlayerError
 import com.kamilh.volleyballstats.storage.PlayerStorage
 import kotlinx.coroutines.coroutineScope
-import com.kamilh.volleyballstats.models.PlayerWithDetails
+import com.kamilh.volleyballstats.domain.models.PlayerWithDetails
+import com.kamilh.volleyballstats.network.NetworkError
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import me.tatarka.inject.annotations.Inject
 
 typealias UpdatePlayers = Interactor<UpdatePlayersParams, UpdatePlayersResult>

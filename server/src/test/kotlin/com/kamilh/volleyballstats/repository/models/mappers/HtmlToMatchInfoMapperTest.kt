@@ -1,11 +1,10 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
-import com.kamilh.volleyballstats.models.MatchId
-import com.kamilh.volleyballstats.models.MatchInfo
-import com.kamilh.volleyballstats.models.Result
-import com.kamilh.volleyballstats.models.assertSuccess
+import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.MatchInfo
+import com.kamilh.volleyballstats.domain.models.Result
 import com.kamilh.volleyballstats.repository.extensions.toPolishLeagueLocalDate
-import com.kamilh.volleyballstats.repository.models.mappers.HtmlToAllMatchesItemMapper
 import com.kamilh.volleyballstats.repository.parsing.JsoupHtmlParser
 import org.junit.Test
 

@@ -2,8 +2,8 @@ package com.kamilh.volleyballstats
 
 import com.kamilh.volleyballstats.authorization.AccessTokenValidator
 import com.kamilh.volleyballstats.authorization.headers
+import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.interactors.Synchronizer
-import com.kamilh.volleyballstats.models.League
 import com.kamilh.volleyballstats.models.config
 import com.kamilh.volleyballstats.routes.matches.MatchesController
 import com.kamilh.volleyballstats.routes.matches.matches
@@ -14,7 +14,7 @@ import com.kamilh.volleyballstats.routes.teams.teams
 import com.kamilh.volleyballstats.routes.tours.ToursController
 import com.kamilh.volleyballstats.routes.tours.tours
 import com.kamilh.volleyballstats.storage.DatabaseFactory
-import com.kamilh.volleyballstats.utils.PlatformLogger
+import com.kamilh.volleyballstats.domain.utils.PlatformLogger
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -83,7 +83,7 @@ class ApplicationInitializer(
     }
 
     private fun configureLogger() {
-        com.kamilh.volleyballstats.utils.Logger.setLogger(platformLogger)
+        com.kamilh.volleyballstats.domain.utils.Logger.setLogger(platformLogger)
     }
 
     private fun Application.configureDatabase() {

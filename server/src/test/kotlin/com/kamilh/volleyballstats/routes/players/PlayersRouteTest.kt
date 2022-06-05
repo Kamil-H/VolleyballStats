@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.routes.players
 
-import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.models.api.player_with_details.PlayerWithDetailsResponse
+import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.api.player_with_details.PlayerWithDetailsResponse
 import com.kamilh.volleyballstats.routes.testServerApplication
 import io.ktor.client.call.*
 import io.ktor.client.request.*

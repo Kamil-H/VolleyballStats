@@ -1,14 +1,14 @@
 package com.kamilh.volleyballstats.routes.tours
 
-import com.kamilh.volleyballstats.Singleton
-import com.kamilh.volleyballstats.models.Tour
-import com.kamilh.volleyballstats.models.api.ResponseMapper
-import com.kamilh.volleyballstats.models.api.tour.TourResponse
+import com.kamilh.volleyballstats.api.ResponseMapper
+import com.kamilh.volleyballstats.api.tour.TourResponse
+import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.routes.CallResult
 import com.kamilh.volleyballstats.storage.TourStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
-import com.kamilh.volleyballstats.routes.CallResult
 
 interface ToursController {
 

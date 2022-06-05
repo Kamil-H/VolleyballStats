@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.match_analyzer
 
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.models.*
 
 class LineupMutator(
     startingLineup: Lineup,

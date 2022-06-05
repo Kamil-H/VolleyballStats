@@ -1,14 +1,16 @@
 package com.kamilh.volleyballstats.repository.polishleague
 
-import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.repository.HttpClient
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.models.MatchReport
+import com.kamilh.volleyballstats.models.MatchReportId
+import com.kamilh.volleyballstats.network.HttpClient
+import com.kamilh.volleyballstats.network.NetworkResult
 import com.kamilh.volleyballstats.repository.models.mappers.HtmlMapper
 import com.kamilh.volleyballstats.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.volleyballstats.repository.parsing.ParseErrorHandler
+import com.kamilh.volleyballstats.repository.parsing.ParseResult
 import com.kamilh.volleyballstats.utils.cache.Cache
 import me.tatarka.inject.annotations.Inject
-import com.kamilh.volleyballstats.models.PlayerWithDetails
-import com.kamilh.volleyballstats.repository.parsing.ParseResult
 
 interface PolishLeagueRepository {
 
@@ -101,7 +103,7 @@ class HttpPolishLeagueRepository(
                 is Result.Success -> Result.success(result.value)
                 is Result.Failure -> {
                     parseErrorHandler.handle(result.error)
-                    Result.failure(NetworkError.UnexpectedException(result.error.exception))
+                    Result.failure(com.kamilh.volleyballstats.network.NetworkError.UnexpectedException(result.error.exception))
                 }
             }
             is Result.Failure -> this

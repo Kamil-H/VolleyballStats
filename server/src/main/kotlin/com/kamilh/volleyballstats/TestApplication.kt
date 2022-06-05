@@ -1,12 +1,12 @@
 package com.kamilh.volleyballstats
 
+import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.models.DatabaseConfig
-import com.kamilh.volleyballstats.models.League
 import com.kamilh.volleyballstats.models.TestAppConfig
 import com.kamilh.volleyballstats.storage.DatabaseFactory
-import com.kamilh.volleyballstats.utils.Logger
-import com.kamilh.volleyballstats.utils.PlatformLogger
+import com.kamilh.volleyballstats.domain.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.PlatformLogger
 import kotlinx.coroutines.CoroutineScope
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.coroutineContext

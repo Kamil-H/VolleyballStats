@@ -1,7 +1,8 @@
 package com.kamilh.volleyballstats.repository.polishleague
 
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.seasonOf
 import com.kamilh.volleyballstats.models.MatchReportId
-import com.kamilh.volleyballstats.models.Season
 import com.kamilh.volleyballstats.models.matchReportIdOf
 import com.kamilh.volleyballstats.repository.FileManager
 import com.kamilh.volleyballstats.repository.FileMetadata
@@ -15,7 +16,7 @@ import org.junit.Test
 
 class MatchResponseStorageTest {
 
-    private val json = Json {  }
+    private val json = Json
     private fun matchResponseStorageOf(
         fileManager: FileManager = fileManagerOf()
     ): MatchResponseStorage =

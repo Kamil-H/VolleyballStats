@@ -2,8 +2,8 @@
 
 package com.kamilh.volleyballstats.repository.models
 
+import com.kamilh.volleyballstats.api.adapters.LocalDateTimeSerializer
 import com.kamilh.volleyballstats.datetime.LocalDateTime
-import com.kamilh.volleyballstats.models.api.adapters.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.json.JsonObject

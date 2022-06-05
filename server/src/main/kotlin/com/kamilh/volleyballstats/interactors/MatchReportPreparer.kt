@@ -1,11 +1,14 @@
 package com.kamilh.volleyballstats.interactors
 
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzer
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerParams
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.models.MatchReport
+import com.kamilh.volleyballstats.models.MatchReportTeam
 import com.kamilh.volleyballstats.storage.InsertMatchStatisticsError
 import com.kamilh.volleyballstats.storage.MatchStatisticsStorage
-import com.kamilh.volleyballstats.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.Logger
 import me.tatarka.inject.annotations.Inject
 
 typealias MatchReportPreparer = Interactor<MatchReportPreparerParams, MatchReportPreparerResult>

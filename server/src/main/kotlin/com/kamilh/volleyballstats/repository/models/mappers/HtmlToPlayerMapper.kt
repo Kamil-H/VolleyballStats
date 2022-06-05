@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
-import com.kamilh.volleyballstats.models.Player
-import com.kamilh.volleyballstats.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Player
+import com.kamilh.volleyballstats.domain.models.PlayerId
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import me.tatarka.inject.annotations.Inject
 import com.kamilh.volleyballstats.repository.parsing.EmptyResultException

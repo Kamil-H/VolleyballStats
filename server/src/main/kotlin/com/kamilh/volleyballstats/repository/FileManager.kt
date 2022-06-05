@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.repository
 
-import com.kamilh.volleyballstats.models.AppDispatchers
-import com.kamilh.volleyballstats.utils.ExceptionLogger
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.domain.utils.ExceptionLogger
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import java.io.File

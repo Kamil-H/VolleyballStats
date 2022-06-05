@@ -1,18 +1,18 @@
 package com.kamilh.volleyballstats.routes.players
 
-import com.kamilh.volleyballstats.Singleton
-import com.kamilh.volleyballstats.models.PlayerWithDetails
-import com.kamilh.volleyballstats.models.TourId
-import com.kamilh.volleyballstats.models.api.ResponseMapper
-import com.kamilh.volleyballstats.models.api.player_with_details.PlayerWithDetailsResponse
+import com.kamilh.volleyballstats.api.ResponseMapper
+import com.kamilh.volleyballstats.api.player_with_details.PlayerWithDetailsResponse
+import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.models.PlayerWithDetails
+import com.kamilh.volleyballstats.domain.models.TourId
+import com.kamilh.volleyballstats.routes.CallResult
 import com.kamilh.volleyballstats.routes.TourIdCache
 import com.kamilh.volleyballstats.storage.PlayerStorage
+import com.kamilh.volleyballstats.utils.SafeMap
+import com.kamilh.volleyballstats.utils.safeMapOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
-import com.kamilh.volleyballstats.routes.CallResult
-import com.kamilh.volleyballstats.utils.SafeMap
-import com.kamilh.volleyballstats.utils.safeMapOf
 
 interface PlayersController {
 

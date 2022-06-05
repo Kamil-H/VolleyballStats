@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.routes.matches
 
-import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.models.api.match.MatchResponse
+import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.api.match.MatchResponse
 import com.kamilh.volleyballstats.routes.testServerApplication
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -118,7 +118,7 @@ class MatchesRouteTest {
         val teamId = teamIdOf(value = 1)
         val teams = listOf(teamOf(id = teamId))
         val matches = (0..2).map {
-            matchOf(id = matchIdOf(matchId = it.toLong()), home = teamId, away = teamId)
+            matchOf(id = matchIdOf(value = it.toLong()), home = teamId, away = teamId)
         }
         withStorages {
             leagueStorage.insert(league)

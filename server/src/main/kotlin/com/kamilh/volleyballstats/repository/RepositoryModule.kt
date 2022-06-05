@@ -1,7 +1,10 @@
 package com.kamilh.volleyballstats.repository
 
-import com.kamilh.volleyballstats.Singleton
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.models.MatchReportId
+import com.kamilh.volleyballstats.network.HttpClient
+import com.kamilh.volleyballstats.network.KtorHttpClient
 import com.kamilh.volleyballstats.repository.models.mappers.*
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.JsoupHtmlParser
@@ -33,7 +36,7 @@ interface RepositoryModule {
                 level = LogLevel.HEADERS
                 logger = object : Logger {
                     override fun log(message: String) {
-                        com.kamilh.volleyballstats.utils.Logger.d(message = message)
+                        com.kamilh.volleyballstats.domain.utils.Logger.d(message = message)
                     }
                 }
             }

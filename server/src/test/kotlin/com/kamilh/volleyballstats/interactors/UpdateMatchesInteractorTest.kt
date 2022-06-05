@@ -1,12 +1,20 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDate
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.models.MatchInfo
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.onSuccess
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.assertFailure
+import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.network.result.networkFailureOf
+import com.kamilh.volleyballstats.network.result.networkSuccessOf
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
 import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
 import com.kamilh.volleyballstats.storage.*
-import com.kamilh.volleyballstats.utils.CurrentDate
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import com.kamilh.volleyballstats.utils.testClock
 import com.kamilh.volleyballstats.utils.zonedDateTime

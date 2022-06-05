@@ -1,13 +1,15 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.models.MatchReportPlayer
+import com.kamilh.volleyballstats.models.MatchReportTeam
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.storage.InsertPlayerError
 import com.kamilh.volleyballstats.storage.PlayerStorage
-import com.kamilh.volleyballstats.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.utils.findSimilarity
 import me.tatarka.inject.annotations.Inject
-import com.kamilh.volleyballstats.models.PlayerWithDetails
 
 typealias FixWrongPlayers = Interactor<FixWrongPlayersParams, MatchReportTeam>
 

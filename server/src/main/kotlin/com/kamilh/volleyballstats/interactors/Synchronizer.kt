@@ -1,10 +1,11 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.storage.*
-import com.kamilh.volleyballstats.utils.CurrentDate
-import com.kamilh.volleyballstats.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.utils.Logger
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration

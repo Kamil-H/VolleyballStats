@@ -3,7 +3,7 @@ package com.kamilh.volleyballstats.match_analyzer.strategies
 import com.kamilh.volleyballstats.extensions.divideExcluding
 import com.kamilh.volleyballstats.match_analyzer.AnalysisInput
 import com.kamilh.volleyballstats.match_analyzer.generalInfo
-import com.kamilh.volleyballstats.models.PlayAction
+import com.kamilh.volleyballstats.domain.models.PlayAction
 import me.tatarka.inject.annotations.Inject
 
 @Inject

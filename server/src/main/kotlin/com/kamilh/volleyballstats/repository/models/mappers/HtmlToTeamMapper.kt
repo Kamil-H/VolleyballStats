@@ -1,10 +1,10 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
-import com.kamilh.volleyballstats.models.Team
-import com.kamilh.volleyballstats.models.TeamId
-import com.kamilh.volleyballstats.models.Url
+import com.kamilh.volleyballstats.domain.models.Team
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.Url
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
-import com.kamilh.volleyballstats.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import me.tatarka.inject.annotations.Inject
 import com.kamilh.volleyballstats.repository.parsing.EmptyResultException
 import com.kamilh.volleyballstats.repository.parsing.ParseResult

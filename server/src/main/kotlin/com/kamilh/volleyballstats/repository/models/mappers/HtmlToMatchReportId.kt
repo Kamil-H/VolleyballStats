@@ -1,9 +1,9 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
 import com.kamilh.volleyballstats.models.MatchReportId
-import me.tatarka.inject.annotations.Inject
 import com.kamilh.volleyballstats.repository.parsing.ParseError
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
+import me.tatarka.inject.annotations.Inject
 
 /**
     <a class="btn btn-default btm-margins" href="https://www.plusliga.pl/games/action/downloadStats/matchId/2103711.html">Statystyki meczu</a>

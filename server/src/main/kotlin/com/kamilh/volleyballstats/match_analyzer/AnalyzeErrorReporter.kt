@@ -1,7 +1,9 @@
 package com.kamilh.volleyballstats.match_analyzer
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.models.Event
+import com.kamilh.volleyballstats.models.MatchReportId
 import me.tatarka.inject.annotations.Inject
 
 sealed class AnalyzeError {

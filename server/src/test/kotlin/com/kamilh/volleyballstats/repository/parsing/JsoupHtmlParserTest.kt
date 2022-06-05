@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.repository.parsing
 
-import com.kamilh.volleyballstats.models.Result
+import com.kamilh.volleyballstats.domain.models.Result
 import org.jsoup.nodes.Document
 import org.junit.Test
 

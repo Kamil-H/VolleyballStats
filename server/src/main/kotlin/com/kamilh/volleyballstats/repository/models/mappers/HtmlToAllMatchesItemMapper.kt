@@ -1,9 +1,9 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
-import com.kamilh.volleyballstats.models.MatchId
-import com.kamilh.volleyballstats.models.MatchInfo
-import com.kamilh.volleyballstats.models.TeamId
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.MatchInfo
+import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.repository.extensions.toPolishLeagueLocalDate
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import me.tatarka.inject.annotations.Inject

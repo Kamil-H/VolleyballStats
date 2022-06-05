@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.routes
 
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.models.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*

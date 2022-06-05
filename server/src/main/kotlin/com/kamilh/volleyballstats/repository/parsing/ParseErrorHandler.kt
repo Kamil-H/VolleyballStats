@@ -1,9 +1,9 @@
 package com.kamilh.volleyballstats.repository.parsing
 
-import com.kamilh.volleyballstats.Singleton
+import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.repository.FileManager
 import com.kamilh.volleyballstats.repository.FileMetadata
-import com.kamilh.volleyballstats.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject

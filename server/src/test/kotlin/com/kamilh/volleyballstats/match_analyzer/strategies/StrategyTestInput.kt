@@ -1,7 +1,12 @@
 package com.kamilh.volleyballstats.match_analyzer.strategies
 
+import com.kamilh.volleyballstats.domain.models.Effect
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Skill
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.playerIdOf
 import com.kamilh.volleyballstats.match_analyzer.AnalysisInput
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.models.analysisInputPlayOf
 
 data class StrategyTestInput(
     val skill: Skill,

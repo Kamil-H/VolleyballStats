@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
+import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.models.Set
 import com.kamilh.volleyballstats.repository.models.*
@@ -173,7 +174,7 @@ class MatchResponseToMatchReportMapper {
             team = team.toTeamType(),
         )
 
-    private fun SetResponse.toSet(): Set =
+    private fun SetResponse.toSet(): com.kamilh.volleyballstats.models.Set =
         Set(
             duration = duration,
             endTime = endTime,
@@ -300,8 +301,8 @@ class MatchResponseToMatchReportMapper {
             time = time,
         )
 
-    private fun ScoreResponse.toScore(): Score =
-        Score(
+    private fun ScoreResponse.toScore(): com.kamilh.volleyballstats.models.Score =
+        com.kamilh.volleyballstats.models.Score(
             away = away,
             home = home,
         )

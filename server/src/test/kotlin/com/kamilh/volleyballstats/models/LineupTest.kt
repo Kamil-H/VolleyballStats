@@ -1,5 +1,7 @@
 package com.kamilh.volleyballstats.models
 
+import com.kamilh.volleyballstats.domain.models.Lineup
+import com.kamilh.volleyballstats.domain.playerIdOf
 import org.junit.Test
 
 class LineupTest {

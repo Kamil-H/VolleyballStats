@@ -1,11 +1,11 @@
 package com.kamilh.volleyballstats.repository.polishleague
 
 import com.kamilh.volleyballstats.datetime.LocalDate
-import com.kamilh.volleyballstats.models.League
-import com.kamilh.volleyballstats.models.Season
-import com.kamilh.volleyballstats.models.Tour
-import com.kamilh.volleyballstats.models.TourId
-import com.kamilh.volleyballstats.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.models.League
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.TourId
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import me.tatarka.inject.annotations.Inject
 
 interface TourCache {

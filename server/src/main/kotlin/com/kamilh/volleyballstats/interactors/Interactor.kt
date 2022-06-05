@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.models.AppDispatchers
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import kotlinx.coroutines.withContext
 
 abstract class Interactor<in P, out T>(private val appDispatchers: AppDispatchers) {

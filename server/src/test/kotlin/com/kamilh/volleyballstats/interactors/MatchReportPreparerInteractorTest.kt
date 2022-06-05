@@ -1,10 +1,21 @@
 package com.kamilh.volleyballstats.interactors
 
+import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.MatchStatistics
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.TourId
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzer
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerResult
 import com.kamilh.volleyballstats.match_analyzer.matchReportAnalyzerOf
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.models.MatchReport
+import com.kamilh.volleyballstats.models.matchReportOf
+import com.kamilh.volleyballstats.models.matchReportTeamOf
+import com.kamilh.volleyballstats.domain.assertFailure
+import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.models.matchReportIdOf
 import com.kamilh.volleyballstats.storage.InsertMatchStatisticsError
 import com.kamilh.volleyballstats.storage.InsertMatchStatisticsResult
 import com.kamilh.volleyballstats.storage.MatchStatisticsStorage
@@ -53,7 +64,7 @@ class MatchReportPreparerInteractorTest {
     @Test
     fun `interactor returns Insert error analyze returns TourNotFound`() = runTest {
         // GIVEN
-        val matches = listOf(matchIdOf() to matchReportOf())
+        val matches = listOf<Pair<MatchId, MatchReport>>(matchIdOf() to matchReportOf())
 
         // WHEN
         val result = interactor(

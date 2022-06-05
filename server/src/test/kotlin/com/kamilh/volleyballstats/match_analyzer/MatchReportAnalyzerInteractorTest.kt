@@ -2,8 +2,15 @@ package com.kamilh.volleyballstats.match_analyzer
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
+import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.Result
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.scoreOf
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.assertFailure
 import com.kamilh.volleyballstats.repository.models.MatchResponse
 import com.kamilh.volleyballstats.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.volleyballstats.storage.TeamStorage
@@ -12,7 +19,6 @@ import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import com.kamilh.volleyballstats.match_analyzer.lineupOf
 import org.junit.Test
 import java.io.File
 import kotlin.time.Duration
@@ -48,7 +54,7 @@ class MatchReportAnalyzerInteractorTest {
         // GIVEN
         val matchReport = matchReportOf(
             scout = scoutOf(
-                sets = listOf(setOf())
+                sets = listOf(com.kamilh.volleyballstats.models.setOf())
             ),
             scoutData = listOf()
         )

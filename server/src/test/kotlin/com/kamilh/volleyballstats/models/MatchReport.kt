@@ -1,8 +1,8 @@
 package com.kamilh.volleyballstats.models
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.utils.localDateTime
-import kotlinx.serialization.Serializable
 
 fun matchReportOf(
     id: String = "",
@@ -110,6 +110,22 @@ fun scoutOf(
     sets = sets,
 )
 
+fun setOf(
+    duration: Int = 0,
+    endTime: LocalDateTime = localDateTime(),
+    events: List<Event> = emptyList(),
+    score: Score = scoreOf(),
+    startTime: LocalDateTime = localDateTime(),
+    startingLineup: StartingLineup = startingLineupOf(),
+): Set = Set(
+    duration = duration,
+    endTime = endTime,
+    events = events,
+    score = score,
+    startTime = startTime,
+    startingLineup = startingLineup,
+)
+
 fun scoutDataOf(
     id: String = "",
     plays: List<Play> = emptyList(),
@@ -160,22 +176,6 @@ fun mvpOf(
 ): Mvp = Mvp(
     number = number,
     team = team,
-)
-
-fun setOf(
-    duration: Int = 0,
-    endTime: LocalDateTime = localDateTime(),
-    events: List<Event> = emptyList(),
-    score: Score = scoreOf(),
-    startTime: LocalDateTime = localDateTime(),
-    startingLineup: StartingLineup = startingLineupOf(),
-): Set = Set(
-    duration = duration,
-    endTime = endTime,
-    events = events,
-    score = score,
-    startTime = startTime,
-    startingLineup = startingLineup,
 )
 
 fun startingLineupOf(
@@ -290,13 +290,6 @@ fun medicalOf(
     firstName = firstName,
     lastName = lastName,
     type = type,
-)
-
-@Serializable
-class Medical(
-    val firstName: String,
-    val lastName: String,
-    val type: String,
 )
 
 fun eventOf(

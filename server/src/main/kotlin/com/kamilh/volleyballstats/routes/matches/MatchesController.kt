@@ -1,21 +1,21 @@
 package com.kamilh.volleyballstats.routes.matches
 
-import com.kamilh.volleyballstats.Singleton
-import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.models.api.ResponseMapper
-import com.kamilh.volleyballstats.models.api.match.MatchResponse
-import com.kamilh.volleyballstats.models.api.match_report.MatchReportResponse
+import com.kamilh.volleyballstats.api.ResponseMapper
+import com.kamilh.volleyballstats.api.match.MatchResponse
+import com.kamilh.volleyballstats.api.match_report.MatchReportResponse
+import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.routes.CallError
+import com.kamilh.volleyballstats.routes.CallResult
 import com.kamilh.volleyballstats.routes.TourIdCache
 import com.kamilh.volleyballstats.routes.retrieveLongId
 import com.kamilh.volleyballstats.storage.MatchStatisticsStorage
 import com.kamilh.volleyballstats.storage.MatchStorage
+import com.kamilh.volleyballstats.utils.SafeMap
+import com.kamilh.volleyballstats.utils.safeMapOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
-import com.kamilh.volleyballstats.routes.CallError
-import com.kamilh.volleyballstats.routes.CallResult
-import com.kamilh.volleyballstats.utils.SafeMap
-import com.kamilh.volleyballstats.utils.safeMapOf
 
 interface MatchesController {
 

@@ -1,33 +1,33 @@
 package com.kamilh.volleyballstats
 
+import com.kamilh.volleyballstats.api.Api
+import com.kamilh.volleyballstats.api.MappersModule
+import com.kamilh.volleyballstats.api.ResponseMapper
+import com.kamilh.volleyballstats.api.match.MatchResponse
+import com.kamilh.volleyballstats.api.match_report.MatchReportResponse
+import com.kamilh.volleyballstats.api.player_with_details.PlayerWithDetailsResponse
+import com.kamilh.volleyballstats.api.team.TeamResponse
+import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.authorization.AuthorizationModule
+import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.interactors.InteractorModule
 import com.kamilh.volleyballstats.match_analyzer.MatchAnalyzerModule
-import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.models.api.MappersModule
-import com.kamilh.volleyballstats.models.api.ResponseMapper
-import com.kamilh.volleyballstats.models.api.match.MatchResponse
-import com.kamilh.volleyballstats.models.api.match_report.MatchReportResponse
-import com.kamilh.volleyballstats.models.api.player_with_details.PlayerWithDetailsResponse
-import com.kamilh.volleyballstats.models.api.team.TeamResponse
-import com.kamilh.volleyballstats.models.api.tour.TourResponse
+import com.kamilh.volleyballstats.models.AppConfig
 import com.kamilh.volleyballstats.repository.RepositoryModule
-import com.kamilh.volleyballstats.routes.Api
 import com.kamilh.volleyballstats.routes.RoutesModule
 import com.kamilh.volleyballstats.routes.TourIdCache
 import com.kamilh.volleyballstats.routes.TourIdCacheImpl
 import com.kamilh.volleyballstats.storage.*
 import com.kamilh.volleyballstats.utils.UtilModule
+import com.squareup.sqldelight.db.SqlDriver
+import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
-import me.tatarka.inject.annotations.Scope
-
-@Scope
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
-annotation class Singleton
 
 @Component
 @Singleton
@@ -64,6 +64,11 @@ abstract class AppModule(
             main = Dispatchers.Main,
             default = Dispatchers.Default,
         )
+
+    @Provides
+    fun sqlDriverCreator(): SqlDriverFactory = object : SqlDriverFactory {
+        override fun create(): SqlDriver = JdbcSqliteDriver(url = appConfig.databaseConfig.jdbcUrl)
+    }
 }
 
 @Component
@@ -104,8 +109,8 @@ abstract class TestComponent(@Component val parent: AppModule) {
         )
     }
 
-    val api: Api
-        @Provides get() = Api(baseUrl = "")
+    val api: com.kamilh.volleyballstats.api.Api
+        @Provides get() = com.kamilh.volleyballstats.api.Api(baseUrl = "")
 
     class Storages(
         val leagueStorage: LeagueStorage,

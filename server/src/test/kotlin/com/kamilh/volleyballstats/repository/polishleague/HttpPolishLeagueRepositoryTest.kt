@@ -1,20 +1,25 @@
 package com.kamilh.volleyballstats.repository.polishleague
 
+import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.repository.HttpClient
-import com.kamilh.volleyballstats.repository.httpClientOf
+import com.kamilh.volleyballstats.network.HttpClient
+import com.kamilh.volleyballstats.network.NetworkError
+import com.kamilh.volleyballstats.network.NetworkResult
+import com.kamilh.volleyballstats.network.client.httpClientOf
+import com.kamilh.volleyballstats.network.result.networkFailureOf
+import com.kamilh.volleyballstats.network.result.networkSuccessOf
 import com.kamilh.volleyballstats.repository.models.MatchResponse
 import com.kamilh.volleyballstats.repository.models.mappers.HtmlMapper
 import com.kamilh.volleyballstats.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.volleyballstats.repository.models.matchResponseOf
+import com.kamilh.volleyballstats.repository.parsing.ParseError
 import com.kamilh.volleyballstats.repository.parsing.ParseErrorHandler
+import com.kamilh.volleyballstats.repository.parsing.ParseResult
 import com.kamilh.volleyballstats.utils.cache.Cache
 import com.kamilh.volleyballstats.utils.cache.cacheOf
 import kotlinx.coroutines.test.runTest
-import com.kamilh.volleyballstats.models.PlayerWithDetails
 import org.junit.Test
-import com.kamilh.volleyballstats.repository.parsing.ParseError
-import com.kamilh.volleyballstats.repository.parsing.ParseResult
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -611,8 +616,6 @@ fun jsonParseErrorOf(
 ): ParseError.Json = ParseError.Json(content, exception)
 
 fun <T> htmlMapperOf(result: ParseResult<T>): HtmlMapper<T> = HtmlMapper { result }
-
-fun seasonOf(tour: Int = 2020): Season = Season.create(tour)
 
 fun matchReportEndpointOf(result: NetworkResult<MatchResponse>): MatchReportEndpoint =
     object : MatchReportEndpoint {

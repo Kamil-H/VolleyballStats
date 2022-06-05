@@ -1,7 +1,6 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
-import com.kamilh.volleyballstats.models.Result
-import com.kamilh.volleyballstats.repository.models.mappers.HtmlToTeamMapper
+import com.kamilh.volleyballstats.domain.models.Result
 import com.kamilh.volleyballstats.repository.parsing.JsoupHtmlParser
 import org.junit.Test
 

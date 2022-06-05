@@ -2,13 +2,9 @@ package com.kamilh.volleyballstats.repository.models.mappers
 
 import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.parsePolishLeagueDate
-import com.kamilh.volleyballstats.models.PlayerDetails
-import com.kamilh.volleyballstats.models.PlayerId
-import com.kamilh.volleyballstats.models.TeamId
-import com.kamilh.volleyballstats.models.TeamPlayer
+import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
-import com.kamilh.volleyballstats.utils.CurrentDate
-import com.kamilh.volleyballstats.models.PlayerWithDetails
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import me.tatarka.inject.annotations.Inject
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
 

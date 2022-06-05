@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.utils.cache
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
-import com.kamilh.volleyballstats.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 

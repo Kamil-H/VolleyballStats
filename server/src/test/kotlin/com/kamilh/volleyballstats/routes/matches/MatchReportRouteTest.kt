@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.routes.matches
 
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.routes.testServerApplication
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -132,7 +132,7 @@ class MatchReportRouteTest {
         val tour = tourOf(id = tourId, league = league)
         val teamIdOne = teamIdOf(value = 1)
         val teamIdTwo = teamIdOf(value = 2)
-        val matchId = matchIdOf(matchId = 1)
+        val matchId = matchIdOf(value = 1)
         val teams = listOf(teamOf(id = teamIdOne), teamOf(id = teamIdTwo))
         val playerId = playerIdOf(value = 1)
         val playerWithDetails = listOf(
@@ -162,7 +162,7 @@ class MatchReportRouteTest {
         assertEquals(matchStatistics, mapped)
 
         // GIVEN
-        val newMatchId = matchIdOf(matchId = 2)
+        val newMatchId = matchIdOf(value = 2)
         val newMatchStatistics = matchStatistics.copy(matchId = newMatchId)
         withStorages {
             matchStatisticsStorage.insert(newMatchStatistics, tourId)
@@ -185,7 +185,7 @@ class MatchReportRouteTest {
         val tour = tourOf(id = tourId, league = league)
         val teamIdOne = teamIdOf(value = 1)
         val teamIdTwo = teamIdOf(value = 2)
-        val matchId = matchIdOf(matchId = 1)
+        val matchId = matchIdOf(value = 1)
         val teams = listOf(teamOf(id = teamIdOne), teamOf(id = teamIdTwo))
         val playerId = playerIdOf(value = 1)
         val playerWithDetails = listOf(
@@ -217,7 +217,7 @@ class MatchReportRouteTest {
         // GIVEN
         val newTourId = tourIdOf(1)
         val newTour = tour.copy(id = newTourId, season = tour.season.plus(1))
-        val newMatchId = matchIdOf(matchId = 2)
+        val newMatchId = matchIdOf(value = 2)
         val newMatchStatistics = matchStatistics.copy(matchId = newMatchId)
         withStorages {
             tourStorage.insert(newTour)

@@ -1,9 +1,8 @@
 package com.kamilh.volleyballstats.match_analyzer
 
-import com.kamilh.volleyballstats.match_analyzer.LineupMutator
-import com.kamilh.volleyballstats.models.Lineup
-import com.kamilh.volleyballstats.models.PlayerPosition
-import com.kamilh.volleyballstats.models.playerIdOf
+import com.kamilh.volleyballstats.domain.models.Lineup
+import com.kamilh.volleyballstats.domain.models.PlayerPosition
+import com.kamilh.volleyballstats.domain.playerIdOf
 import org.junit.Test
 
 class LineupMutatorTest {
