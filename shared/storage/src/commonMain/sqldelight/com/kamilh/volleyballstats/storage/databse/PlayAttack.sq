@@ -20,7 +20,7 @@ LEFT JOIN
 team_player_model receive_player_id ON receive_player_id.id = attack.receive_id
 LEFT JOIN
 team_player_model setter_player_id ON setter_player_id.id = attack.setter_id
-WHERE set_model.match_id IN (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+WHERE set_model.match_id IN (SELECT id FROM match_report_model WHERE tour_id = ?);
 
 selectAttackStats:
 SELECT

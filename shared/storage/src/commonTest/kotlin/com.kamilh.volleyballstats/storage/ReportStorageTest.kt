@@ -5,6 +5,7 @@ import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.MatchReport
 import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.player.playerOf
 import kotlinx.coroutines.flow.first
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -17,7 +18,7 @@ abstract class ReportStorageTest : DatabaseTest() {
             teamQueries = teamQueries,
             teamPlayerQueries = teamPlayerQueries,
             tourTeamQueries = tourTeamQueries,
-            matchStatisticsQueries = matchStatisticsQueries,
+            matchReportQueries = matchReportQueries,
             playQueries = playQueries,
             playAttackQueries = playAttackQueries,
             playBlockQueries = playBlockQueries,
@@ -83,7 +84,7 @@ abstract class ReportStorageTest : DatabaseTest() {
         val insertResult = storage.insert(matchStatistics, tour.id)
 
         // THEN
-        val result = matchStatisticsQueries.selectAll().executeAsList()
+        val result = matchReportQueries.selectAll().executeAsList()
         assertEquals(expected = matchStatistics, storage.getAllMatchReports().first().first())
         assertTrue(result.isNotEmpty())
         insertResult.assertSuccess()

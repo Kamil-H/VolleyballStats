@@ -5,6 +5,7 @@ import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.player.playerOf
 import com.kamilh.volleyballstats.utils.localDateTime
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

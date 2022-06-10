@@ -1,16 +1,15 @@
 package com.kamilh.volleyballstats.storage
 
-import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.storage.databse.*
 import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
+import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.domain.models.Url
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.common.TransacterQueryRunner
 import com.kamilh.volleyballstats.storage.common.adapters.*
+import com.kamilh.volleyballstats.storage.databse.*
 import com.squareup.sqldelight.ColumnAdapter
 import me.tatarka.inject.annotations.Provides
 import kotlin.time.Duration
@@ -47,8 +46,8 @@ interface StorageModule {
 
     @Singleton
     @Provides
-    fun matchStatisticsQueries(database: DatabaseFactory): MatchStatisticsQueries =
-        database.database.matchStatisticsQueries
+    fun matchReportQueries(database: DatabaseFactory): MatchReportQueries =
+        database.database.matchReportQueries
 
     @Singleton
     @Provides

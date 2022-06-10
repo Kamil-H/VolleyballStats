@@ -10,4 +10,4 @@ team_player_model tpm ON map.player_id = tpm.id,
 tour_team_model ttm ON map.tour_team_id = ttm.id,
 player_model pm ON pm.id = tpm.player_id,
 team_model tm ON tm.id = ttm.team_id
-WHERE match_id IN (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+WHERE match_id IN (SELECT id FROM match_report_model WHERE tour_id = ?);

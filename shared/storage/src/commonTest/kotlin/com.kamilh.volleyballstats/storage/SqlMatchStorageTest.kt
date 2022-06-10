@@ -3,6 +3,7 @@ package com.kamilh.volleyballstats.storage
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.player.playerOf
 import com.kamilh.volleyballstats.storage.databse.SelectAllMatchesByTour
 import com.kamilh.volleyballstats.utils.localDateTime
 import com.kamilh.volleyballstats.utils.zonedDateTime
@@ -135,7 +136,7 @@ class SqlMatchStorageTest : ReportStorageTest() {
         assertEquals(expected = expectedValue, value)
 
         // WHEN
-        matchStatisticsQueries.insert(
+        matchReportQueries.insert(
             id = matchId,
             home = 0,
             away = 0,

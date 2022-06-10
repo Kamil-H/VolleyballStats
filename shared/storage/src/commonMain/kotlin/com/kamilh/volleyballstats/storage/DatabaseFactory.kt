@@ -5,7 +5,6 @@ import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.domain.models.Url
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
@@ -94,7 +93,7 @@ class AppConfigDatabaseFactory(
 			match_appearance_modelAdapter = Match_appearance_model.Adapter(
 				match_idAdapter = matchIdAdapter,
 			),
-			match_statistics_modelAdapter = Match_statistics_model.Adapter(
+			match_report_modelAdapter = Match_report_model.Adapter(
 				idAdapter = matchIdAdapter,
 				phaseAdapter = EnumColumnAdapter(),
 				updated_atAdapter = localDateTimeAdapter,

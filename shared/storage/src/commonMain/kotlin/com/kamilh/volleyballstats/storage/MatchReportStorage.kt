@@ -35,7 +35,7 @@ class SqlMatchReportStorage(
     private val teamQueries: TeamQueries,
     private val teamPlayerQueries: TeamPlayerQueries,
     private val tourTeamQueries: TourTeamQueries,
-    private val matchStatisticsQueries: MatchStatisticsQueries,
+    private val matchReportQueries: MatchReportQueries,
     private val playQueries: PlayQueries,
     private val playAttackQueries: PlayAttackQueries,
     private val playBlockQueries: PlayBlockQueries,
@@ -103,7 +103,7 @@ class SqlMatchReportStorage(
                 )
             }
 
-            matchStatisticsQueries.insert(
+            matchReportQueries.insert(
                 id = matchReport.matchId,
                 home = homeTeamId,
                 away = awayTeamId,
@@ -248,7 +248,7 @@ class SqlMatchReportStorage(
     private fun <T : Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
 
     private fun getAllMatchReports(tourId: TourId): Flow<List<MatchReport>> {
-        val stats = matchStatisticsQueries.selectAllStatsByTourId(tourId).mapQuery()
+        val stats = matchReportQueries.selectAllReportsByTourId(tourId).mapQuery()
         val matchAppearances = matchAppearanceQueries.selectAllAppearancesByTour(tourId).mapQuery()
         val sets = setQueries.selectAllBySetsTourId(tourId).mapQuery()
         val points = pointQueries.selectAllPointsByTourId(tourId).mapQuery()

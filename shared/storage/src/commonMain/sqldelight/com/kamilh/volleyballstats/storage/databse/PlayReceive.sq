@@ -16,7 +16,7 @@ set_model ON set_model.id = point_model.set_id,
 team_player_model team_player ON play_model.player_id = team_player.id,
 tour_team_model team ON team_player.tour_team_id = team.id,
 team_player_model server_player_id ON server_player_id.id = server_id
-WHERE set_model.match_id IN (SELECT id FROM match_statistics_model WHERE tour_id = ?);
+WHERE set_model.match_id IN (SELECT id FROM match_report_model WHERE tour_id = ?);
 
 selectReceiveStats:
 SELECT

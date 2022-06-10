@@ -14,7 +14,7 @@ selectAllMatchesByTour:
 SELECT match_model.id, match_model.date, home_team.team_id AS home_id, away_team.team_id AS away_id, match_statistics.id AS match_statistics_id
 FROM match_model
 LEFT JOIN
-match_statistics_model match_statistics ON match_model.id = match_statistics.id
+match_report_model match_statistics ON match_model.id = match_statistics.id
 INNER JOIN
 tour_team_model home_team ON match_model.home = home_team.id
 INNER JOIN

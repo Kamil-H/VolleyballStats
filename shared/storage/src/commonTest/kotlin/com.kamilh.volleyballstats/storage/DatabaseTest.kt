@@ -39,7 +39,7 @@ abstract class DatabaseTest(
     protected val tourQueries: TourQueries by lazy { databaseFactory.database.tourQueries }
     protected val leagueQueries: LeagueQueries by lazy { databaseFactory.database.leagueQueries }
     protected val teamPlayerQueries: TeamPlayerQueries by lazy { databaseFactory.database.teamPlayerQueries }
-    protected val matchStatisticsQueries: MatchStatisticsQueries by lazy { databaseFactory.database.matchStatisticsQueries }
+    protected val matchReportQueries: MatchReportQueries by lazy { databaseFactory.database.matchReportQueries }
     protected val playQueries: PlayQueries by lazy { databaseFactory.database.playQueries }
     protected val playerQueries: PlayerQueries by lazy { databaseFactory.database.playerQueries }
     protected val playAttackQueries: PlayAttackQueries by lazy { databaseFactory.database.playAttackQueries }
