@@ -31,7 +31,7 @@ class AppConfigDatabaseFactory(
     localDateAdapter: ColumnAdapter<LocalDate, String>,
     localDateTimeAdapter: ColumnAdapter<LocalDateTime, String>,
     seasonAdapter: ColumnAdapter<Season, Long>,
-    specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long>,
+    specializationAdapter: ColumnAdapter<Specialization, Long>,
     durationAdapter: ColumnAdapter<Duration, Long>,
     positionAdapter: ColumnAdapter<PlayerPosition, Long>,
     matchIdAdapter: ColumnAdapter<MatchId, Long>,

@@ -1,8 +1,10 @@
 package com.kamilh.volleyballstats.repository
 
 import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.models.MatchReportId
+import com.kamilh.volleyballstats.domain.models.MatchInfo
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.models.Team
+import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
 import com.kamilh.volleyballstats.repository.models.mappers.*
@@ -45,7 +47,7 @@ interface RepositoryModule {
 
     @Provides
     @Singleton
-    fun allPlayersCache(): Cache<Unit, List<Player>> =
+    fun allPlayersCache(): Cache<Unit, List<PlayerSnapshot>> =
         ExpirableCache(LocalDateTimeCacheValidator())
 
     @Provides
@@ -83,7 +85,7 @@ interface RepositoryModule {
     val HtmlToTeamPlayerMapper.bind: HtmlMapper<List<TeamPlayer>>
         @Provides get() = this
 
-    val HtmlToPlayerMapper.bind: HtmlMapper<List<Player>>
+    val HtmlToPlayerMapper.bind: HtmlMapper<List<PlayerSnapshot>>
         @Provides get() = this
 
     val HtmlToAllMatchesItemMapper.bind: HtmlMapper<List<MatchInfo>>

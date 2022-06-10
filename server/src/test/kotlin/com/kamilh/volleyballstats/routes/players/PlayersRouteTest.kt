@@ -1,7 +1,8 @@
 package com.kamilh.volleyballstats.routes.players
 
+import com.kamilh.volleyballstats.api.player.PlayerResponse
 import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.api.player_with_details.PlayerWithDetailsResponse
+import com.kamilh.volleyballstats.domain.player.playerOf
 import com.kamilh.volleyballstats.routes.testServerApplication
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -92,7 +93,7 @@ class PlayersRouteTest {
         val tour = tourOf(id = tourId, league = league)
         val teamId = teamIdOf(value = 1)
         val teams = listOf(teamOf(id = teamId))
-        val players = listOf(playerWithDetailsOf(teamPlayer = teamPlayerOf(team = teamId)))
+        val players = listOf(playerOf(team = teamId))
         withStorages {
             leagueStorage.insert(league)
             tourStorage.insert(tour)
@@ -105,7 +106,7 @@ class PlayersRouteTest {
         val response = client.request(request)
 
         // THEN
-        val mapped = response.body<List<PlayerWithDetailsResponse>>().map(mappers.playerWithDetailsMapper::from)
+        val mapped = response.body<List<PlayerResponse>>().map(mappers.playerMapper::from)
         assertEquals(players, mapped)
     }
 
@@ -117,7 +118,7 @@ class PlayersRouteTest {
         val tour = tourOf(id = tourId, league = league)
         val teamId = teamIdOf(value = 1)
         val teams = listOf(teamOf(id = teamId))
-        val players = listOf(playerWithDetailsOf(teamPlayer = teamPlayerOf(team = teamId)))
+        val players = listOf(playerOf(team = teamId))
         withStorages {
             leagueStorage.insert(league)
             tourStorage.insert(tour)
@@ -130,14 +131,14 @@ class PlayersRouteTest {
         val response = client.request(request)
 
         // THEN
-        val mapped = response.body<List<PlayerWithDetailsResponse>>().map(mappers.playerWithDetailsMapper::from)
+        val mapped = response.body<List<PlayerResponse>>().map(mappers.playerMapper::from)
         assertEquals(players, mapped)
 
         val newTeamId = teamIdOf(value = 2)
         val newTeams = listOf(teamOf(id = newTeamId))
         val newPlayers = listOf(
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerIdOf(1), team = newTeamId)),
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerIdOf(2), team = newTeamId))
+            playerOf(id = playerIdOf(1), team = newTeamId),
+            playerOf(id = playerIdOf(2), team = newTeamId),
         )
         withStorages {
             teamStorage.insert(newTeams, tourId)
@@ -148,7 +149,7 @@ class PlayersRouteTest {
         val newResponse = client.request(request)
 
         // THEN
-        val newMapped = newResponse.body<List<PlayerWithDetailsResponse>>().map(mappers.playerWithDetailsMapper::from)
+        val newMapped = newResponse.body<List<PlayerResponse>>().map(mappers.playerMapper::from)
         assertEquals(players + newPlayers, newMapped)
     }
 }

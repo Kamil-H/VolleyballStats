@@ -9,7 +9,7 @@ import com.kamilh.volleyballstats.routes.CallError
 import com.kamilh.volleyballstats.routes.CallResult
 import com.kamilh.volleyballstats.routes.TourIdCache
 import com.kamilh.volleyballstats.routes.retrieveLongId
-import com.kamilh.volleyballstats.storage.MatchStatisticsStorage
+import com.kamilh.volleyballstats.storage.MatchReportStorage
 import com.kamilh.volleyballstats.storage.MatchStorage
 import com.kamilh.volleyballstats.utils.SafeMap
 import com.kamilh.volleyballstats.utils.safeMapOf
@@ -27,15 +27,15 @@ interface MatchesController {
 @Inject
 @Singleton
 class MatchesControllerImpl(
-    matchStatisticsStorage: MatchStatisticsStorage,
+    matchReportStorage: MatchReportStorage,
     private val tourIdCache: TourIdCache,
     private val matchStorage: MatchStorage,
     private val matchInfoMapper: ResponseMapper<Match, MatchResponse>,
-    private val matchReportMapper: ResponseMapper<MatchStatistics, MatchReportResponse>,
+    private val matchReportMapper: ResponseMapper<MatchReport, MatchReportResponse>,
 ) : MatchesController {
 
     private val allMatchesCache: SafeMap<TourId, Flow<List<Match>>> = safeMapOf()
-    private val allMatchReportsCache: Flow<List<MatchStatistics>> = matchStatisticsStorage.getAllMatchStatistics()
+    private val allMatchReportsCache: Flow<List<MatchReport>> = matchReportStorage.getAllMatchReports()
 
     override suspend fun getMatches(tourId: String?): CallResult<List<MatchResponse>> =
         tourIdCache.tourIdFrom(tourId) {

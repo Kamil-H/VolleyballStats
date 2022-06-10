@@ -10,27 +10,27 @@ import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
-interface MatchStatisticsStorage {
+interface MatchReportStorage {
 
-    suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult
+    suspend fun insert(matchReport: MatchReport, tourId: TourId): InsertMatchReportResult
 
-    fun getAllMatchStatistics(): Flow<List<MatchStatistics>>
+    fun getAllMatchReports(): Flow<List<MatchReport>>
 }
 
-typealias InsertMatchStatisticsResult = Result<Unit, InsertMatchStatisticsError>
+typealias InsertMatchReportResult = Result<Unit, InsertMatchReportError>
 
-sealed class InsertMatchStatisticsError(override val message: String?) : Error {
-    object TourNotFound : InsertMatchStatisticsError("TourNotFound")
-    object NoPlayersInTeams : InsertMatchStatisticsError("NoPlayersInTeams")
-    class TeamNotFound(val teamId: TeamId) : InsertMatchStatisticsError("TeamNotFound(teamId: $teamId)")
-    class PlayerNotFound(val playerIds: List<Pair<PlayerId, TeamId>>) : InsertMatchStatisticsError(
+sealed class InsertMatchReportError(override val message: String?) : Error {
+    object TourNotFound : InsertMatchReportError("TourNotFound")
+    object NoPlayersInTeams : InsertMatchReportError("NoPlayersInTeams")
+    class TeamNotFound(val teamId: TeamId) : InsertMatchReportError("TeamNotFound(teamId: $teamId)")
+    class PlayerNotFound(val playerIds: List<Pair<PlayerId, TeamId>>) : InsertMatchReportError(
         "PlayerNotFound(playerIds: ${playerIds.joinToString { "[${it.first}, ${it.second}]" }}"
     )
 }
 
 @Inject
 @Singleton
-class SqlMatchStatisticsStorage(
+class SqlMatchReportStorage(
     private val queryRunner: QueryRunner,
     private val teamQueries: TeamQueries,
     private val teamPlayerQueries: TeamPlayerQueries,
@@ -49,72 +49,72 @@ class SqlMatchStatisticsStorage(
     private val setQueries: SetQueries,
     private val matchAppearanceQueries: MatchAppearanceQueries,
     private val tourQueries: TourQueries,
-) : MatchStatisticsStorage {
+) : MatchReportStorage {
 
-    override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult =
+    override suspend fun insert(matchReport: MatchReport, tourId: TourId): InsertMatchReportResult =
         queryRunner.runTransaction {
             tourQueries.selectById(tourId).executeAsOneOrNull()
-                ?: return@runTransaction Result.failure<Unit, InsertMatchStatisticsError>(
-                    InsertMatchStatisticsError.TourNotFound
+                ?: return@runTransaction Result.failure<Unit, InsertMatchReportError>(
+                    InsertMatchReportError.TourNotFound
                 )
 
-            val homeTeamId = tourTeamQueries.selectId(matchStatistics.home.teamId, tourId).executeAsOneOrNull()
-                ?: return@runTransaction InsertMatchStatisticsResult.failure(
-                    InsertMatchStatisticsError.TeamNotFound(
-                        matchStatistics.home.teamId
+            val homeTeamId = tourTeamQueries.selectId(matchReport.home.teamId, tourId).executeAsOneOrNull()
+                ?: return@runTransaction InsertMatchReportResult.failure(
+                    InsertMatchReportError.TeamNotFound(
+                        matchReport.home.teamId
                     )
                 )
-            teamQueries.updateCode(matchStatistics.home.code, matchStatistics.home.teamId)
+            teamQueries.updateCode(matchReport.home.code, matchReport.home.teamId)
 
-            val awayTeamId = tourTeamQueries.selectId(matchStatistics.away.teamId, tourId).executeAsOneOrNull()
-                ?: return@runTransaction InsertMatchStatisticsResult.failure(
-                    InsertMatchStatisticsError.TeamNotFound(
-                        matchStatistics.away.teamId
+            val awayTeamId = tourTeamQueries.selectId(matchReport.away.teamId, tourId).executeAsOneOrNull()
+                ?: return@runTransaction InsertMatchReportResult.failure(
+                    InsertMatchReportError.TeamNotFound(
+                        matchReport.away.teamId
                     )
                 )
-            teamQueries.updateCode(matchStatistics.away.code, matchStatistics.away.teamId)
+            teamQueries.updateCode(matchReport.away.code, matchReport.away.teamId)
 
-            if (matchStatistics.home.players.isEmpty() || matchStatistics.away.players.isEmpty()) {
-                return@runTransaction InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.NoPlayersInTeams)
+            if (matchReport.home.players.isEmpty() || matchReport.away.players.isEmpty()) {
+                return@runTransaction InsertMatchReportResult.failure(InsertMatchReportError.NoPlayersInTeams)
             }
 
             val playerIdCache = mutableMapOf<PlayerId, Long>()
             val playersNotFound = insert(
-                matchPlayers = matchStatistics.home.players,
-                matchId = matchStatistics.matchId,
+                matchPlayers = matchReport.home.players,
+                matchId = matchReport.matchId,
                 tourTeamId = homeTeamId,
-                teamId = matchStatistics.home.teamId,
+                teamId = matchReport.home.teamId,
             ) { playerId, id ->
                 playerIdCache[playerId] = id
             } + insert(
-                matchPlayers = matchStatistics.away.players,
-                matchId = matchStatistics.matchId,
+                matchPlayers = matchReport.away.players,
+                matchId = matchReport.matchId,
                 tourTeamId = awayTeamId,
-                teamId = matchStatistics.away.teamId,
+                teamId = matchReport.away.teamId,
             ) { playerId, id ->
                 playerIdCache[playerId] = id
             }
 
             if (playersNotFound.isNotEmpty()) {
-                return@runTransaction InsertMatchStatisticsResult.failure(
-                    InsertMatchStatisticsError.PlayerNotFound(
+                return@runTransaction InsertMatchReportResult.failure(
+                    InsertMatchReportError.PlayerNotFound(
                         playersNotFound
                     )
                 )
             }
 
             matchStatisticsQueries.insert(
-                id = matchStatistics.matchId,
+                id = matchReport.matchId,
                 home = homeTeamId,
                 away = awayTeamId,
-                mvp = playerIdCache[matchStatistics.mvp]!!,
-                best_player = playerIdCache[matchStatistics.bestPlayer],
+                mvp = playerIdCache[matchReport.mvp]!!,
+                best_player = playerIdCache[matchReport.bestPlayer],
                 tour_id = tourId,
-                updated_at = matchStatistics.updatedAt,
-                phase = matchStatistics.phase,
+                updated_at = matchReport.updatedAt,
+                phase = matchReport.phase,
             )
 
-            matchStatistics.sets.forEach { matchSet ->
+            matchReport.sets.forEach { matchSet ->
                 setQueries.insert(
                     number = matchSet.number,
                     home_score = matchSet.score.home,
@@ -122,7 +122,7 @@ class SqlMatchStatisticsStorage(
                     start_time = matchSet.startTime,
                     end_time = matchSet.endTime,
                     duration = matchSet.duration,
-                    match_id = matchStatistics.matchId,
+                    match_id = matchReport.matchId,
                 )
                 val setId = setQueries.lastInsertRowId().executeAsOne()
                 matchSet.points.forEach { matchPoint ->
@@ -132,8 +132,8 @@ class SqlMatchStatisticsStorage(
                         start_time = matchPoint.startTime,
                         end_time = matchPoint.endTime,
                         point = when (matchPoint.point) {
-                            matchStatistics.home.teamId -> homeTeamId
-                            matchStatistics.away.teamId -> awayTeamId
+                            matchReport.home.teamId -> homeTeamId
+                            matchReport.away.teamId -> awayTeamId
                             else -> error("It should never happen")
                         },
                         home_lineup = pointLineupQueries.insert(matchPoint.homeLineup, playerIdCache),
@@ -146,7 +146,7 @@ class SqlMatchStatisticsStorage(
                     }
                 }
             }
-            InsertMatchStatisticsResult.success(Unit)
+            InsertMatchReportResult.success(Unit)
         }
 
     private fun insert(
@@ -247,7 +247,7 @@ class SqlMatchStatisticsStorage(
 
     private fun <T : Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
 
-    private fun getAllMatchStatistics(tourId: TourId): Flow<List<MatchStatistics>> {
+    private fun getAllMatchReports(tourId: TourId): Flow<List<MatchReport>> {
         val stats = matchStatisticsQueries.selectAllStatsByTourId(tourId).mapQuery()
         val matchAppearances = matchAppearanceQueries.selectAllAppearancesByTour(tourId).mapQuery()
         val sets = setQueries.selectAllBySetsTourId(tourId).mapQuery()
@@ -272,7 +272,7 @@ class SqlMatchStatisticsStorage(
             points,
             playActions) { stats, matchAppearances, sets, points, playActions ->
             stats.map { selectAllStats ->
-                MatchStatistics(
+                MatchReport(
                     matchId = selectAllStats.id,
                     sets = sets.toMatchSet(selectAllStats.id, points, playActions),
                     home = matchAppearances.toMatchTeam(selectAllStats.home, selectAllStats.id),
@@ -286,12 +286,12 @@ class SqlMatchStatisticsStorage(
         }
     }
 
-    override fun getAllMatchStatistics(): Flow<List<MatchStatistics>> =
+    override fun getAllMatchReports(): Flow<List<MatchReport>> =
         tourQueries.selectAllTourIds().mapQuery().flatMapLatest { tourIds ->
             if (tourIds.isEmpty()) {
                 flowOf(emptyList())
             } else {
-                combine(tourIds.map { getAllMatchStatistics(it) }) { matches ->
+                combine(tourIds.map { getAllMatchReports(it) }) { matches ->
                     matches.flatMap { it }
                 }
             }

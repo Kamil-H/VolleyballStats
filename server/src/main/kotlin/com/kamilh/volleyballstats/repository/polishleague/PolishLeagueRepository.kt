@@ -1,8 +1,7 @@
 package com.kamilh.volleyballstats.repository.polishleague
 
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.models.MatchReport
-import com.kamilh.volleyballstats.models.MatchReportId
+import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.NetworkResult
 import com.kamilh.volleyballstats.repository.models.mappers.HtmlMapper
@@ -22,7 +21,7 @@ interface PolishLeagueRepository {
 
     suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId>
 
-    suspend fun getMatchReport(matchReportId: MatchReportId, season: Season): NetworkResult<MatchReport>
+    suspend fun getMatchReport(matchReportId: MatchReportId, season: Season): NetworkResult<RawMatchReport>
 
     suspend fun getPlayerDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerDetails>
 
@@ -30,7 +29,7 @@ interface PolishLeagueRepository {
 
     suspend fun getAllTours(): NetworkResult<List<Tour>>
 
-    suspend fun getAllPlayers(): NetworkResult<List<Player>>
+    suspend fun getAllPlayers(): NetworkResult<List<PlayerSnapshot>>
 }
 
 @Inject
@@ -39,7 +38,7 @@ class HttpPolishLeagueRepository(
     private val polishLeagueApi: PolishLeagueApi,
     private val htmlToTeamMapper: HtmlMapper<List<Team>>,
     private val htmlToTeamPlayerMapper: HtmlMapper<List<TeamPlayer>>,
-    private val htmlToPlayerMapper: HtmlMapper<List<Player>>,
+    private val htmlToPlayerSnapshotMapper: HtmlMapper<List<PlayerSnapshot>>,
     private val htmlToMatchInfoMapper: HtmlMapper<List<MatchInfo>>,
     private val htmlToMatchReportId: HtmlMapper<MatchReportId>,
     private val htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails>,
@@ -49,7 +48,7 @@ class HttpPolishLeagueRepository(
     private val matchResponseStorage: MatchResponseStorage,
     private val matchResponseToMatchReportMapper: MatchResponseToMatchReportMapper,
     private val tourCache: TourCache,
-    private val allPlayersCache: Cache<Unit, List<Player>>,
+    private val allPlayersCache: Cache<Unit, List<PlayerSnapshot>>,
     private val allPlayersByTourCache: Cache<Season, List<TeamPlayer>>,
 ) : PolishLeagueRepository {
 
@@ -61,9 +60,9 @@ class HttpPolishLeagueRepository(
             httpClient.execute(polishLeagueApi.getPlayers(season)).parseHtml(htmlToTeamPlayerMapper::map)
         }
 
-    override suspend fun getAllPlayers(): NetworkResult<List<Player>> =
+    override suspend fun getAllPlayers(): NetworkResult<List<PlayerSnapshot>> =
         getFromCacheOrFetch(key = Unit, cache = allPlayersCache) {
-            httpClient.execute(polishLeagueApi.getAllPlayers()).parseHtml(htmlToPlayerMapper::map)
+            httpClient.execute(polishLeagueApi.getAllPlayers()).parseHtml(htmlToPlayerSnapshotMapper::map)
         }
 
     private suspend inline fun <KEY, VALUE> getFromCacheOrFetch(
@@ -80,7 +79,7 @@ class HttpPolishLeagueRepository(
     override suspend fun getMatchReportId(matchId: MatchId): NetworkResult<MatchReportId> =
         httpClient.execute(polishLeagueApi.getMatch(matchId)).parseHtml(htmlToMatchReportId::map)
 
-    override suspend fun getMatchReport(matchReportId: MatchReportId, season: Season): NetworkResult<MatchReport> =
+    override suspend fun getMatchReport(matchReportId: MatchReportId, season: Season): NetworkResult<RawMatchReport> =
         matchResponseStorage.get(matchReportId, season)
             ?.let(matchResponseToMatchReportMapper::map)
             ?.let(Result.Companion::success)

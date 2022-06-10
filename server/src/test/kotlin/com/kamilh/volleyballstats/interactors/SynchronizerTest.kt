@@ -1,16 +1,22 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
-import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.domain.models.PlayerWithDetails
+import com.kamilh.volleyballstats.domain.leagueOf
+import com.kamilh.volleyballstats.domain.models.Player
 import com.kamilh.volleyballstats.domain.models.Team
 import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.player.playerOf
+import com.kamilh.volleyballstats.domain.teamIdOf
+import com.kamilh.volleyballstats.domain.teamOf
+import com.kamilh.volleyballstats.domain.tourOf
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.domain.utils.Severity
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
 import com.kamilh.volleyballstats.storage.*
-import com.kamilh.volleyballstats.utils.*
+import com.kamilh.volleyballstats.utils.localDateTime
+import com.kamilh.volleyballstats.utils.testClock
+import com.kamilh.volleyballstats.utils.zonedDateTime
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -177,10 +183,10 @@ class SynchronizerTest {
     }
 
     @Test
-    fun `updatePlayers not called when getAllPlayers returns some teams`() = runTest {
+    fun `updatePlayers not called when getAllPlayers returns some players`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
-        val getAllPlayers = flowOf(listOf(playerWithDetailsOf()))
+        val getAllPlayers = flowOf(listOf(playerOf()))
         var updateTeamCalled = false
 
         // WHEN
@@ -201,7 +207,7 @@ class SynchronizerTest {
     fun `updatePlayers called when getAllPlayers returns empty list`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
-        val getAllPlayers = flowOf(emptyList<PlayerWithDetails>())
+        val getAllPlayers = flowOf(emptyList<Player>())
         var updateTeamCalled = false
 
         // WHEN
@@ -222,7 +228,7 @@ class SynchronizerTest {
     fun `schedule called when updatePlayers returns Network error`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
-        val getAllPlayers = flowOf(emptyList<PlayerWithDetails>())
+        val getAllPlayers = flowOf(emptyList<Player>())
         var scheduleDate: LocalDateTime? = null
 
         // WHEN
@@ -241,7 +247,7 @@ class SynchronizerTest {
     fun `updateTours called once again when updatePlayers returns TourNotFound error`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
-        val getAllPlayers = flowOf(emptyList<PlayerWithDetails>())
+        val getAllPlayers = flowOf(emptyList<Player>())
         var updateToursCalled = false
 
         // WHEN
@@ -263,7 +269,7 @@ class SynchronizerTest {
     fun `updateTeams called when updatePlayers returns Errors with teamsNotFound not empty error`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
-        val getAllPlayers = flowOf(emptyList<PlayerWithDetails>())
+        val getAllPlayers = flowOf(emptyList<Player>())
         var updateTeamsCalled = false
 
         // WHEN
@@ -298,7 +304,7 @@ class SynchronizerTest {
         interactor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchStatisticsError.TeamNotFound(teamIdOf())))
+                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.TeamNotFound(teamIdOf())))
             },
             updateTeams = updateTeamsOf {
                 updateTeamsCalled = true
@@ -311,7 +317,7 @@ class SynchronizerTest {
     }
 
     @Test
-    fun `updateTours called when updateMatches returns InsertMatchStatisticsError's TourNotFound error`() = runTest {
+    fun `updateTours called when updateMatches returns InsertMatchReportError's TourNotFound error`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
         var updateToursCalled = false
@@ -320,7 +326,7 @@ class SynchronizerTest {
         interactor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchStatisticsError.TourNotFound))
+                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.TourNotFound))
             },
             updateTours = updateToursOf {
                 updateToursCalled = true
@@ -342,7 +348,7 @@ class SynchronizerTest {
         interactor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchStatisticsError.NoPlayersInTeams))
+                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.NoPlayersInTeams))
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true
@@ -364,7 +370,7 @@ class SynchronizerTest {
         interactor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchStatisticsError.PlayerNotFound(
+                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.PlayerNotFound(
                     emptyList())))
             },
             updatePlayers = updatePlayersOf {

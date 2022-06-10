@@ -25,7 +25,7 @@ abstract class DatabaseTest(
     private val localDateAdapter: ColumnAdapter<LocalDate, String> = LocalDateAdapter(),
     private val localDateTimeAdapter: ColumnAdapter<LocalDateTime, String> = LocalDateTimeAdapter(),
     private val seasonAdapter: ColumnAdapter<Season, Long> = SeasonAdapter(),
-    private val specializationAdapter: ColumnAdapter<TeamPlayer.Specialization, Long> = SpecializationAdapter(),
+    private val specializationAdapter: ColumnAdapter<Specialization, Long> = SpecializationAdapter(),
     private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
     private val positionAdapter: ColumnAdapter<PlayerPosition, Long> = PositionAdapter(),
     private val matchIdAdapter: ColumnAdapter<MatchId, Long> = MatchIdAdapter(),
@@ -133,24 +133,24 @@ abstract class DatabaseTest(
         insertPlayers.forEach { insertPlayer ->
             val player = insertPlayer.player
             playerQueries.insertPlayer(
-                id = player.teamPlayer.id,
-                name = player.teamPlayer.name,
-                birth_date = player.details.date,
-                height = player.details.height,
-                weight = player.details.weight,
-                range = player.details.weight,
-                updated_at = player.details.updatedAt,
+                id = player.id,
+                name = player.name,
+                birth_date = player.date,
+                height = player.height,
+                weight = player.weight,
+                range = player.weight,
+                updated_at = player.updatedAt,
             )
             teamPlayerQueries.insertPlayer(
-                image_url = player.teamPlayer.imageUrl,
+                image_url = player.imageUrl,
                 tour_team_id = tourTeamQueries.selectId(
-                    team_id = player.teamPlayer.team,
+                    team_id = player.team,
                     tour_id = insertPlayer.tour.id,
                 ).executeAsOne(),
-                specialization = player.teamPlayer.specialization,
-                player_id = player.teamPlayer.id,
-                number = player.details.number,
-                updated_at = player.teamPlayer.updatedAt,
+                specialization = player.specialization,
+                player_id = player.id,
+                number = player.number,
+                updated_at = player.updatedAt,
             )
         }
     }
@@ -161,7 +161,7 @@ abstract class DatabaseTest(
     )
 
     data class InsertPlayer(
-        val player: PlayerWithDetails,
+        val player: Player,
         val tour: Tour,
     )
 }

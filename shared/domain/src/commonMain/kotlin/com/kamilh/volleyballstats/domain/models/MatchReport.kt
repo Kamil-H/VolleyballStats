@@ -4,7 +4,7 @@ import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import kotlin.time.Duration
 
-data class MatchStatistics(
+data class MatchReport(
     val matchId: MatchId,
     val sets: List<MatchSet>,
     val home: MatchTeam,

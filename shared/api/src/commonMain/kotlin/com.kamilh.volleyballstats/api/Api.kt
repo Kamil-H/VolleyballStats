@@ -2,7 +2,7 @@ package com.kamilh.volleyballstats.api
 
 import com.kamilh.volleyballstats.api.match.MatchResponse
 import com.kamilh.volleyballstats.api.match_report.MatchReportResponse
-import com.kamilh.volleyballstats.api.player_with_details.PlayerWithDetailsResponse
+import com.kamilh.volleyballstats.api.player.PlayerResponse
 import com.kamilh.volleyballstats.api.team.TeamResponse
 import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.domain.models.MatchId
@@ -20,7 +20,7 @@ class Api(private val baseUrl: String) {
     fun getTeams(tourId: TourId): Endpoint<List<TeamResponse>> =
         create(path = ApiConstants.PATH_SEGMENT_TEAMS, queryParams = tourId.queryParams)
 
-    fun getPlayers(tourId: TourId): Endpoint<List<PlayerWithDetailsResponse>> =
+    fun getPlayers(tourId: TourId): Endpoint<List<PlayerResponse>> =
         create(path = ApiConstants.PATH_SEGMENT_PLAYERS, queryParams = tourId.queryParams)
 
     fun getMatches(tourId: TourId): Endpoint<List<MatchResponse>> =

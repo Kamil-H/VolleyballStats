@@ -1,11 +1,11 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
-import com.kamilh.volleyballstats.domain.models.Player
 import com.kamilh.volleyballstats.domain.models.PlayerId
-import com.kamilh.volleyballstats.repository.parsing.HtmlParser
-import me.tatarka.inject.annotations.Inject
+import com.kamilh.volleyballstats.models.PlayerSnapshot
 import com.kamilh.volleyballstats.repository.parsing.EmptyResultException
+import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
+import me.tatarka.inject.annotations.Inject
 
 /**
 <div id="hiddenPlayersListAllBuffer">
@@ -21,9 +21,9 @@ import com.kamilh.volleyballstats.repository.parsing.ParseResult
 </div>
  */
 @Inject
-class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<Player>> {
+class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<PlayerSnapshot>> {
 
-    override fun map(html: String): ParseResult<List<Player>> = htmlParser.parse(html) {
+    override fun map(html: String): ParseResult<List<PlayerSnapshot>> = htmlParser.parse(html) {
         getElementById("hiddenPlayersListAllBuffer").children().mapNotNull {
             val thumbnailPlayer = it.getElementsByClass("thumbnail player")
 
@@ -31,7 +31,7 @@ class HtmlToPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<P
             val image = thumbnailPlayer.select("img")
             val name = image.attr("alt")
 
-            Player(
+            PlayerSnapshot(
                 id = PlayerId(id.extractPlayerId()!!),
                 name = name,
             )

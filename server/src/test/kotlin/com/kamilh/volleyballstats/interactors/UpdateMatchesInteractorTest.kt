@@ -158,7 +158,7 @@ class UpdateMatchesInteractorTest {
     fun `interactor returns Insert error when updateMatchReports returns Insert error`() = runTest {
         // GIVEN
         val getAllMatchInfos = listOf(potentiallyFinishedOf())
-        val insertError = InsertMatchStatisticsError.TourNotFound
+        val insertError = InsertMatchReportError.TourNotFound
         val getAllMatches = listOf(matchOf())
 
         // WHEN

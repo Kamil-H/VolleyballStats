@@ -40,7 +40,7 @@ class MatchReportAnalyzerInteractorTest {
     )
 
     private fun paramsOf(
-        matchReport: MatchReport = matchReportOf(),
+        matchReport: RawMatchReport = matchReportOf(),
         tour: Tour = tourOf(),
         matchId: MatchId = matchIdOf(),
     ): MatchReportAnalyzerParams = MatchReportAnalyzerParams(
@@ -237,7 +237,7 @@ class MatchReportAnalyzerInteractorTest {
     )
 }
 
-fun Any.loadMatchReportFile(fileName: String): MatchReport {
+fun Any.loadMatchReportFile(fileName: String): RawMatchReport {
     val pathName = javaClass.classLoader?.getResource(fileName)?.file ?: error("No such file: $fileName")
     val content = File(pathName).readText()
     val response = Json { ignoreUnknownKeys = true }.decodeFromString<MatchResponse>(content)
@@ -246,7 +246,7 @@ fun Any.loadMatchReportFile(fileName: String): MatchReport {
 
 fun matchReportAnalyzerOf(
     appDispatchers: AppDispatchers = testAppDispatchers,
-    invoke: MatchReportAnalyzerResult = MatchReportAnalyzerResult.success(matchStatisticsOf())
+    invoke: MatchReportAnalyzerResult = MatchReportAnalyzerResult.success(com.kamilh.volleyballstats.domain.matchReportOf())
 ): MatchReportAnalyzer = object : MatchReportAnalyzer(appDispatchers) {
     override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult = invoke
 }

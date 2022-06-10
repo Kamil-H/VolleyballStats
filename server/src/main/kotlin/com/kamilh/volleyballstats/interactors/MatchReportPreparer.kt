@@ -4,31 +4,31 @@ import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzer
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerParams
-import com.kamilh.volleyballstats.models.MatchReport
+import com.kamilh.volleyballstats.models.RawMatchReport
 import com.kamilh.volleyballstats.models.MatchReportTeam
-import com.kamilh.volleyballstats.storage.InsertMatchStatisticsError
-import com.kamilh.volleyballstats.storage.MatchStatisticsStorage
+import com.kamilh.volleyballstats.storage.InsertMatchReportError
+import com.kamilh.volleyballstats.storage.MatchReportStorage
 import com.kamilh.volleyballstats.domain.utils.Logger
 import me.tatarka.inject.annotations.Inject
 
 typealias MatchReportPreparer = Interactor<MatchReportPreparerParams, MatchReportPreparerResult>
 
 data class MatchReportPreparerParams(
-    val matches: List<Pair<MatchId, MatchReport>>,
+    val matches: List<Pair<MatchId, RawMatchReport>>,
     val tour: Tour
 )
 
 typealias MatchReportPreparerResult = Result<Unit, MatchReportPreparerError>
 
 sealed class MatchReportPreparerError(override val message: String) : Error {
-    class Insert(val error: InsertMatchStatisticsError) : MatchReportPreparerError("Insert(error=${error.message})")
+    class Insert(val error: InsertMatchReportError) : MatchReportPreparerError("Insert(error=${error.message})")
 }
 
 @Inject
 class MatchReportPreparerInteractor(
     appDispatchers: AppDispatchers,
     private val matchReportAnalyzer: MatchReportAnalyzer,
-    private val matchStatisticsStorage: MatchStatisticsStorage,
+    private val matchReportStorage: MatchReportStorage,
     private val fixWrongPlayers: FixWrongPlayers,
 ) : MatchReportPreparer(appDispatchers) {
 
@@ -50,7 +50,7 @@ class MatchReportPreparerInteractor(
 
     private suspend fun analyze(
         matchId: MatchId,
-        matchReport: MatchReport,
+        matchReport: RawMatchReport,
         tour: Tour,
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
@@ -58,7 +58,7 @@ class MatchReportPreparerInteractor(
             .flatMapError {
                 Logger.i("AnalyzeMatchReport failure: ${it.message}")
                 // Ignoring analyze error. It should be reported and proceeded further
-                Result.success<MatchStatistics?, MatchReportPreparerError>(null)
+                Result.success<MatchReport?, MatchReportPreparerError>(null)
             }
             .flatMap { matchStatistics ->
                 if (matchStatistics != null) {
@@ -75,18 +75,18 @@ class MatchReportPreparerInteractor(
             }
 
     private suspend fun insert(
-        matchReport: MatchReport,
-        matchStatistics: MatchStatistics,
+        matchReport: RawMatchReport,
+        matchStatistics: MatchReport,
         matchId: MatchId,
         tour: Tour,
         tryFixPlayerOnError: Boolean,
     ): MatchReportPreparerResult =
-        matchStatisticsStorage.insert(
-            matchStatistics = matchStatistics,
+        matchReportStorage.insert(
+            matchReport = matchStatistics,
             tourId = tour.id,
         ).flatMapError {
             when (it) {
-                is InsertMatchStatisticsError.PlayerNotFound -> {
+                is InsertMatchReportError.PlayerNotFound -> {
                     Logger.i("matchId: ${matchId}, matchReportId: ${matchStatistics.matchId}, playerIds: ${it.playerIds}")
                     if (tryFixPlayerOnError) {
                         tryUpdatePlayers(
@@ -99,8 +99,8 @@ class MatchReportPreparerInteractor(
                         MatchReportPreparerResult.failure(MatchReportPreparerError.Insert(it))
                     }
                 }
-                is InsertMatchStatisticsError.TeamNotFound, InsertMatchStatisticsError.NoPlayersInTeams,
-                InsertMatchStatisticsError.TourNotFound -> MatchReportPreparerResult.failure(
+                is InsertMatchReportError.TeamNotFound, InsertMatchReportError.NoPlayersInTeams,
+                InsertMatchReportError.TourNotFound -> MatchReportPreparerResult.failure(
                     MatchReportPreparerError.Insert(it)
                 )
             }
@@ -110,7 +110,7 @@ class MatchReportPreparerInteractor(
         matchId: MatchId,
         playersNotFound: List<Pair<PlayerId, TeamId>>,
         tour: Tour,
-        matchReport: MatchReport,
+        matchReport: RawMatchReport,
     ) : MatchReportPreparerResult =
         analyze(
             matchId = matchId,

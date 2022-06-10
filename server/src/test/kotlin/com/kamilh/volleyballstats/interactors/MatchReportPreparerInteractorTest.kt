@@ -2,7 +2,7 @@ package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.models.MatchId
-import com.kamilh.volleyballstats.domain.models.MatchStatistics
+import com.kamilh.volleyballstats.domain.models.MatchReport
 import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
@@ -10,15 +10,13 @@ import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzer
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerError
 import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerResult
 import com.kamilh.volleyballstats.match_analyzer.matchReportAnalyzerOf
-import com.kamilh.volleyballstats.models.MatchReport
+import com.kamilh.volleyballstats.models.RawMatchReport
+import com.kamilh.volleyballstats.models.matchReportIdOf
 import com.kamilh.volleyballstats.models.matchReportOf
 import com.kamilh.volleyballstats.models.matchReportTeamOf
-import com.kamilh.volleyballstats.domain.assertFailure
-import com.kamilh.volleyballstats.domain.assertSuccess
-import com.kamilh.volleyballstats.models.matchReportIdOf
-import com.kamilh.volleyballstats.storage.InsertMatchStatisticsError
-import com.kamilh.volleyballstats.storage.InsertMatchStatisticsResult
-import com.kamilh.volleyballstats.storage.MatchStatisticsStorage
+import com.kamilh.volleyballstats.storage.InsertMatchReportError
+import com.kamilh.volleyballstats.storage.InsertMatchReportResult
+import com.kamilh.volleyballstats.storage.MatchReportStorage
 import com.kamilh.volleyballstats.storage.matchStatisticsStorageOf
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
@@ -29,30 +27,30 @@ class MatchReportPreparerInteractorTest {
     private fun interactor(
         appDispatchers: AppDispatchers = testAppDispatchers,
         matchReportAnalyzer: MatchReportAnalyzer = matchReportAnalyzerOf(),
-        matchStatisticsStorage: MatchStatisticsStorage = matchStatisticsStorageOf(),
+        matchReportStorage: MatchReportStorage = matchStatisticsStorageOf(),
         fixWrongPlayers: FixWrongPlayers = wrongPlayerFixerOf(),
     ): MatchReportPreparerInteractor = MatchReportPreparerInteractor(
         appDispatchers = appDispatchers,
         matchReportAnalyzer = matchReportAnalyzer,
-        matchStatisticsStorage = matchStatisticsStorage,
+        matchReportStorage = matchReportStorage,
         fixWrongPlayers = fixWrongPlayers,
     )
 
     private fun paramsOf(
-        matches: List<Pair<MatchId, MatchReport>> = emptyList(),
+        matches: List<Pair<MatchId, RawMatchReport>> = emptyList(),
         tour: Tour = tourOf(),
     ): MatchReportPreparerParams = MatchReportPreparerParams(
         matches = matches,
         tour = tour,
     )
 
-    private fun insertCallbackOf(callback: () -> InsertMatchStatisticsResult): (matchStatistics: MatchStatistics, tourId: TourId) -> InsertMatchStatisticsResult =
+    private fun insertCallbackOf(callback: () -> InsertMatchReportResult): (matchReport: MatchReport, tourId: TourId) -> InsertMatchReportResult =
         { _, _ -> callback() }
 
     @Test
     fun `interactor returns Success when empty matches list is passed`() = runTest {
         // GIVEN
-        val matches = emptyList<Pair<MatchId, MatchReport>>()
+        val matches = emptyList<Pair<MatchId, RawMatchReport>>()
 
         // WHEN
         val result = interactor()(paramsOf(matches = matches))
@@ -64,20 +62,20 @@ class MatchReportPreparerInteractorTest {
     @Test
     fun `interactor returns Insert error analyze returns TourNotFound`() = runTest {
         // GIVEN
-        val matches = listOf<Pair<MatchId, MatchReport>>(matchIdOf() to matchReportOf())
+        val matches = listOf(matchIdOf() to matchReportOf())
 
         // WHEN
         val result = interactor(
-            matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(matchStatisticsOf())),
-            matchStatisticsStorage = matchStatisticsStorageOf(
-                insert = insertCallbackOf { InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TourNotFound) }
+            matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(com.kamilh.volleyballstats.domain.matchReportOf())),
+            matchReportStorage = matchStatisticsStorageOf(
+                insert = insertCallbackOf { InsertMatchReportResult.failure(InsertMatchReportError.TourNotFound) }
             )
         )(paramsOf(matches = matches))
 
         // THEN
         result.assertFailure {
             require(this is MatchReportPreparerError.Insert)
-            assert(error == InsertMatchStatisticsError.TourNotFound)
+            assert(error == InsertMatchReportError.TourNotFound)
         }
     }
 
@@ -90,8 +88,8 @@ class MatchReportPreparerInteractorTest {
         // WHEN
         val result = interactor(
             matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.failure(error)),
-            matchStatisticsStorage = matchStatisticsStorageOf(
-                insert = insertCallbackOf { InsertMatchStatisticsResult.failure(InsertMatchStatisticsError.TourNotFound) }
+            matchReportStorage = matchStatisticsStorageOf(
+                insert = insertCallbackOf { InsertMatchReportResult.failure(InsertMatchReportError.TourNotFound) }
             )
         )(paramsOf(matches = matches))
 
@@ -107,15 +105,15 @@ class MatchReportPreparerInteractorTest {
         var numberOfCalls = 0
         val insert = insertCallbackOf {
             numberOfCalls++
-            InsertMatchStatisticsResult.failure(
-                error = InsertMatchStatisticsError.PlayerNotFound(emptyList())
+            InsertMatchReportResult.failure(
+                error = InsertMatchReportError.PlayerNotFound(emptyList())
             )
         }
 
         // WHEN
         val result = interactor(
-            matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(matchStatisticsOf())),
-            matchStatisticsStorage = matchStatisticsStorageOf(insert = insert),
+            matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(com.kamilh.volleyballstats.domain.matchReportOf())),
+            matchReportStorage = matchStatisticsStorageOf(insert = insert),
             fixWrongPlayers = wrongPlayerFixerOf(invoke = fixedMatchReportTeam)
         )(paramsOf(matches = matches))
 
@@ -123,7 +121,7 @@ class MatchReportPreparerInteractorTest {
         assert(numberOfCalls == 2)
         result.assertFailure {
             require(this is MatchReportPreparerError.Insert)
-            assert(error is InsertMatchStatisticsError.PlayerNotFound)
+            assert(error is InsertMatchReportError.PlayerNotFound)
         }
     }
 
@@ -131,12 +129,12 @@ class MatchReportPreparerInteractorTest {
     fun `interactor returns Success when all returns Success`() = runTest {
         // GIVEN
         val matches = listOf(matchIdOf() to matchReportOf())
-        val insert = insertCallbackOf { InsertMatchStatisticsResult.success(Unit) }
+        val insert = insertCallbackOf { InsertMatchReportResult.success(Unit) }
 
         // WHEN
         val result = interactor(
-            matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(matchStatisticsOf())),
-            matchStatisticsStorage = matchStatisticsStorageOf(insert = insert),
+            matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(com.kamilh.volleyballstats.domain.matchReportOf())),
+            matchReportStorage = matchStatisticsStorageOf(insert = insert),
         )(paramsOf(matches = matches))
 
         // THEN

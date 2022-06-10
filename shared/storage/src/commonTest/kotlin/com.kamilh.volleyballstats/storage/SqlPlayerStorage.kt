@@ -3,12 +3,10 @@ package com.kamilh.volleyballstats.storage
 import app.cash.turbine.test
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.models.League
+import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.Tour
-import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.utils.localDateTime
 import kotlinx.coroutines.test.runTest
-import com.kamilh.volleyballstats.domain.assertFailure
-import com.kamilh.volleyballstats.domain.assertSuccess
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
@@ -39,7 +37,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
     @Test
     fun `insert returns TourNotFound when no tour in the database`() = runTest {
         // GIVEN
-        val player = playerWithDetailsOf()
+        val player = playerOf()
         val tourId = tourIdOf()
 
         // WHEN
@@ -67,9 +65,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val tour = tourOf()
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
-        val player = playerWithDetailsOf(
-            teamPlayer = teamPlayerOf(team = teamId)
-        )
+        val player = playerOf(team = teamId)
         configure(
             leagues = listOf(tour.league),
             tours = listOf(tour),
@@ -92,9 +88,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val tourYear = seasonOf()
         val tour = tourOf(season = tourYear, league = league)
         val teamId = teamIdOf(1)
-        val player = playerWithDetailsOf(
-            teamPlayer = teamPlayerOf(team = teamId)
-        )
+        val player = playerOf(team = teamId)
         configure(
             leagues = listOf(league),
             tours = listOf(tour),
@@ -120,9 +114,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val tour = tourOf(season = tourYear)
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
-        val player = playerWithDetailsOf(
-            teamPlayer = teamPlayerOf(team = teamId)
-        )
+        val player = playerOf(team = teamId)
         configure(
             leagues = listOf(league),
             tours = listOf(tour),
@@ -137,7 +129,7 @@ class SqlPlayerStorageTest : DatabaseTest() {
         result.assertFailure {
             require(this is InsertPlayerError.Errors)
             assertTrue(this.teamsNotFound.isEmpty())
-            assertTrue(this.teamPlayersAlreadyExists.contains(player.teamPlayer.id))
+            assertTrue(this.teamPlayersAlreadyExists.contains(player.id))
         }
         playerQueries.selectAll().executeAsList().isEmpty()
         teamPlayerQueries.selectAll().executeAsList().isEmpty()
@@ -154,18 +146,13 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val now = localDateTime()
         val playerUpdatedAt = now.plus(1.days)
         val detailsUpdatedAt = now.plus(2.days)
-        val teamPlayer = playerWithDetailsOf(
-            teamPlayer = teamPlayerOf(
-                team = teamId,
-                name = "name",
-                specialization = TeamPlayer.Specialization.MiddleBlocker,
-                updatedAt = playerUpdatedAt,
-            ),
-            details = playerDetailsOf(
-                height = 201,
-                weight = 91,
-                updatedAt = detailsUpdatedAt,
-            )
+        val teamPlayer = playerOf(
+            team = teamId,
+            name = "name",
+            specialization = Specialization.MiddleBlocker,
+            height = 201,
+            weight = 91,
+            updatedAt = detailsUpdatedAt,
         )
         configure(
             leagues = listOf(league),

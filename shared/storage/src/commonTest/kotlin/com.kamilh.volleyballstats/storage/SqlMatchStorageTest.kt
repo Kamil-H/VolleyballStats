@@ -3,8 +3,6 @@ package com.kamilh.volleyballstats.storage
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.domain.assertFailure
-import com.kamilh.volleyballstats.domain.assertSuccess
 import com.kamilh.volleyballstats.storage.databse.SelectAllMatchesByTour
 import com.kamilh.volleyballstats.utils.localDateTime
 import com.kamilh.volleyballstats.utils.zonedDateTime
@@ -17,7 +15,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
-class SqlMatchStorageTest : StatisticsStorageTest() {
+class SqlMatchStorageTest : ReportStorageTest() {
 
     private val matchStorage by lazy {
         SqlMatchStorage(
@@ -203,7 +201,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
             insert(insertTeam)
             insert(
                 InsertPlayer(
-                    player = playerWithDetailsOf(teamPlayer = teamPlayerOf(team = insertTeam.team.id)),
+                    player = playerOf(team = insertTeam.team.id),
                     tour = tour,
                 )
             )
@@ -212,7 +210,7 @@ class SqlMatchStorageTest : StatisticsStorageTest() {
         val range = (1..size)
         val matches = (1..size + 1).map { index -> matchOf(matchIdOf(index.toLong())) }
         val matchStats = range.map { index ->
-            matchStatisticsOf(
+            matchReportOf(
                 away = teams.removeFirst(),
                 home = teams.removeFirst(),
                 matchId = matchIdOf(index.toLong()),

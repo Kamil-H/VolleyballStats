@@ -5,11 +5,10 @@ import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.models.PlayAction.*
-import com.kamilh.volleyballstats.domain.models.PlayAction.Set
 import kotlin.time.Duration
 
-fun getMatchStatistics(id: MatchId): MatchStatistics =
-    matchStatisticsOf(
+fun getMatchReport(id: MatchId): MatchReport =
+    matchReportOf(
         matchId = id,
         home = matchTeamOf(
             teamId = teamIdOf(value = 30288),

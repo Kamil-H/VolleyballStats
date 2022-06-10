@@ -3,17 +3,16 @@ package com.kamilh.volleyballstats.storage
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.models.MatchId
-import com.kamilh.volleyballstats.domain.models.MatchStatistics
+import com.kamilh.volleyballstats.domain.models.MatchReport
 import com.kamilh.volleyballstats.domain.models.Season
-import com.kamilh.volleyballstats.domain.assertSuccess
 import kotlinx.coroutines.flow.first
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-abstract class StatisticsStorageTest : DatabaseTest() {
+abstract class ReportStorageTest : DatabaseTest() {
 
-    protected val storage: SqlMatchStatisticsStorage by lazy {
-        SqlMatchStatisticsStorage(
+    protected val storage: SqlMatchReportStorage by lazy {
+        SqlMatchReportStorage(
             queryRunner = testQueryRunner,
             teamQueries = teamQueries,
             teamPlayerQueries = teamPlayerQueries,
@@ -39,9 +38,9 @@ abstract class StatisticsStorageTest : DatabaseTest() {
         league: League = leagueOf(),
         season: Season = seasonOf(2020),
         matchId: MatchId = matchIdOf(),
-    ): MatchStatistics {
+    ): MatchReport {
         // GIVEN
-        val matchStatistics = getMatchStatistics(matchId)
+        val matchStatistics = getMatchReport(matchId)
         val tour = tourOf(league = league, season = season)
 
         val homeId = matchStatistics.home.teamId
@@ -67,9 +66,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             insert(
                 InsertPlayer(
                     tour = tour,
-                    player = playerWithDetailsOf(
-                        teamPlayer = teamPlayerOf(id = teamPlayer, team = homeId),
-                    )
+                    player = playerOf(id = teamPlayer, team = homeId)
                 )
             )
         }
@@ -77,9 +74,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
             insert(
                 InsertPlayer(
                     tour = tour,
-                    player = playerWithDetailsOf(
-                        teamPlayer = teamPlayerOf(id = teamPlayer, team = awayId),
-                    )
+                    player = playerOf(id = teamPlayer, team = awayId)
                 )
             )
         }
@@ -89,7 +84,7 @@ abstract class StatisticsStorageTest : DatabaseTest() {
 
         // THEN
         val result = matchStatisticsQueries.selectAll().executeAsList()
-        assertEquals(expected = matchStatistics, storage.getAllMatchStatistics().first().first())
+        assertEquals(expected = matchStatistics, storage.getAllMatchReports().first().first())
         assertTrue(result.isNotEmpty())
         insertResult.assertSuccess()
         return matchStatistics

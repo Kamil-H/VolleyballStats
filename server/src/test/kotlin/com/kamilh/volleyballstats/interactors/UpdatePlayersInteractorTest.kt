@@ -1,11 +1,9 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.domain.models.TeamPlayer
 import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.kamilh.volleyballstats.domain.assertFailure
-import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.models.TeamPlayer
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository

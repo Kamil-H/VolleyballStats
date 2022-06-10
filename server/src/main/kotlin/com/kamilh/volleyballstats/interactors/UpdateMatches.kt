@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
-import com.kamilh.volleyballstats.storage.InsertMatchStatisticsError
+import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import com.kamilh.volleyballstats.storage.MatchStorage
 import com.kamilh.volleyballstats.storage.TourStorage
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
@@ -29,7 +29,7 @@ sealed class UpdateMatchesError(override val message: String) : Error {
     object TourNotFound : UpdateMatchesError("TourNotFound")
     object NoMatchesInTour : UpdateMatchesError("NoMatchesInTour")
     class Network(val networkError: NetworkError) : UpdateMatchesError("Network(networkError: ${networkError.message})")
-    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchesError("Insert(error: ${error.message})")
+    class Insert(val error: InsertMatchReportError) : UpdateMatchesError("Insert(error: ${error.message})")
 }
 
 @Inject

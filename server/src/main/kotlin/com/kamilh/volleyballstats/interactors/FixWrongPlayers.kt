@@ -2,12 +2,11 @@ package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.kamilh.volleyballstats.models.MatchReportPlayer
-import com.kamilh.volleyballstats.models.MatchReportTeam
+import com.kamilh.volleyballstats.domain.utils.Logger
+import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.storage.InsertPlayerError
 import com.kamilh.volleyballstats.storage.PlayerStorage
-import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.utils.findSimilarity
 import me.tatarka.inject.annotations.Inject
 
@@ -39,7 +38,7 @@ class FixWrongPlayersInteractor(
     }
 
     private suspend fun MatchReportTeam.fixPlayers(
-        allPlayers: List<Player>,
+        allPlayers: List<PlayerSnapshot>,
         allTeamPlayers: List<TeamPlayer>,
         playersNotFound: List<Pair<PlayerId, TeamId>>,
         tour: Tour,
@@ -65,7 +64,7 @@ class FixWrongPlayersInteractor(
     }
 
     private suspend fun findPlayerId(
-        allPlayers: List<Player>,
+        allPlayers: List<PlayerSnapshot>,
         allTeamPlayers: List<TeamPlayer>,
         matchPlayer: MatchReportPlayer,
         tour: Tour,
@@ -83,7 +82,7 @@ class FixWrongPlayersInteractor(
         }
     }
 
-    private fun List<Player>.findByName(matchPlayer: MatchReportPlayer): PlayerId =
+    private fun List<PlayerSnapshot>.findByName(matchPlayer: MatchReportPlayer): PlayerId =
         firstOrNull { player ->
             player.name.contains(matchPlayer.firstName) && player.name.contains(matchPlayer.lastName)
         }?.id ?: firstOrNull { player ->
@@ -133,7 +132,7 @@ class FixWrongPlayersInteractor(
                         number = matchPlayer.shirtNumber,
                     )
                 )
-            ),
+            ).map { it.toPlayer() },
             tourId = tour.id,
         ).onFailure { error ->
             val message = when (error) {

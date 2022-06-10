@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.api.MappersModule
 import com.kamilh.volleyballstats.api.ResponseMapper
 import com.kamilh.volleyballstats.api.match.MatchResponse
 import com.kamilh.volleyballstats.api.match_report.MatchReportResponse
-import com.kamilh.volleyballstats.api.player_with_details.PlayerWithDetailsResponse
+import com.kamilh.volleyballstats.api.player.PlayerResponse
 import com.kamilh.volleyballstats.api.team.TeamResponse
 import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.authorization.AuthorizationModule
@@ -76,22 +76,22 @@ abstract class TestComponent(@Component val parent: AppModule) {
     abstract val databaseFactory: DatabaseFactory
     abstract val json: Json
     abstract val leagueStorage: LeagueStorage
-    abstract val matchStatisticsStorage: MatchStatisticsStorage
+    abstract val matchReportStorage: MatchReportStorage
     abstract val matchStorage: MatchStorage
     abstract val playerStorage: PlayerStorage
     abstract val tourStorage: TourStorage
     abstract val teamStorage: TeamStorage
 
     abstract val matchMapper: ResponseMapper<Match, MatchResponse>
-    abstract val matchReportMapper: ResponseMapper<MatchStatistics, MatchReportResponse>
-    abstract val playerWithDetailsMapper: ResponseMapper<PlayerWithDetails, PlayerWithDetailsResponse>
+    abstract val matchReportMapper: ResponseMapper<MatchReport, MatchReportResponse>
+    abstract val playerMapper: ResponseMapper<Player, PlayerResponse>
     abstract val teamMapper: ResponseMapper<Team, TeamResponse>
     abstract val tourMapper: ResponseMapper<Tour, TourResponse>
 
     val storages by lazy {
         Storages(
             leagueStorage = leagueStorage,
-            matchStatisticsStorage = matchStatisticsStorage,
+            matchReportStorage = matchReportStorage,
             matchStorage = matchStorage,
             playerStorage = playerStorage,
             tourStorage = tourStorage,
@@ -103,18 +103,18 @@ abstract class TestComponent(@Component val parent: AppModule) {
         Mappers(
             matchMapper = matchMapper,
             matchReportMapper = matchReportMapper,
-            playerWithDetailsMapper = playerWithDetailsMapper,
+            playerMapper = playerMapper,
             teamMapper = teamMapper,
             tourMapper = tourMapper,
         )
     }
 
-    val api: com.kamilh.volleyballstats.api.Api
-        @Provides get() = com.kamilh.volleyballstats.api.Api(baseUrl = "")
+    val api: Api
+        @Provides get() = Api(baseUrl = "")
 
     class Storages(
         val leagueStorage: LeagueStorage,
-        val matchStatisticsStorage: MatchStatisticsStorage,
+        val matchReportStorage: MatchReportStorage,
         val matchStorage: MatchStorage,
         val playerStorage: PlayerStorage,
         val tourStorage: TourStorage,
@@ -123,8 +123,8 @@ abstract class TestComponent(@Component val parent: AppModule) {
 
     class Mappers(
         val matchMapper: ResponseMapper<Match, MatchResponse>,
-        val matchReportMapper: ResponseMapper<MatchStatistics, MatchReportResponse>,
-        val playerWithDetailsMapper: ResponseMapper<PlayerWithDetails, PlayerWithDetailsResponse>,
+        val matchReportMapper: ResponseMapper<MatchReport, MatchReportResponse>,
+        val playerMapper: ResponseMapper<Player, PlayerResponse>,
         val teamMapper: ResponseMapper<Team, TeamResponse>,
         val tourMapper: ResponseMapper<Tour, TourResponse>,
     )

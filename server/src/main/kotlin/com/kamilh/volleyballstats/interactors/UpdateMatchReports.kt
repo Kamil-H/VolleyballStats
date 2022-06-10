@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.extensions.mapAsync
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
-import com.kamilh.volleyballstats.storage.InsertMatchStatisticsError
+import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import kotlinx.coroutines.coroutineScope
 import me.tatarka.inject.annotations.Inject
 
@@ -20,7 +20,7 @@ typealias UpdateMatchReportResult = Result<Unit, UpdateMatchReportError>
 
 sealed class UpdateMatchReportError(override val message: String) : Error {
     class Network(val networkError: NetworkError) : UpdateMatchReportError("Network(networkError=${networkError.message}")
-    class Insert(val error: InsertMatchStatisticsError) : UpdateMatchReportError("Insert(error=${error.message}")
+    class Insert(val error: InsertMatchReportError) : UpdateMatchReportError("Insert(error=${error.message}")
 }
 
 @Inject

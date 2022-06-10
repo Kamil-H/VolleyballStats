@@ -1,6 +1,9 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.Effect
+import com.kamilh.volleyballstats.domain.models.Phase
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Skill
 import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.models.Set
 import com.kamilh.volleyballstats.repository.models.*
@@ -9,32 +12,17 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class MatchResponseToMatchReportMapper {
 
-    fun map(from: MatchResponse): MatchReport =
-        MatchReport(
-            id = from._id,
-            category = from.category,
-            city = from.city,
-            competition = from.competition,
-            createdAt = from.createdAt,
-            division = from.division,
-            hall = from.hall,
+    fun map(from: MatchResponse): RawMatchReport =
+        RawMatchReport(
             matchId = MatchReportId(from.matchId.toLong()),
-            matchNumber = from.matchNumber,
-            officials = from.officials.toOfficials(),
             phase = when {
                 PHASE_REGULAR_SEASON.contains(from.phase.trim()) -> Phase.RegularSeason
                 PHASE_PLAYOFF.contains(from.phase.trim()) -> Phase.PlayOff
                 else -> error("Wrong Phase: ${from.phase}")
             },
-            remarks = from.remarks,
-            commissionerRemarks = from.commissionerRemarks,
             scout = from.scout.toScout(),
             scoutData = from.scoutData.map { it.map { it.toScoutData() } },
-            settings = from.settings.toSettings(),
-            spectators = from.spectators,
-            startDate = from.startDate,
             matchTeams = from.teams.toTeams(),
-            updatedAt = from.updatedAt,
         )
 
     private fun TeamsResponse.toTeams(): MatchTeams =
@@ -45,13 +33,10 @@ class MatchResponseToMatchReportMapper {
 
     private fun TeamResponse.toMatchTeam(): MatchReportTeam =
         MatchReportTeam(
-            captain = captain,
             code = code,
             libero = libero,
             name = name,
             players = players.map { it.toTeamPlayer() },
-            shortName = shortName,
-            staff = staff.toStaff()
         )
 
     private fun PlayerResponse.toTeamPlayer(): MatchReportPlayer =
@@ -63,82 +48,9 @@ class MatchResponseToMatchReportMapper {
             shirtNumber = shirtNumber,
         )
 
-    private fun StaffResponse.toStaff(): Staff =
-        Staff(
-            assistant1 = assistant1?.toAssistant(),
-            assistant2 = assistant2?.toAssistant(),
-            coach = coach.toCoach(),
-            medical1 = medical1?.toMedical(),
-            medical2 = medical2?.toMedical(),
-        )
-
-    private fun MedicalResponse.toMedical(): Medical =
-        Medical(
-            firstName = firstName,
-            lastName = lastName,
-            type = type,
-        )
-
-    private fun AssistantResponse.toAssistant(): Assistant =
-        Assistant(
-            firstName = firstName,
-            lastName = lastName,
-        )
-
-    private fun CoachResponse.toCoach(): Coach =
-        Coach(
-            firstName = firstName,
-            lastName = lastName,
-        )
-
-    private fun OfficialsResponse.toOfficials(): Officials =
-        Officials(
-            commissioner = commissioner.toCommissioner(),
-            referee1 = referee1.toReferee(),
-            referee2 = referee2.toReferee(),
-            scorer1 = scorer1?.toScorer(),
-            scorer2 = scorer2?.toScorer(),
-            supervisor = supervisor?.toSupervisor(),
-            lineJudge1 = lineJudge1?.toLineJudge(),
-            lineJudge2 = lineJudge2?.toLineJudge(),
-        )
-
-    private fun CommissionerResponse.toCommissioner(): Commissioner =
-        Commissioner(
-            firstName = firstName,
-            lastName = lastName,
-        )
-
-    private fun RefereeResponse.toReferee(): Referee =
-        Referee(
-            firstName = firstName,
-            lastName = lastName,
-            level = level,
-        )
-
-    private fun ScorerResponse.toScorer(): Scorer =
-        Scorer(
-            firstName = firstName,
-            lastName = lastName,
-            level = level,
-        )
-
-    private fun SupervisorResponse.toSupervisor(): Supervisor =
-        Supervisor(
-            firstName = firstName,
-            lastName = lastName,
-        )
-
-    private fun LineJudgeResponse.toLineJudge(): LineJudge =
-        LineJudge(
-            firstName = firstName,
-            lastName = lastName,
-        )
-
     private fun ScoutResponse.toScout(): Scout =
         Scout(
             bestPlayer = bestPlayer?.toBestPlayer(),
-            coinToss = coinToss.toCoinToss(),
             ended = ended,
             mvp = mvp.toMvp(),
             sets = sets.map { it.toSet() },
@@ -150,36 +62,18 @@ class MatchResponseToMatchReportMapper {
             team = team.toTeamType(),
         )
 
-    private fun CoinTossResponse.toCoinToss(): CoinToss =
-        CoinToss(
-            start = start.toStart(),
-            deciding = deciding?.toDeciding(),
-        )
-
-    private fun StartResponse.toStart(): Start =
-        Start(
-            leftSide = leftSide,
-            serve = serve,
-        )
-
-    private fun DecidingResponse.toDeciding(): Deciding =
-        Deciding(
-            leftSide = leftSide,
-            serve = serve,
-        )
-
     private fun MvpResponse.toMvp(): Mvp =
         Mvp(
             number = number,
             team = team.toTeamType(),
         )
 
-    private fun SetResponse.toSet(): com.kamilh.volleyballstats.models.Set =
+    private fun SetResponse.toSet(): Set =
         Set(
             duration = duration,
             endTime = endTime,
             events = events.flatMap { it.toEvent() },
-            score = score.toScore(),
+            matchScore = score.toScore(),
             startTime = startTime,
             startingLineup = startingLineup.toStartingLineup(),
         )
@@ -253,7 +147,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun ManualChangeResponse.toManualChange(): Event.ManualChange =
         Event.ManualChange(
-            score = score.toScore(),
+            matchScore = score.toScore(),
             lineup = lineup.toStartingLineup(),
             serve = serve.toTeamType(),
             time = null,
@@ -301,8 +195,8 @@ class MatchResponseToMatchReportMapper {
             time = time,
         )
 
-    private fun ScoreResponse.toScore(): com.kamilh.volleyballstats.models.Score =
-        com.kamilh.volleyballstats.models.Score(
+    private fun ScoreResponse.toScore(): MatchScore =
+        MatchScore(
             away = away,
             home = home,
         )
@@ -313,19 +207,12 @@ class MatchResponseToMatchReportMapper {
             home = home,
         )
 
-    private fun SettingsResponse.toSettings(): Settings =
-        Settings(
-            decidingSetWin = decidingSetWin,
-            regularSetWin = regularSetWin,
-            winningScore = winningScore,
-        )
-
     private fun ScoutDataResponse.toScoutData(): ScoutData =
         ScoutData(
             id = _id,
             plays = plays.map { it.toPlay() },
             point = point.toTeamType(),
-            score = score.toScore(),
+            matchScore = score.toScore(),
         )
 
     private fun PlayResponse.toPlay(): Play =
@@ -396,7 +283,8 @@ class MatchResponseToMatchReportMapper {
             "o 11-12 miejsce", "Play Off - o 5-6 miejsce", "Play off - 1/4 finału", "PLAY OFF - 1/2 finału", "o 9-10 miejsce",
             "o 11--12 miejsce", "PLAY OFF  - o miejsca 1-2", "PLAY OFF  - 1/2 finału", "Play Off 1/4 finału", "Mecz o 1-2 miejsce",
             "PLAY -OFF o miejsca 3-4", "PLAY-OFF,  o miejsca 3-4", "O miejsce 5-6", "Play Off - o 9-10 miejsce", "Play- Off - 1/2 Finału",
-            "Play Off o 3 -- 4 miejsce", "Play off o miejsce 5", "O 3. miejsce",
+            "Play Off o 3 -- 4 miejsce", "Play off o miejsce 5", "O 3. miejsce", "Baraż", "Play-out", "Baraż o prawo gry w PlusLidze w sezonie 2022/2023",
+            "Play Out - Baraż"
         )
         private val PHASE_REGULAR_SEASON = listOf("FZ", "ZAS", "Faza Zasadnicza")
     }

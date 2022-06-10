@@ -13,7 +13,7 @@ import com.kamilh.volleyballstats.network.result.networkSuccessOf
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
 import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
-import com.kamilh.volleyballstats.storage.InsertMatchStatisticsError
+import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -95,7 +95,7 @@ class UpdateMatchReportsTest {
     fun `interactor returns Insert error when matchReportPreparer returns error`() = runTest {
         // GIVEN
         val matches = listOf(potentiallyFinishedOf())
-        val insertError = InsertMatchStatisticsError.TourNotFound
+        val insertError = InsertMatchReportError.TourNotFound
 
         // WHEN
         val result = interactor(

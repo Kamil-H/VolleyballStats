@@ -1,11 +1,13 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.models.Player
 import com.kamilh.volleyballstats.domain.models.PlayerId
-import com.kamilh.volleyballstats.domain.models.PlayerWithDetails
 import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.domain.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.Severity
 import com.kamilh.volleyballstats.models.MatchReportTeam
 import com.kamilh.volleyballstats.models.matchReportPlayerOf
 import com.kamilh.volleyballstats.models.matchReportTeamOf
@@ -17,8 +19,6 @@ import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepository
 import com.kamilh.volleyballstats.storage.InsertPlayerResult
 import com.kamilh.volleyballstats.storage.PlayerStorage
 import com.kamilh.volleyballstats.storage.playerStorageOf
-import com.kamilh.volleyballstats.domain.utils.Logger
-import com.kamilh.volleyballstats.domain.utils.Severity
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -164,7 +164,7 @@ class FixWrongPlayersInteractorTest {
             polishLeagueRepository = polishLeagueRepositoryOf(
                 getAllPlayers = networkSuccessOf(
                     listOf(
-                        playerOf(
+                        playerSnapshotOf(
                             id = newPlayerId,
                             name = name,
                         )
@@ -211,7 +211,7 @@ class FixWrongPlayersInteractorTest {
             polishLeagueRepository = polishLeagueRepositoryOf(
                 getAllPlayers = networkSuccessOf(
                     listOf(
-                        playerOf(
+                        playerSnapshotOf(
                             id = newPlayerId,
                             name = name,
                         )
@@ -249,7 +249,7 @@ class FixWrongPlayersInteractorTest {
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
                 getAllPlayers = networkSuccessOf(
-                    listOf(playerOf(id = playerId))
+                    listOf(playerSnapshotOf(id = playerId))
                 ),
                 getAllPlayersByTour = networkSuccessOf(
                     listOf(teamPlayerOf(id = playerId))
@@ -275,12 +275,12 @@ class FixWrongPlayersInteractorTest {
         val shirtNumber = 7
         val matchPlayer = matchReportPlayerOf(id = playerId, shirtNumber = shirtNumber)
         val team = matchReportTeamOf(players = listOf(matchPlayer))
-        var insertedPlayers = emptyList<PlayerWithDetails>()
+        var insertedPlayers = emptyList<Player>()
 
         // WHEN
         interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllPlayers = networkSuccessOf(listOf(playerOf(id = playerId))),
+                getAllPlayers = networkSuccessOf(listOf(playerSnapshotOf(id = playerId))),
                 getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf(id = playerId))),
             ),
             playerStorage = playerStorageOf(
@@ -299,9 +299,9 @@ class FixWrongPlayersInteractorTest {
         // THEN
         assert(
             insertedPlayers.all {
-                it.details.number == shirtNumber
+                it.number == shirtNumber
             } && insertedPlayers.all {
-                it.teamPlayer.team == teamId
+                it.team == teamId
             }
         )
     }

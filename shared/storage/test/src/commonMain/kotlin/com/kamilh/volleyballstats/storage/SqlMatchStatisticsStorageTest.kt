@@ -1,18 +1,18 @@
 package com.kamilh.volleyballstats.storage
 
-import com.kamilh.volleyballstats.domain.models.MatchStatistics
+import com.kamilh.volleyballstats.domain.models.MatchReport
 import com.kamilh.volleyballstats.domain.models.TourId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 fun matchStatisticsStorageOf(
-    insert: (matchStatistics: MatchStatistics, tourId: TourId) -> InsertMatchStatisticsResult = { _, _ ->
-        InsertMatchStatisticsResult.success(Unit)
+    insert: (matchReport: MatchReport, tourId: TourId) -> InsertMatchReportResult = { _, _ ->
+        InsertMatchReportResult.success(Unit)
     },
-    getAllMatchStatistics: Flow<List<MatchStatistics>> = flowOf(emptyList()),
-): MatchStatisticsStorage = object : MatchStatisticsStorage {
-    override suspend fun insert(matchStatistics: MatchStatistics, tourId: TourId): InsertMatchStatisticsResult =
-        insert(matchStatistics, tourId)
+    getAllMatchReport: Flow<List<MatchReport>> = flowOf(emptyList()),
+): MatchReportStorage = object : MatchReportStorage {
+    override suspend fun insert(matchReport: MatchReport, tourId: TourId): InsertMatchReportResult =
+        insert(matchReport, tourId)
 
-    override fun getAllMatchStatistics(): Flow<List<MatchStatistics>> = getAllMatchStatistics
+    override fun getAllMatchReports(): Flow<List<MatchReport>> = getAllMatchReport
 }

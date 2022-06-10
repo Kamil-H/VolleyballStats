@@ -1,45 +1,21 @@
 package com.kamilh.volleyballstats.models
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.Effect
+import com.kamilh.volleyballstats.domain.models.Phase
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Skill
 
-data class MatchReport(
-    val id: String,
-    val category: String,
-    val city: String?,
-    val competition: String?,
-    val createdAt: LocalDateTime,
-    val division: String,
-    val hall: String,
+data class RawMatchReport(
     val matchId: MatchReportId,
-    val matchNumber: String?,
-    val officials: Officials,
     val phase: Phase,
-    val remarks: String?,
-    val commissionerRemarks: String?,
     val scout: Scout,
     val scoutData: List<List<ScoutData>>,
-    val settings: Settings,
-    val spectators: Int,
-    val startDate: String,
     val matchTeams: MatchTeams,
-    val updatedAt: String
-)
-
-data class Officials(
-    val supervisor: Supervisor?,
-    val commissioner: Commissioner,
-    val referee1: Referee,
-    val referee2: Referee,
-    val scorer1: Scorer?,
-    val scorer2: Scorer?,
-    val lineJudge1: LineJudge?,
-    val lineJudge2: LineJudge?,
 )
 
 data class Scout(
     val bestPlayer: BestPlayer?,
-    val coinToss: CoinToss,
     val ended: LocalDateTime,
     val mvp: Mvp,
     val sets: List<Set>
@@ -49,13 +25,7 @@ data class ScoutData(
     val id: String,
     val plays: List<Play>,
     val point: TeamType,
-    val score: Score,
-)
-
-data class Settings(
-    val decidingSetWin: Int,
-    val regularSetWin: Int,
-    val winningScore: Int,
+    val matchScore: MatchScore,
 )
 
 data class MatchTeams(
@@ -63,36 +33,9 @@ data class MatchTeams(
     val home: MatchReportTeam,
 )
 
-data class Commissioner(
-    val firstName: String,
-    val lastName: String,
-)
-
-data class Referee(
-    val firstName: String,
-    val lastName: String,
-    val level: String,
-)
-
-data class Scorer(
-    val firstName: String,
-    val lastName: String,
-    val level: String?,
-)
-
 data class BestPlayer(
     val number: Int,
     val team: TeamType,
-)
-
-data class CoinToss(
-    val start: Start,
-    val deciding: Deciding?,
-)
-
-data class Deciding(
-    val leftSide: String,
-    val serve: String
 )
 
 data class Mvp(
@@ -104,14 +47,9 @@ data class Set(
     val duration: Int,
     val endTime: LocalDateTime,
     val events: List<Event>,
-    val score: Score,
+    val matchScore: MatchScore,
     val startTime: LocalDateTime,
     val startingLineup: StartingLineup
-)
-
-data class Start(
-    val leftSide: String,
-    val serve: String
 )
 
 sealed class Event {
@@ -204,14 +142,14 @@ sealed class Event {
     ) : Event()
 
     data class ManualChange(
-        val score: Score,
+        val matchScore: MatchScore,
         val lineup: StartingLineup,
         val serve: TeamType,
         override val time: LocalDateTime?,
     ) : Event()
 }
 
-data class Score(
+data class MatchScore(
     val home: Int,
     val away: Int,
 )
@@ -235,13 +173,10 @@ data class Play(
 )
 
 data class MatchReportTeam(
-    val captain: Int,
     val code: String,
     val libero: List<Int>,
     val name: String,
     val players: List<MatchReportPlayer>,
-    val shortName: String,
-    val staff: Staff
 )
 
 enum class TeamType {
@@ -254,38 +189,4 @@ data class MatchReportPlayer(
     val isForeign: Boolean?,
     val lastName: String,
     val shirtNumber: Int
-)
-
-data class Staff(
-    val assistant1: Assistant?,
-    val assistant2: Assistant?,
-    val coach: Coach,
-    val medical1: Medical?,
-    val medical2: Medical?
-)
-
-data class Assistant(
-    val firstName: String,
-    val lastName: String
-)
-
-data class Coach(
-    val firstName: String,
-    val lastName: String
-)
-
-data class Medical(
-    val firstName: String,
-    val lastName: String,
-    val type: String
-)
-
-data class Supervisor(
-    val firstName: String,
-    val lastName: String
-)
-
-data class LineJudge(
-    val firstName: String,
-    val lastName: String,
 )

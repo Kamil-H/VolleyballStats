@@ -152,7 +152,7 @@ interface StorageModule {
     val SeasonAdapter.bind: ColumnAdapter<Season, Long>
         @Provides get() = this
 
-    val SpecializationAdapter.bind: ColumnAdapter<TeamPlayer.Specialization, Long>
+    val SpecializationAdapter.bind: ColumnAdapter<Specialization, Long>
         @Provides get() = this
 
     val DurationAdapter.bind: ColumnAdapter<Duration, Long>
@@ -170,7 +170,7 @@ interface StorageModule {
     val SqlLeagueStorage.bind: LeagueStorage
         @Provides get() = this
 
-    val SqlMatchStatisticsStorage.bind: MatchStatisticsStorage
+    val SqlMatchReportStorage.bind: MatchReportStorage
         @Provides get() = this
 
     val SqlMatchStorage.bind: MatchStorage

@@ -1,26 +1,25 @@
 package com.kamilh.volleyballstats.match_analyzer
 
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.domain.models.Score
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
+import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.extensions.divideExcluding
 import com.kamilh.volleyballstats.interactors.Interactor
 import com.kamilh.volleyballstats.match_analyzer.strategies.PlayActionStrategy
 import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.storage.TeamStorage
-import com.kamilh.volleyballstats.domain.utils.Logger
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 typealias MatchReportAnalyzer = Interactor<MatchReportAnalyzerParams, MatchReportAnalyzerResult>
 
-typealias MatchReportAnalyzerResult = Result<MatchStatistics, MatchReportAnalyzerError>
+typealias MatchReportAnalyzerResult = Result<MatchReport, MatchReportAnalyzerError>
 
 data class MatchReportAnalyzerParams(
     val matchId: MatchId,
-    val matchReport: MatchReport,
+    val matchReport: RawMatchReport,
     val tour: Tour,
 )
 
@@ -47,7 +46,7 @@ class MatchReportAnalyzerInteractor(
 ) : MatchReportAnalyzer(appDispatchers) {
 
     override suspend fun doWork(params: MatchReportAnalyzerParams): MatchReportAnalyzerResult {
-        val (matchId: MatchId, matchReport: MatchReport, tour: Tour) = params
+        val (matchId: MatchId, matchReport: RawMatchReport, tour: Tour) = params
         val matchReportId = matchReport.matchId
 
         if (matchReport.scout.sets.size > matchReport.scoutData.size) {
@@ -101,7 +100,9 @@ class MatchReportAnalyzerInteractor(
                             }
                         point?.let { team ->
                             score = score.increment(team)
-                            val dataToAnalyze = setScoutData.firstOrNull { it.score.away == score.away && it.score.home == score.home }
+                            val dataToAnalyze = setScoutData.firstOrNull {
+                                it.matchScore.away == score.away && it.matchScore.home == score.home
+                            }
                             val data = dataToAnalyze?.copy(plays = dataToAnalyze.plays.filter { it.player != 0 })
 
                             if (data == null || data.plays.isEmpty()) {
@@ -204,14 +205,14 @@ class MatchReportAnalyzerInteractor(
                         }
                     }
                     is Event.ManualChange -> {
-                        Logger.i("ManualChange EventScore: ${event.score}, CurrentScore: $score")
+                        Logger.i("ManualChange EventScore: ${event.matchScore}, CurrentScore: $score")
                     }
                     else -> { }
                 }
             }
-            if (score.away != set.score.away && score.home != set.score.home) {
+            if (score.away != set.matchScore.away && score.home != set.matchScore.home) {
                 analyzeErrorReporter.report(
-                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchReportId, calculatedScore = score, expectedScore = Score(home = set.score.home, away = set.score.away), tour.season)
+                    AnalyzeError.CalculatedScoreDifferentThanExpected(matchReportId, calculatedScore = score, expectedScore = Score(home = set.matchScore.home, away = set.matchScore.away), tour.season)
                 )
             }
             MatchSet(
@@ -225,7 +226,7 @@ class MatchReportAnalyzerInteractor(
         }
 
         return Result.success(
-            MatchStatistics(
+            MatchReport(
                 matchId = matchId,
                 sets = matchSets,
                 home = MatchTeam(

@@ -1,29 +1,27 @@
 package com.kamilh.volleyballstats.storage
 
-import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.common.errors.SqlError
 import com.kamilh.volleyballstats.storage.common.errors.createSqlError
-import kotlinx.coroutines.flow.Flow
-import me.tatarka.inject.annotations.Inject
-import com.kamilh.volleyballstats.domain.models.PlayerWithDetails
-import com.kamilh.volleyballstats.domain.models.Url
 import com.kamilh.volleyballstats.storage.databse.PlayerQueries
 import com.kamilh.volleyballstats.storage.databse.TeamPlayerQueries
 import com.kamilh.volleyballstats.storage.databse.TourTeamQueries
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import kotlinx.coroutines.flow.Flow
+import me.tatarka.inject.annotations.Inject
 
 interface PlayerStorage {
 
-    suspend fun insert(players: List<PlayerWithDetails>, tourId: TourId): InsertPlayerResult
+    suspend fun insert(players: List<Player>, tourId: TourId): InsertPlayerResult
 
-    fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>>
+    fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<Player>>
 
-    fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>>
+    fun getAllPlayers(tourId: TourId): Flow<List<Player>>
 }
 
 typealias InsertPlayerResult = Result<Unit, InsertPlayerError>
@@ -44,7 +42,7 @@ class SqlPlayerStorage(
     private val tourTeamQueries: TourTeamQueries,
 ) : PlayerStorage {
 
-    override suspend fun insert(players: List<PlayerWithDetails>, tourId: TourId): InsertPlayerResult =
+    override suspend fun insert(players: List<Player>, tourId: TourId): InsertPlayerResult =
         queryRunner.runTransaction {
             if (players.isEmpty()) {
                 return@runTransaction Result.success(Unit)
@@ -52,7 +50,7 @@ class SqlPlayerStorage(
 
             val teamIdsNotFound = mutableListOf<TeamId>()
             val playersAlreadyExists = mutableListOf<PlayerId>()
-            players.groupBy { it.teamPlayer.team }.forEach { (teamId, players) ->
+            players.groupBy { it.team }.forEach { (teamId, players) ->
                 val tourTeamId = tourTeamQueries.selectId(teamId, tourId).executeAsOneOrNull()
                 if (tourTeamId == null) {
                     teamIdsNotFound.add(teamId)
@@ -60,7 +58,7 @@ class SqlPlayerStorage(
                     players.forEach { player ->
                         val error = insertPlayer(player, tourTeamId)?.isTeamPlayerAlreadyExistsError()
                         if (error != null) {
-                            playersAlreadyExists.add(player.teamPlayer.id)
+                            playersAlreadyExists.add(player.id)
                         }
                     }
                 }
@@ -77,38 +75,38 @@ class SqlPlayerStorage(
             }
         }
 
-    private fun insertPlayer(player: PlayerWithDetails, tourTeamId: Long): Exception? =
+    private fun insertPlayer(player: Player, tourTeamId: Long): Exception? =
         try {
             playerQueries.insertPlayer(
-                id = player.teamPlayer.id,
-                name = player.teamPlayer.name,
-                birth_date = player.details.date,
-                height = player.details.height,
-                weight = player.details.weight,
-                range = player.details.range,
-                updated_at = player.details.updatedAt,
+                id = player.id,
+                name = player.name,
+                birth_date = player.date,
+                height = player.height,
+                weight = player.weight,
+                range = player.range,
+                updated_at = player.updatedAt,
             )
             teamPlayerQueries.insertPlayer(
-                image_url = player.teamPlayer.imageUrl,
+                image_url = player.imageUrl,
                 tour_team_id = tourTeamId,
-                specialization = player.teamPlayer.specialization,
-                player_id = player.teamPlayer.id,
-                number = player.details.number,
-                updated_at = player.teamPlayer.updatedAt,
+                specialization = player.specialization,
+                player_id = player.id,
+                number = player.number,
+                updated_at = player.updatedAt,
             )
             null
         } catch (exception: Exception) {
             exception
         }
 
-    override fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<PlayerWithDetails>> =
+    override fun getAllPlayers(teamId: TeamId, tourId: TourId): Flow<List<Player>> =
         teamPlayerQueries.selectPlayersByTeam(
             team_id = teamId,
             tour_id = tourId,
             mapper = mapper,
         ).asFlow().mapToList(queryRunner.dispatcher)
 
-    override fun getAllPlayers(tourId: TourId): Flow<List<PlayerWithDetails>> =
+    override fun getAllPlayers(tourId: TourId): Flow<List<Player>> =
         teamPlayerQueries.selectPlayers(
             tour_id = tourId,
             mapper = mapper,
@@ -117,7 +115,7 @@ class SqlPlayerStorage(
     private val mapper: (
         image_url: Url?,
         tour_team_id: Long,
-        position: TeamPlayer.Specialization,
+        position: Specialization,
         player_id: PlayerId,
         number: Int,
         name: String,
@@ -128,10 +126,10 @@ class SqlPlayerStorage(
         weight: Int?,
         range: Int?,
         team_id: TeamId
-    ) -> PlayerWithDetails = {
+    ) -> Player = {
             image_url: Url?,
             _: Long,
-            position: TeamPlayer.Specialization,
+            position: Specialization,
             player_id: PlayerId,
             number: Int,
             name: String,
@@ -143,23 +141,18 @@ class SqlPlayerStorage(
             range: Int?,
             team_id: TeamId
         ->
-        PlayerWithDetails(
-            teamPlayer = TeamPlayer(
-                id = player_id,
-                name = name,
-                imageUrl = image_url,
-                team = team_id,
-                specialization = position,
-                updatedAt = updated_at,
-            ),
-            details = PlayerDetails(
-                date = birth_date,
-                height = height,
-                weight = weight,
-                range = range,
-                number = number,
-                updatedAt = updated_at_,
-            )
+        Player(
+            id = player_id,
+            name = name,
+            imageUrl = image_url,
+            team = team_id,
+            specialization = position,
+            date = birth_date,
+            height = height,
+            weight = weight,
+            range = range,
+            number = number,
+            updatedAt = updated_at,
         )
     }
 }

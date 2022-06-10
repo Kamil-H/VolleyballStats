@@ -2,11 +2,16 @@ package com.kamilh.volleyballstats.repository.models.mappers
 
 import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.parsePolishLeagueDate
-import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.repository.parsing.HtmlParser
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Specialization
+import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
-import me.tatarka.inject.annotations.Inject
+import com.kamilh.volleyballstats.models.PlayerDetails
+import com.kamilh.volleyballstats.models.PlayerWithDetails
+import com.kamilh.volleyballstats.models.TeamPlayer
+import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
+import me.tatarka.inject.annotations.Inject
 
 /**
 <div class="col-xs-9 col-sm-8 col-md-8 col-lg-9">
@@ -59,7 +64,7 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
         var id: PlayerId? = null
         var name: String? = null
         var team: TeamId? = null
-        var specialization: TeamPlayer.Specialization? = null
+        var specialization: Specialization? = null
         getElementsByClass("playerteamname").forEach {
             team = TeamId(it.select("a").attr("href").extractTeamId()!!)
         }
@@ -118,13 +123,13 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
         )
     }
 
-    private fun String.tryCreateSpecialization(): TeamPlayer.Specialization? =
+    private fun String.tryCreateSpecialization(): Specialization? =
         when {
-            contains("Rozgrywający") -> TeamPlayer.Specialization.Setter
-            contains("Przyjmujący") -> TeamPlayer.Specialization.OutsideHitter
-            contains("Atakujący") -> TeamPlayer.Specialization.OppositeHitter
-            contains("Libero") -> TeamPlayer.Specialization.Libero
-            contains("Środkowy") -> TeamPlayer.Specialization.MiddleBlocker
+            contains("Rozgrywający") -> Specialization.Setter
+            contains("Przyjmujący") -> Specialization.OutsideHitter
+            contains("Atakujący") -> Specialization.OppositeHitter
+            contains("Libero") -> Specialization.Libero
+            contains("Środkowy") -> Specialization.MiddleBlocker
             else -> null
         }
 }

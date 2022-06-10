@@ -55,9 +55,9 @@ class Synchronizer(
                         UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
                         UpdateMatchesError.NoMatchesInTour -> { }
                         is UpdateMatchesError.Insert -> when (error.error) {
-                            InsertMatchStatisticsError.NoPlayersInTeams, is InsertMatchStatisticsError.PlayerNotFound -> updatePlayers(tour)
-                            is InsertMatchStatisticsError.TeamNotFound -> updateTeams(tour)
-                            InsertMatchStatisticsError.TourNotFound -> initializeTours(league = tour.league)
+                            InsertMatchReportError.NoPlayersInTeams, is InsertMatchReportError.PlayerNotFound -> updatePlayers(tour)
+                            is InsertMatchReportError.TeamNotFound -> updateTeams(tour)
+                            InsertMatchReportError.TourNotFound -> initializeTours(league = tour.league)
                         }
                     }
                 }

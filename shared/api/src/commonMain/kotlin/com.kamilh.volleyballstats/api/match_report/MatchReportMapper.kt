@@ -5,9 +5,9 @@ import com.kamilh.volleyballstats.domain.models.*
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class MatchReportMapper : ResponseMapper<MatchStatistics, MatchReportResponse> {
+class MatchReportMapper : ResponseMapper<MatchReport, MatchReportResponse> {
 
-    override fun to(from: MatchStatistics): MatchReportResponse =
+    override fun to(from: MatchReport): MatchReportResponse =
         MatchReportResponse(
             matchId = from.matchId,
             sets = from.sets.map { it.toResponse() },
@@ -146,8 +146,8 @@ class MatchReportMapper : ResponseMapper<MatchStatistics, MatchReportResponse> {
             receiveEffect = receiveEffect,
         )
 
-    override fun from(from: MatchReportResponse): MatchStatistics =
-        MatchStatistics(
+    override fun from(from: MatchReportResponse): MatchReport =
+        MatchReport(
             matchId = from.matchId,
             sets = from.sets.map { it.toDomain() },
             home = from.home.toDomain(),

@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
 import com.kamilh.volleyballstats.domain.models.Result
-import com.kamilh.volleyballstats.domain.models.TeamPlayer
+import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.repository.parsing.EmptyResultException
 import com.kamilh.volleyballstats.repository.parsing.JsoupHtmlParser
 import org.junit.Test
@@ -161,7 +161,7 @@ class HtmlToTeamPlayerMapperTest {
     @Test
     fun `test if when positionId is correct then result is Success and positionId is parsed properly`() {
         // GIVEN
-        val specialization = TeamPlayer.Specialization.Libero
+        val specialization = Specialization.Libero
 
         val html = html(positionId = specialization.id.toString())
 

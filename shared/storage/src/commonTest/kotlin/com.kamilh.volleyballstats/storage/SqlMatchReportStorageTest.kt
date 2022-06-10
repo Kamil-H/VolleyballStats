@@ -1,15 +1,13 @@
 package com.kamilh.volleyballstats.storage
 
 import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.domain.assertFailure
-import com.kamilh.volleyballstats.domain.assertSuccess
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.yield
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
+class SqlMatchReportStorageTest : ReportStorageTest() {
 
     @Test
     fun `insert and select works properly`() = runTest {
@@ -21,14 +19,14 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
     fun `insert returns TourNotFound when there is no such tour`() = runTest {
         // GIVEN
         val tourId = tourIdOf()
-        val matchStatistics = matchStatisticsOf()
+        val matchStatistics = matchReportOf()
 
         // WHEN
         val result = storage.insert(matchStatistics, tourId)
 
         // THEN
         result.assertFailure {
-            assertEquals(expected = InsertMatchStatisticsError.TourNotFound, this)
+            assertEquals(expected = InsertMatchReportError.TourNotFound, this)
         }
     }
 
@@ -39,7 +37,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val league = leagueOf()
         val tour = tourOf(league = league, season = season)
         val teamId = teamIdOf(1)
-        val matchStatistics = matchStatisticsOf(home = matchTeamOf(teamId = teamId))
+        val matchStatistics = matchReportOf(home = matchTeamOf(teamId = teamId))
         insert(league)
         insert(tour)
 
@@ -48,7 +46,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
 
         // THEN
         result.assertFailure {
-            require(this is InsertMatchStatisticsError.TeamNotFound)
+            require(this is InsertMatchReportError.TeamNotFound)
             assertEquals(expected = teamId, this.teamId)
         }
     }
@@ -62,7 +60,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val code = "code"
-        val matchStatistics = matchStatisticsOf(
+        val matchStatistics = matchReportOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
                 code = code,
@@ -84,7 +82,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         // THEN
         assertEquals(expected = code, teamQueries.selectAll().executeAsList().first { it.id == homeTeamId }.code)
         result.assertFailure {
-            require(this is InsertMatchStatisticsError.TeamNotFound)
+            require(this is InsertMatchReportError.TeamNotFound)
             assertEquals(expected = awayTeamId, this.teamId)
         }
     }
@@ -98,7 +96,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val code = "code"
-        val matchStatistics = matchStatisticsOf(
+        val matchStatistics = matchReportOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
             ),
@@ -135,7 +133,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val tour = tourOf(league = league, season = season)
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
-        val matchStatistics = matchStatisticsOf(
+        val matchStatistics = matchReportOf(
             home = matchTeamOf(teamId = homeTeamId),
             away = matchTeamOf(teamId = awayTeamId)
         )
@@ -157,7 +155,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
 
         // THEN
         result.assertFailure {
-            assertTrue(this is InsertMatchStatisticsError.NoPlayersInTeams)
+            assertTrue(this is InsertMatchReportError.NoPlayersInTeams)
         }
     }
 
@@ -170,7 +168,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val homeTeamId = teamIdOf(1)
         val awayTeamId = teamIdOf(2)
         val playerId = playerIdOf(1)
-        val matchStatistics = matchStatisticsOf(
+        val matchStatistics = matchReportOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
                 players = listOf(playerId),
@@ -198,7 +196,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
 
         // THEN
         result.assertFailure {
-            require(this is InsertMatchStatisticsError.PlayerNotFound)
+            require(this is InsertMatchReportError.PlayerNotFound)
             assertTrue(this.playerIds.contains(playerId to homeTeamId))
         }
     }
@@ -213,7 +211,7 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         val awayTeamId = teamIdOf(2)
         val playerId = playerIdOf(1)
         val awayPlayerId = playerIdOf(2)
-        val matchStatistics = matchStatisticsOf(
+        val matchStatistics = matchReportOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
                 players = listOf(playerId),
@@ -238,20 +236,16 @@ class SqlMatchStatisticsStorageTest : StatisticsStorageTest() {
         )
         insert(
             InsertPlayer(
-                player = playerWithDetailsOf(
-                    teamPlayer = teamPlayerOf(
-                        id = playerId,
-                        team = homeTeamId,
-                    ),
+                player = playerOf(
+                    id = playerId,
+                    team = homeTeamId,
                 ),
                 tour = tour,
             ),
             InsertPlayer(
-                player = playerWithDetailsOf(
-                    teamPlayer = teamPlayerOf(
-                        id = awayPlayerId,
-                        team = awayTeamId,
-                    ),
+                player = playerOf(
+                    id = awayPlayerId,
+                    team = awayTeamId,
                 ),
                 tour = tour,
             )

@@ -1,13 +1,13 @@
 package com.kamilh.volleyballstats.storage.common.adapters
 
-import com.kamilh.volleyballstats.domain.models.TeamPlayer
+import com.kamilh.volleyballstats.domain.models.Specialization
 import com.squareup.sqldelight.ColumnAdapter
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class SpecializationAdapter : ColumnAdapter<TeamPlayer.Specialization, Long> {
+class SpecializationAdapter : ColumnAdapter<Specialization, Long> {
 
-    override fun decode(databaseValue: Long): TeamPlayer.Specialization = TeamPlayer.Specialization.create(databaseValue.toInt())
+    override fun decode(databaseValue: Long): Specialization = Specialization.create(databaseValue.toInt())
 
-    override fun encode(value: TeamPlayer.Specialization): Long = value.id.toLong()
+    override fun encode(value: Specialization): Long = value.id.toLong()
 }

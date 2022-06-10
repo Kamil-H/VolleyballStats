@@ -1,14 +1,15 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
 import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.TeamId
-import com.kamilh.volleyballstats.domain.models.TeamPlayer
 import com.kamilh.volleyballstats.domain.models.Url
-import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
-import me.tatarka.inject.annotations.Inject
+import com.kamilh.volleyballstats.models.TeamPlayer
 import com.kamilh.volleyballstats.repository.parsing.EmptyResultException
+import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
+import me.tatarka.inject.annotations.Inject
 
 /**
 <div class="item-1 col-xs-6 col-sm-4 col-md-3 col-lg-2 playersItem" data-playerposition="4" data-fullnamefirstletter="A" data-teamsid="1407">
@@ -41,7 +42,7 @@ class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<Li
                 name = name,
                 imageUrl = Url.createOrNull(imageUrl),
                 team = TeamId(teamId),
-                specialization = TeamPlayer.Specialization.create(positionId),
+                specialization = Specialization.create(positionId),
                 updatedAt = CurrentDate.localDateTime,
             )
         }.apply {

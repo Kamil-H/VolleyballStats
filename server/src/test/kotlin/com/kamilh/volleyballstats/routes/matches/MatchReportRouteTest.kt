@@ -1,6 +1,7 @@
 package com.kamilh.volleyballstats.routes.matches
 
 import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.player.playerOf
 import com.kamilh.volleyballstats.routes.testServerApplication
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -97,11 +98,11 @@ class MatchReportRouteTest {
         val matchId = matchIdOf()
         val teams = listOf(teamOf(id = teamIdOne), teamOf(id = teamIdTwo))
         val playerId = playerIdOf(value = 1)
-        val playerWithDetails = listOf(
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerId, team = teamIdOne)),
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerId, team = teamIdTwo))
+        val players = listOf(
+            playerOf(id = playerId, team = teamIdOne),
+            playerOf(id = playerId, team = teamIdTwo),
         )
-        val matchStatistics = matchStatisticsOf(
+        val matchStatistics = matchReportOf(
             matchId = matchId,
             home = matchTeamOf(teamId = teamIdOne, players = listOf(playerId)),
             away = matchTeamOf(teamId = teamIdTwo, players = listOf(playerId)),
@@ -111,8 +112,8 @@ class MatchReportRouteTest {
             leagueStorage.insert(league)
             tourStorage.insert(tour)
             teamStorage.insert(teams, tourId)
-            playerStorage.insert(playerWithDetails, tourId)
-            matchStatisticsStorage.insert(matchStatistics, tourId)
+            playerStorage.insert(players, tourId)
+            matchReportStorage.insert(matchStatistics, tourId)
         }
         val request = api.getMatchReport(matchId).toHttpRequest().authorize()
 
@@ -135,11 +136,11 @@ class MatchReportRouteTest {
         val matchId = matchIdOf(value = 1)
         val teams = listOf(teamOf(id = teamIdOne), teamOf(id = teamIdTwo))
         val playerId = playerIdOf(value = 1)
-        val playerWithDetails = listOf(
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerId, team = teamIdOne)),
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerId, team = teamIdTwo))
+        val players = listOf(
+            playerOf(id = playerId, team = teamIdOne),
+            playerOf(id = playerId, team = teamIdTwo),
         )
-        val matchStatistics = matchStatisticsOf(
+        val matchStatistics = matchReportOf(
             matchId = matchId,
             home = matchTeamOf(teamId = teamIdOne, players = listOf(playerId)),
             away = matchTeamOf(teamId = teamIdTwo, players = listOf(playerId)),
@@ -149,8 +150,8 @@ class MatchReportRouteTest {
             leagueStorage.insert(league)
             tourStorage.insert(tour)
             teamStorage.insert(teams, tourId)
-            playerStorage.insert(playerWithDetails, tourId)
-            matchStatisticsStorage.insert(matchStatistics, tourId)
+            playerStorage.insert(players, tourId)
+            matchReportStorage.insert(matchStatistics, tourId)
         }
         val request = api.getMatchReport(matchId).toHttpRequest().authorize()
 
@@ -163,9 +164,9 @@ class MatchReportRouteTest {
 
         // GIVEN
         val newMatchId = matchIdOf(value = 2)
-        val newMatchStatistics = matchStatistics.copy(matchId = newMatchId)
+        val newMatchReport = matchStatistics.copy(matchId = newMatchId)
         withStorages {
-            matchStatisticsStorage.insert(newMatchStatistics, tourId)
+            matchReportStorage.insert(newMatchReport, tourId)
         }
 
         // WHEN
@@ -174,7 +175,7 @@ class MatchReportRouteTest {
 
         // THEN
         val newMapped = mappers.matchReportMapper.from(newResponse.body())
-        assertEquals(newMatchStatistics, newMapped)
+        assertEquals(newMatchReport, newMapped)
     }
 
     @Test
@@ -188,11 +189,11 @@ class MatchReportRouteTest {
         val matchId = matchIdOf(value = 1)
         val teams = listOf(teamOf(id = teamIdOne), teamOf(id = teamIdTwo))
         val playerId = playerIdOf(value = 1)
-        val playerWithDetails = listOf(
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerId, team = teamIdOne)),
-            playerWithDetailsOf(teamPlayer = teamPlayerOf(id = playerId, team = teamIdTwo))
+        val players = listOf(
+            playerOf(id = playerId, team = teamIdOne),
+            playerOf(id = playerId, team = teamIdTwo),
         )
-        val matchStatistics = matchStatisticsOf(
+        val matchReport = matchReportOf(
             matchId = matchId,
             home = matchTeamOf(teamId = teamIdOne, players = listOf(playerId)),
             away = matchTeamOf(teamId = teamIdTwo, players = listOf(playerId)),
@@ -202,8 +203,8 @@ class MatchReportRouteTest {
             leagueStorage.insert(league)
             tourStorage.insert(tour)
             teamStorage.insert(teams, tourId)
-            playerStorage.insert(playerWithDetails, tourId)
-            matchStatisticsStorage.insert(matchStatistics, tourId)
+            playerStorage.insert(players, tourId)
+            matchReportStorage.insert(matchReport, tourId)
         }
         val request = api.getMatchReport(matchId).toHttpRequest().authorize()
 
@@ -212,18 +213,18 @@ class MatchReportRouteTest {
 
         // THEN
         val mapped = mappers.matchReportMapper.from(response.body())
-        assertEquals(matchStatistics, mapped)
+        assertEquals(matchReport, mapped)
 
         // GIVEN
         val newTourId = tourIdOf(1)
         val newTour = tour.copy(id = newTourId, season = tour.season.plus(1))
         val newMatchId = matchIdOf(value = 2)
-        val newMatchStatistics = matchStatistics.copy(matchId = newMatchId)
+        val newMatchReport = matchReport.copy(matchId = newMatchId)
         withStorages {
             tourStorage.insert(newTour)
             teamStorage.insert(teams, newTourId)
-            playerStorage.insert(playerWithDetails, newTourId)
-            matchStatisticsStorage.insert(newMatchStatistics, newTourId)
+            playerStorage.insert(players, newTourId)
+            matchReportStorage.insert(newMatchReport, newTourId)
         }
 
         // WHEN
@@ -232,6 +233,6 @@ class MatchReportRouteTest {
 
         // THEN
         val newMapped = mappers.matchReportMapper.from(newResponse.body())
-        assertEquals(newMatchStatistics, newMapped)
+        assertEquals(newMatchReport, newMapped)
     }
 }

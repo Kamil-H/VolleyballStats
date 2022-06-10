@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.domain.models
+package com.kamilh.volleyballstats.models
 
 import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.LocalDateTime

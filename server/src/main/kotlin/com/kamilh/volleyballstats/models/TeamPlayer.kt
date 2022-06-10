@@ -1,6 +1,10 @@
-package com.kamilh.volleyballstats.domain.models
+package com.kamilh.volleyballstats.models
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Specialization
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.Url
 
 data class TeamPlayer(
     val id: PlayerId,
@@ -10,13 +14,6 @@ data class TeamPlayer(
     val specialization: Specialization,
     val updatedAt: LocalDateTime,
 ) {
-    enum class Specialization(val id: Int) {
-        Setter(5), Libero(1), MiddleBlocker(4), OutsideHitter(2), OppositeHitter(3);
-
-        companion object {
-            fun create(id: Int): Specialization = values().first { it.id == id }
-        }
-    }
 
     override fun toString(): String {
         return "TeamPlayer(id=${id.value}, name='$name' team=${team.value})"
