@@ -2,7 +2,7 @@ package com.kamilh.volleyballstats.domain.utils
 
 fun interface PlatformLogger {
 
-    fun log(severity: Severity, tag: String, message: String)
+    fun log(severity: Severity, tag: String?, message: String)
 }
 
 enum class Severity(val shorthand: String) {

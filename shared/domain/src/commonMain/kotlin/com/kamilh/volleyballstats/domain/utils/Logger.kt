@@ -10,23 +10,23 @@ object Logger {
         Logger.logger = logger
     }
 
-    fun v(message: String, tag: String = TAG) {
+    fun v(message: String, tag: String? = null) {
         logger?.log(Severity.Verbose, tag, message)
     }
 
-    fun d(message: String, tag: String = TAG) {
+    fun d(message: String, tag: String? = null) {
         logger?.log(Severity.Debug, tag, message)
     }
 
-    fun i(message: String, tag: String = TAG) {
+    fun i(message: String, tag: String? = null) {
         logger?.log(Severity.Info, tag, message)
     }
 
-    fun w(message: String, tag: String = TAG) {
+    fun w(message: String, tag: String? = null) {
         logger?.log(Severity.Warn, tag, message)
     }
 
-    fun e(message: String, tag: String = TAG) {
+    fun e(message: String, tag: String? = null) {
         logger?.log(Severity.Error, tag, message)
     }
 }

@@ -50,7 +50,7 @@ class SynchronizerTest {
     @Before
     fun setClock() {
         CurrentDate.changeClock(testClock)
-        Logger.setLogger { severity: Severity, tag: String, message: String ->
+        Logger.setLogger { severity: Severity, tag: String?, message: String ->
             println("${severity.shorthand}/$tag: $message")
         }
     }

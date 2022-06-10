@@ -45,17 +45,21 @@ class FixWrongPlayersInteractor(
     ): MatchReportTeam {
         val playerIds = playersNotFound.map { it.first }
         return copy(
-            players = players.map { matchPlayer ->
+            players = players.mapNotNull { matchPlayer ->
                 if (playerIds.contains(matchPlayer.id)) {
-                    matchPlayer.copy(
-                        id = findPlayerId(
-                            allPlayers = allPlayers,
-                            allTeamPlayers = allTeamPlayers,
-                            matchPlayer = matchPlayer,
-                            tour = tour,
-                            teamId = playersNotFound.first { it.first == matchPlayer.id }.second,
-                        )
+                    val newPlayerId = findPlayerId(
+                        allPlayers = allPlayers,
+                        allTeamPlayers = allTeamPlayers,
+                        matchPlayer = matchPlayer,
+                        tour = tour,
+                        teamId = playersNotFound.first { it.first == matchPlayer.id }.second,
                     )
+                    if (newPlayerId != null) {
+                        matchPlayer.copy(id = newPlayerId)   
+                    } else {
+                        log("Player not found, removing player: ${matchPlayer.id}")
+                        null
+                    }
                 } else {
                     matchPlayer
                 }
@@ -69,30 +73,37 @@ class FixWrongPlayersInteractor(
         matchPlayer: MatchReportPlayer,
         tour: Tour,
         teamId: TeamId,
-    ): PlayerId {
+    ): PlayerId? {
         val playerIdFromName = allPlayers.findByName(matchPlayer)
         val player = allTeamPlayers.firstOrNull { it.id == matchPlayer.id } ?: allTeamPlayers.firstOrNull { it.id == playerIdFromName }
-        Logger.i("playerIdFromName: $playerIdFromName, player: $player")
+        log("playerIdFromName: $playerIdFromName, player: $player")
         return when {
             player != null -> getDetailsAndSave(player, tour, matchPlayer, teamId)
-            else -> when (val playerWithDetails = polishLeagueRepository.getPlayerWithDetails(tour.season, playerIdFromName).value) {
+            playerIdFromName != null -> when (val playerWithDetails = polishLeagueRepository.getPlayerWithDetails(tour.season, playerIdFromName).value) {
                 null -> matchPlayer.id
                 else -> insert(playerWithDetails, tour, matchPlayer, teamId)
             }
+            else -> null
         }
     }
 
-    private fun List<PlayerSnapshot>.findByName(matchPlayer: MatchReportPlayer): PlayerId =
+    private fun List<PlayerSnapshot>.findByName(matchPlayer: MatchReportPlayer): PlayerId? =
         firstOrNull { player ->
             player.name.contains(matchPlayer.firstName) && player.name.contains(matchPlayer.lastName)
         }?.id ?: firstOrNull { player ->
-            val matchPlayerFullName = "${matchPlayer.firstName} ${matchPlayer.lastName}"
-            (matchPlayerFullName.findSimilarity(player.name) >= NAME_SIMILARITY_THRESHOLD).apply {
+            player.hasSimilarName(matchPlayer).apply {
                 if (this) {
-                    Logger.i("Found similarity: MatchPlayer: $matchPlayerFullName and Player: ${player.name}")
+                    log("Found similarity: MatchPlayer: ${"${matchPlayer.firstName} ${matchPlayer.lastName}"} and Player: ${player.name}")
                 }
             }
-        }?.id ?: matchPlayer.id
+        }?.id
+
+    private fun PlayerSnapshot.hasSimilarName(matchPlayer: MatchReportPlayer): Boolean {
+        val fullName = name.split(" ")
+        return fullName[0].isSimilarTo(matchPlayer.firstName) && fullName[1].isSimilarTo(matchPlayer.lastName)
+    }
+
+    private fun String.isSimilarTo(other: String) = findSimilarity(other) >= NAME_SIMILARITY_THRESHOLD
 
     private suspend fun getDetailsAndSave(
         player: TeamPlayer,
@@ -117,10 +128,10 @@ class FixWrongPlayersInteractor(
         teamId: TeamId,
     ): PlayerId {
         if (teamId != playerWithDetails.teamPlayer.team) {
-            Logger.i("Detected new team (${teamId.value}) for the player: ${playerWithDetails.teamPlayer.name} (${playerWithDetails.teamPlayer.id})")
+            log("Detected new team (${teamId.value}) for the player: ${playerWithDetails.teamPlayer.name} (${playerWithDetails.teamPlayer.id})")
         }
         if (matchPlayer.shirtNumber != playerWithDetails.details.number) {
-            Logger.i("Detected new shirt number (${matchPlayer.shirtNumber}) for the player: ${playerWithDetails.teamPlayer.name} ${playerWithDetails.teamPlayer.id}")
+            log("Detected new shirt number (${matchPlayer.shirtNumber}) for the player: ${playerWithDetails.teamPlayer.name} ${playerWithDetails.teamPlayer.id}")
         }
         playerStorage.insert(
             players = listOf(
@@ -144,12 +155,17 @@ class FixWrongPlayersInteractor(
                 }
                 InsertPlayerError.TourNotFound -> "Tour not found"
             }
-            Logger.i(message)
+            log(message)
         }
         return playerWithDetails.teamPlayer.id
+    }
+    
+    private fun log(message: String) {
+        Logger.i(message = message, tag = TAG)
     }
 
     companion object {
         private const val NAME_SIMILARITY_THRESHOLD = 0.7
+        private const val TAG = "FixWrongPlayers"
     }
 }

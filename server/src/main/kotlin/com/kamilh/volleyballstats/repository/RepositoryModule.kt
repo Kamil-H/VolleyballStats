@@ -35,7 +35,7 @@ interface RepositoryModule {
                 json(json = json)
             }
             install(Logging) {
-                level = LogLevel.HEADERS
+                level = LogLevel.INFO
                 logger = object : Logger {
                     override fun log(message: String) {
                         com.kamilh.volleyballstats.domain.utils.Logger.d(message = message)

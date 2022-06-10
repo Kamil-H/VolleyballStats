@@ -48,7 +48,7 @@ class FixWrongPlayersInteractorTest {
 
     @Before
     fun setLogger() {
-        Logger.setLogger { severity: Severity, tag: String, message: String ->
+        Logger.setLogger { severity: Severity, tag: String?, message: String ->
             println("${severity.shorthand}/$tag: $message")
         }
     }
@@ -304,6 +304,36 @@ class FixWrongPlayersInteractorTest {
                 it.team == teamId
             }
         )
+    }
+
+    @Test
+    fun `interactor returns MatchTeam without player that coulnd't be found`() = runTest {
+        // GIVEN
+        val playerId = playerIdOf(1)
+        val teamId = teamIdOf(1)
+        val playersNotFound = listOf(playerId to teamId)
+        val matchPlayer = matchReportPlayerOf(
+            id = playerId,
+            firstName = "firstName",
+            lastName = "lastName",
+        )
+        val team = matchReportTeamOf(players = listOf(matchPlayer))
+
+        // WHEN
+        val result = interactor(
+            polishLeagueRepository = polishLeagueRepositoryOf(
+                getAllPlayers = networkSuccessOf(listOf(playerSnapshotOf())),
+                getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf())),
+            ),
+        )(
+            paramsOf(
+                team = team,
+                playersNotFound = playersNotFound
+            )
+        )
+
+        // THEN
+        assert(result.players.isEmpty())
     }
 }
 

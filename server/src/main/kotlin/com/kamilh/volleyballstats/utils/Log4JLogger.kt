@@ -7,12 +7,13 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class Log4JLogger(private val logger: org.slf4j.Logger) : PlatformLogger {
 
-    override fun log(severity: Severity, tag: String, message: String) {
+    override fun log(severity: Severity, tag: String?, message: String) {
+        val logMessage = tag?.let { "$tag: $message" } ?: message
         when (severity) {
-            Severity.Verbose, Severity.Info -> logger.info(message)
-            Severity.Debug -> logger.debug(message)
-            Severity.Warn -> logger.warn(message)
-            Severity.Error -> logger.error(message)
+            Severity.Verbose, Severity.Info -> logger.info(logMessage)
+            Severity.Debug -> logger.debug(logMessage)
+            Severity.Warn -> logger.warn(logMessage)
+            Severity.Error -> logger.error(logMessage)
         }
     }
 }
