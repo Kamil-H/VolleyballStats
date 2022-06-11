@@ -3,6 +3,7 @@ plugins {
     id("com.google.devtools.ksp")
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("com.github.johnrengelman.shadow")
 }
 
 sourceSets.main {
