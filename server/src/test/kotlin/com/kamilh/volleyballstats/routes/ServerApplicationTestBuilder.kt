@@ -2,10 +2,11 @@ package com.kamilh.volleyballstats.routes
 
 import com.kamilh.volleyballstats.AppModule
 import com.kamilh.volleyballstats.TestComponent
+import com.kamilh.volleyballstats.api.Api
 import com.kamilh.volleyballstats.api.ApiConstants
 import com.kamilh.volleyballstats.create
-import com.kamilh.volleyballstats.models.TEST_ACCESS_TOKEN
-import com.kamilh.volleyballstats.models.TestAppConfig
+import com.kamilh.volleyballstats.models.AccessToken
+import com.kamilh.volleyballstats.models.appConfigOf
 import com.kamilh.volleyballstats.module
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import io.ktor.client.*
@@ -25,7 +26,11 @@ class ServerApplicationTestBuilder(applicationTestBuilder: ApplicationTestBuilde
     private var applicationStarted: Boolean = false
 
     private val scope = CoroutineScope(testAppDispatchers.default)
-    private val appModule = AppModule::class.create(scope = scope, appConfig = TestAppConfig())
+    private val accessToken = "application_test"
+    private val appModule = AppModule::class.create(
+        scope = scope,
+        appConfig = appConfigOf(accessTokens = listOf(AccessToken(accessToken)))
+    )
     private val testComponent = TestComponent::class.create(appModule)
 
     val client: HttpClient by lazy {
@@ -35,7 +40,7 @@ class ServerApplicationTestBuilder(applicationTestBuilder: ApplicationTestBuilde
             }
         }
     }
-    val api: com.kamilh.volleyballstats.api.Api = testComponent.api
+    val api: Api = testComponent.api
     val mappers: TestComponent.Mappers = testComponent.mappers
 
     init {
@@ -74,7 +79,7 @@ class ServerApplicationTestBuilder(applicationTestBuilder: ApplicationTestBuilde
     }
 
     fun HttpRequestBuilder.authorize(): HttpRequestBuilder = apply {
-        header(ApiConstants.HEADER_ACCESS_TOKEN, TEST_ACCESS_TOKEN.value)
+        header(ApiConstants.HEADER_ACCESS_TOKEN, accessToken)
     }
 }
 

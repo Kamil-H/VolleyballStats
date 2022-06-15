@@ -9,3 +9,4 @@ build/
 /exceptions
 .DS_Store
 *.db
+/data_files

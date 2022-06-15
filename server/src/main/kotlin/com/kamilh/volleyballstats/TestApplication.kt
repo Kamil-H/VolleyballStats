@@ -1,24 +1,21 @@
 package com.kamilh.volleyballstats
 
 import com.kamilh.volleyballstats.domain.models.League
-import com.kamilh.volleyballstats.interactors.Synchronizer
-import com.kamilh.volleyballstats.models.DatabaseConfig
-import com.kamilh.volleyballstats.models.TestAppConfig
-import com.kamilh.volleyballstats.storage.DatabaseFactory
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.domain.utils.PlatformLogger
+import com.kamilh.volleyballstats.interactors.Synchronizer
+import com.kamilh.volleyballstats.models.TestAppConfig
+import com.kamilh.volleyballstats.storage.DatabaseFactory
 import kotlinx.coroutines.CoroutineScope
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.coroutineContext
 
-suspend fun main(args: Array<String>) {
+suspend fun main() {
     val scope = CoroutineScope(coroutineContext)
-    val appModule: AppModule = AppModule::class.create(
+    AppModule::class.create(
         scope = scope,
-        appConfig = TestAppConfig(databaseConfig = DatabaseConfig.TEST_DATABASE),
-    )
-
-    appModule.initializer.init()
+        appConfig = TestAppConfig(),
+    ).initializer.init()
 }
 
 @Inject

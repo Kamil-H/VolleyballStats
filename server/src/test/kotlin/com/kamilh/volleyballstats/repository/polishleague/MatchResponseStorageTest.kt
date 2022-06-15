@@ -2,7 +2,9 @@ package com.kamilh.volleyballstats.repository.polishleague
 
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.seasonOf
+import com.kamilh.volleyballstats.models.AppConfig
 import com.kamilh.volleyballstats.models.MatchReportId
+import com.kamilh.volleyballstats.models.appConfigOf
 import com.kamilh.volleyballstats.models.matchReportIdOf
 import com.kamilh.volleyballstats.repository.FileManager
 import com.kamilh.volleyballstats.repository.FileMetadata
@@ -18,11 +20,13 @@ class MatchResponseStorageTest {
 
     private val json = Json
     private fun matchResponseStorageOf(
-        fileManager: FileManager = fileManagerOf()
+        fileManager: FileManager = fileManagerOf(),
+        appConfig: AppConfig = appConfigOf(),
     ): MatchResponseStorage =
         FileBasedMatchResponseStorage(
             json = json,
             fileManager = fileManager,
+            appConfig = appConfig,
         )
 
     @Test
@@ -90,18 +94,20 @@ class MatchResponseStorageTest {
         val tour = 2020
         val matchResponse = matchResponseOf(matchId = matchId)
         var savingFileMetadata: FileMetadata? = null
-        val saveTextAsFile = { content: String, fileMetadata: FileMetadata ->
+        val saveTextAsFile = { _: String, fileMetadata: FileMetadata ->
             savingFileMetadata = fileMetadata
             true
         }
+        val workDir = "workDir"
 
         // WHEN
         matchResponseStorageOf(
-            fileManagerOf(saveTextAsFile = saveTextAsFile)
+            fileManagerOf(saveTextAsFile = saveTextAsFile),
+            appConfig = appConfigOf(workDirPath = workDir)
         ).save(matchResponse, seasonOf(tour))
 
         // THEN
-        assert(savingFileMetadata?.directory == "match_reports/plus_liga/${tour}")
+        assert(savingFileMetadata?.directory == "$workDir/match_reports/plus_liga/${tour}")
         assert(savingFileMetadata?.extension == FileMetadata.Extension.Json)
         assert(savingFileMetadata?.name == matchId.toString())
     }

@@ -7,18 +7,15 @@ data class AppConfig(
     val serverConfig: ServerConfig,
     val databaseConfig: DatabaseConfig,
     val accessTokens: List<AccessToken>,
+    val workDirPath: String,
 )
 
-data class ServerConfig(
-    val port: Int,
-)
+data class ServerConfig(val port: Int)
 
-data class DatabaseConfig(
-    val jdbcUrl: String,
-) {
+data class DatabaseConfig(val jdbcUrl: String) {
     companion object {
         val IN_MEMORY: DatabaseConfig = DatabaseConfig(jdbcUrl = JdbcSqliteDriver.IN_MEMORY)
-        val TEST_DATABASE: DatabaseConfig = DatabaseConfig(jdbcUrl = "jdbc:sqlite:test_database.db")
+        val TEST_DATABASE: DatabaseConfig = DatabaseConfig(jdbcUrl = "jdbc:sqlite:$WORK_DIR/database.db")
     }
 }
 
@@ -34,16 +31,15 @@ fun Application.config(): AppConfig {
             jdbcUrl = dbConfig.property("jdbcUrl").getString(),
         ),
         accessTokens = appConfig.property("accessTokens").getList().map(::AccessToken),
+        workDirPath = appConfig.property("workDir").getString(),
     )
 }
 
-val TEST_ACCESS_TOKEN = AccessToken("application_test")
-fun TestAppConfig(
-    serverConfig: ServerConfig = ServerConfig(port = 1),
-    databaseConfig: DatabaseConfig = DatabaseConfig.IN_MEMORY,
-    accessTokens: List<AccessToken> = listOf(TEST_ACCESS_TOKEN),
-): AppConfig = AppConfig(
-    serverConfig = serverConfig,
-    databaseConfig = databaseConfig,
-    accessTokens = accessTokens,
+private const val WORK_DIR = "data_files"
+
+fun TestAppConfig(): AppConfig = AppConfig(
+    serverConfig = ServerConfig(port = 1),
+    databaseConfig = DatabaseConfig.TEST_DATABASE,
+    accessTokens = listOf(AccessToken("application_test")),
+    workDirPath = WORK_DIR,
 )

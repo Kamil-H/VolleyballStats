@@ -1,11 +1,13 @@
 package com.kamilh.volleyballstats.repository.parsing
 
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
+import com.kamilh.volleyballstats.models.AppConfig
+import com.kamilh.volleyballstats.models.appConfigOf
 import com.kamilh.volleyballstats.repository.FileManager
 import com.kamilh.volleyballstats.repository.FileMetadata
 import com.kamilh.volleyballstats.repository.fileManagerOf
 import com.kamilh.volleyballstats.repository.polishleague.htmlParseErrorOf
 import com.kamilh.volleyballstats.repository.polishleague.jsonParseErrorOf
-import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.utils.testClock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,9 +23,11 @@ class SavableParseErrorHandlerTest {
     private fun handler(
         scope: CoroutineScope,
         fileManager: FileManager = fileManagerOf(),
+        appConfig: AppConfig = appConfigOf(),
     ): SavableParseErrorHandler = SavableParseErrorHandler(
         scope = scope,
         fileManager = fileManager,
+        appConfig = appConfig,
     )
 
     @Before
@@ -46,22 +50,28 @@ class SavableParseErrorHandlerTest {
             arguments.add(content to fileMetadata)
             true
         }
+        val workDir = "workDir"
 
         // WHEN
-        handler(this, fileManagerOf(saveTextAsFile = saveTextAsFile)).handle(parseError)
+        handler(
+            scope = this,
+            fileManager = fileManagerOf(saveTextAsFile = saveTextAsFile),
+            appConfig = appConfigOf(workDirPath = workDir)
+        ).handle(parseError)
         yield()
 
         // THEN
+        val expectedPath = "$workDir/$EXCEPTIONS_DIRECTORY_PATH"
         arguments[0].let { (content, fileMetadata) ->
             assertEquals(errorContent, content)
             assertEquals(CurrentDate.localDateTime.toString(), fileMetadata.name)
-            assertEquals(EXCEPTIONS_DIRECTORY_PATH, fileMetadata.directory)
+            assertEquals(expectedPath, fileMetadata.directory)
             assertEquals(FileMetadata.Extension.Html, fileMetadata.extension)
         }
         arguments[1].let { (content, fileMetadata) ->
             assertEquals("${exceptionMessage}\n$exception", content)
             assertEquals(CurrentDate.localDateTime.toString(), fileMetadata.name)
-            assertEquals(EXCEPTIONS_DIRECTORY_PATH, fileMetadata.directory)
+            assertEquals(expectedPath, fileMetadata.directory)
             assertEquals(FileMetadata.Extension.Text, fileMetadata.extension)
         }
     }
@@ -81,22 +91,28 @@ class SavableParseErrorHandlerTest {
             arguments.add(content to fileMetadata)
             true
         }
+        val workDir = "workDir"
 
         // WHEN
-        handler(this, fileManagerOf(saveTextAsFile = saveTextAsFile)).handle(parseError)
+        handler(
+            scope = this,
+            fileManager = fileManagerOf(saveTextAsFile = saveTextAsFile),
+            appConfig = appConfigOf(workDirPath = workDir)
+        ).handle(parseError)
         yield()
 
         // THEN
+        val expectedPath = "$workDir/$EXCEPTIONS_DIRECTORY_PATH"
         arguments[0].let { (content, fileMetadata) ->
             assertEquals(errorContent, content)
             assertEquals(CurrentDate.localDateTime.toString(), fileMetadata.name)
-            assertEquals(EXCEPTIONS_DIRECTORY_PATH, fileMetadata.directory)
+            assertEquals(expectedPath, fileMetadata.directory)
             assertEquals(FileMetadata.Extension.Json, fileMetadata.extension)
         }
         arguments[1].let { (content, fileMetadata) ->
             assertEquals("${exceptionMessage}\n$exception", content)
             assertEquals(CurrentDate.localDateTime.toString(), fileMetadata.name)
-            assertEquals(EXCEPTIONS_DIRECTORY_PATH, fileMetadata.directory)
+            assertEquals(expectedPath, fileMetadata.directory)
             assertEquals(FileMetadata.Extension.Text, fileMetadata.extension)
         }
     }

@@ -1,9 +1,10 @@
 package com.kamilh.volleyballstats.repository.parsing
 
 import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
+import com.kamilh.volleyballstats.models.AppConfig
 import com.kamilh.volleyballstats.repository.FileManager
 import com.kamilh.volleyballstats.repository.FileMetadata
-import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -15,9 +16,12 @@ fun interface ParseErrorHandler {
 @Inject
 @Singleton
 class SavableParseErrorHandler(
+    appConfig: AppConfig,
     private val scope: CoroutineScope,
     private val fileManager: FileManager,
 ) : ParseErrorHandler {
+
+    private val exceptionsDirectoryPath = "${appConfig.workDirPath}/exceptions"
 
     override fun handle(parseError: ParseError) {
         scope.launch {
@@ -26,7 +30,7 @@ class SavableParseErrorHandler(
                 content = parseError.content,
                 fileMetadata = FileMetadata(
                     name = now,
-                    directory = EXCEPTIONS_DIRECTORY_PATH,
+                    directory = exceptionsDirectoryPath,
                     extension = parseError.extension,
                 ),
             )
@@ -34,7 +38,7 @@ class SavableParseErrorHandler(
                 content = parseError.exceptionContent(),
                 fileMetadata = FileMetadata(
                     name = now,
-                    directory = EXCEPTIONS_DIRECTORY_PATH,
+                    directory = exceptionsDirectoryPath,
                     extension = FileMetadata.Extension.Text,
                 ),
             )
@@ -48,8 +52,4 @@ class SavableParseErrorHandler(
             is ParseError.Html -> FileMetadata.Extension.Html
             is ParseError.Json -> FileMetadata.Extension.Json
         }
-
-    companion object {
-        private const val EXCEPTIONS_DIRECTORY_PATH = "exceptions"
-    }
 }

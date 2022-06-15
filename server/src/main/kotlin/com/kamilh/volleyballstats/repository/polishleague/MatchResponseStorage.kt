@@ -1,6 +1,7 @@
 package com.kamilh.volleyballstats.repository.polishleague
 
 import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.models.AppConfig
 import com.kamilh.volleyballstats.models.MatchReportId
 import com.kamilh.volleyballstats.repository.FileManager
 import com.kamilh.volleyballstats.repository.FileMetadata
@@ -23,6 +24,7 @@ interface MatchResponseStorage {
 class FileBasedMatchResponseStorage(
     private val json: Json,
     private val fileManager: FileManager,
+    private val appConfig: AppConfig,
 ) : MatchResponseStorage {
 
     override suspend fun get(matchReportId: MatchReportId, tour: Season): MatchResponse? =
@@ -55,5 +57,5 @@ class FileBasedMatchResponseStorage(
         get() = value.toString()
 
     private val Season.directory: String
-        get() = "match_reports/plus_liga/$value"
+        get() = "${appConfig.workDirPath}/match_reports/plus_liga/$value"
 }
