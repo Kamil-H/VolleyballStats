@@ -15,5 +15,6 @@ buildscript {
         classpath(libs.plugin.serialization)
         classpath(libs.plugin.ksp)
         classpath(libs.plugin.shadow)
+        classpath(libs.plugin.kover)
     }
 }

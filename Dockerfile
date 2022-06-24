@@ -1,7 +1,7 @@
 FROM gradle:7-jdk11 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle clean test --fail-fast
+RUN gradle :server:koverMergedReport
 RUN gradle shadowJar --no-daemon
 
 FROM openjdk:11
