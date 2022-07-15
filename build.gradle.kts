@@ -1,3 +1,5 @@
+apply(plugin = "io.gitlab.arturbosch.detekt")
+
 allprojects {
     repositories.applyDefault()
 
@@ -16,5 +18,19 @@ buildscript {
         classpath(libs.plugin.ksp)
         classpath(libs.plugin.shadow)
         classpath(libs.plugin.kover)
+        classpath(libs.plugin.detekt)
     }
+}
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
+    config.setFrom(file("detekt-config.yml"))
+    source = objects.fileCollection().from(
+        "server/src/main/kotlin",
+        "shared/datetime/src/commonMain/kotlin",
+        "shared/domain/src/commonMain/kotlin",
+        "shared/storage/src/commonMain/kotlin",
+        "shared/network/src/commonMain/kotlin",
+        "shared/api/src/commonMain/kotlin",
+    ).asFileTree
+    allRules = true
 }

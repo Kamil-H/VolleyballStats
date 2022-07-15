@@ -15,6 +15,7 @@ dateTime = "0.6.3"
 jUnit5 = "5.7.0"
 shadow = "7.1.2"
 kover = "0.5.1"
+detekt = "1.20.0"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }
@@ -26,6 +27,7 @@ plugin-sqldelight = { module = "com.squareup.sqldelight:gradle-plugin", version.
 plugin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
 plugin-shadow = { module = "gradle.plugin.com.github.johnrengelman:shadow", version.ref = "shadow" }
 plugin-kover = { module = "org.jetbrains.kotlinx:kover", version.ref = "kover" }
+plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 
