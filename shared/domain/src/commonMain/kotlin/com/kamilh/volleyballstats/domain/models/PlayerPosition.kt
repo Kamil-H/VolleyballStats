@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.domain.models
 
+@Suppress("MagicNumber")
 enum class PlayerPosition(val value: Int) {
     P1(1), P2(2), P3(3), P4(4), P5(5), P6(6);
 

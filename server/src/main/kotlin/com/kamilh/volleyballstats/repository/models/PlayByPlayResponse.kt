@@ -1,4 +1,5 @@
 @file:UseSerializers(LocalDateTimeSerializer::class)
+@file:Suppress("ConstructorParameterNaming")
 
 package com.kamilh.volleyballstats.repository.models
 

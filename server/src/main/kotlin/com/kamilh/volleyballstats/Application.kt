@@ -3,6 +3,7 @@ package com.kamilh.volleyballstats
 import com.kamilh.volleyballstats.authorization.AccessTokenValidator
 import com.kamilh.volleyballstats.authorization.headers
 import com.kamilh.volleyballstats.domain.models.League
+import com.kamilh.volleyballstats.domain.utils.PlatformLogger
 import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.models.config
 import com.kamilh.volleyballstats.routes.matches.MatchesController
@@ -14,7 +15,6 @@ import com.kamilh.volleyballstats.routes.teams.teams
 import com.kamilh.volleyballstats.routes.tours.ToursController
 import com.kamilh.volleyballstats.routes.tours.tours
 import com.kamilh.volleyballstats.storage.DatabaseFactory
-import com.kamilh.volleyballstats.domain.utils.PlatformLogger
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
 @JvmOverloads
 fun Application.module(
@@ -66,7 +66,6 @@ class ApplicationInitializer(
             )
         }
 
-        // TODO: detect 404 and usage of wrong method (eg. POST instead of GET)
         install(StatusPages) {
             exception<Throwable> { call, cause ->
                 cause.printStackTrace()

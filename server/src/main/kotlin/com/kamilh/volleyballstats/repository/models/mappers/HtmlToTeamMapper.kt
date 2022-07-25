@@ -3,12 +3,13 @@ package com.kamilh.volleyballstats.repository.models.mappers
 import com.kamilh.volleyballstats.domain.models.Team
 import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.domain.models.Url
-import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
-import me.tatarka.inject.annotations.Inject
 import com.kamilh.volleyballstats.repository.parsing.EmptyResultException
+import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
+import me.tatarka.inject.annotations.Inject
 
+@Suppress("MaxLineLength")
 /**
 <div class="thumbnail teamlist">
     <a href="/teams/id/30288.html"><img src="https://dl.siatkarskaliga.pl/415936/inline/crop=0x175x5293x2828,scalecrop=600x300/8834bf/Grupowe.jpg" width="600" height="300" alt="Aluron CMC Warta Zawiercie" class="img-responsive"></a>

@@ -45,33 +45,41 @@ class SqlPlayerStorage(
     override suspend fun insert(players: List<Player>, tourId: TourId): InsertPlayerResult =
         queryRunner.runTransaction {
             if (players.isEmpty()) {
-                return@runTransaction Result.success(Unit)
-            }
-
-            val teamIdsNotFound = mutableListOf<TeamId>()
-            val playersAlreadyExists = mutableListOf<PlayerId>()
-            players.groupBy { it.team }.forEach { (teamId, players) ->
-                val tourTeamId = tourTeamQueries.selectId(teamId, tourId).executeAsOneOrNull()
-                if (tourTeamId == null) {
-                    teamIdsNotFound.add(teamId)
-                } else {
-                    players.forEach { player ->
-                        val error = insertPlayer(player, tourTeamId)?.isTeamPlayerAlreadyExistsError()
-                        if (error != null) {
-                            playersAlreadyExists.add(player.id)
-                        }
-                    }
-                }
-            }
-            if (teamIdsNotFound.isNotEmpty() || playersAlreadyExists.isNotEmpty()) {
-                Result.failure<Unit, InsertPlayerError>(
-                    InsertPlayerError.Errors(
-                        teamsNotFound = teamIdsNotFound,
-                        teamPlayersAlreadyExists = playersAlreadyExists,
-                    )
-                )
-            } else {
                 Result.success(Unit)
+            } else {
+                insertInternal(players, tourId)
+            }
+        }
+
+    private fun insertInternal(players: List<Player>, tourId: TourId): InsertPlayerResult {
+        val teamIdsNotFound = mutableListOf<TeamId>()
+        val playersAlreadyExists = mutableListOf<PlayerId>()
+        players.groupBy { it.team }.forEach { (teamId, players) ->
+            val tourTeamId = tourTeamQueries.selectId(teamId, tourId).executeAsOneOrNull()
+            if (tourTeamId == null) {
+                teamIdsNotFound.add(teamId)
+            } else {
+                playersAlreadyExists.addAll(insertPlayers(players, tourTeamId))
+            }
+        }
+        return if (teamIdsNotFound.isNotEmpty() || playersAlreadyExists.isNotEmpty()) {
+            Result.failure<Unit, InsertPlayerError>(
+                InsertPlayerError.Errors(
+                    teamsNotFound = teamIdsNotFound,
+                    teamPlayersAlreadyExists = playersAlreadyExists,
+                )
+            )
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    private fun insertPlayers(players: List<Player>, tourTeamId: Long): List<PlayerId> =
+        players.mapNotNull { player ->
+            if (insertPlayer(player, tourTeamId)?.isTeamPlayerAlreadyExistsError() != null) {
+                player.id
+            } else {
+                null
             }
         }
 
@@ -127,32 +135,32 @@ class SqlPlayerStorage(
         range: Int?,
         team_id: TeamId
     ) -> Player = {
-            image_url: Url?,
+            imageUrl: Url?,
             _: Long,
             position: Specialization,
-            player_id: PlayerId,
+            playerId: PlayerId,
             number: Int,
             name: String,
-            updated_at: LocalDateTime,
-            updated_at_: LocalDateTime,
-            birth_date: LocalDate,
+            updatedAt: LocalDateTime,
+            _: LocalDateTime,
+            birthDate: LocalDate,
             height: Int?,
             weight: Int?,
             range: Int?,
-            team_id: TeamId
+            teamId: TeamId
         ->
         Player(
-            id = player_id,
+            id = playerId,
             name = name,
-            imageUrl = image_url,
-            team = team_id,
+            imageUrl = imageUrl,
+            team = teamId,
             specialization = position,
-            date = birth_date,
+            date = birthDate,
             height = height,
             weight = weight,
             range = range,
             number = number,
-            updatedAt = updated_at,
+            updatedAt = updatedAt,
         )
     }
 }

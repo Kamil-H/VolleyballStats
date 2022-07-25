@@ -1,8 +1,8 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.storage.InsertTourError
 import com.kamilh.volleyballstats.storage.LeagueStorage

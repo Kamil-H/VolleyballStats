@@ -1,13 +1,13 @@
 package com.kamilh.volleyballstats.storage
 
 import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.storage.databse.LeagueQueries
 import com.kamilh.volleyballstats.domain.models.Error
 import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.models.Result
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.common.errors.SqlError
 import com.kamilh.volleyballstats.storage.common.errors.createSqlError
+import com.kamilh.volleyballstats.storage.databse.LeagueQueries
 import me.tatarka.inject.annotations.Inject
 
 interface LeagueStorage {
@@ -39,9 +39,8 @@ class SqlLeagueStorage(
         }
         Result.success(Unit)
     } catch (exception: Exception) {
-        when (exception.createSqlError(tableName = "league_model", "country")) {
-            SqlError.Uniqueness -> Result.failure(InsertLeagueError.LeagueAlreadyExists)
-            else -> throw exception
-        }
+        if (exception.createSqlError(tableName = "league_model", "country") == SqlError.Uniqueness) {
+            Result.failure(InsertLeagueError.LeagueAlreadyExists)
+        } else throw exception
     }
 }

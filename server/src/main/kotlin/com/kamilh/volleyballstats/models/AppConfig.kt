@@ -37,6 +37,7 @@ fun Application.config(): AppConfig {
 
 private const val WORK_DIR = "data_files"
 
+@Suppress("FunctionNaming")
 fun TestAppConfig(): AppConfig = AppConfig(
     serverConfig = ServerConfig(port = 1),
     databaseConfig = DatabaseConfig.TEST_DATABASE,

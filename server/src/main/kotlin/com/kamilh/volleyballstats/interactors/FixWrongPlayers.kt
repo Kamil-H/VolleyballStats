@@ -55,7 +55,7 @@ class FixWrongPlayersInteractor(
                         teamId = playersNotFound.first { it.first == matchPlayer.id }.second,
                     )
                     if (newPlayerId != null) {
-                        matchPlayer.copy(id = newPlayerId)   
+                        matchPlayer.copy(id = newPlayerId)
                     } else {
                         log("Player not found, removing player: ${matchPlayer.id}")
                         null
@@ -79,9 +79,13 @@ class FixWrongPlayersInteractor(
         log("playerIdFromName: $playerIdFromName, player: $player")
         return when {
             player != null -> getDetailsAndSave(player, tour, matchPlayer, teamId)
-            playerIdFromName != null -> when (val playerWithDetails = polishLeagueRepository.getPlayerWithDetails(tour.season, playerIdFromName).value) {
-                null -> matchPlayer.id
-                else -> insert(playerWithDetails, tour, matchPlayer, teamId)
+            playerIdFromName != null -> {
+                val playerWithDetails = polishLeagueRepository.getPlayerWithDetails(tour.season, playerIdFromName).value
+                if (playerWithDetails != null) {
+                    insert(playerWithDetails, tour, matchPlayer, teamId)
+                } else {
+                    matchPlayer.id
+                }
             }
             else -> null
         }
@@ -145,21 +149,23 @@ class FixWrongPlayersInteractor(
                 )
             ).map { it.toPlayer() },
             tourId = tour.id,
-        ).onFailure { error ->
-            val message = when (error) {
-                is InsertPlayerError.Errors -> buildString {
-                    append("Player already inserted: ${playerWithDetails.teamPlayer} ")
-                        .takeIf { error.teamPlayersAlreadyExists.isNotEmpty() }
-                    append("Team not found: ${error.teamsNotFound.joinToString { it.value.toString() }}")
-                        .takeIf { error.teamsNotFound.isNotEmpty() }
-                }
-                InsertPlayerError.TourNotFound -> "Tour not found"
-            }
-            log(message)
-        }
+        ).onFailure { error -> onInsertFailure(error = error, teamPlayer = playerWithDetails.teamPlayer) }
         return playerWithDetails.teamPlayer.id
     }
-    
+
+    private fun onInsertFailure(error: InsertPlayerError, teamPlayer: TeamPlayer) {
+        val message = when (error) {
+            is InsertPlayerError.Errors -> buildString {
+                append("Player already inserted: $teamPlayer ")
+                    .takeIf { error.teamPlayersAlreadyExists.isNotEmpty() }
+                append("Team not found: ${error.teamsNotFound.joinToString { it.value.toString() }}")
+                    .takeIf { error.teamsNotFound.isNotEmpty() }
+            }
+            InsertPlayerError.TourNotFound -> "Tour not found"
+        }
+        log(message)
+    }
+
     private fun log(message: String) {
         Logger.i(message = message, tag = TAG)
     }

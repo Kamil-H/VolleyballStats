@@ -64,9 +64,13 @@ class SqlMatchReportStorageTest : ReportStorageTest() {
         val matchStatistics = matchReportOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
+                players = listOf(playerIdOf()),
                 code = code,
             ),
-            away = matchTeamOf(teamId = awayTeamId)
+            away = matchTeamOf(
+                teamId = awayTeamId,
+                players = listOf(playerIdOf()),
+            )
         )
         insert(league)
         insert(tour)
@@ -74,18 +78,18 @@ class SqlMatchReportStorageTest : ReportStorageTest() {
             InsertTeam(
                 team = teamOf(id = homeTeamId),
                 tour = tour,
+            ),
+            InsertTeam(
+                team = teamOf(id = awayTeamId),
+                tour = tour,
             )
         )
 
         // WHEN
-        val result = storage.insert(matchStatistics, tour.id)
+        storage.insert(matchStatistics, tour.id)
 
         // THEN
         assertEquals(expected = code, teamQueries.selectAll().executeAsList().first { it.id == homeTeamId }.code)
-        result.assertFailure {
-            require(this is InsertMatchReportError.TeamNotFound)
-            assertEquals(expected = awayTeamId, this.teamId)
-        }
     }
 
     @Test
@@ -100,9 +104,11 @@ class SqlMatchReportStorageTest : ReportStorageTest() {
         val matchStatistics = matchReportOf(
             home = matchTeamOf(
                 teamId = homeTeamId,
+                players = listOf(playerIdOf()),
             ),
             away = matchTeamOf(
                 teamId = awayTeamId,
+                players = listOf(playerIdOf()),
                 code = code,
             )
         )

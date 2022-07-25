@@ -40,23 +40,14 @@ class WebSocketMatchReportEndpoint(
         httpClient.ws(urlString = url.value) {
             val frame = incoming.receive()
 
-            var timeout: Long? = null
-            if (frame is Frame.Text) {
+            val timeout: Long = if (frame is Frame.Text) {
                 val requestInformationResponseText = frame.text()?.dropBitsFromTheBeginning() ?: ""
-                try {
-                    val requestInformationResponse = json.decodeFromString<WebSocketRequestInformationResponse>(requestInformationResponseText)
-                    timeout = requestInformationResponse.pingTimeout
-                }  catch (exception: Exception) {
-                    parseErrorHandler.handle(
-                        ParseError.Json(
-                            content = requestInformationResponseText,
-                            exception = exception,
-                        )
-                    )
-                }
+                getTimeout(requestInformationResponseText)
+            } else {
+                DEFAULT_TIMEOUT
             }
 
-            delay(timeout ?: DefaultTimeout)
+            delay(timeout)
             send(message)
 
             var text: String?
@@ -65,25 +56,42 @@ class WebSocketMatchReportEndpoint(
             } while (text.isNullOrEmpty())
 
             val stringJson = text.dropUntilObjectDefinition()
-            result = try {
-                val playByPlayResponse = json.decodeFromString<PlayByPlayResponse>(stringJson)
-                if (playByPlayResponse.data.isEmpty()) {
-                    error("PlayByPlayResponse.data is empty")
-                }
-                val matchResponse = playByPlayResponse.data.first()
-                Result.success(matchResponse)
-            } catch (exception: Exception) {
-                parseErrorHandler.handle(
-                    ParseError.Json(
-                        content = stringJson,
-                        exception = exception,
-                    )
-                )
-                Result.failure(NetworkError.UnexpectedException(exception))
-            }
+            result = createResult(stringJson)
         }
         return result!!
     }
+
+    private fun getTimeout(requestInformationResponseText: String): Long =
+        try {
+            val requestInformationResponse = json.decodeFromString<WebSocketRequestInformationResponse>(requestInformationResponseText)
+            requestInformationResponse.pingTimeout
+        } catch (exception: Exception) {
+            parseErrorHandler.handle(
+                ParseError.Json(
+                    content = requestInformationResponseText,
+                    exception = exception,
+                )
+            )
+            DEFAULT_TIMEOUT
+        }
+
+    private fun createResult(stringJson: String): NetworkResult<MatchResponse>? =
+        try {
+            val playByPlayResponse = json.decodeFromString<PlayByPlayResponse>(stringJson)
+            if (playByPlayResponse.data.isEmpty()) {
+                error("PlayByPlayResponse.data is empty")
+            }
+            val matchResponse = playByPlayResponse.data.first()
+            Result.success(matchResponse)
+        } catch (exception: Exception) {
+            parseErrorHandler.handle(
+                ParseError.Json(
+                    content = stringJson,
+                    exception = exception,
+                )
+            )
+            Result.failure(NetworkError.UnexpectedException(exception))
+        }
 
     private fun Frame.text(): String? =
         if (this is Frame.Text) {
@@ -99,7 +107,7 @@ class WebSocketMatchReportEndpoint(
         dropWhile { it != '{' }.dropLastWhile { it != '}' }
 
     companion object {
-        private const val DefaultTimeout = 5000L
+        private const val DEFAULT_TIMEOUT = 5000L
     }
 }
 

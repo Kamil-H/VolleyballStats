@@ -2,7 +2,7 @@ package com.kamilh.volleyballstats.routes.matches
 
 import com.kamilh.volleyballstats.api.ResponseMapper
 import com.kamilh.volleyballstats.api.match.MatchResponse
-import com.kamilh.volleyballstats.api.match_report.MatchReportResponse
+import com.kamilh.volleyballstats.api.matchreport.MatchReportResponse
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.routes.CallError

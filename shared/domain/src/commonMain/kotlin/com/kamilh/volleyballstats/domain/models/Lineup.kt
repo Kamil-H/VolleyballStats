@@ -21,6 +21,7 @@ data class Lineup(
     companion object {
         private const val NUMBER_OF_ITEMS = 6
 
+        @Suppress("MagicNumber")
         fun from(playerIds: List<PlayerId>): Lineup =
             if (playerIds.size == NUMBER_OF_ITEMS) {
                 Lineup(

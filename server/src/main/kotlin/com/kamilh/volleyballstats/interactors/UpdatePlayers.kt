@@ -22,7 +22,7 @@ sealed class UpdatePlayersError(override val message: String) : Error {
     class Network(val networkError: NetworkError) : UpdatePlayersError("Network(networkError: ${networkError.message})")
     class Storage(val insertPlayerError: InsertPlayerError) : UpdatePlayersError("Storage(insertPlayerError: ${insertPlayerError.message})")
 }
-// TODO: Change implementation for mobile app
+
 @Inject
 class UpdatePlayersInteractor(
     appDispatchers: AppDispatchers,

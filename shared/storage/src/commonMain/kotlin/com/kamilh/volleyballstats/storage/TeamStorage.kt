@@ -1,16 +1,15 @@
 package com.kamilh.volleyballstats.storage
 
+import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.storage.common.QueryRunner
+import com.kamilh.volleyballstats.storage.common.errors.SqlError
+import com.kamilh.volleyballstats.storage.common.errors.createSqlError
 import com.kamilh.volleyballstats.storage.databse.SelectByTourYearAndName
 import com.kamilh.volleyballstats.storage.databse.TeamQueries
 import com.kamilh.volleyballstats.storage.databse.TourQueries
 import com.kamilh.volleyballstats.storage.databse.TourTeamQueries
-import com.kamilh.volleyballstats.datetime.LocalDateTime
-import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.domain.models.Url
-import com.kamilh.volleyballstats.storage.common.QueryRunner
-import com.kamilh.volleyballstats.storage.common.errors.SqlError
-import com.kamilh.volleyballstats.storage.common.errors.createSqlError
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
@@ -45,42 +44,49 @@ class SqlTeamStorage(
 
     override suspend fun insert(teams: List<Team>, tourId: TourId): InsertTeamResult =
         queryRunner.runTransaction {
-            val firstTeam = teams.firstOrNull() ?: return@runTransaction Result.success(Unit)
-            tourQueries.selectById(tourId).executeAsOneOrNull() ?: return@runTransaction Result.failure<Unit, InsertTeamError>(InsertTeamError.TourNotFound)
-            val insert: Team.() -> Exception? = {
-                try {
-                    teamQueries.insert(id)
-                    tourTeamQueries.insert(
-                        name = name,
-                        image_url = teamImageUrl,
-                        logo_url = logoUrl,
-                        team_id = id,
-                        tour_id = tourId,
-                        updated_at = updatedAt,
-                    )
-                    null
-                } catch (exception: Exception) {
-                    exception
-                }
+            when {
+                teams.isEmpty() -> Result.success(Unit)
+                tourQueries.selectById(tourId).executeAsOneOrNull() == null -> InsertTeamResult.failure(InsertTeamError.TourNotFound)
+                else -> insertInternal(teams, tourId)
             }
-            val insertResult = firstTeam.insert()
-            val alreadyExitsTeamIds = if (insertResult?.isTourTeamAlreadyExistsError() == true) {
-                listOf(firstTeam.id)
-            } else {
-                emptyList()
-            } + teams.drop(1).mapNotNull { team ->
-                val result = team.insert()
-                when {
-                    result == null -> null
-                    result.isTourTeamAlreadyExistsError() -> team.id
-                    else -> throw result
-                }
+        }
+
+    private fun insertInternal(teams: List<Team>, tourId: TourId): InsertTeamResult {
+        val firstTeam = teams.first()
+        val insertResult = insert(firstTeam, tourId)
+        val alreadyExitsTeamIds = if (insertResult?.isTourTeamAlreadyExistsError() == true) {
+            listOf(firstTeam.id)
+        } else {
+            emptyList()
+        } + teams.drop(1).mapNotNull { team ->
+            val result = insert(team, tourId)
+            when {
+                result == null -> null
+                result.isTourTeamAlreadyExistsError() -> team.id
+                else -> throw result
             }
-            if (alreadyExitsTeamIds.isEmpty()) {
-                Result.success(Unit)
-            } else {
-                Result.failure(InsertTeamError.TourTeamAlreadyExists(alreadyExitsTeamIds))
-            }
+        }
+        return if (alreadyExitsTeamIds.isEmpty()) {
+            Result.success(Unit)
+        } else {
+            Result.failure(InsertTeamError.TourTeamAlreadyExists(alreadyExitsTeamIds))
+        }
+    }
+
+    private fun insert(team: Team, tourId: TourId): Exception? =
+        try {
+            teamQueries.insert(team.id)
+            tourTeamQueries.insert(
+                name = team.name,
+                image_url = team.teamImageUrl,
+                logo_url = team.logoUrl,
+                team_id = team.id,
+                tour_id = tourId,
+                updated_at = team.updatedAt,
+            )
+            null
+        } catch (exception: Exception) {
+            exception
         }
 
     override suspend fun getAllTeams(tourId: TourId): Flow<List<Team>> =
@@ -120,18 +126,18 @@ class SqlTeamStorage(
     ) -> Team = {
             _: Long,
             name: String,
-            image_url: Url,
-            logo_url: Url,
-            team_id: TeamId,
+            imageUrl: Url,
+            logoUrl: Url,
+            teamId: TeamId,
             _: TourId,
-            updated_at: LocalDateTime,
+            updatedAt: LocalDateTime,
         ->
         Team(
-            id = team_id,
+            id = teamId,
             name = name,
-            teamImageUrl = image_url,
-            logoUrl = logo_url,
-            updatedAt = updated_at,
+            teamImageUrl = imageUrl,
+            logoUrl = logoUrl,
+            updatedAt = updatedAt,
         )
     }
 }

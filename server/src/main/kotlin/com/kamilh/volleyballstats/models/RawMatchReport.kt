@@ -79,6 +79,7 @@ sealed class Event {
         override val time: LocalDateTime = startTime
     }
 
+    @Suppress("ConstructorParameterNaming")
     data class Substitution(
         val `in`: Int,
         val `out`: Int,

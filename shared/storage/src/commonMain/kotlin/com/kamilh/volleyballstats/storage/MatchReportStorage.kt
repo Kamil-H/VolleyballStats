@@ -30,6 +30,7 @@ sealed class InsertMatchReportError(override val message: String?) : Error {
 
 @Inject
 @Singleton
+@Suppress("LargeClass")
 class SqlMatchReportStorage(
     private val queryRunner: QueryRunner,
     private val teamQueries: TeamQueries,
@@ -53,92 +54,39 @@ class SqlMatchReportStorage(
 
     override suspend fun insert(matchReport: MatchReport, tourId: TourId): InsertMatchReportResult =
         queryRunner.runTransaction {
-            tourQueries.selectById(tourId).executeAsOneOrNull()
-                ?: return@runTransaction Result.failure<Unit, InsertMatchReportError>(
-                    InsertMatchReportError.TourNotFound
-                )
-
             val homeTeamId = tourTeamQueries.selectId(matchReport.home.teamId, tourId).executeAsOneOrNull()
-                ?: return@runTransaction InsertMatchReportResult.failure(
-                    InsertMatchReportError.TeamNotFound(
-                        matchReport.home.teamId
-                    )
-                )
-            teamQueries.updateCode(matchReport.home.code, matchReport.home.teamId)
-
             val awayTeamId = tourTeamQueries.selectId(matchReport.away.teamId, tourId).executeAsOneOrNull()
-                ?: return@runTransaction InsertMatchReportResult.failure(
-                    InsertMatchReportError.TeamNotFound(
-                        matchReport.away.teamId
-                    )
-                )
-            teamQueries.updateCode(matchReport.away.code, matchReport.away.teamId)
-
-            if (matchReport.home.players.isEmpty() || matchReport.away.players.isEmpty()) {
-                return@runTransaction InsertMatchReportResult.failure(InsertMatchReportError.NoPlayersInTeams)
+            when {
+                tourQueries.selectById(tourId).executeAsOneOrNull() == null ->
+                    InsertMatchReportResult.failure(InsertMatchReportError.TourNotFound)
+                homeTeamId == null ->
+                    InsertMatchReportResult.failure(InsertMatchReportError.TeamNotFound(matchReport.home.teamId))
+                awayTeamId == null ->
+                    InsertMatchReportResult.failure(InsertMatchReportError.TeamNotFound(matchReport.away.teamId))
+                matchReport.home.players.isEmpty() || matchReport.away.players.isEmpty() ->
+                    InsertMatchReportResult.failure(InsertMatchReportError.NoPlayersInTeams)
+                else -> insert(matchReport = matchReport, home = homeTeamId, away = awayTeamId, tourId = tourId)
             }
+        }
 
-            val playerIdCache = mutableMapOf<PlayerId, Long>()
-            val playersNotFound = insert(
-                matchPlayers = matchReport.home.players,
-                matchId = matchReport.matchId,
-                tourTeamId = homeTeamId,
-                teamId = matchReport.home.teamId,
-            ) { playerId, id ->
-                playerIdCache[playerId] = id
-            } + insert(
-                matchPlayers = matchReport.away.players,
-                matchId = matchReport.matchId,
-                tourTeamId = awayTeamId,
-                teamId = matchReport.away.teamId,
-            ) { playerId, id ->
-                playerIdCache[playerId] = id
-            }
-
-            if (playersNotFound.isNotEmpty()) {
-                return@runTransaction InsertMatchReportResult.failure(
-                    InsertMatchReportError.PlayerNotFound(
-                        playersNotFound
-                    )
-                )
-            }
-
+    private fun insert(matchReport: MatchReport, home: Long, away: Long, tourId: TourId): InsertMatchReportResult {
+        updateCodes(matchReport)
+        val playerIdCache = mutableMapOf<PlayerId, Long>()
+        val playersNotFound = preparePlayerCache(matchReport, playerIdCache, home = home, away = away)
+        return if (playersNotFound.isNotEmpty()) {
+            InsertMatchReportResult.failure(InsertMatchReportError.PlayerNotFound(playersNotFound))
+        } else {
             matchReportQueries.insert(
-                id = matchReport.matchId,
-                home = homeTeamId,
-                away = awayTeamId,
-                mvp = playerIdCache[matchReport.mvp]!!,
-                best_player = playerIdCache[matchReport.bestPlayer],
-                tour_id = tourId,
-                updated_at = matchReport.updatedAt,
+                id = matchReport.matchId, home = home, away = away, mvp = playerIdCache[matchReport.mvp]!!,
+                best_player = playerIdCache[matchReport.bestPlayer], tour_id = tourId, updated_at = matchReport.updatedAt,
                 phase = matchReport.phase,
             )
-
             matchReport.sets.forEach { matchSet ->
-                setQueries.insert(
-                    number = matchSet.number,
-                    home_score = matchSet.score.home,
-                    away_score = matchSet.score.away,
-                    start_time = matchSet.startTime,
-                    end_time = matchSet.endTime,
-                    duration = matchSet.duration,
-                    match_id = matchReport.matchId,
-                )
+                insert(matchSet = matchSet, matchId = matchReport.matchId)
                 val setId = setQueries.lastInsertRowId().executeAsOne()
                 matchSet.points.forEach { matchPoint ->
-                    pointQueries.insert(
-                        home_score = matchPoint.score.home,
-                        away_score = matchPoint.score.away,
-                        start_time = matchPoint.startTime,
-                        end_time = matchPoint.endTime,
-                        point = when (matchPoint.point) {
-                            matchReport.home.teamId -> homeTeamId
-                            matchReport.away.teamId -> awayTeamId
-                            else -> error("It should never happen")
-                        },
-                        home_lineup = pointLineupQueries.insert(matchPoint.homeLineup, playerIdCache),
-                        away_lineup = pointLineupQueries.insert(matchPoint.awayLineup, playerIdCache),
-                        set_id = setId,
+                    insert(matchPoint = matchPoint, matchReport = matchReport, playerIdCache = playerIdCache,
+                        homeTeamId = home, awayTeamId = away, setId = setId,
                     )
                     val pointId = pointQueries.lastInsertRowId().executeAsOne()
                     matchPoint.playActions.forEachIndexed { index, playAction ->
@@ -148,6 +96,72 @@ class SqlMatchReportStorage(
             }
             InsertMatchReportResult.success(Unit)
         }
+    }
+
+    private fun updateCodes(matchReport: MatchReport) {
+        teamQueries.updateCode(matchReport.home.code, matchReport.home.teamId)
+        teamQueries.updateCode(matchReport.away.code, matchReport.away.teamId)
+    }
+
+    private fun insert(matchId: MatchId, matchSet: MatchSet) {
+        setQueries.insert(
+            number = matchSet.number,
+            home_score = matchSet.score.home,
+            away_score = matchSet.score.away,
+            start_time = matchSet.startTime,
+            end_time = matchSet.endTime,
+            duration = matchSet.duration,
+            match_id = matchId,
+        )
+    }
+
+    private fun insert(
+        matchPoint: MatchPoint,
+        matchReport: MatchReport,
+        playerIdCache: Map<PlayerId, Long>,
+        homeTeamId: Long,
+        awayTeamId: Long,
+        setId: Long,
+    ) {
+        pointQueries.insert(
+            home_score = matchPoint.score.home,
+            away_score = matchPoint.score.away,
+            start_time = matchPoint.startTime,
+            end_time = matchPoint.endTime,
+            point = when (matchPoint.point) {
+                matchReport.home.teamId -> homeTeamId
+                matchReport.away.teamId -> awayTeamId
+                else -> error("It should never happen")
+            },
+            home_lineup = pointLineupQueries.insert(matchPoint.homeLineup, playerIdCache),
+            away_lineup = pointLineupQueries.insert(matchPoint.awayLineup, playerIdCache),
+            set_id = setId,
+        )
+    }
+
+    private fun preparePlayerCache(
+        matchReport: MatchReport,
+        playerIdCache: MutableMap<PlayerId, Long>,
+        home: Long,
+        away: Long,
+    ): List<Pair<PlayerId, TeamId>> {
+        val playersNotFound = insert(
+            matchPlayers = matchReport.home.players,
+            matchId = matchReport.matchId,
+            tourTeamId = home,
+            teamId = matchReport.home.teamId,
+        ) { playerId, id ->
+            playerIdCache[playerId] = id
+        } + insert(
+            matchPlayers = matchReport.away.players,
+            matchId = matchReport.matchId,
+            tourTeamId = away,
+            teamId = matchReport.away.teamId,
+        ) { playerId, id ->
+            playerIdCache[playerId] = id
+        }
+        return playersNotFound
+    }
 
     private fun insert(
         matchPlayers: List<PlayerId>,
@@ -186,6 +200,7 @@ class SqlMatchReportStorage(
         return lastInsertRowId().executeAsOne()
     }
 
+    @Suppress("LongMethod")
     private fun insert(index: Int, playAction: PlayAction, pointId: Long, playerIdCache: Map<PlayerId, Long>) {
         val toId: PlayerId.() -> Long = { playerIdCache[this]!! }
         playQueries.insert(
@@ -248,29 +263,13 @@ class SqlMatchReportStorage(
     private fun <T : Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
 
     private fun getAllMatchReports(tourId: TourId): Flow<List<MatchReport>> {
-        val stats = matchReportQueries.selectAllReportsByTourId(tourId).mapQuery()
-        val matchAppearances = matchAppearanceQueries.selectAllAppearancesByTour(tourId).mapQuery()
-        val sets = setQueries.selectAllBySetsTourId(tourId).mapQuery()
-        val points = pointQueries.selectAllPointsByTourId(tourId).mapQuery()
+        val statsFlow = matchReportQueries.selectAllReportsByTourId(tourId).mapQuery()
+        val matchAppearancesFlow = matchAppearanceQueries.selectAllAppearancesByTour(tourId).mapQuery()
+        val setsFlow = setQueries.selectAllBySetsTourId(tourId).mapQuery()
+        val pointsFlow = pointQueries.selectAllPointsByTourId(tourId).mapQuery()
 
-        val attacks = playAttackQueries.selectAllAttacksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val blocks = playBlockQueries.selectAllBlocksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val digs = playDigQueries.selectAllDigsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val freeballs =
-            playFreeballQueries.selectAllFreeballsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val serves = playServeQueries.selectAllServesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val receives =
-            playReceiveQueries.selectAllReceivesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val playSets = playSetQueries.selectAllSetsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-
-        val playActions =
-            combine(attacks, blocks, digs, freeballs, receives, serves, playSets) { list -> list.flatMap { it } }
-
-        return combine(stats,
-            matchAppearances,
-            sets,
-            points,
-            playActions) { stats, matchAppearances, sets, points, playActions ->
+        val playActionsFlow = playActionFlow(tourId)
+        return combine(statsFlow, matchAppearancesFlow, setsFlow, pointsFlow, playActionsFlow) { stats, matchAppearances, sets, points, playActions ->
             stats.map { selectAllStats ->
                 MatchReport(
                     matchId = selectAllStats.id,
@@ -284,6 +283,20 @@ class SqlMatchReportStorage(
                 )
             }
         }
+    }
+
+    private fun playActionFlow(tourId: TourId): Flow<List<PlayActionWrapper>> {
+        val attacks = playAttackQueries.selectAllAttacksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val blocks = playBlockQueries.selectAllBlocksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val digs = playDigQueries.selectAllDigsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val freeballs =
+            playFreeballQueries.selectAllFreeballsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val serves = playServeQueries.selectAllServesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val receives =
+            playReceiveQueries.selectAllReceivesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+        val playSets = playSetQueries.selectAllSetsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
+
+        return combine(attacks, blocks, digs, freeballs, receives, serves, playSets) { list -> list.flatMap { it } }
     }
 
     override fun getAllMatchReports(): Flow<List<MatchReport>> =
@@ -330,22 +343,8 @@ class SqlMatchReportStorage(
                             endTime = pointModel.end_time,
                             playActions = playActions.filter { it.pointId == pointModel.id }.map { it.playAction },
                             point = pointModel.point_team_id,
-                            homeLineup = Lineup(
-                                p1 = pointModel.home_p1,
-                                p2 = pointModel.home_p2,
-                                p3 = pointModel.home_p3,
-                                p4 = pointModel.home_p4,
-                                p5 = pointModel.home_p5,
-                                p6 = pointModel.home_p6,
-                            ),
-                            awayLineup = Lineup(
-                                p1 = pointModel.away_p1,
-                                p2 = pointModel.away_p2,
-                                p3 = pointModel.away_p3,
-                                p4 = pointModel.away_p4,
-                                p5 = pointModel.away_p5,
-                                p6 = pointModel.away_p6,
-                            ),
+                            homeLineup = pointModel.toHomeLineup(),
+                            awayLineup = pointModel.toAwayLineup(),
                         )
                     },
                     startTime = setModel.start_time,
@@ -353,6 +352,26 @@ class SqlMatchReportStorage(
                     duration = setModel.duration,
                 )
             }
+
+    private fun SelectAllPointsByTourId.toHomeLineup(): Lineup =
+        Lineup(
+            p1 = home_p1,
+            p2 = home_p2,
+            p3 = home_p3,
+            p4 = home_p4,
+            p5 = home_p5,
+            p6 = home_p6,
+        )
+
+    private fun SelectAllPointsByTourId.toAwayLineup(): Lineup =
+        Lineup(
+            p1 = away_p1,
+            p2 = away_p2,
+            p3 = away_p3,
+            p4 = away_p4,
+            p5 = away_p5,
+            p6 = away_p6,
+        )
 
     private fun SelectAllAttacksByTourId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(

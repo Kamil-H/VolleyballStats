@@ -1,10 +1,6 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
-import com.kamilh.volleyballstats.datetime.LocalDate
-import com.kamilh.volleyballstats.datetime.parsePolishLeagueDate
-import com.kamilh.volleyballstats.domain.models.PlayerId
-import com.kamilh.volleyballstats.domain.models.Specialization
-import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.models.PlayerDetails
 import com.kamilh.volleyballstats.models.PlayerWithDetails
@@ -12,7 +8,9 @@ import com.kamilh.volleyballstats.models.TeamPlayer
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
 import me.tatarka.inject.annotations.Inject
+import org.jsoup.nodes.Document
 
+@Suppress("MaxLineLength")
 /**
 <div class="col-xs-9 col-sm-8 col-md-8 col-lg-9">
     <h1>Robbert Andringa</h1>
@@ -53,18 +51,16 @@ import me.tatarka.inject.annotations.Inject
 <a class="btn btn-default" style="float:right;" href='/statsPlayers/id/30339.html'>Statystyki zawodnika</a>
  */
 @Inject
-class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper<PlayerWithDetails> {
+class HtmlToPlayerWithDetailsMapper(
+    private val htmlParser: HtmlParser,
+    private val htmlToPlayerDetailsMapper: HtmlMapper<PlayerDetails>,
+) : HtmlMapper<PlayerWithDetails> {
 
     override fun map(html: String): ParseResult<PlayerWithDetails> = htmlParser.parse(html) {
-        var date: LocalDate? = null
-        var height: Int? = null
-        var weight: Int? = null
-        var range: Int? = null
-        var number: Int? = null
         var id: PlayerId? = null
         var name: String? = null
         var team: TeamId? = null
-        var specialization: Specialization? = null
+        val specialization: Specialization? = findSpecialization()
         getElementsByClass("playerteamname").forEach {
             team = TeamId(it.select("a").attr("href").extractTeamId()!!)
         }
@@ -76,33 +72,7 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
                 id = PlayerId(it)
             }
         }
-        getElementsByClass("datainfo small").forEach {
-            val dateRegex = Regex("\\d{2}.\\d{2}.\\d{4}")
-            it.children().forEach { child ->
-                val outerHtml = child.outerHtml()
-                dateRegex.find(outerHtml)?.value?.let { dateString ->
-                    date = LocalDate.parsePolishLeagueDate(dateString)
-                }
-                outerHtml.tryCreateSpecialization()?.let {
-                    specialization = it
-                }
-            }
-        }
-        val regex = Regex("(\\d+)")
-        getElementsByClass("datainfo text-center").forEach {
-            val childText = it.outerHtml()
-            val value = regex.find(childText)?.value?.toIntOrNull()
-            if (value != null) {
-                when {
-                    childText.contains("wzrost", ignoreCase = true) -> height = value
-                    childText.contains("waga", ignoreCase = true) -> weight = value
-                    childText.contains("zasięg", ignoreCase = true) -> range = value
-                }
-            }
-        }
-        getElementsByClass("playernumber").forEach {
-            number = regex.find(it.outerHtml())?.value?.toIntOrNull()
-        }
+        val detailsResult = htmlToPlayerDetailsMapper.map(html)
         PlayerWithDetails(
             teamPlayer = TeamPlayer(
                 id = id!!,
@@ -112,14 +82,7 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
                 specialization = specialization!!,
                 updatedAt = CurrentDate.localDateTime,
             ),
-            details = PlayerDetails(
-                date = date!!,
-                height = height,
-                weight = weight,
-                range = range,
-                number = number!!,
-                updatedAt = CurrentDate.localDateTime,
-            )
+            details = detailsResult.value ?: throw detailsResult.error?.exception!!,
         )
     }
 
@@ -132,4 +95,17 @@ class HtmlToPlayerWithDetailsMapper(private val htmlParser: HtmlParser) : HtmlMa
             contains("Środkowy") -> Specialization.MiddleBlocker
             else -> null
         }
+
+    private fun Document.findSpecialization(): Specialization? {
+        var specialization: Specialization? = null
+        getElementsByClass("datainfo small").forEach {
+            it.children().forEach { child ->
+                val outerHtml = child.outerHtml()
+                outerHtml.tryCreateSpecialization()?.let {
+                    specialization = it
+                }
+            }
+        }
+        return specialization
+    }
 }

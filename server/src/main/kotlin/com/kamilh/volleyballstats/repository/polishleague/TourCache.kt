@@ -20,6 +20,7 @@ interface TourCache {
 @Inject
 class InMemoryTourCache : TourCache {
 
+    @Suppress("MagicNumber")
     private val tours = listOf(
         Season.create(2020) to LocalDate.of(2020, 9, 11),
         Season.create(2021) to LocalDate.of(2021, 10, 1),

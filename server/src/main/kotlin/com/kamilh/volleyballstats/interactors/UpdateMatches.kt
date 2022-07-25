@@ -2,16 +2,16 @@ package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
+import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import com.kamilh.volleyballstats.storage.MatchStorage
 import com.kamilh.volleyballstats.storage.TourStorage
-import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import kotlinx.coroutines.flow.first
-import kotlin.time.Duration.Companion.days
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration.Companion.days
 
 typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
 
@@ -41,6 +41,7 @@ class UpdateMatchesInteractor(
     private val updateMatchReports: UpdateMatchReports,
 ) : UpdateMatches(appDispatchers) {
 
+    @Suppress("ReturnCount", "LongMethod", "ComplexMethod")
     override suspend fun doWork(params: UpdateMatchesParams): UpdateMatchesResult {
         val tour = params.tour
 

@@ -11,6 +11,7 @@ import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
 import me.tatarka.inject.annotations.Inject
 
+@Suppress("MaxLineLength")
 /**
 <div class="item-1 col-xs-6 col-sm-4 col-md-3 col-lg-2 playersItem" data-playerposition="4" data-fullnamefirstletter="A" data-teamsid="1407">
     <div class="thumbnail player">

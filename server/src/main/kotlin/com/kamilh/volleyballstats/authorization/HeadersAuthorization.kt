@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.authorization
 
-import com.kamilh.volleyballstats.models.AccessToken
 import com.kamilh.volleyballstats.domain.models.onFailure
+import com.kamilh.volleyballstats.models.AccessToken
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
@@ -23,14 +23,14 @@ class HeadersAuthorization(
     class Configuration(name: String? = null) : Config(name)
 
     private suspend fun validate(accessToken: AccessToken): HeaderAuthorizationResult =
-        when {
-            !accessTokenValidator.isValid(accessToken) -> HeaderAuthorizationResult.failure(HeaderAuthorizationError.InvalidAccessToken)
-            else -> HeaderAuthorizationResult.success(Unit)
-        }
+        if (!accessTokenValidator.isValid(accessToken)) {
+            HeaderAuthorizationResult.failure(HeaderAuthorizationError.InvalidAccessToken)
+        } else HeaderAuthorizationResult.success(Unit)
 
     override suspend fun onAuthenticate(context: AuthenticationContext) {
         val call = context.call
 
+        @Suppress("UseIfInsteadOfWhen")
         when (val accessToken = call.request.accessTokenHeader()) {
             null -> HeaderAuthorizationResult.failure(HeaderAuthorizationError.NoAccessToken)
             else -> validate(accessToken)
@@ -39,7 +39,7 @@ class HeadersAuthorization(
                 HeaderAuthorizationError.NoAccessToken -> AuthenticationFailedCause.NoCredentials
                 HeaderAuthorizationError.InvalidAccessToken -> AuthenticationFailedCause.InvalidCredentials
             }
-            context.challenge(headersAuthenticationChallengeKey, cause) { challenge, call ->
+            context.challenge(HEADERS_AUTHENTICATION_CHALLENGE_KEY, cause) { challenge, call ->
                 call.respond(status = HttpStatusCode.Forbidden, it.message)
                 challenge.complete()
             }
@@ -47,4 +47,4 @@ class HeadersAuthorization(
     }
 }
 
-private val headersAuthenticationChallengeKey: Any = "HeadersAuth"
+private const val HEADERS_AUTHENTICATION_CHALLENGE_KEY = "HeadersAuth"

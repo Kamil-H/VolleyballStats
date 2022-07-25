@@ -4,8 +4,8 @@ import com.kamilh.volleyballstats.api.Api
 import com.kamilh.volleyballstats.api.MappersModule
 import com.kamilh.volleyballstats.api.ResponseMapper
 import com.kamilh.volleyballstats.api.match.MatchResponse
-import com.kamilh.volleyballstats.api.match_report.MatchReportResponse
-import com.kamilh.volleyballstats.api.player.PlayerResponse
+import com.kamilh.volleyballstats.api.matchreport.MatchReportResponse
+import com.kamilh.volleyballstats.api.PlayerResponse
 import com.kamilh.volleyballstats.api.team.TeamResponse
 import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.authorization.AuthorizationModule
@@ -13,7 +13,7 @@ import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.interactors.InteractorModule
-import com.kamilh.volleyballstats.match_analyzer.MatchAnalyzerModule
+import com.kamilh.volleyballstats.matchanalyzer.MatchAnalyzerModule
 import com.kamilh.volleyballstats.models.AppConfig
 import com.kamilh.volleyballstats.repository.RepositoryModule
 import com.kamilh.volleyballstats.routes.RoutesModule

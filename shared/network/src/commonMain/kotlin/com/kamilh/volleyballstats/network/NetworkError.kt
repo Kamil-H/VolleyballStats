@@ -32,7 +32,8 @@ sealed class NetworkError(override val message: String) : Error {
             fun handle(responseException: ResponseException): HttpError =
                 handle(status = responseException.response.status, responseException = responseException)
 
-            fun handle(status: HttpStatusCode, responseException: ResponseException? = null): HttpError =
+            @Suppress("MagicNumber")
+            private fun handle(status: HttpStatusCode, responseException: ResponseException? = null): HttpError =
                 when (status.value) {
                     400 -> BadRequestException
                     401 -> UnauthorizedException

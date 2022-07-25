@@ -8,7 +8,11 @@ import org.junit.Test
 
 class HtmlToPlayerWithDetailsMapperTest {
 
-    private val mapper = HtmlToPlayerWithDetailsMapper(htmlParser = JsoupHtmlParser())
+    private val htmlParser = JsoupHtmlParser()
+    private val mapper = HtmlToPlayerWithDetailsMapper(
+        htmlParser = htmlParser,
+        htmlToPlayerDetailsMapper = HtmlToPlayerDetailsMapper(htmlParser)
+    )
 
     @Test
     fun `test if when html is empty then Failure is returned`() {

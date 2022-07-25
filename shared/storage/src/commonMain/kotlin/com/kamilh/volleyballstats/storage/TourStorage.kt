@@ -1,14 +1,14 @@
 package com.kamilh.volleyballstats.storage
 
-import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.storage.databse.TourQueries
 import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.common.errors.SqlError
 import com.kamilh.volleyballstats.storage.common.errors.createSqlError
-import com.kamilh.volleyballstats.domain.utils.CurrentDate
+import com.kamilh.volleyballstats.storage.databse.TourQueries
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
@@ -103,9 +103,9 @@ class SqlTourStorage(
             id: TourId,
             name: String,
             season: Season,
-            start_date: LocalDate,
-            end_date: LocalDate?,
-            updated_at: LocalDateTime,
+            startDate: LocalDate,
+            endDate: LocalDate?,
+            updatedAt: LocalDateTime,
             country: Country,
             division: Int, ->
         Tour(
@@ -113,9 +113,9 @@ class SqlTourStorage(
             name = name,
             season = season,
             league = League(country, division),
-            startDate = start_date,
-            endDate = end_date,
-            updatedAt = updated_at
+            startDate = startDate,
+            endDate = endDate,
+            updatedAt = updatedAt
         )
     }
 }

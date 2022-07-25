@@ -6,10 +6,10 @@ import com.kamilh.volleyballstats.domain.models.MatchReport
 import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzer
-import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerError
-import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerResult
-import com.kamilh.volleyballstats.match_analyzer.matchReportAnalyzerOf
+import com.kamilh.volleyballstats.matchanalyzer.MatchReportAnalyzer
+import com.kamilh.volleyballstats.matchanalyzer.MatchReportAnalyzerError
+import com.kamilh.volleyballstats.matchanalyzer.MatchReportAnalyzerResult
+import com.kamilh.volleyballstats.matchanalyzer.matchReportAnalyzerOf
 import com.kamilh.volleyballstats.models.RawMatchReport
 import com.kamilh.volleyballstats.models.matchReportIdOf
 import com.kamilh.volleyballstats.models.matchReportOf

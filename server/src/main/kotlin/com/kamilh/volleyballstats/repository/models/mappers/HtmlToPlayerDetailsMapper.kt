@@ -7,6 +7,7 @@ import com.kamilh.volleyballstats.models.PlayerDetails
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
 import me.tatarka.inject.annotations.Inject
+import org.jsoup.nodes.Document
 
 /**
 <div class="row">
@@ -26,20 +27,11 @@ import me.tatarka.inject.annotations.Inject
 class HtmlToPlayerDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper<PlayerDetails> {
 
     override fun map(html: String): ParseResult<PlayerDetails> = htmlParser.parse(html) {
-        var date: LocalDate? = null
+        val regex = Regex("(\\d+)")
+        val date: LocalDate? = findDate()
         var height: Int? = null
         var weight: Int? = null
         var range: Int? = null
-        var number: Int? = null
-        getElementsByClass("datainfo small").forEach {
-            it.children().forEach { child ->
-                val regex = Regex("\\d{2}.\\d{2}.\\d{4}")
-                regex.find(child.outerHtml())?.value?.let { dateString ->
-                    date = LocalDate.parsePolishLeagueDate(dateString)
-                }
-            }
-        }
-        val regex = Regex("(\\d+)")
         getElementsByClass("datainfo text-center").forEach {
             val childText = it.outerHtml()
             val value = regex.find(childText)?.value?.toIntOrNull()
@@ -51,16 +43,34 @@ class HtmlToPlayerDetailsMapper(private val htmlParser: HtmlParser) : HtmlMapper
                 }
             }
         }
-        getElementsByClass("playernumber").forEach {
-            number = regex.find(it.outerHtml())?.value?.toIntOrNull()
-        }
         PlayerDetails(
             date = date!!,
             height = height,
             weight = weight,
             range = range,
-            number = number!!,
+            number = findNumber(regex)!!,
             updatedAt = CurrentDate.localDateTime,
         )
+    }
+
+    private fun Document.findDate(): LocalDate? {
+        var date: LocalDate? = null
+        getElementsByClass("datainfo small").forEach {
+            it.children().forEach { child ->
+                val regex = Regex("\\d{2}.\\d{2}.\\d{4}")
+                regex.find(child.outerHtml())?.value?.let { dateString ->
+                    date = LocalDate.parsePolishLeagueDate(dateString)
+                }
+            }
+        }
+        return date
+    }
+
+    private fun Document.findNumber(regex: Regex): Int? {
+        var number: Int? = null
+        getElementsByClass("playernumber").forEach {
+            number = regex.find(it.outerHtml())?.value?.toIntOrNull()
+        }
+        return number
     }
 }

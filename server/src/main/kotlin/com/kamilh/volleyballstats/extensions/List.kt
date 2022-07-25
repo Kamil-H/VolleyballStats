@@ -1,13 +1,9 @@
 package com.kamilh.volleyballstats.extensions
 
+import com.kamilh.volleyballstats.models.DividedList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-
-data class DividedList<T>(
-    val before: List<T>,
-    val after: List<T>,
-)
 
 fun <T> List<T>.divideExcluding(pivotIndex: Int): DividedList<T> {
     if (pivotIndex < 0 || (lastIndex in 1 until pivotIndex)) {

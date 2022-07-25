@@ -14,7 +14,6 @@ value class Season private constructor(val value: Int) {
 
         fun createOrNull(year: Int): Season? = if (year.isCorrect()) Season(year) else null
 
-        // TODO: Validate if it's correct year
         private fun Int.isCorrect(): Boolean = true
     }
 }

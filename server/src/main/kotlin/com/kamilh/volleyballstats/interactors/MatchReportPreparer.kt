@@ -3,8 +3,8 @@ package com.kamilh.volleyballstats.interactors
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.Logger
-import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzer
-import com.kamilh.volleyballstats.match_analyzer.MatchReportAnalyzerParams
+import com.kamilh.volleyballstats.matchanalyzer.MatchReportAnalyzer
+import com.kamilh.volleyballstats.matchanalyzer.MatchReportAnalyzerParams
 import com.kamilh.volleyballstats.models.MatchReportTeam
 import com.kamilh.volleyballstats.models.RawMatchReport
 import com.kamilh.volleyballstats.storage.InsertMatchReportError

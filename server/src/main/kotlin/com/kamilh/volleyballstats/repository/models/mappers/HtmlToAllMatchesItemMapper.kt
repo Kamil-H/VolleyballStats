@@ -6,8 +6,8 @@ import com.kamilh.volleyballstats.domain.models.MatchInfo
 import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.repository.extensions.toPolishLeagueLocalDate
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
-import me.tatarka.inject.annotations.Inject
 import com.kamilh.volleyballstats.repository.parsing.ParseResult
+import me.tatarka.inject.annotations.Inject
 
 /**
  * <div class="gameresult clickable" onclick="location.href='/games/id/1101019.html';"> <span class="green">3</span><span class="doubledot">:</span><span class="red">0</span></div>
@@ -15,6 +15,7 @@ import com.kamilh.volleyballstats.repository.parsing.ParseResult
 @Inject
 class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<MatchInfo>> {
 
+    @Suppress("ComplexMethod", "LongMethod", "MagicNumber")
     override fun map(html: String): ParseResult<List<MatchInfo>> = htmlParser.parse(html) {
         getElementsByClass("row text-center gridtable games alter")
             .mapNotNull { element ->

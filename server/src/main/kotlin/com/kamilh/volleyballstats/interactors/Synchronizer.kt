@@ -2,10 +2,10 @@ package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.network.NetworkError
-import com.kamilh.volleyballstats.storage.*
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.domain.utils.Logger
+import com.kamilh.volleyballstats.network.NetworkError
+import com.kamilh.volleyballstats.storage.*
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
@@ -43,30 +43,32 @@ class Synchronizer(
             updatePlayers(tour)
             updateMatches(UpdateMatchesParams(tour))
                 .onResult { log("Updating matches result: $it") }
-                .onFailure { error ->
-                    when (error) {
-                        is UpdateMatchesError.Network -> {
-                            val networkError = error.networkError
-                            if (networkError is NetworkError.UnexpectedException) {
-                                networkError.throwable.printStackTrace()
-                            }
-                            schedule()
-                        }
-                        UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
-                        UpdateMatchesError.NoMatchesInTour -> { }
-                        is UpdateMatchesError.Insert -> when (error.error) {
-                            InsertMatchReportError.NoPlayersInTeams, is InsertMatchReportError.PlayerNotFound -> updatePlayers(tour)
-                            is InsertMatchReportError.TeamNotFound -> updateTeams(tour)
-                            InsertMatchReportError.TourNotFound -> initializeTours(league = tour.league)
-                        }
-                    }
-                }
+                .onFailure { error -> onUpdateMatchesFailure(error, tour) }
                 .onSuccess {
                     when (it) {
                         UpdateMatchesSuccess.NothingToSchedule, UpdateMatchesSuccess.SeasonCompleted -> { }
                         is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plus(3.hours))
                     }
                 }
+        }
+    }
+
+    private suspend fun onUpdateMatchesFailure(error: UpdateMatchesError, tour: Tour) {
+        when (error) {
+            is UpdateMatchesError.Network -> {
+                val networkError = error.networkError
+                if (networkError is NetworkError.UnexpectedException) {
+                    networkError.throwable.printStackTrace()
+                }
+                schedule()
+            }
+            UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
+            UpdateMatchesError.NoMatchesInTour -> { }
+            is UpdateMatchesError.Insert -> when (error.error) {
+                InsertMatchReportError.NoPlayersInTeams, is InsertMatchReportError.PlayerNotFound -> updatePlayers(tour)
+                is InsertMatchReportError.TeamNotFound -> updateTeams(tour)
+                InsertMatchReportError.TourNotFound -> initializeTours(league = tour.league)
+            }
         }
     }
 
