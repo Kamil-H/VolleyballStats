@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.statusPages)
     implementation(libs.ktor.server.contentNegotiate)
+    implementation(libs.ktor.server.callLogging)
 
     implementation(libs.ktor.client.contentNegotiate)
     implementation(libs.ktor.client.jvm)

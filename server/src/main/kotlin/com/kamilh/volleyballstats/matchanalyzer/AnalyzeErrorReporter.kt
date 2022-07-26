@@ -2,6 +2,7 @@ package com.kamilh.volleyballstats.matchanalyzer
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.models.Event
 import com.kamilh.volleyballstats.models.MatchReportId
 import me.tatarka.inject.annotations.Inject
@@ -83,6 +84,6 @@ interface AnalyzeErrorReporter {
 class PrintingAnalyzeErrorReporter : AnalyzeErrorReporter {
 
     override fun report(analyzeError: AnalyzeError) {
-//        println(analyzeError)
+        Logger.e(message = analyzeError.toString(), tag = "AnalyzeError")
     }
 }

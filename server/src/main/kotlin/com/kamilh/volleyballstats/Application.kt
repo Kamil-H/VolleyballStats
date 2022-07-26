@@ -19,13 +19,16 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
+import org.slf4j.event.Level
 
 fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
@@ -51,7 +54,7 @@ class ApplicationInitializer(
 ) {
 
     fun init(application: Application, inTest: Boolean) = with(application) {
-        configureLogger()
+        configureLogging()
         configureDatabase()
         configureSynchronizer(inTest)
 
@@ -81,8 +84,20 @@ class ApplicationInitializer(
         }
     }
 
-    private fun configureLogger() {
+    private fun Application.configureLogging() {
         com.kamilh.volleyballstats.domain.utils.Logger.setLogger(platformLogger)
+
+        install(CallLogging) {
+            level = Level.INFO
+            format { call ->
+                val status = call.response.status()?.value
+                val httpMethod = call.request.httpMethod.value
+                val remoteHost = call.request.local.remoteHost
+                val userAgent = call.request.headers["User-Agent"]
+                val path = call.request.path()
+                "$status [$httpMethod] $path | HOST: $remoteHost, $userAgent"
+            }
+        }
     }
 
     private fun Application.configureDatabase() {

@@ -10,6 +10,6 @@ fun interface ExceptionLogger {
 class ConsoleExceptionLogger : ExceptionLogger {
 
     override fun log(exception: Exception) {
-        exception.printStackTrace()
+        Logger.e(message = exception.stackTraceToString())
     }
 }
