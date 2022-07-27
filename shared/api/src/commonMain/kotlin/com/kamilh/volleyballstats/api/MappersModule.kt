@@ -6,6 +6,8 @@ import com.kamilh.volleyballstats.api.match.MatchMapper
 import com.kamilh.volleyballstats.api.match.MatchResponse
 import com.kamilh.volleyballstats.api.matchreport.MatchReportMapper
 import com.kamilh.volleyballstats.api.matchreport.MatchReportResponse
+import com.kamilh.volleyballstats.api.player.PlayerMapper
+import com.kamilh.volleyballstats.api.player.PlayerResponse
 import com.kamilh.volleyballstats.api.team.TeamMapper
 import com.kamilh.volleyballstats.api.team.TeamResponse
 import com.kamilh.volleyballstats.api.tour.TourMapper

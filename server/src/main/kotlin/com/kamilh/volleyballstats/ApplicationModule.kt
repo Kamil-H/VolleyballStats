@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.api.MappersModule
 import com.kamilh.volleyballstats.api.ResponseMapper
 import com.kamilh.volleyballstats.api.match.MatchResponse
 import com.kamilh.volleyballstats.api.matchreport.MatchReportResponse
-import com.kamilh.volleyballstats.api.PlayerResponse
+import com.kamilh.volleyballstats.api.player.PlayerResponse
 import com.kamilh.volleyballstats.api.team.TeamResponse
 import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.authorization.AuthorizationModule

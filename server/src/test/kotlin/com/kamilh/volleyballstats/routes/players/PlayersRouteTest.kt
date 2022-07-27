@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.routes.players
 
-import com.kamilh.volleyballstats.api.PlayerResponse
+import com.kamilh.volleyballstats.api.player.PlayerResponse
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.player.playerOf
 import com.kamilh.volleyballstats.routes.testServerApplication

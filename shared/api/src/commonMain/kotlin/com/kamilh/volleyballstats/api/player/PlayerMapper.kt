@@ -1,5 +1,6 @@
-package com.kamilh.volleyballstats.api
+package com.kamilh.volleyballstats.api.player
 
+import com.kamilh.volleyballstats.api.ResponseMapper
 import com.kamilh.volleyballstats.domain.models.Player
 import me.tatarka.inject.annotations.Inject
 

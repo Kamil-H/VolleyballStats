@@ -6,7 +6,7 @@
     TeamIdSerializer::class,
 )
 
-package com.kamilh.volleyballstats.api
+package com.kamilh.volleyballstats.api.player
 
 import com.kamilh.volleyballstats.api.adapters.*
 import com.kamilh.volleyballstats.datetime.LocalDate

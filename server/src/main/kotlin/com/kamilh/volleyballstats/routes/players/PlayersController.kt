@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.routes.players
 
 import com.kamilh.volleyballstats.api.ResponseMapper
-import com.kamilh.volleyballstats.api.PlayerResponse
+import com.kamilh.volleyballstats.api.player.PlayerResponse
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.Player
 import com.kamilh.volleyballstats.domain.models.TourId
