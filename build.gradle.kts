@@ -22,6 +22,10 @@ buildscript {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+}
+
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
     config.setFrom(file("detekt-config.yml"))
     source = objects.fileCollection().from(
