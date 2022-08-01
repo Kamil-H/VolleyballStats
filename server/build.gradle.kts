@@ -63,9 +63,8 @@ dependencies {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.time.ExperimentalTime"
-    kotlinOptions.freeCompilerArgs += "-Xinline-classes"
     kotlinOptions.jvmTarget = "11"
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
 }
 
 tasks.register("prepareKotlinBuildScriptModel") { }

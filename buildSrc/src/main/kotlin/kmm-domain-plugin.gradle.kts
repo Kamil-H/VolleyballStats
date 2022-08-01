@@ -10,5 +10,9 @@ kotlin {
 
     sourceSets {
         val commonMain by getting
+
+        all {
+            languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+        }
     }
 }

@@ -10,7 +10,6 @@ import com.kamilh.volleyballstats.domain.scoreOf
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.matchanalyzer.strategies.PlayActionStrategy
 import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.domain.assertFailure
 import com.kamilh.volleyballstats.repository.models.MatchResponse
 import com.kamilh.volleyballstats.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.volleyballstats.storage.TeamStorage
@@ -22,6 +21,7 @@ import kotlinx.serialization.json.Json
 import org.junit.Test
 import java.io.File
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 class MatchReportAnalyzerInteractorTest {
 
@@ -227,7 +227,7 @@ class MatchReportAnalyzerInteractorTest {
     ): MatchTime = MatchTime(
         startTime = LocalDateTime.parse(startTime).atPolandZone(),
         endTime = LocalDateTime.parse(endTime).atPolandZone(),
-        duration = Duration.minutes(duration),
+        duration = duration.minutes,
     )
 
     private data class MatchTime(

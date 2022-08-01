@@ -227,7 +227,7 @@ class SqlMatchStorageTest : ReportStorageTest() {
 
         // WHEN
         matchStorage.insertOrUpdate(matches, tour.id)
-        matchStats.forEachIndexed { index, matchStatistics ->
+        matchStats.forEach { matchStatistics ->
             storage.insert(matchStatistics, tour.id)
         }
 

@@ -1,13 +1,14 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.domain.models.MatchInfo
-import com.kamilh.volleyballstats.domain.models.Tour
-import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.kamilh.volleyballstats.models.matchReportOf
 import com.kamilh.volleyballstats.domain.assertFailure
 import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.models.MatchInfo
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.potentiallyFinishedOf
+import com.kamilh.volleyballstats.domain.tourOf
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.models.matchReportIdOf
+import com.kamilh.volleyballstats.models.matchReportOf
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
 import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
@@ -119,7 +120,6 @@ class UpdateMatchReportsTest {
     fun `interactor returns Success when all operations succeed`() = runTest {
         // GIVEN
         val matches = listOf(potentiallyFinishedOf())
-        val networkError = networkErrorOf()
 
         // WHEN
         val result = interactor(

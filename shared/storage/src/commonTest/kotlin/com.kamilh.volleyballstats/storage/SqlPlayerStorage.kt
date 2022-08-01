@@ -145,7 +145,6 @@ class SqlPlayerStorageTest : DatabaseTest() {
         val teamId = teamIdOf(1)
         val team = teamOf(id = teamId)
         val now = localDateTime()
-        val playerUpdatedAt = now.plus(1.days)
         val detailsUpdatedAt = now.plus(2.days)
         val teamPlayer = playerOf(
             team = teamId,

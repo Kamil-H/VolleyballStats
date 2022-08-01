@@ -250,8 +250,8 @@ class MatchReportAnalyzerInteractor(
                     TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.mvp.number)
                 }!!,
                 bestPlayer = when (matchReport.scout.bestPlayer?.team) {
-                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer!!.number)
-                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer!!.number)
+                    TeamType.Home -> matchReport.matchTeams.home.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer.number)
+                    TeamType.Away -> matchReport.matchTeams.away.playerIdOrNull(matchReportId, matchReport.scout.bestPlayer.number)
                     else -> null
                 },
                 phase = matchReport.phase,
