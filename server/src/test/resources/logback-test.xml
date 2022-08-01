@@ -1,0 +1,2 @@
+<!-- This file prevents logback from logging in unit tests -->
+<configuration />

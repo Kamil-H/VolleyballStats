@@ -10,4 +10,3 @@ build/
 .DS_Store
 *.db
 /data_files
-/server/data_files/logs/
