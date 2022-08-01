@@ -88,8 +88,7 @@ class MatchReportAnalyzerInteractor(
                 when (event) {
                     is Event.Rally -> {
                         var point = event.point
-                        sortedEvents
-                            .divideExcluding(index).after
+                        sortedEvents.divideExcluding(index).after
                             .takeWhile { it !is Event.Rally }
                             .filterIsInstance<Event.VideoChallenge>()
                             .forEach { videoChallenge ->

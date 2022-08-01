@@ -82,7 +82,7 @@ sealed class Event {
     @Suppress("ConstructorParameterNaming")
     data class Substitution(
         val `in`: Int,
-        val `out`: Int,
+        val out: Int,
         val team: TeamType,
         override val time: LocalDateTime
     ) : Event()

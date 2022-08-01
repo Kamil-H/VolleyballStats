@@ -115,15 +115,14 @@ class FixWrongPlayersInteractor(
         matchPlayer: MatchReportPlayer,
         teamId: TeamId,
     ): PlayerId =
-        polishLeagueRepository.getPlayerDetails(tour.season, player.id)
-            .map { playerDetails ->
-                insert(
-                    playerWithDetails = PlayerWithDetails(teamPlayer = player, details = playerDetails),
-                    tour = tour,
-                    matchPlayer = matchPlayer,
-                    teamId = teamId,
-                )
-            }.value ?: player.id
+        polishLeagueRepository.getPlayerDetails(tour.season, player.id).map { playerDetails ->
+            insert(
+                playerWithDetails = PlayerWithDetails(teamPlayer = player, details = playerDetails),
+                tour = tour,
+                matchPlayer = matchPlayer,
+                teamId = teamId,
+            )
+        }.value ?: player.id
 
     private suspend fun insert(
         playerWithDetails: PlayerWithDetails,

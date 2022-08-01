@@ -44,18 +44,17 @@ data class CallError(
 }
 
 suspend inline fun ApplicationCall.respond(callResult: CallResult<*>) {
-    callResult
-        .onSuccess { value ->
-            if (value != null) {
-                respond(HttpStatusCode.OK, value)
-            } else {
-                respond(HttpStatusCode.OK)
-            }
-        }.onFailure { error ->
-            if (error.message != null) {
-                respond(error.status, error.message)
-            } else {
-                respond(error.status)
-            }
+    callResult.onSuccess { value ->
+        if (value != null) {
+            respond(HttpStatusCode.OK, value)
+        } else {
+            respond(HttpStatusCode.OK)
         }
+    }.onFailure { error ->
+        if (error.message != null) {
+            respond(error.status, error.message)
+        } else {
+            respond(error.status)
+        }
+    }
 }

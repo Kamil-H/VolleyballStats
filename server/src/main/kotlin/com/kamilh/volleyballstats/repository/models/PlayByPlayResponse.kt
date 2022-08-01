@@ -241,7 +241,7 @@ class DelayResponse(
 @Serializable
 class SubstitutionResponse(
     val `in`: Int,
-    val `out`: Int,
+    val out: Int,
     val team: String,
     val time: LocalDateTime,
 )
