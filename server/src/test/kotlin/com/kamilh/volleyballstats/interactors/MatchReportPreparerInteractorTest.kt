@@ -56,7 +56,7 @@ class MatchReportPreparerInteractorTest {
         val result = interactor()(paramsOf(matches = matches))
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -94,7 +94,7 @@ class MatchReportPreparerInteractorTest {
         )(paramsOf(matches = matches))
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -138,7 +138,7 @@ class MatchReportPreparerInteractorTest {
         )(paramsOf(matches = matches))
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 }
 

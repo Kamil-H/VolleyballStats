@@ -1,10 +1,11 @@
 package com.kamilh.volleyballstats.interactors
 
+import com.kamilh.volleyballstats.domain.interactor.Interactor
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.extensions.mapAsync
 import com.kamilh.volleyballstats.network.NetworkError
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import kotlinx.coroutines.coroutineScope
 import me.tatarka.inject.annotations.Inject
@@ -26,7 +27,7 @@ sealed class UpdateMatchReportError(override val message: String) : Error {
 @Inject
 class UpdateMatchReportInteractor(
     appDispatchers: AppDispatchers,
-    private val polishLeagueRepository: PolishLeagueRepository,
+    private val polishLeagueRepository: PlsRepository,
     private val matchReportPreparer: MatchReportPreparer,
 ): UpdateMatchReports(appDispatchers) {
 

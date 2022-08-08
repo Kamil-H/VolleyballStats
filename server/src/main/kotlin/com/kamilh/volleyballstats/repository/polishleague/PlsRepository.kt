@@ -4,6 +4,7 @@ import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.NetworkResult
+import com.kamilh.volleyballstats.network.repository.PolishLeagueRepository
 import com.kamilh.volleyballstats.repository.models.mappers.HtmlMapper
 import com.kamilh.volleyballstats.repository.models.mappers.MatchResponseToMatchReportMapper
 import com.kamilh.volleyballstats.repository.parsing.ParseErrorHandler
@@ -11,9 +12,7 @@ import com.kamilh.volleyballstats.repository.parsing.ParseResult
 import com.kamilh.volleyballstats.utils.cache.Cache
 import me.tatarka.inject.annotations.Inject
 
-interface PolishLeagueRepository {
-
-    suspend fun getAllTeams(season: Season): NetworkResult<List<Team>>
+interface PlsRepository : PolishLeagueRepository {
 
     suspend fun getAllPlayers(season: Season): NetworkResult<List<TeamPlayer>>
 
@@ -27,13 +26,11 @@ interface PolishLeagueRepository {
 
     suspend fun getPlayerWithDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerWithDetails>
 
-    suspend fun getAllTours(): NetworkResult<List<Tour>>
-
     suspend fun getAllPlayers(): NetworkResult<List<PlayerSnapshot>>
 }
 
 @Inject
-class HttpPolishLeagueRepository(
+class HttpPlsRepository(
     private val httpClient: HttpClient,
     private val polishLeagueApi: PolishLeagueApi,
     private val htmlToTeamMapper: HtmlMapper<List<Team>>,
@@ -50,10 +47,10 @@ class HttpPolishLeagueRepository(
     private val tourCache: TourCache,
     private val allPlayersCache: Cache<Unit, List<PlayerSnapshot>>,
     private val allPlayersByTourCache: Cache<Season, List<TeamPlayer>>,
-) : PolishLeagueRepository {
+) : PlsRepository {
 
-    override suspend fun getAllTeams(season: Season): NetworkResult<List<Team>> =
-        httpClient.execute(polishLeagueApi.getTeams(season)).parseHtml(htmlToTeamMapper::map)
+    override suspend fun getTeams(tour: Tour): NetworkResult<List<Team>> =
+        httpClient.execute(polishLeagueApi.getTeams(tour.season)).parseHtml(htmlToTeamMapper::map)
 
     override suspend fun getAllPlayers(season: Season): NetworkResult<List<TeamPlayer>> =
         getFromCacheOrFetch(key = season, cache = allPlayersByTourCache) {
@@ -93,7 +90,7 @@ class HttpPolishLeagueRepository(
     override suspend fun getPlayerWithDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerWithDetails> =
         httpClient.execute(polishLeagueApi.getPlayerWithDetails(season, playerId)).parseHtml(htmlToPlayerWithDetailsMapper::map)
 
-    override suspend fun getAllTours(): NetworkResult<List<Tour>> =
+    override suspend fun getTours(): NetworkResult<List<Tour>> =
         Result.success(tourCache.getAll())
 
     private fun <T> NetworkResult<String>.parseHtml(parser: (String) -> ParseResult<T>): NetworkResult<T> =

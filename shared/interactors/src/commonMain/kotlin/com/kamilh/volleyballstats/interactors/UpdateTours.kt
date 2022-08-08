@@ -1,9 +1,10 @@
 package com.kamilh.volleyballstats.interactors
 
+import com.kamilh.volleyballstats.domain.interactor.Interactor
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.network.NetworkError
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
+import com.kamilh.volleyballstats.network.repository.PolishLeagueRepository
 import com.kamilh.volleyballstats.storage.InsertTourError
 import com.kamilh.volleyballstats.storage.LeagueStorage
 import com.kamilh.volleyballstats.storage.TourStorage
@@ -28,7 +29,7 @@ class UpdateToursInteractor(
 ) : UpdateTours(appDispatchers) {
 
     override suspend fun doWork(params: UpdateToursParams): UpdateToursResult =
-        polishLeagueRepository.getAllTours()
+        polishLeagueRepository.getTours()
             .onSuccess { tours -> tours.forEach { insertTour(it, shouldTryInsertLeagueOnError = true) } }
             .map { }
             .mapError { UpdateToursError.Network(it) }

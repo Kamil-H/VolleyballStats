@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":shared:storage"))
     implementation(project(":shared:network"))
     implementation(project(":shared:api"))
+    implementation(project(":shared:interactors"))
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
 
@@ -60,6 +61,7 @@ dependencies {
     testImplementation(project(":shared:domain:test"))
     testImplementation(project(":shared:storage:test"))
     testImplementation(project(":shared:network:test"))
+    testImplementation(project(":shared:interactors:test"))
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

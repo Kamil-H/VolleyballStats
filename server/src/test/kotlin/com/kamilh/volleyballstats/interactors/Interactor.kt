@@ -1,6 +1,8 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.domain.appDispatchersOf
+import com.kamilh.volleyballstats.domain.interactor.Interactor
+import com.kamilh.volleyballstats.domain.interactor.NoInputInteractor
 
 fun <P, T> interactorOf(f: suspend (P) -> T): Interactor<P, T> =
     object : Interactor<P, T>(appDispatchersOf()) {

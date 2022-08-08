@@ -1,20 +1,22 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.domain.models.League
-import com.kamilh.volleyballstats.domain.models.Tour
-import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.assertFailure
 import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.leagueOf
+import com.kamilh.volleyballstats.domain.models.League
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.tourOf
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.network.repository.PolishLeagueRepository
+import com.kamilh.volleyballstats.network.repository.polishLeagueRepositoryOf
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
-import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
 import com.kamilh.volleyballstats.storage.*
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class UpdateToursInteractorTest {
 
@@ -33,21 +35,21 @@ class UpdateToursInteractorTest {
     private fun paramsOf(league: League = leagueOf()): UpdateToursParams = UpdateToursParams(league = league)
 
     @Test
-    fun `interactor returns Network when getAllTours returns error`() = runTest {
+    fun `interactor returns Network when getTours returns error`() = runTest {
         // GIVEN
         val error = networkErrorOf()
 
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTours = networkFailureOf(error)
+                getTours = networkFailureOf(error)
             ),
         )(paramsOf())
 
         // THEN
         result.assertFailure {
             require(this is UpdateToursError.Network)
-            assert(this.networkError == error)
+            assertEquals(error, this.networkError)
         }
     }
 
@@ -59,13 +61,13 @@ class UpdateToursInteractorTest {
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTours = networkSuccessOf(listOf(tour))
+                getTours = networkSuccessOf(listOf(tour))
             ),
             tourStorage = tourStorageOf(insert = { InsertTourResult.success(Unit) })
         )(paramsOf())
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -76,13 +78,13 @@ class UpdateToursInteractorTest {
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTours = networkSuccessOf(tours)
+                getTours = networkSuccessOf(tours)
             ),
             tourStorage = tourStorageOf(insert = { InsertTourResult.success(Unit) })
         )(paramsOf())
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -98,14 +100,14 @@ class UpdateToursInteractorTest {
         // WHEN
         interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTours = networkSuccessOf(listOf(tour))
+                getTours = networkSuccessOf(listOf(tour))
             ),
             tourStorage = tourStorageOf(insert = insert),
             leagueStorage = leagueStorageOf(insert = InsertLeagueResult.success(Unit))
         )(paramsOf())
 
         // THEN
-        assert(callCount == 2)
+        assertEquals(expected = 2, actual = callCount)
     }
 
     @Test
@@ -116,13 +118,13 @@ class UpdateToursInteractorTest {
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTours = networkSuccessOf(listOf(tour))
+                getTours = networkSuccessOf(listOf(tour))
             ),
             tourStorage = tourStorageOf(insert = { InsertTourResult.failure(InsertTourError.TourAlreadyExists) })
         )(paramsOf())
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 }
 

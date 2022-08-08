@@ -7,13 +7,11 @@ import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.models.onSuccess
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
-import com.kamilh.volleyballstats.domain.assertFailure
-import com.kamilh.volleyballstats.domain.assertSuccess
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
-import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
+import com.kamilh.volleyballstats.repository.polishleague.plsRepositoryOf
 import com.kamilh.volleyballstats.storage.*
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import com.kamilh.volleyballstats.utils.testClock
@@ -30,7 +28,7 @@ class UpdateMatchesInteractorTest {
         appDispatchers: AppDispatchers = testAppDispatchers,
         tourStorage: TourStorage = tourStorageOf(),
         matchStorage: MatchStorage = matchStorageOf(),
-        polishLeagueRepository: PolishLeagueRepository = polishLeagueRepositoryOf(),
+        polishLeagueRepository: PlsRepository = plsRepositoryOf(),
         updateMatchReports: UpdateMatchReports = updateMatchReportsOf(),
     ): UpdateMatchesInteractor = UpdateMatchesInteractor(
         appDispatchers = appDispatchers,
@@ -59,7 +57,7 @@ class UpdateMatchesInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatches)),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatches)),
             matchStorage = matchStorageOf(insertOrUpdate = insertOrUpdate)
         )(paramsOf())
 
@@ -77,7 +75,7 @@ class UpdateMatchesInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
             matchStorage = matchStorageOf(insertOrUpdate = insertOrUpdate)
         )(paramsOf())
 
@@ -95,7 +93,7 @@ class UpdateMatchesInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches))
         )(paramsOf())
 
@@ -119,7 +117,7 @@ class UpdateMatchesInteractorTest {
             tourStorage = tourStorageOf(
                 onUpdate = { newTour, endTime -> onUpdate = newTour to endTime },
             ),
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches))
         )(params)
 
@@ -140,7 +138,7 @@ class UpdateMatchesInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(
                 invoke = { UpdateMatchReportResult.failure(UpdateMatchReportError.Network(networkError)) }
@@ -163,7 +161,7 @@ class UpdateMatchesInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(
                 invoke = { UpdateMatchReportResult.failure(UpdateMatchReportError.Insert(insertError)) }
@@ -185,7 +183,7 @@ class UpdateMatchesInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkFailureOf(networkErrorOf())),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(invoke = { UpdateMatchReportResult.success(Unit) })
         )(paramsOf())
@@ -204,7 +202,7 @@ class UpdateMatchesInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(getAllMatches = networkSuccessOf(getAllMatcheInfos)),
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatcheInfos)),
             updateMatchReports = updateMatchReportsOf(invoke = { UpdateMatchReportResult.success(Unit) })
         )(paramsOf())
 
@@ -213,12 +211,4 @@ class UpdateMatchesInteractorTest {
             require(it is UpdateMatchesSuccess.NothingToSchedule)
         }
     }
-}
-
-fun updateMatchesOf(
-    appDispatchers: AppDispatchers = testAppDispatchers,
-    invoke: (params: UpdateMatchesParams) -> UpdateMatchesResult = { UpdateMatchesResult.success(UpdateMatchesSuccess.NothingToSchedule) },
-): UpdateMatches = object : UpdateMatches(appDispatchers) {
-
-    override suspend fun doWork(params: UpdateMatchesParams): UpdateMatchesResult = invoke(params)
 }

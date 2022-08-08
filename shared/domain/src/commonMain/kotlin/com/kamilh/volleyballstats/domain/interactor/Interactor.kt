@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.interactors
+package com.kamilh.volleyballstats.domain.interactor
 
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import kotlinx.coroutines.withContext

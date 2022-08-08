@@ -20,8 +20,10 @@ import com.kamilh.volleyballstats.utils.zonedDateTime
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
@@ -47,7 +49,7 @@ class SynchronizerTest {
         scheduler = scheduler,
     )
 
-    @Before
+    @BeforeTest
     fun setClock() {
         CurrentDate.changeClock(testClock)
         Logger.setLogger { severity: Severity, tag: String?, message: String ->
@@ -96,7 +98,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(tours.isEmpty())
+        assertTrue(tours.isEmpty())
     }
 
     @Test
@@ -117,7 +119,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(!updateTeamCalled)
+        assertTrue(!updateTeamCalled)
     }
 
     @Test
@@ -138,7 +140,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateTeamCalled)
+        assertTrue(updateTeamCalled)
     }
 
     @Test
@@ -179,7 +181,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateToursCalled)
+        assertTrue(updateToursCalled)
     }
 
     @Test
@@ -200,7 +202,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(!updateTeamCalled)
+        assertTrue(!updateTeamCalled)
     }
 
     @Test
@@ -221,7 +223,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateTeamCalled)
+        assertTrue(updateTeamCalled)
     }
 
     @Test
@@ -262,7 +264,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateToursCalled)
+        assertTrue(updateToursCalled)
     }
 
     @Test
@@ -278,8 +280,10 @@ class SynchronizerTest {
             updatePlayers = updatePlayersOf {
                 UpdatePlayersResult.failure(
                     error = UpdatePlayersError.Storage(
-                        InsertPlayerError.Errors(teamsNotFound = listOf(teamIdOf()),
-                            teamPlayersAlreadyExists = emptyList())
+                        InsertPlayerError.Errors(
+                            teamsNotFound = listOf(teamIdOf()),
+                            teamPlayersAlreadyExists = emptyList()
+                        )
                     )
                 )
             },
@@ -291,7 +295,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateTeamsCalled)
+        assertTrue(updateTeamsCalled)
     }
 
     @Test
@@ -313,7 +317,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateTeamsCalled)
+        assertTrue(updateTeamsCalled)
     }
 
     @Test
@@ -335,7 +339,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateToursCalled)
+        assertTrue(updateToursCalled)
     }
 
     @Test
@@ -357,7 +361,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updatePlayersCalled)
+        assertTrue(updatePlayersCalled)
     }
 
     @Test
@@ -370,8 +374,13 @@ class SynchronizerTest {
         interactor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.PlayerNotFound(
-                    emptyList())))
+                UpdateMatchesResult.failure(
+                    UpdateMatchesError.Insert(
+                        InsertMatchReportError.PlayerNotFound(
+                            emptyList()
+                        )
+                    )
+                )
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true
@@ -380,7 +389,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updatePlayersCalled)
+        assertTrue(updatePlayersCalled)
     }
 
     @Test
@@ -402,7 +411,7 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(updateToursCalled)
+        assertTrue(updateToursCalled)
     }
 
     @Test
@@ -441,10 +450,10 @@ class SynchronizerTest {
         ).synchronize(leagueOf())
 
         // THEN
-        assert(nextMatch.toLocalDateTime().plus(3.hours) == scheduleDate)
+        assertEquals(nextMatch.toLocalDateTime().plus(3.hours), scheduleDate)
     }
 
     private fun assertDate(date: LocalDateTime?) {
-        assert(localDateTime().plus(1.hours) == date)
+        assertEquals(localDateTime().plus(1.hours), date)
     }
 }

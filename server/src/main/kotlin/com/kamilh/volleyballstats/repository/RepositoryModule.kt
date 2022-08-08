@@ -7,6 +7,7 @@ import com.kamilh.volleyballstats.domain.models.Team
 import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
+import com.kamilh.volleyballstats.network.repository.PolishLeagueRepository
 import com.kamilh.volleyballstats.repository.models.mappers.*
 import com.kamilh.volleyballstats.repository.parsing.HtmlParser
 import com.kamilh.volleyballstats.repository.parsing.JsoupHtmlParser
@@ -67,7 +68,10 @@ interface RepositoryModule {
     val FileBasedMatchResponseStorage.bind: MatchResponseStorage
         @Provides get() = this
 
-    val HttpPolishLeagueRepository.bind: PolishLeagueRepository
+    val HttpPlsRepository.bindPlsRepository: PlsRepository
+        @Provides get() = this
+
+    val HttpPlsRepository.bindPolishLeagueRepository: PolishLeagueRepository
         @Provides get() = this
 
     val InMemoryTourCache.bind: TourCache

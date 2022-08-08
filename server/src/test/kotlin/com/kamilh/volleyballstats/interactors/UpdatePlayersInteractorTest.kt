@@ -6,9 +6,9 @@ import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.models.TeamPlayer
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
-import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
+import com.kamilh.volleyballstats.repository.polishleague.plsRepositoryOf
 import com.kamilh.volleyballstats.storage.InsertPlayerError
 import com.kamilh.volleyballstats.storage.InsertPlayerResult
 import com.kamilh.volleyballstats.storage.PlayerStorage
@@ -22,7 +22,7 @@ class UpdatePlayersInteractorTest {
     private fun interactor(
         appDispatchers: AppDispatchers = testAppDispatchers,
         playerStorage: PlayerStorage = playerStorageOf(),
-        polishLeagueRepository: PolishLeagueRepository = polishLeagueRepositoryOf(),
+        polishLeagueRepository: PlsRepository = plsRepositoryOf(),
     ): UpdatePlayersInteractor = UpdatePlayersInteractor(
         appDispatchers = appDispatchers,
         playerStorage = playerStorage,
@@ -42,7 +42,7 @@ class UpdatePlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayersByTour = networkFailureOf(error)
             )
         )(paramsOf())
@@ -61,7 +61,7 @@ class UpdatePlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf())),
                 getPlayerDetails = networkFailureOf(error)
             )
@@ -81,13 +81,13 @@ class UpdatePlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayersByTour = networkSuccessOf(getAllPlayersByTour),
             )
         )(paramsOf())
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -97,7 +97,7 @@ class UpdatePlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf())),
                 getPlayerDetails = networkSuccessOf(playerDetails)
             ),
@@ -107,7 +107,7 @@ class UpdatePlayersInteractorTest {
         )(paramsOf())
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -117,7 +117,7 @@ class UpdatePlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf())),
                 getPlayerDetails = networkSuccessOf(playerDetailsOf())
             ),
@@ -132,12 +132,4 @@ class UpdatePlayersInteractorTest {
             assert(this.insertPlayerError == error)
         }
     }
-}
-
-fun updatePlayersOf(
-    appDispatchers: AppDispatchers = testAppDispatchers,
-    invoke: (params: UpdatePlayersParams) -> UpdatePlayersResult = { UpdatePlayersResult.success(Unit) },
-): UpdatePlayers = object : UpdatePlayers(appDispatchers) {
-
-    override suspend fun doWork(params: UpdatePlayersParams): UpdatePlayersResult = invoke(params)
 }

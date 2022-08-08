@@ -1,23 +1,25 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.domain.models.Team
-import com.kamilh.volleyballstats.domain.models.Tour
-import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.assertFailure
 import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.models.Team
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.teamOf
+import com.kamilh.volleyballstats.domain.tourOf
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.network.repository.PolishLeagueRepository
+import com.kamilh.volleyballstats.network.repository.polishLeagueRepositoryOf
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
-import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
 import com.kamilh.volleyballstats.storage.InsertTeamError
 import com.kamilh.volleyballstats.storage.InsertTeamResult
 import com.kamilh.volleyballstats.storage.TeamStorage
 import com.kamilh.volleyballstats.storage.teamStorageOf
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class UpdateTeamsInteractorTest {
 
@@ -38,21 +40,21 @@ class UpdateTeamsInteractorTest {
     )
 
     @Test
-    fun `interactor returns Network when getAllTeams returns error`() = runTest {
+    fun `interactor returns Network when getTeams returns error`() = runTest {
         // GIVEN
         val error = networkErrorOf()
 
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTeams = networkFailureOf(error)
+                getTeams = networkFailureOf(error)
             ),
         )(paramsOf())
 
         // THEN
         result.assertFailure {
             require(this is UpdateTeamsError.Network)
-            assert(this.networkError == error)
+            assertEquals(error, this.networkError)
         }
     }
 
@@ -64,30 +66,30 @@ class UpdateTeamsInteractorTest {
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTeams = networkSuccessOf(listOf(team))
+                getTeams = networkSuccessOf(listOf(team))
             ),
             teamStorage = teamStorageOf(insert = InsertTeamResult.success(Unit))
         )(paramsOf())
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
-    fun `interactor returns Success getAllTeams return empty list`() = runTest {
+    fun `interactor returns Success getTeams return empty list`() = runTest {
         // GIVEN
         val teams = emptyList<Team>()
 
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTeams = networkSuccessOf(teams)
+                getTeams = networkSuccessOf(teams)
             ),
             teamStorage = teamStorageOf(insert = InsertTeamResult.success(Unit))
         )(paramsOf())
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -98,7 +100,7 @@ class UpdateTeamsInteractorTest {
         // WHEN
         val result = interactor(
             polishLeagueRepository = polishLeagueRepositoryOf(
-                getAllTeams = networkSuccessOf(listOf(teamOf()))
+                getTeams = networkSuccessOf(listOf(teamOf()))
             ),
             teamStorage = teamStorageOf(
                 insert = InsertTeamResult.failure(error)
@@ -108,7 +110,7 @@ class UpdateTeamsInteractorTest {
         // THEN
         result.assertFailure {
             require(this is UpdateTeamsError.Storage)
-            assert(this.insertTeamError == error)
+            assertEquals(error, this.insertTeamError)
         }
     }
 }

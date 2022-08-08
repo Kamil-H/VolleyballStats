@@ -5,28 +5,15 @@ import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.extensions.mapAsync
 import com.kamilh.volleyballstats.models.PlayerWithDetails
 import com.kamilh.volleyballstats.models.toPlayer
-import com.kamilh.volleyballstats.network.NetworkError
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
-import com.kamilh.volleyballstats.storage.InsertPlayerError
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.storage.PlayerStorage
 import kotlinx.coroutines.coroutineScope
 import me.tatarka.inject.annotations.Inject
 
-typealias UpdatePlayers = Interactor<UpdatePlayersParams, UpdatePlayersResult>
-
-data class UpdatePlayersParams(val tour: Tour)
-
-typealias UpdatePlayersResult = Result<Unit, UpdatePlayersError>
-
-sealed class UpdatePlayersError(override val message: String) : Error {
-    class Network(val networkError: NetworkError) : UpdatePlayersError("Network(networkError: ${networkError.message})")
-    class Storage(val insertPlayerError: InsertPlayerError) : UpdatePlayersError("Storage(insertPlayerError: ${insertPlayerError.message})")
-}
-
 @Inject
 class UpdatePlayersInteractor(
     appDispatchers: AppDispatchers,
-    private val polishLeagueRepository: PolishLeagueRepository,
+    private val polishLeagueRepository: PlsRepository,
     private val playerStorage: PlayerStorage,
 ) : UpdatePlayers(appDispatchers) {
 

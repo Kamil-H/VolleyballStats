@@ -4,40 +4,19 @@ import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
-import com.kamilh.volleyballstats.network.NetworkError
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
-import com.kamilh.volleyballstats.storage.InsertMatchReportError
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.storage.MatchStorage
 import com.kamilh.volleyballstats.storage.TourStorage
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration.Companion.days
 
-typealias UpdateMatches = Interactor<UpdateMatchesParams, UpdateMatchesResult>
-
-data class UpdateMatchesParams(val tour: Tour)
-
-typealias UpdateMatchesResult = Result<UpdateMatchesSuccess, UpdateMatchesError>
-
-sealed class UpdateMatchesSuccess {
-    object SeasonCompleted : UpdateMatchesSuccess()
-    object NothingToSchedule : UpdateMatchesSuccess()
-    class NextMatch(val dateTime: ZonedDateTime) : UpdateMatchesSuccess()
-}
-
-sealed class UpdateMatchesError(override val message: String) : Error {
-    object TourNotFound : UpdateMatchesError("TourNotFound")
-    object NoMatchesInTour : UpdateMatchesError("NoMatchesInTour")
-    class Network(val networkError: NetworkError) : UpdateMatchesError("Network(networkError: ${networkError.message})")
-    class Insert(val error: InsertMatchReportError) : UpdateMatchesError("Insert(error: ${error.message})")
-}
-
 @Inject
 class UpdateMatchesInteractor(
     appDispatchers: AppDispatchers,
     private val tourStorage: TourStorage,
     private val matchStorage: MatchStorage,
-    private val polishLeagueRepository: PolishLeagueRepository,
+    private val polishLeagueRepository: PlsRepository,
     private val updateMatchReports: UpdateMatchReports,
 ) : UpdateMatches(appDispatchers) {
 

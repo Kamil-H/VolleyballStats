@@ -23,7 +23,7 @@ import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class HttpPolishLeagueRepositoryTest {
+class HttpPlsRepositoryTest {
 
     private fun <T> httpPolishLeagueRepositoryOf(
         httpClient: HttpClient = httpClientOf<T>(networkFailureOf(networkErrorOf())),
@@ -42,8 +42,8 @@ class HttpPolishLeagueRepositoryTest {
         tourCache: TourCache = tourCacheOf(),
         allPlayersCache: Cache<Unit, List<PlayerSnapshot>> = cacheOf(),
         allPlayersByTourCache: Cache<Season, List<TeamPlayer>> = cacheOf(),
-    ): HttpPolishLeagueRepository =
-        HttpPolishLeagueRepository(
+    ): HttpPlsRepository =
+        HttpPlsRepository(
             httpClient = httpClient,
             polishLeagueApi = polishLeagueApi,
             htmlToTeamMapper = htmlToTeamMapper,
@@ -73,7 +73,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
-        ).getAllTeams(season = seasonOf())
+        ).getTeams(tour = tourOf())
 
         // THEN
         require(result is Result.Success)
@@ -91,7 +91,7 @@ class HttpPolishLeagueRepositoryTest {
         val result = httpPolishLeagueRepositoryOf<String>(
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
-        ).getAllTeams(season = seasonOf())
+        ).getTeams(tour = tourOf())
 
         // THEN
         require(result is Result.Failure)
@@ -111,7 +111,7 @@ class HttpPolishLeagueRepositoryTest {
             httpClient = httpClientOf(networkResult),
             htmlToTeamMapper = mapperResult,
             parseErrorHandler = { parseErrorToHandle = it },
-        ).getAllTeams(season = seasonOf())
+        ).getTeams(tour = tourOf())
 
         // THEN
         require(result is Result.Failure)
@@ -595,7 +595,7 @@ class HttpPolishLeagueRepositoryTest {
         // WHEN
         val result = httpPolishLeagueRepositoryOf<String>(
             tourCache = tourCacheOf(cachedValue)
-        ).getAllTours()
+        ).getTours()
 
         // THEN
         require(result is Result.Success)
@@ -626,7 +626,7 @@ fun tourCacheOf(
     override fun getAll(): List<Tour> = getAll
 }
 
-fun polishLeagueRepositoryOf(
+fun plsRepositoryOf(
     getAllTeams: NetworkResult<List<Team>> = networkFailureOf(networkErrorOf()),
     getAllPlayersByTour: NetworkResult<List<TeamPlayer>> = networkFailureOf(networkErrorOf()),
     getAllPlayers: NetworkResult<List<PlayerSnapshot>> = networkFailureOf(networkErrorOf()),
@@ -636,8 +636,8 @@ fun polishLeagueRepositoryOf(
     getPlayerDetails: NetworkResult<PlayerDetails> = networkFailureOf(networkErrorOf()),
     getPlayerWithDetails: NetworkResult<PlayerWithDetails> = networkFailureOf(networkErrorOf()),
     getAllTours: NetworkResult<List<Tour>> = networkFailureOf(networkErrorOf()),
-): PolishLeagueRepository = object : PolishLeagueRepository {
-    override suspend fun getAllTeams(season: Season): NetworkResult<List<Team>> = getAllTeams
+): PlsRepository = object : PlsRepository {
+    override suspend fun getTeams(tour: Tour): NetworkResult<List<Team>> = getAllTeams
     override suspend fun getAllPlayers(season: Season): NetworkResult<List<TeamPlayer>> = getAllPlayersByTour
     override suspend fun getAllPlayers(): NetworkResult<List<PlayerSnapshot>> = getAllPlayers
     override suspend fun getAllMatches(season: Season): NetworkResult<List<MatchInfo>> = getAllMatches
@@ -645,5 +645,5 @@ fun polishLeagueRepositoryOf(
     override suspend fun getMatchReport(matchReportId: MatchReportId, season: Season): NetworkResult<RawMatchReport> = getMatchReport
     override suspend fun getPlayerDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerDetails> = getPlayerDetails
     override suspend fun getPlayerWithDetails(season: Season, playerId: PlayerId): NetworkResult<PlayerWithDetails> = getPlayerWithDetails
-    override suspend fun getAllTours(): NetworkResult<List<Tour>> = getAllTours
+    override suspend fun getTours(): NetworkResult<List<Tour>> = getAllTours
 }

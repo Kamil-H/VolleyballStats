@@ -1,10 +1,11 @@
 package com.kamilh.volleyballstats.interactors
 
+import com.kamilh.volleyballstats.domain.interactor.Interactor
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.models.*
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.storage.InsertPlayerError
 import com.kamilh.volleyballstats.storage.PlayerStorage
 import com.kamilh.volleyballstats.utils.findSimilarity
@@ -22,7 +23,7 @@ data class FixWrongPlayersParams(
 class FixWrongPlayersInteractor(
     appDispatchers: AppDispatchers,
     private val playerStorage: PlayerStorage,
-    private val polishLeagueRepository: PolishLeagueRepository,
+    private val polishLeagueRepository: PlsRepository,
 ) : FixWrongPlayers(appDispatchers) {
 
     override suspend fun doWork(params: FixWrongPlayersParams): MatchReportTeam {

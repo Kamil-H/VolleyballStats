@@ -13,9 +13,9 @@ import com.kamilh.volleyballstats.models.matchReportPlayerOf
 import com.kamilh.volleyballstats.models.matchReportTeamOf
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
-import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
+import com.kamilh.volleyballstats.repository.polishleague.plsRepositoryOf
 import com.kamilh.volleyballstats.storage.InsertPlayerResult
 import com.kamilh.volleyballstats.storage.PlayerStorage
 import com.kamilh.volleyballstats.storage.playerStorageOf
@@ -29,7 +29,7 @@ class FixWrongPlayersInteractorTest {
     private fun interactor(
         appDispatchers: AppDispatchers = testAppDispatchers,
         playerStorage: PlayerStorage = playerStorageOf(),
-        polishLeagueRepository: PolishLeagueRepository = polishLeagueRepositoryOf(),
+        polishLeagueRepository: PlsRepository = plsRepositoryOf(),
     ): FixWrongPlayersInteractor = FixWrongPlayersInteractor(
         appDispatchers = appDispatchers,
         playerStorage = playerStorage,
@@ -102,7 +102,7 @@ class FixWrongPlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayers = networkFailureOf(networkErrorOf()),
                 getAllPlayersByTour = networkFailureOf(networkErrorOf()),
             )
@@ -127,7 +127,7 @@ class FixWrongPlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayers = networkSuccessOf(emptyList()),
                 getAllPlayersByTour = networkSuccessOf(emptyList()),
             )
@@ -161,7 +161,7 @@ class FixWrongPlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayers = networkSuccessOf(
                     listOf(
                         playerSnapshotOf(
@@ -208,7 +208,7 @@ class FixWrongPlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayers = networkSuccessOf(
                     listOf(
                         playerSnapshotOf(
@@ -247,7 +247,7 @@ class FixWrongPlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayers = networkSuccessOf(
                     listOf(playerSnapshotOf(id = playerId))
                 ),
@@ -279,7 +279,7 @@ class FixWrongPlayersInteractorTest {
 
         // WHEN
         interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayers = networkSuccessOf(listOf(playerSnapshotOf(id = playerId))),
                 getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf(id = playerId))),
             ),
@@ -321,7 +321,7 @@ class FixWrongPlayersInteractorTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getAllPlayers = networkSuccessOf(listOf(playerSnapshotOf())),
                 getAllPlayersByTour = networkSuccessOf(listOf(teamPlayerOf())),
             ),

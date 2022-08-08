@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.extensions.divideExcluding
-import com.kamilh.volleyballstats.interactors.Interactor
+import com.kamilh.volleyballstats.domain.interactor.Interactor
 import com.kamilh.volleyballstats.matchanalyzer.strategies.PlayActionStrategy
 import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.storage.TeamStorage

@@ -11,9 +11,9 @@ import com.kamilh.volleyballstats.models.matchReportIdOf
 import com.kamilh.volleyballstats.models.matchReportOf
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
-import com.kamilh.volleyballstats.repository.polishleague.PolishLeagueRepository
+import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
-import com.kamilh.volleyballstats.repository.polishleague.polishLeagueRepositoryOf
+import com.kamilh.volleyballstats.repository.polishleague.plsRepositoryOf
 import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
@@ -23,7 +23,7 @@ class UpdateMatchReportsTest {
 
     private fun interactor(
         appDispatchers: AppDispatchers = testAppDispatchers,
-        polishLeagueRepository: PolishLeagueRepository = polishLeagueRepositoryOf(),
+        polishLeagueRepository: PlsRepository = plsRepositoryOf(),
         matchReportPreparer: MatchReportPreparer = matchReportPreparerOf(),
     ): UpdateMatchReportInteractor = UpdateMatchReportInteractor(
         appDispatchers = appDispatchers,
@@ -48,7 +48,7 @@ class UpdateMatchReportsTest {
         val result = interactor()(paramsOf(matches = matches))
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 
     @Test
@@ -59,7 +59,7 @@ class UpdateMatchReportsTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getMatchReportId = networkFailureOf(networkError)
             )
         )(paramsOf(matches = matches))
@@ -79,7 +79,7 @@ class UpdateMatchReportsTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getMatchReportId = networkSuccessOf(matchReportIdOf()),
                 getMatchReport = networkFailureOf(networkError)
             )
@@ -100,7 +100,7 @@ class UpdateMatchReportsTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getMatchReportId = networkSuccessOf(matchReportIdOf()),
                 getMatchReport = networkSuccessOf(matchReportOf()),
             ),
@@ -123,7 +123,7 @@ class UpdateMatchReportsTest {
 
         // WHEN
         val result = interactor(
-            polishLeagueRepository = polishLeagueRepositoryOf(
+            polishLeagueRepository = plsRepositoryOf(
                 getMatchReportId = networkSuccessOf(matchReportIdOf()),
                 getMatchReport = networkSuccessOf(matchReportOf()),
             ),
@@ -133,7 +133,7 @@ class UpdateMatchReportsTest {
         )(paramsOf(matches = matches))
 
         // THEN
-        result.assertSuccess { }
+        result.assertSuccess()
     }
 }
 

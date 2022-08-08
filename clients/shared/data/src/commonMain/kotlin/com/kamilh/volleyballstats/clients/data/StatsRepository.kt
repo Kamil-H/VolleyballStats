@@ -10,13 +10,10 @@ import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.NetworkResult
+import com.kamilh.volleyballstats.network.repository.PolishLeagueRepository
 import me.tatarka.inject.annotations.Inject
 
-interface StatsRepository {
-
-    suspend fun getTours(): NetworkResult<List<Tour>>
-
-    suspend fun getTeams(tour: Tour): NetworkResult<List<Team>>
+interface StatsRepository : PolishLeagueRepository {
 
     suspend fun getPlayers(tour: Tour): NetworkResult<List<Player>>
 
