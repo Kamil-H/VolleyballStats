@@ -2,7 +2,7 @@ package com.kamilh.volleyballstats.routes
 
 import com.kamilh.volleyballstats.AppModule
 import com.kamilh.volleyballstats.TestComponent
-import com.kamilh.volleyballstats.api.Api
+import com.kamilh.volleyballstats.api.StatsApi
 import com.kamilh.volleyballstats.api.ApiConstants
 import com.kamilh.volleyballstats.create
 import com.kamilh.volleyballstats.models.AccessToken
@@ -40,7 +40,7 @@ class ServerApplicationTestBuilder(applicationTestBuilder: ApplicationTestBuilde
             }
         }
     }
-    val api: Api = testComponent.api
+    val statsApi: StatsApi = testComponent.statsApi
     val mappers: TestComponent.Mappers = testComponent.mappers
 
     init {

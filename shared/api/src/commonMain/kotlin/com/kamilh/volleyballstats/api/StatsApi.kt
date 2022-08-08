@@ -9,7 +9,7 @@ import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.network.httprequest.Endpoint
 
-class Api(private val baseUrl: String) {
+class StatsApi(private val baseUrl: String) {
 
     private inline fun <reified T> create(path: String, queryParams: Map<String, Any?> = emptyMap()): Endpoint<T> =
         Endpoint.create(baseUrl = baseUrl, path = path, queryParams = queryParams)

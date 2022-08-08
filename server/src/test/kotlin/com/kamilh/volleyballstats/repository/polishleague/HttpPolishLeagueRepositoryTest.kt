@@ -603,8 +603,6 @@ class HttpPolishLeagueRepositoryTest {
     }
 }
 
-fun networkErrorOf(throwable: Throwable = Throwable()): NetworkError = NetworkError.createFrom(throwable)
-
 fun htmlParseErrorOf(
     content: String = "",
     exception: Exception = IllegalStateException(),

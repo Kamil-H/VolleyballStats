@@ -31,6 +31,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
         "shared/storage/src/commonMain/kotlin",
         "shared/network/src/commonMain/kotlin",
         "shared/api/src/commonMain/kotlin",
+        "clients/shared/data/src/commonMain/kotlin",
     ).asFileTree
     allRules = true
 }

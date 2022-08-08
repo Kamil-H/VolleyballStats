@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats
 
-import com.kamilh.volleyballstats.api.Api
+import com.kamilh.volleyballstats.api.StatsApi
 import com.kamilh.volleyballstats.api.MappersModule
 import com.kamilh.volleyballstats.api.ResponseMapper
 import com.kamilh.volleyballstats.api.match.MatchResponse
@@ -109,8 +109,8 @@ abstract class TestComponent(@Component val parent: AppModule) {
         )
     }
 
-    val api: Api
-        @Provides get() = Api(baseUrl = "")
+    val statsApi: StatsApi
+        @Provides get() = StatsApi(baseUrl = "")
 
     class Storages(
         val leagueStorage: LeagueStorage,

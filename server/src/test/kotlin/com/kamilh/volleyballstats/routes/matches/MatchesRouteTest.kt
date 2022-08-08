@@ -16,7 +16,7 @@ class MatchesRouteTest {
     fun `endpoint returns Forbidden when unauthorized`() = testServerApplication {
         // GIVEN
         val tourId = tourIdOf()
-        val request = api.getMatches(tourId).toHttpRequest()
+        val request = statsApi.getMatches(tourId).toHttpRequest()
 
         // WHEN
         val response = client.request(request)
@@ -29,7 +29,7 @@ class MatchesRouteTest {
     fun `endpoint returns BadRequest when tourId is missing`() = testServerApplication {
         // GIVEN
         val tourId = tourIdOf()
-        val request = api.getMatches(tourId).copy(queryParams = emptyMap()).toHttpRequest().authorize()
+        val request = statsApi.getMatches(tourId).copy(queryParams = emptyMap()).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -42,7 +42,7 @@ class MatchesRouteTest {
     fun `endpoint returns BadRequest when tourId is of different type than Integer`() = testServerApplication {
         // GIVEN
         val tourId = tourIdOf()
-        val request = api.getMatches(tourId).copy(queryParams = mapOf("tourId" to "string")).toHttpRequest().authorize()
+        val request = statsApi.getMatches(tourId).copy(queryParams = mapOf("tourId" to "string")).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -55,7 +55,7 @@ class MatchesRouteTest {
     fun `endpoint returns NotFound when no tours in database`() = testServerApplication {
         // GIVEN
         val tourId = tourIdOf()
-        val request = api.getMatches(tourId).toHttpRequest().authorize()
+        val request = statsApi.getMatches(tourId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -74,7 +74,7 @@ class MatchesRouteTest {
             leagueStorage.insert(league)
             tourStorage.insert(tour)
         }
-        val request = api.getMatches(tourId).toHttpRequest().authorize()
+        val request = statsApi.getMatches(tourId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -99,7 +99,7 @@ class MatchesRouteTest {
             teamStorage.insert(teams, tourId)
             matchStorage.insertOrUpdate(matches, tourId)
         }
-        val request = api.getMatches(tourId).toHttpRequest().authorize()
+        val request = statsApi.getMatches(tourId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -126,7 +126,7 @@ class MatchesRouteTest {
             teamStorage.insert(teams, tourId)
             matchStorage.insertOrUpdate(matches.take(1), tourId)
         }
-        val request = api.getMatches(tourId).toHttpRequest().authorize()
+        val request = statsApi.getMatches(tourId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)

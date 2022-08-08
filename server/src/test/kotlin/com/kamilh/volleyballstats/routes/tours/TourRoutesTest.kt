@@ -17,7 +17,7 @@ class TourRoutesTest {
     @Test
     fun `endpoint returns Forbidden when unauthorized`() = testServerApplication {
         // GIVEN
-        val request = api.getTours().toHttpRequest()
+        val request = statsApi.getTours().toHttpRequest()
 
         // WHEN
         val response = client.request(request)
@@ -29,7 +29,7 @@ class TourRoutesTest {
     @Test
     fun `endpoint returns Ok when authorized`() = testServerApplication {
         // GIVEN
-        val request = api.getTours().toHttpRequest().authorize()
+        val request = statsApi.getTours().toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -41,7 +41,7 @@ class TourRoutesTest {
     @Test
     fun `endpoint returns empty list when no tours in database`() = testServerApplication {
         // GIVEN
-        val request = api.getTours().toHttpRequest().authorize()
+        val request = statsApi.getTours().toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -54,7 +54,7 @@ class TourRoutesTest {
     @Test
     fun `endpoint returns tours from the database`() = testServerApplication {
         // GIVEN
-        val request = api.getTours().toHttpRequest().authorize()
+        val request = statsApi.getTours().toHttpRequest().authorize()
         val league = leagueOf()
         val tour = tourOf(league = league)
         withStorages {
@@ -73,7 +73,7 @@ class TourRoutesTest {
     @Test
     fun `saving more tours in the database results in more tours returned from the endpoint`() = testServerApplication {
         // GIVEN
-        val request = api.getTours().toHttpRequest().authorize()
+        val request = statsApi.getTours().toHttpRequest().authorize()
         val league = leagueOf()
         val tour = tourOf(league = league)
         withStorages {

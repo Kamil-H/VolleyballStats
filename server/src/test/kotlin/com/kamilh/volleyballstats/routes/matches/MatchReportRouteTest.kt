@@ -15,7 +15,7 @@ class MatchReportRouteTest {
     fun `endpoint returns Forbidden when unauthorized`() = testServerApplication {
         // GIVEN
         val matchId = matchIdOf()
-        val request = api.getMatchReport(matchId).toHttpRequest()
+        val request = statsApi.getMatchReport(matchId).toHttpRequest()
 
         // WHEN
         val response = client.request(request)
@@ -28,7 +28,7 @@ class MatchReportRouteTest {
     fun `endpoint returns NotFound when matchId is missing`() = testServerApplication {
         // GIVEN
         val matchId = matchIdOf()
-        val originalRequest = api.getMatchReport(matchId)
+        val originalRequest = statsApi.getMatchReport(matchId)
         val request = originalRequest.copy(path = originalRequest.path.replace("/${matchId.value}", ""))
             .toHttpRequest().authorize()
 
@@ -43,7 +43,7 @@ class MatchReportRouteTest {
     fun `endpoint returns BadRequest when matchId is of different type than Integer`() = testServerApplication {
         // GIVEN
         val matchId = matchIdOf()
-        val originalRequest = api.getMatchReport(matchId)
+        val originalRequest = statsApi.getMatchReport(matchId)
         val request = originalRequest.copy(path = originalRequest.path.replace("/${matchId.value}", "/id"))
             .toHttpRequest().authorize()
 
@@ -58,7 +58,7 @@ class MatchReportRouteTest {
     fun `endpoint returns NotFound when no tours in database`() = testServerApplication {
         // GIVEN
         val matchId = matchIdOf()
-        val request = api.getMatchReport(matchId).toHttpRequest().authorize()
+        val request = statsApi.getMatchReport(matchId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -78,7 +78,7 @@ class MatchReportRouteTest {
             leagueStorage.insert(league)
             tourStorage.insert(tour)
         }
-        val request = api.getMatchReport(matchId).toHttpRequest().authorize()
+        val request = statsApi.getMatchReport(matchId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -115,7 +115,7 @@ class MatchReportRouteTest {
             playerStorage.insert(players, tourId)
             matchReportStorage.insert(matchStatistics, tourId)
         }
-        val request = api.getMatchReport(matchId).toHttpRequest().authorize()
+        val request = statsApi.getMatchReport(matchId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -153,7 +153,7 @@ class MatchReportRouteTest {
             playerStorage.insert(players, tourId)
             matchReportStorage.insert(matchStatistics, tourId)
         }
-        val request = api.getMatchReport(matchId).toHttpRequest().authorize()
+        val request = statsApi.getMatchReport(matchId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -170,7 +170,7 @@ class MatchReportRouteTest {
         }
 
         // WHEN
-        val newRequest = api.getMatchReport(newMatchId).toHttpRequest().authorize()
+        val newRequest = statsApi.getMatchReport(newMatchId).toHttpRequest().authorize()
         val newResponse = client.request(newRequest)
 
         // THEN
@@ -206,7 +206,7 @@ class MatchReportRouteTest {
             playerStorage.insert(players, tourId)
             matchReportStorage.insert(matchReport, tourId)
         }
-        val request = api.getMatchReport(matchId).toHttpRequest().authorize()
+        val request = statsApi.getMatchReport(matchId).toHttpRequest().authorize()
 
         // WHEN
         val response = client.request(request)
@@ -228,7 +228,7 @@ class MatchReportRouteTest {
         }
 
         // WHEN
-        val newRequest = api.getMatchReport(newMatchId).toHttpRequest().authorize()
+        val newRequest = statsApi.getMatchReport(newMatchId).toHttpRequest().authorize()
         val newResponse = client.request(newRequest)
 
         // THEN
