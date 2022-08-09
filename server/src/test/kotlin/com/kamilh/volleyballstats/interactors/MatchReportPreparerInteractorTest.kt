@@ -1,10 +1,13 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.assertFailure
+import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.matchIdOf
 import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.MatchReport
 import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.models.TourId
+import com.kamilh.volleyballstats.domain.tourOf
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.matchanalyzer.MatchReportAnalyzer
 import com.kamilh.volleyballstats.matchanalyzer.MatchReportAnalyzerError
@@ -17,7 +20,7 @@ import com.kamilh.volleyballstats.models.matchReportTeamOf
 import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import com.kamilh.volleyballstats.storage.InsertMatchReportResult
 import com.kamilh.volleyballstats.storage.MatchReportStorage
-import com.kamilh.volleyballstats.storage.matchStatisticsStorageOf
+import com.kamilh.volleyballstats.storage.matchReportStorageOf
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -27,7 +30,7 @@ class MatchReportPreparerInteractorTest {
     private fun interactor(
         appDispatchers: AppDispatchers = testAppDispatchers,
         matchReportAnalyzer: MatchReportAnalyzer = matchReportAnalyzerOf(),
-        matchReportStorage: MatchReportStorage = matchStatisticsStorageOf(),
+        matchReportStorage: MatchReportStorage = matchReportStorageOf(),
         fixWrongPlayers: FixWrongPlayers = wrongPlayerFixerOf(),
     ): MatchReportPreparerInteractor = MatchReportPreparerInteractor(
         appDispatchers = appDispatchers,
@@ -67,7 +70,7 @@ class MatchReportPreparerInteractorTest {
         // WHEN
         val result = interactor(
             matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(com.kamilh.volleyballstats.domain.matchReportOf())),
-            matchReportStorage = matchStatisticsStorageOf(
+            matchReportStorage = matchReportStorageOf(
                 insert = insertCallbackOf { InsertMatchReportResult.failure(InsertMatchReportError.TourNotFound) }
             )
         )(paramsOf(matches = matches))
@@ -88,7 +91,7 @@ class MatchReportPreparerInteractorTest {
         // WHEN
         val result = interactor(
             matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.failure(error)),
-            matchReportStorage = matchStatisticsStorageOf(
+            matchReportStorage = matchReportStorageOf(
                 insert = insertCallbackOf { InsertMatchReportResult.failure(InsertMatchReportError.TourNotFound) }
             )
         )(paramsOf(matches = matches))
@@ -113,7 +116,7 @@ class MatchReportPreparerInteractorTest {
         // WHEN
         val result = interactor(
             matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(com.kamilh.volleyballstats.domain.matchReportOf())),
-            matchReportStorage = matchStatisticsStorageOf(insert = insert),
+            matchReportStorage = matchReportStorageOf(insert = insert),
             fixWrongPlayers = wrongPlayerFixerOf(invoke = fixedMatchReportTeam)
         )(paramsOf(matches = matches))
 
@@ -134,7 +137,7 @@ class MatchReportPreparerInteractorTest {
         // WHEN
         val result = interactor(
             matchReportAnalyzer = matchReportAnalyzerOf(invoke = MatchReportAnalyzerResult.success(com.kamilh.volleyballstats.domain.matchReportOf())),
-            matchReportStorage = matchStatisticsStorageOf(insert = insert),
+            matchReportStorage = matchReportStorageOf(insert = insert),
         )(paramsOf(matches = matches))
 
         // THEN

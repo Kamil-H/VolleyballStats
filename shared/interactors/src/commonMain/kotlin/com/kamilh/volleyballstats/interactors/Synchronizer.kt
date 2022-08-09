@@ -58,7 +58,7 @@ class Synchronizer(
             is UpdateMatchesError.Network -> {
                 val networkError = error.networkError
                 if (networkError is NetworkError.UnexpectedException) {
-                    networkError.throwable.printStackTrace()
+                    Logger.e(tag = tag, message = networkError.throwable.stackTraceToString())
                 }
                 schedule()
             }

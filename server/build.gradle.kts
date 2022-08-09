@@ -61,7 +61,6 @@ dependencies {
     testImplementation(project(":shared:domain:test"))
     testImplementation(project(":shared:storage:test"))
     testImplementation(project(":shared:network:test"))
-    testImplementation(project(":shared:interactors:test"))
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

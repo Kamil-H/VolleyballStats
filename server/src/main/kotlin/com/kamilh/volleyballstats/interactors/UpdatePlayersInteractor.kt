@@ -1,8 +1,8 @@
 package com.kamilh.volleyballstats.interactors
 
+import com.kamilh.volleyballstats.domain.extensions.mapAsync
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.kamilh.volleyballstats.extensions.mapAsync
 import com.kamilh.volleyballstats.models.PlayerWithDetails
 import com.kamilh.volleyballstats.models.toPlayer
 import com.kamilh.volleyballstats.repository.polishleague.PlsRepository

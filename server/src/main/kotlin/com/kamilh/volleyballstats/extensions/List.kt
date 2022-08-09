@@ -1,9 +1,6 @@
 package com.kamilh.volleyballstats.extensions
 
 import com.kamilh.volleyballstats.models.DividedList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 
 fun <T> List<T>.divideExcluding(pivotIndex: Int): DividedList<T> {
     if (pivotIndex < 0 || (lastIndex in 1 until pivotIndex)) {
@@ -24,6 +21,3 @@ fun <T> List<T>.divideExcluding(pivotIndex: Int): DividedList<T> {
         )
     }
 }
-
-suspend inline fun <T, R> List<T>.mapAsync(scope: CoroutineScope, crossinline transform: suspend (T) -> R): List<R> =
-    map { scope.async { transform(it) } }.awaitAll()

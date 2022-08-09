@@ -212,3 +212,11 @@ class UpdateMatchesInteractorTest {
         }
     }
 }
+
+fun updateMatchReportsOf(
+    appDispatchers: AppDispatchers = testAppDispatchers,
+    invoke: (params: UpdateMatchReportParams) -> UpdateMatchReportResult = { UpdateMatchReportResult.success(Unit) },
+): UpdateMatchReports = object : UpdateMatchReports(appDispatchers) {
+
+    override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult = invoke(params)
+}

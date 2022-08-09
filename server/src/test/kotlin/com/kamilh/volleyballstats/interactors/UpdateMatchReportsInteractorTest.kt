@@ -2,9 +2,9 @@ package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.domain.assertFailure
 import com.kamilh.volleyballstats.domain.assertSuccess
-import com.kamilh.volleyballstats.domain.models.MatchInfo
+import com.kamilh.volleyballstats.domain.matchIdOf
+import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.Tour
-import com.kamilh.volleyballstats.domain.potentiallyFinishedOf
 import com.kamilh.volleyballstats.domain.tourOf
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.models.matchReportIdOf
@@ -33,7 +33,7 @@ class UpdateMatchReportsTest {
 
     private fun paramsOf(
         tour: Tour = tourOf(),
-        matches: List<MatchInfo.PotentiallyFinished> = emptyList(),
+        matches: List<MatchId> = emptyList(),
     ): UpdateMatchReportParams = UpdateMatchReportParams(
         tour = tour,
         matches = matches,
@@ -42,7 +42,7 @@ class UpdateMatchReportsTest {
     @Test
     fun `interactor returns Success when list of matches is empty`() = runTest {
         // GIVEN
-        val matches = emptyList<MatchInfo.PotentiallyFinished>()
+        val matches = emptyList<MatchId>()
 
         // WHEN
         val result = interactor()(paramsOf(matches = matches))
@@ -54,7 +54,7 @@ class UpdateMatchReportsTest {
     @Test
     fun `interactor returns Network error when getMatchReportId returns error`() = runTest {
         // GIVEN
-        val matches = listOf(potentiallyFinishedOf())
+        val matches = listOf(matchIdOf())
         val networkError = networkErrorOf()
 
         // WHEN
@@ -74,7 +74,7 @@ class UpdateMatchReportsTest {
     @Test
     fun `interactor returns Network error when getMatchReport returns error`() = runTest {
         // GIVEN
-        val matches = listOf(potentiallyFinishedOf())
+        val matches = listOf(matchIdOf())
         val networkError = networkErrorOf()
 
         // WHEN
@@ -95,7 +95,7 @@ class UpdateMatchReportsTest {
     @Test
     fun `interactor returns Insert error when matchReportPreparer returns error`() = runTest {
         // GIVEN
-        val matches = listOf(potentiallyFinishedOf())
+        val matches = listOf(matchIdOf())
         val insertError = InsertMatchReportError.TourNotFound
 
         // WHEN
@@ -119,7 +119,7 @@ class UpdateMatchReportsTest {
     @Test
     fun `interactor returns Success when all operations succeed`() = runTest {
         // GIVEN
-        val matches = listOf(potentiallyFinishedOf())
+        val matches = listOf(matchIdOf())
 
         // WHEN
         val result = interactor(
@@ -135,12 +135,4 @@ class UpdateMatchReportsTest {
         // THEN
         result.assertSuccess()
     }
-}
-
-fun updateMatchReportsOf(
-    appDispatchers: AppDispatchers = testAppDispatchers,
-    invoke: (params: UpdateMatchReportParams) -> UpdateMatchReportResult = { UpdateMatchReportResult.success(Unit) },
-): UpdateMatchReports = object : UpdateMatchReports(appDispatchers) {
-
-    override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult = invoke(params)
 }

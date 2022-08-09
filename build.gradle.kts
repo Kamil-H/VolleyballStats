@@ -33,6 +33,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
         "shared/api/src/commonMain/kotlin",
         "shared/interactors/src/commonMain/kotlin",
         "clients/shared/data/src/commonMain/kotlin",
+        "clients/shared/presentation/src/commonMain/kotlin",
     ).asFileTree
     allRules = true
 }

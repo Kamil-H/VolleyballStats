@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.domain.models.TourId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-fun matchStatisticsStorageOf(
+fun matchReportStorageOf(
     insert: (matchReport: MatchReport, tourId: TourId) -> InsertMatchReportResult = { _, _ ->
         InsertMatchReportResult.success(Unit)
     },

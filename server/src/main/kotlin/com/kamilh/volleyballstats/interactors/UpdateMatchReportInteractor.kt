@@ -1,28 +1,11 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.domain.interactor.Interactor
+import com.kamilh.volleyballstats.domain.extensions.mapAsync
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.kamilh.volleyballstats.extensions.mapAsync
-import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
-import com.kamilh.volleyballstats.storage.InsertMatchReportError
 import kotlinx.coroutines.coroutineScope
 import me.tatarka.inject.annotations.Inject
-
-typealias UpdateMatchReports = Interactor<UpdateMatchReportParams, UpdateMatchReportResult>
-
-data class UpdateMatchReportParams(
-    val tour: Tour,
-    val matches: List<MatchInfo.PotentiallyFinished>,
-)
-
-typealias UpdateMatchReportResult = Result<Unit, UpdateMatchReportError>
-
-sealed class UpdateMatchReportError(override val message: String) : Error {
-    class Network(val networkError: NetworkError) : UpdateMatchReportError("Network(networkError=${networkError.message}")
-    class Insert(val error: InsertMatchReportError) : UpdateMatchReportError("Insert(error=${error.message}")
-}
 
 @Inject
 class UpdateMatchReportInteractor(
@@ -40,9 +23,9 @@ class UpdateMatchReportInteractor(
         val callResults = coroutineScope {
             potentiallyFinished
                 .mapAsync(scope = this) { match ->
-                    polishLeagueRepository.getMatchReportId(match.id).flatMap { matchReportId ->
+                    polishLeagueRepository.getMatchReportId(match).flatMap { matchReportId ->
                         polishLeagueRepository.getMatchReport(matchReportId, tour.season).map { matchReport ->
-                            match.id to matchReport
+                            match to matchReport
                         }
                     }
                 }
