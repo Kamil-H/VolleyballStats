@@ -19,6 +19,7 @@ buildscript {
         classpath(libs.plugin.shadow)
         classpath(libs.plugin.kover)
         classpath(libs.plugin.detekt)
+        classpath(libs.plugin.android)
     }
 }
 
@@ -34,6 +35,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
         "shared/interactors/src/commonMain/kotlin",
         "clients/shared/data/src/commonMain/kotlin",
         "clients/shared/presentation/src/commonMain/kotlin",
+        "clients/android/src/commonMain/kotlin",
     ).asFileTree
     allRules = true
 }
