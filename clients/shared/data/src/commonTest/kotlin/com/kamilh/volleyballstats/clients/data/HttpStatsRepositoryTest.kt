@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.clients.data
 
+import com.kamilh.volleyballstats.api.ApiUrl
 import com.kamilh.volleyballstats.api.ResponseMapper
 import com.kamilh.volleyballstats.api.StatsApi
 import com.kamilh.volleyballstats.api.league.LeagueMapper
@@ -31,7 +32,7 @@ class HttpStatsRepositoryTest {
 
     private fun <T> httpStatsRepositoryTestOf(
         httpClient: HttpClient = httpClientOf<T>(networkFailureOf(networkErrorOf())),
-        statsApi: StatsApi = StatsApi(baseUrl = ""),
+        statsApi: StatsApi = StatsApi(apiUrl = ApiUrl.EMPTY),
         matchMapper: ResponseMapper<Match, MatchResponse> = MatchMapper(),
         matchReportMapper: ResponseMapper<MatchReport, MatchReportResponse> = MatchReportMapper(),
         playerMapper: ResponseMapper<Player, PlayerResponse> = PlayerMapper(),

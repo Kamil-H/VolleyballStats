@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -36,11 +37,37 @@ android {
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
+    this.sourceSets {
+        get("debug").java {
+            srcDir("build/generated/ksp/debug/kotlin")
+        }
+        get("release").java {
+            srcDir("build/generated/ksp/release/kotlin")
         }
     }
 }
 
 dependencies {
+    implementation(project(":shared:domain"))
+    implementation(project(":shared:datetime"))
+    implementation(project(":shared:storage"))
+    implementation(project(":shared:network"))
+    implementation(project(":shared:api"))
+    implementation(project(":shared:interactors"))
+    implementation(project(":clients:shared:presentation"))
+    implementation(project(":clients:shared:data"))
+
+    ksp(libs.inject.compiler)
+    implementation(libs.inject.runtime)
+    implementation(libs.sqldelight.driver.android)
+
+    implementation(libs.ktor.client.contentNegotiate)
+    implementation(libs.ktor.client.jvm)
+    implementation(libs.ktor.client.logging)
+
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)
     implementation(libs.androidx.compose.ui)

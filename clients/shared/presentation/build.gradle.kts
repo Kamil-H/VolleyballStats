@@ -1,5 +1,5 @@
 plugins {
-    `kmm-domain-plugin`
+    `kmm-platform-plugin`
 }
 
 dependencies {
@@ -7,10 +7,20 @@ dependencies {
     commonMainImplementation(project(":shared:datetime"))
     commonMainImplementation(project(":shared:interactors"))
     commonMainImplementation(project(":shared:storage"))
+    commonMainImplementation(project(":shared:api"))
     commonMainImplementation(project(":clients:shared:data"))
 
+    commonMainImplementation(libs.kotlinx.serialization)
     commonMainImplementation(libs.kotlinx.coroutines.core)
     commonMainImplementation(libs.inject.runtime)
+
+    androidMainImplementation(libs.sqldelight.driver.android)
+    iosMainImplementation(libs.sqldelight.driver.ios)
+
+    commonMainImplementation(libs.ktor.client.core)
+    commonMainImplementation(libs.ktor.serialization)
+    commonMainImplementation(libs.ktor.client.contentNegotiate)
+    commonMainImplementation(libs.ktor.client.logging)
 
     commonTestImplementation(libs.kotlinx.coroutines.test)
     commonTestImplementation(libs.test.common)
