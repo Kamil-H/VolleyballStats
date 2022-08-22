@@ -8,8 +8,8 @@ value class ApiUrl private constructor(val value: String) {
     companion object {
         val EMPTY: ApiUrl = ApiUrl("")
 
-        val DEBUG: ApiUrl = ApiUrl("srv11.mikr.us:20213")
+        val DEBUG: ApiUrl = ApiUrl("dev.volleyballstats.pl")
 
-        val RELEASE: ApiUrl = ApiUrl("srv11.mikr.us:30213")
+        val RELEASE: ApiUrl = ApiUrl("api.volleyballstats.pl")
     }
 }
