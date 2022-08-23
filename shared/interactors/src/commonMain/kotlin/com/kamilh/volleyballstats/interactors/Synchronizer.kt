@@ -32,7 +32,7 @@ class Synchronizer(
             log("Tours are empty")
             initializeTours(league)
         } else {
-            updateMatches(tours.filterNot { it.isFinished })
+            updateMatches(tours)
         }
     }
 

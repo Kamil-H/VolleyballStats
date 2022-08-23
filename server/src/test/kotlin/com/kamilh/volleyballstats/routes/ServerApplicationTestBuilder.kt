@@ -2,10 +2,10 @@ package com.kamilh.volleyballstats.routes
 
 import com.kamilh.volleyballstats.AppModule
 import com.kamilh.volleyballstats.TestComponent
+import com.kamilh.volleyballstats.api.AccessToken
 import com.kamilh.volleyballstats.api.StatsApi
 import com.kamilh.volleyballstats.api.ApiConstants
 import com.kamilh.volleyballstats.create
-import com.kamilh.volleyballstats.models.AccessToken
 import com.kamilh.volleyballstats.models.appConfigOf
 import com.kamilh.volleyballstats.module
 import com.kamilh.volleyballstats.utils.testAppDispatchers

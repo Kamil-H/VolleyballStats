@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.authorization
 
 import com.kamilh.volleyballstats.domain.models.onFailure
-import com.kamilh.volleyballstats.models.AccessToken
+import com.kamilh.volleyballstats.api.AccessToken
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*

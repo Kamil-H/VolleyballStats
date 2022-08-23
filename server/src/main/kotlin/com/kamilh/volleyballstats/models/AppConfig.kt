@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.models
 
+import com.kamilh.volleyballstats.api.AccessToken
 import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import io.ktor.server.application.*
 

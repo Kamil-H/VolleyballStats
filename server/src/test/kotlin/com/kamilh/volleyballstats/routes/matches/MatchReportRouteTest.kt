@@ -6,6 +6,7 @@ import com.kamilh.volleyballstats.routes.testServerApplication
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.coroutines.delay
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -171,6 +172,7 @@ class MatchReportRouteTest {
 
         // WHEN
         val newRequest = statsApi.getMatchReport(newMatchId).toHttpRequest().authorize()
+        delay(100)
         val newResponse = client.request(newRequest)
 
         // THEN
@@ -229,6 +231,7 @@ class MatchReportRouteTest {
 
         // WHEN
         val newRequest = statsApi.getMatchReport(newMatchId).toHttpRequest().authorize()
+        delay(100)
         val newResponse = client.request(newRequest)
 
         // THEN

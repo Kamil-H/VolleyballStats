@@ -4,6 +4,7 @@ import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.common.errors.SqlError
 import com.kamilh.volleyballstats.storage.common.errors.createSqlError
@@ -114,11 +115,14 @@ class SqlPlayerStorage(
             mapper = mapper,
         ).asFlow().mapToList(queryRunner.dispatcher)
 
-    override fun getAllPlayers(tourId: TourId): Flow<List<Player>> =
-        teamPlayerQueries.selectPlayers(
-            tour_id = tourId,
-            mapper = mapper,
-        ).asFlow().mapToList(queryRunner.dispatcher)
+    override fun getAllPlayers(tourId: TourId): Flow<List<Player>>
+        {
+            Logger.i("getAllPlayers")
+            return teamPlayerQueries.selectPlayers(
+                tour_id = tourId,
+                mapper = mapper,
+            ).asFlow().mapToList(queryRunner.dispatcher)
+        }
 
     private val mapper: (
         image_url: Url?,

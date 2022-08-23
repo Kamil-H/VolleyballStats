@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.presentation.di
 
+import com.kamilh.volleyballstats.api.ApiConstants
 import com.kamilh.volleyballstats.api.ApiUrl
 import com.kamilh.volleyballstats.clients.data.DataModule
 import com.kamilh.volleyballstats.domain.di.Singleton
@@ -11,10 +12,12 @@ import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
 import com.kamilh.volleyballstats.presentation.interactors.InteractorModule
+import com.kamilh.volleyballstats.presentation.utils.AccessTokenProvider
 import com.kamilh.volleyballstats.presentation.utils.AppInitializer
 import com.kamilh.volleyballstats.presentation.utils.ClientLogger
 import com.kamilh.volleyballstats.storage.SqlDriverFactory
 import com.squareup.sqldelight.db.SqlDriver
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
@@ -42,7 +45,7 @@ interface PresentationModule : InteractorModule, DataModule {
 
     @Provides
     @Singleton
-    fun ktor(): Ktor =
+    fun ktor(accessTokenProvider: AccessTokenProvider): Ktor =
         Ktor {
             install(ContentNegotiation) {
                 val json = Json {
@@ -57,6 +60,9 @@ interface PresentationModule : InteractorModule, DataModule {
                         Logger.d(message = message)
                     }
                 }
+            }
+            defaultRequest {
+                headers.append(ApiConstants.HEADER_ACCESS_TOKEN, accessTokenProvider.get().value)
             }
         }
 

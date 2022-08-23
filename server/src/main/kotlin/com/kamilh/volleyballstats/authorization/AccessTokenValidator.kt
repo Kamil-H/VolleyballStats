@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.authorization
 
-import com.kamilh.volleyballstats.models.AccessToken
+import com.kamilh.volleyballstats.api.AccessToken
 import com.kamilh.volleyballstats.models.AppConfig
 import me.tatarka.inject.annotations.Inject
 

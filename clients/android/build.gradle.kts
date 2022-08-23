@@ -22,6 +22,8 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -67,6 +69,8 @@ dependencies {
     implementation(libs.ktor.client.contentNegotiate)
     implementation(libs.ktor.client.jvm)
     implementation(libs.ktor.client.logging)
+
+    coreLibraryDesugaring(libs.android.desugaring)
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)

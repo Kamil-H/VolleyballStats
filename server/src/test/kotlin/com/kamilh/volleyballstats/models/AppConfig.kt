@@ -1,5 +1,7 @@
 package com.kamilh.volleyballstats.models
 
+import com.kamilh.volleyballstats.api.AccessToken
+
 fun appConfigOf(
     serverConfig: ServerConfig = ServerConfig(0),
     databaseConfig: DatabaseConfig = DatabaseConfig.IN_MEMORY,

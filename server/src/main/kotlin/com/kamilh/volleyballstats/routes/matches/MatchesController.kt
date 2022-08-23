@@ -5,19 +5,17 @@ import com.kamilh.volleyballstats.api.match.MatchResponse
 import com.kamilh.volleyballstats.api.matchreport.MatchReportResponse
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.routes.CallError
-import com.kamilh.volleyballstats.routes.CallResult
-import com.kamilh.volleyballstats.routes.TourIdCache
-import com.kamilh.volleyballstats.routes.retrieveLongId
+import com.kamilh.volleyballstats.routes.*
 import com.kamilh.volleyballstats.storage.MatchReportStorage
 import com.kamilh.volleyballstats.storage.MatchStorage
+import com.kamilh.volleyballstats.utils.LazySuspend
 import com.kamilh.volleyballstats.utils.SafeMap
 import com.kamilh.volleyballstats.utils.safeMapOf
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.StateFlow
 import me.tatarka.inject.annotations.Inject
 
-interface MatchesController {
+interface MatchesController : CacheableController {
 
     suspend fun getMatches(tourId: String?): CallResult<List<MatchResponse>>
 
@@ -28,34 +26,28 @@ interface MatchesController {
 @Singleton
 class MatchesControllerImpl(
     matchReportStorage: MatchReportStorage,
+    override val scope: CoroutineScope,
     private val tourIdCache: TourIdCache,
     private val matchStorage: MatchStorage,
     private val matchInfoMapper: ResponseMapper<Match, MatchResponse>,
     private val matchReportMapper: ResponseMapper<MatchReport, MatchReportResponse>,
 ) : MatchesController {
 
-    private val allMatchesCache: SafeMap<TourId, Flow<List<Match>>> = safeMapOf()
-    private val allMatchReportsCache: Flow<List<MatchReport>> = matchReportStorage.getAllMatchReports()
+    private val allMatchesCache: SafeMap<TourId, StateFlow<List<Match>>> = safeMapOf()
+    private val allMatchReportsCache = LazySuspend { matchReportStorage.getAllMatchReports().cache() }
 
     override suspend fun getMatches(tourId: String?): CallResult<List<MatchResponse>> =
         tourIdCache.tourIdFrom(tourId) {
-            CallResult.success(allMatchesFlow(it).first().map(matchInfoMapper::to))
+            CallResult.success(allMatchesCache.getCachedFlow(it, matchStorage::getAllMatches).value.map(matchInfoMapper::to))
         }
 
     override suspend fun getMatchReport(matchId: String?): CallResult<MatchReportResponse> =
         matchId.retrieveLongId { MatchId(it) }.flatMap { id ->
-            val matchReport = allMatchReportsCache.first().firstOrNull { it.matchId == id }
+            val matchReport = allMatchReportsCache().value.firstOrNull { it.matchId == id }
             if (matchReport != null) {
                 CallResult.success(matchReportMapper.to(matchReport))
             } else {
                 CallResult.failure(CallError.resourceNotFound(subject = "MatchReport", id = id.value.toString()))
-            }
-        }
-
-    private suspend fun allMatchesFlow(tourId: TourId): Flow<List<Match>> =
-        allMatchesCache.access { map ->
-            map[tourId] ?: matchStorage.getAllMatches(tourId).apply {
-                map[tourId] = this
             }
         }
 }

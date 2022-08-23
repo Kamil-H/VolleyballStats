@@ -29,6 +29,7 @@ compose = "1.2.1"
 composeCompiler = "1.3.0"
 activityCompose = "1.5.1"
 lifecycleRuntime = "2.5.1"
+coreLibraryDesugaring = "1.1.5"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }
@@ -97,6 +98,8 @@ test-common = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 test-annotations-common = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }
 
 # Android
+android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "coreLibraryDesugaring" }
+
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }

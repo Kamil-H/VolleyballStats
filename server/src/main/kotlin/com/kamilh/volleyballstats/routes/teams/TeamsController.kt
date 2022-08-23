@@ -5,16 +5,17 @@ import com.kamilh.volleyballstats.api.team.TeamResponse
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.Team
 import com.kamilh.volleyballstats.domain.models.TourId
+import com.kamilh.volleyballstats.routes.CacheableController
 import com.kamilh.volleyballstats.routes.CallResult
 import com.kamilh.volleyballstats.routes.TourIdCache
 import com.kamilh.volleyballstats.storage.TeamStorage
 import com.kamilh.volleyballstats.utils.SafeMap
 import com.kamilh.volleyballstats.utils.safeMapOf
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.StateFlow
 import me.tatarka.inject.annotations.Inject
 
-interface TeamsController {
+interface TeamsController : CacheableController {
 
     suspend fun getTeams(tourId: String?): CallResult<List<TeamResponse>>
 }
@@ -22,23 +23,16 @@ interface TeamsController {
 @Inject
 @Singleton
 class TeamsControllerImpl(
+    override val scope: CoroutineScope,
     private val tourIdCache: TourIdCache,
     private val teamStorage: TeamStorage,
     private val teamMapper: ResponseMapper<Team, TeamResponse>,
 ) : TeamsController {
 
-    private val allTeamsCache: SafeMap<TourId, Flow<List<Team>>> = safeMapOf()
+    private val allTeamsCache: SafeMap<TourId, StateFlow<List<Team>>> = safeMapOf()
 
     override suspend fun getTeams(tourId: String?): CallResult<List<TeamResponse>> =
         tourIdCache.tourIdFrom(tourId) {
-            CallResult.success(allTeamsFlow(it).first().map(teamMapper::to))
-        }
-
-    private suspend fun allTeamsFlow(tourId: TourId): Flow<List<Team>> =
-        allTeamsCache.access { map ->
-            map[tourId] ?: teamStorage.getAllTeams(tourId).apply {
-                map[tourId] = this
-            }
+            CallResult.success(allTeamsCache.getCachedFlow(it, teamStorage::getAllTeams).value.map(teamMapper::to))
         }
 }
-
