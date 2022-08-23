@@ -21,6 +21,8 @@ dependencies {
     commonMainImplementation(libs.ktor.serialization)
     commonMainImplementation(libs.ktor.client.contentNegotiate)
     commonMainImplementation(libs.ktor.client.logging)
+    androidMainImplementation(libs.ktor.client.okhttp)
+    iosMainImplementation(libs.ktor.client.darwin)
 
     commonTestImplementation(libs.kotlinx.coroutines.test)
     commonTestImplementation(libs.test.common)

@@ -9,7 +9,7 @@ application = "0.0.1"
 kotlin = "1.7.10"
 sqldelight = "1.5.3"
 ksp = "1.7.10-1.0.6"
-ktor = "2.0.3"
+ktor = "2.1.0"
 serialization = "1.4.0-RC"
 logback = "1.2.1"
 coroutines = "1.6.4"
@@ -66,6 +66,8 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-test = { module = "io.ktor:ktor-client-tests", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 

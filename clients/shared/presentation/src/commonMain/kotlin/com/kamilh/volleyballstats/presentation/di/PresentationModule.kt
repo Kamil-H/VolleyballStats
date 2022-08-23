@@ -39,14 +39,14 @@ interface PresentationModule : InteractorModule, DataModule {
     fun appDispatchers(): AppDispatchers =
         AppDispatchers(
             io = Dispatchers.Default,
-            main = Dispatchers.Main,
+            main = Dispatchers.Main.immediate,
             default = Dispatchers.Default,
         )
 
     @Provides
     @Singleton
     fun ktor(accessTokenProvider: AccessTokenProvider): Ktor =
-        Ktor {
+        HttpClient {
             install(ContentNegotiation) {
                 val json = Json {
                     prettyPrint = true
@@ -54,7 +54,7 @@ interface PresentationModule : InteractorModule, DataModule {
                 json(json = json)
             }
             install(Logging) {
-                level = LogLevel.ALL
+                level = LogLevel.HEADERS
                 logger = object : io.ktor.client.plugins.logging.Logger {
                     override fun log(message: String) {
                         Logger.d(message = message)

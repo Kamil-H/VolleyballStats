@@ -40,11 +40,18 @@ class UpdateMatchesInteractor(
                         }
                         val matchesWithoutReport = savedMatches.filterNot { it.hasReport }.map { it.id }
                         updateMatchReports(UpdateMatchReportParams(tour, matchesWithoutReport))
-                        createResult(tour)
+                            .mapError { it.toUpdateMatchesError() }
+                            .flatMap { createResult(tour) }
                     }
                 }
             }
     }
+
+    private fun UpdateMatchReportError.toUpdateMatchesError(): UpdateMatchesError =
+        when (this) {
+            is UpdateMatchReportError.Insert -> UpdateMatchesError.Insert(error)
+            is UpdateMatchReportError.Network -> UpdateMatchesError.Network(networkError)
+        }
 
     private suspend fun createResult(tour: Tour): UpdateMatchesResult {
         val latestMatchDate = latestMatchDate(tour)
