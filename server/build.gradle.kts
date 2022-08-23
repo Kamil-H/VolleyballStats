@@ -10,6 +10,9 @@ plugins {
 sourceSets.main {
     java.srcDirs("build/generated/ksp/main/kotlin")
 }
+sourceSets.test {
+    java.srcDirs("build/generated/ksp/test/kotlin")
+}
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")

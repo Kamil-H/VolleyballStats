@@ -1,7 +1,6 @@
 package com.kamilh.volleyballstats.routes
 
 import com.kamilh.volleyballstats.AppModule
-import com.kamilh.volleyballstats.TestComponent
 import com.kamilh.volleyballstats.api.AccessToken
 import com.kamilh.volleyballstats.api.StatsApi
 import com.kamilh.volleyballstats.api.ApiConstants
