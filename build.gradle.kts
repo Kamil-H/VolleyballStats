@@ -35,6 +35,8 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
         "shared/interactors/src/commonMain/kotlin",
         "clients/shared/data/src/commonMain/kotlin",
         "clients/shared/presentation/src/commonMain/kotlin",
+        "clients/shared/presentation/src/iosMain/kotlin",
+        "clients/shared/presentation/src/androidMain/kotlin",
         "clients/android/src/commonMain/kotlin",
     ).asFileTree
     allRules = true
