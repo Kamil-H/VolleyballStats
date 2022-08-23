@@ -1,12 +1,14 @@
 package com.kamilh.volleyballstats.storage
 
 import com.kamilh.volleyballstats.domain.di.Singleton
+import com.kamilh.volleyballstats.domain.extensions.mapAsync
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.databse.*
 import com.squareup.sqldelight.Query
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
@@ -50,6 +52,7 @@ class SqlMatchReportStorage(
     private val setQueries: SetQueries,
     private val matchAppearanceQueries: MatchAppearanceQueries,
     private val tourQueries: TourQueries,
+    private val coroutineScope: CoroutineScope,
 ) : MatchReportStorage {
 
     override suspend fun insert(matchReport: MatchReport, tourId: TourId): InsertMatchReportResult =
@@ -270,7 +273,7 @@ class SqlMatchReportStorage(
 
         val playActionsFlow = playActionFlow(tourId)
         return combine(statsFlow, matchAppearancesFlow, setsFlow, pointsFlow, playActionsFlow) { stats, matchAppearances, sets, points, playActions ->
-            stats.map { selectAllStats ->
+            stats.mapAsync(coroutineScope) { selectAllStats ->
                 MatchReport(
                     matchId = selectAllStats.id,
                     sets = sets.toMatchSet(selectAllStats.id, points, playActions),

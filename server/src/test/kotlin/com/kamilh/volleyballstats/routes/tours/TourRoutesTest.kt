@@ -1,13 +1,14 @@
 package com.kamilh.volleyballstats.routes.tours
 
+import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.domain.leagueOf
 import com.kamilh.volleyballstats.domain.tourIdOf
 import com.kamilh.volleyballstats.domain.tourOf
-import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.routes.testServerApplication
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.JsonArray
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -99,6 +100,7 @@ class TourRoutesTest {
         }
 
         // WHEN
+        delay(100)
         val newResponse = client.request(request)
 
         // THEN
