@@ -25,11 +25,13 @@ abstract class DatabaseTest(
     private val localDateAdapter: ColumnAdapter<LocalDate, String> = LocalDateAdapter(),
     private val localDateTimeAdapter: ColumnAdapter<LocalDateTime, String> = LocalDateTimeAdapter(),
     private val seasonAdapter: ColumnAdapter<Season, Long> = SeasonAdapter(),
-    private val specializationAdapter: ColumnAdapter<Specialization, Long> = SpecializationAdapter(),
+    private val specializationAdapter: ColumnAdapter<Specialization, String> = SpecializationAdapter(),
     private val durationAdapter: ColumnAdapter<Duration, Long> = DurationAdapter(),
     private val positionAdapter: ColumnAdapter<PlayerPosition, Long> = PositionAdapter(),
     private val matchIdAdapter: ColumnAdapter<MatchId, Long> = MatchIdAdapter(),
     private val tourIdAdapter: ColumnAdapter<TourId, Long> = TourIdAdapter(),
+    private val effectAdapter: ColumnAdapter<Effect, String> = EffectAdapter(),
+    private val phaseAdapter: ColumnAdapter<Phase, String> = PhaseAdapter()
 ) {
 
     private lateinit var databaseFactory: DatabaseFactory
@@ -74,6 +76,8 @@ abstract class DatabaseTest(
             positionAdapter = positionAdapter,
             matchIdAdapter = matchIdAdapter,
             tourIdAdapter = tourIdAdapter,
+            effectAdapter = effectAdapter,
+            phaseAdapter = phaseAdapter,
         )
         databaseFactory.connect()
     }

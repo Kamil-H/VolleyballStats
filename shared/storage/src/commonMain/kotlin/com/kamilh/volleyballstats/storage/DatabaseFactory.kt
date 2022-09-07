@@ -6,7 +6,6 @@ import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
 import com.squareup.sqldelight.ColumnAdapter
-import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
@@ -30,11 +29,13 @@ class AppConfigDatabaseFactory(
     localDateAdapter: ColumnAdapter<LocalDate, String>,
     localDateTimeAdapter: ColumnAdapter<LocalDateTime, String>,
     seasonAdapter: ColumnAdapter<Season, Long>,
-    specializationAdapter: ColumnAdapter<Specialization, Long>,
+    specializationAdapter: ColumnAdapter<Specialization, String>,
     durationAdapter: ColumnAdapter<Duration, Long>,
     positionAdapter: ColumnAdapter<PlayerPosition, Long>,
     matchIdAdapter: ColumnAdapter<MatchId, Long>,
     tourIdAdapter: ColumnAdapter<TourId, Long>,
+    effectAdapter: ColumnAdapter<Effect, String>,
+    phaseAdapter: ColumnAdapter<Phase, String>,
 ) : DatabaseFactory {
 
     private val driver: SqlDriver by lazy {
@@ -95,28 +96,28 @@ class AppConfigDatabaseFactory(
             ),
             match_report_modelAdapter = Match_report_model.Adapter(
                 idAdapter = matchIdAdapter,
-                phaseAdapter = EnumColumnAdapter(),
+                phaseAdapter = phaseAdapter,
                 updated_atAdapter = localDateTimeAdapter,
                 tour_idAdapter = tourIdAdapter,
             ),
             play_attack_modelAdapter = Play_attack_model.Adapter(
-                receive_effectAdapter = EnumColumnAdapter(),
-                set_effectAdapter = EnumColumnAdapter(),
+                receive_effectAdapter = effectAdapter,
+                set_effectAdapter = effectAdapter,
             ),
             play_modelAdapter = Play_model.Adapter(
-                effectAdapter = EnumColumnAdapter(),
+                effectAdapter = effectAdapter,
                 positionAdapter = positionAdapter,
             ),
             play_receive_modelAdapter = Play_receive_model.Adapter(
-                attack_effectAdapter = EnumColumnAdapter(),
-                set_effectAdapter = EnumColumnAdapter(),
+                attack_effectAdapter = effectAdapter,
+                set_effectAdapter = effectAdapter,
             ),
             play_serve_modelAdapter = Play_serve_model.Adapter(
-                receiver_effectAdapter = EnumColumnAdapter(),
+                receiver_effectAdapter = effectAdapter,
             ),
             play_set_modelAdapter = Play_set_model.Adapter(
                 attacker_positionAdapter = positionAdapter,
-                attack_effectAdapter = EnumColumnAdapter(),
+                attack_effectAdapter = effectAdapter,
             )
         )
     }

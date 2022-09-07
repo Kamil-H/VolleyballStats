@@ -43,7 +43,7 @@ class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<Li
                 name = name,
                 imageUrl = Url.createOrNull(imageUrl),
                 team = TeamId(teamId),
-                specialization = Specialization.create(positionId),
+                specialization = positionId.toSpecialization(),
                 updatedAt = CurrentDate.localDateTime,
             )
         }.apply {
@@ -52,4 +52,14 @@ class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<Li
             }
         }
     }
+
+    private fun Int.toSpecialization(): Specialization =
+        when (this) {
+            5 -> Specialization.Setter
+            1 -> Specialization.Libero
+            4 -> Specialization.MiddleBlocker
+            2 -> Specialization.OutsideHitter
+            3 -> Specialization.OppositeHitter
+            else -> error("Wrong specialization int: $this")
+        }
 }

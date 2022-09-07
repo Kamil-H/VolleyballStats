@@ -163,7 +163,7 @@ class HtmlToTeamPlayerMapperTest {
         // GIVEN
         val specialization = Specialization.Libero
 
-        val html = html(positionId = specialization.id.toString())
+        val html = html(positionId = "1")
 
         // WHEN
         val mapped = mapper.map(html)

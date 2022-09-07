@@ -3,6 +3,7 @@ package com.kamilh.volleyballstats
 import com.kamilh.volleyballstats.authorization.AccessTokenValidator
 import com.kamilh.volleyballstats.authorization.headers
 import com.kamilh.volleyballstats.domain.models.League
+import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.domain.utils.PlatformLogger
 import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.models.config
@@ -72,6 +73,7 @@ class ApplicationInitializer(
         install(StatusPages) {
             exception<Throwable> { call, cause ->
                 cause.printStackTrace()
+                Logger.e(message = cause.stackTraceToString())
                 call.respond(HttpStatusCode.InternalServerError)
             }
         }
@@ -85,7 +87,7 @@ class ApplicationInitializer(
     }
 
     private fun Application.configureLogging() {
-        com.kamilh.volleyballstats.domain.utils.Logger.setLogger(platformLogger)
+        Logger.setLogger(platformLogger)
 
         install(CallLogging) {
             level = Level.INFO

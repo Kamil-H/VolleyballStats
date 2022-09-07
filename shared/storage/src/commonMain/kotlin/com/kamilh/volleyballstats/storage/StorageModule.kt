@@ -151,10 +151,16 @@ interface StorageModule {
     val SeasonAdapter.bind: ColumnAdapter<Season, Long>
         @Provides get() = this
 
-    val SpecializationAdapter.bind: ColumnAdapter<Specialization, Long>
+    val SpecializationAdapter.bind: ColumnAdapter<Specialization, String>
         @Provides get() = this
 
     val DurationAdapter.bind: ColumnAdapter<Duration, Long>
+        @Provides get() = this
+
+    val EffectAdapter.bind: ColumnAdapter<Effect, String>
+        @Provides get() = this
+
+    val PhaseAdapter.bind : ColumnAdapter<Phase, String>
         @Provides get() = this
 
     val PositionAdapter.bind: ColumnAdapter<PlayerPosition, Long>
