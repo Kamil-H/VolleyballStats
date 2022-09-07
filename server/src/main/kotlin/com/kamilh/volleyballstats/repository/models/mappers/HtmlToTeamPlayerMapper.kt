@@ -53,6 +53,7 @@ class HtmlToTeamPlayerMapper(private val htmlParser: HtmlParser) : HtmlMapper<Li
         }
     }
 
+    @Suppress("MagicNumber")
     private fun Int.toSpecialization(): Specialization =
         when (this) {
             5 -> Specialization.Setter
