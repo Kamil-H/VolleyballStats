@@ -16,11 +16,14 @@ import com.kamilh.volleyballstats.presentation.utils.AccessTokenProvider
 import com.kamilh.volleyballstats.presentation.utils.AppInitializer
 import com.kamilh.volleyballstats.presentation.utils.ClientLogger
 import com.kamilh.volleyballstats.storage.SqlDriverFactory
+import com.kamilh.volleyballstats.storage.stats.AttackStats
 import com.squareup.sqldelight.db.SqlDriver
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Component
@@ -33,6 +36,13 @@ interface PresentationModule : InteractorModule, DataModule {
     val synchronizer: Synchronizer
 
     val appInitializer: AppInitializer
+
+    val attackStats: AttackStats
+
+    @Provides
+    @Singleton
+    fun coroutineScope(appDispatchers: AppDispatchers): CoroutineScope =
+        CoroutineScope(context = appDispatchers.main + SupervisorJob())
 
     @Singleton
     @Provides

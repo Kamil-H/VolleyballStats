@@ -1,7 +1,10 @@
 package com.kamilh.volleyballstats.presentation.interactors
 
 import com.kamilh.volleyballstats.clients.data.StatsRepository
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.flatMap
+import com.kamilh.volleyballstats.domain.models.mapError
+import com.kamilh.volleyballstats.domain.models.toResult
+import com.kamilh.volleyballstats.domain.models.toResults
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.interactors.UpdateMatchReportError
 import com.kamilh.volleyballstats.interactors.UpdateMatchReportParams
@@ -17,23 +20,13 @@ class UpdateMatchReportInteractor(
     private val matchReportStorage: MatchReportStorage,
 ): UpdateMatchReports(appDispatchers) {
 
-    override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult {
-        val (tour, potentiallyFinished) = params
-
-        if (potentiallyFinished.isEmpty()) {
-            return Result.success(Unit)
-        }
-        val callResults = potentiallyFinished.map { match ->
+    override suspend fun doWork(params: UpdateMatchReportParams): UpdateMatchReportResult =
+        params.matches.map { match ->
             statsRepository.getMatchReport(match)
-        }.toResults()
-
-        val firstFailure = callResults.firstFailure?.error
-        if (firstFailure != null) {
-            return Result.failure(UpdateMatchReportError.Network(firstFailure))
-        }
-
-        return callResults.values.map { matchReport ->
-            matchReportStorage.insert(matchReport, tour.id).mapError(UpdateMatchReportError::Insert)
+                .mapError(UpdateMatchReportError::Network)
+                .flatMap {
+                    matchReportStorage.insert(it, params.tour.id)
+                        .mapError(UpdateMatchReportError::Insert)
+                }
         }.toResults().toResult() ?: UpdateMatchReportResult.success(Unit)
-    }
 }

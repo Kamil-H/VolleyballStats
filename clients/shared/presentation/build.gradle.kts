@@ -9,6 +9,7 @@ dependencies {
     commonMainImplementation(project(":shared:storage"))
     commonMainImplementation(project(":shared:api"))
     commonMainImplementation(project(":clients:shared:data"))
+    commonMainImplementation(project(":clients:shared:storage"))
 
     commonMainImplementation(libs.kotlinx.serialization)
     commonMainImplementation(libs.kotlinx.coroutines.core)

@@ -3,11 +3,10 @@ package com.kamilh.volleyballstats.clients.data
 import com.kamilh.volleyballstats.api.MappersModule
 import com.kamilh.volleyballstats.network.repository.PolishLeagueRepository
 import com.kamilh.volleyballstats.storage.StorageModule
-import me.tatarka.inject.annotations.Component
+import com.kamilh.volleyballstats.storage.stats.StatsModule
 import me.tatarka.inject.annotations.Provides
 
-@Component
-interface DataModule : MappersModule, StorageModule {
+interface DataModule : MappersModule, StorageModule, StatsModule {
 
     val HttpStatsRepository.bindStatsRepository: StatsRepository
         @Provides get() = this

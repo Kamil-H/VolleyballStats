@@ -6,8 +6,11 @@ import com.kamilh.volleyballstats.clients.app.BuildConfig
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildInfo
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildType
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
 import com.kamilh.volleyballstats.presentation.di.PresentationModule
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -15,8 +18,9 @@ import me.tatarka.inject.annotations.Provides
 @Singleton
 abstract class AppModule(
     @get:Provides val application: Application,
-    @get:Provides val scope: CoroutineScope,
 ) : PresentationModule {
+
+    abstract val playerStatsPresenter: PlayerStatsPresenter
 
     @Provides
     fun context(): Context = application
@@ -31,4 +35,12 @@ abstract class AppModule(
             },
             versionName = BuildConfig.VERSION_NAME
         )
+
+    companion object {
+        private var instance: AppModule? = null
+
+        fun getInstance(context: Context) = instance ?: AppModule::class.create(
+            context.applicationContext as Application,
+        ).also { instance = it }
+    }
 }

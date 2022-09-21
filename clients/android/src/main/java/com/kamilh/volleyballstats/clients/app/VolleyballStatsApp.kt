@@ -17,7 +17,7 @@ class VolleyballStatsApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val module = AppModule::class.create(this, scope)
+        val module = AppModule.getInstance(this)
         module.appInitializer.initialize()
         scope.launch {
             module.synchronizer.synchronize(League.POLISH_LEAGUE)
