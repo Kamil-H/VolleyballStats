@@ -5,18 +5,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kamilh.volleyballstats.presentation.features.TableCell
+import com.kamilh.volleyballstats.presentation.features.CellSize
+import com.kamilh.volleyballstats.presentation.features.DataRow
+import com.kamilh.volleyballstats.presentation.features.HeaderRow
 import com.kamilh.volleyballstats.presentation.features.TableContent
-import com.kamilh.volleyballstats.presentation.features.TableRow
 
 @Composable
 fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
@@ -29,39 +30,77 @@ fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
                 Modifier
             }
         },
-        stickyHeaderModifier = Modifier.background(color = MaterialTheme.colors.background),
+        stickyHeaderModifier = Modifier.background(
+            color = MaterialTheme.colors.primary,
+            shape = RoundedCornerShape(8.dp),
+        ),
         stickyHeader = tableContent.header?.let { stickyRow ->
-            { columnIndex -> TableRow(row = stickyRow, columnIndex = columnIndex) }
+            { HeaderRow(row = stickyRow) }
         },
-        columnCount = tableContent.rows.firstOrNull()?.cells?.size ?: 0,
-        rowCount = tableContent.rows.size
-    ) { columnIndex, rowIndex ->
+        columnCount = tableContent.columnCount,
+        rowCount = tableContent.rowCount,
+    ) {
         val row = tableContent.rows[rowIndex]
-        TableRow(row = row, columnIndex = columnIndex)
+        TableRow(row = row)
     }
 }
 
 @Composable
-private fun TableRow(modifier: Modifier = Modifier, row: TableRow, columnIndex: Int) {
+private fun TableRowScope.TableRow(modifier: Modifier = Modifier, row: DataRow) {
     val cell = row.cells[columnIndex]
     val horizontalSpacing = cell.size.horizontalSpacing
 
-    Column(modifier = modifier) {
+    TableRow(modifier = modifier, horizontalSpacing = horizontalSpacing) {
+        Text(text = cell.content)
+    }
+}
+
+@Composable
+private fun TableRowScope.HeaderRow(modifier: Modifier = Modifier, row: HeaderRow) {
+    val cell = row.cells[columnIndex]
+    val horizontalSpacing = cell.size.horizontalSpacing
+
+    TableRow(
+        modifier = modifier.columnWidth().rowHeight(),
+        horizontalSpacing = horizontalSpacing,
+    ) {
+        Column {
+            HeaderCellText(text = cell.firstLine)
+            cell.secondLine?.let {
+                HeaderCellText(text = it)
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeaderCellText(modifier: Modifier = Modifier, text: String) {
+    Text(
+        text = text,
+        maxLines = 1,
+        modifier = modifier,
+        color = MaterialTheme.colors.onPrimary,
+    )
+}
+
+@Composable
+private fun TableRow(modifier: Modifier = Modifier, horizontalSpacing: Dp, content: @Composable RowScope.() -> Unit) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         Spacer(modifier = Modifier.height(8.dp))
         Row {
             Spacer(modifier = Modifier.width(horizontalSpacing))
-            Text(text = cell.content)
+            content()
             Spacer(modifier = Modifier.width(horizontalSpacing))
         }
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-private val TableCell.Size.horizontalSpacing: Dp
+private val CellSize.horizontalSpacing: Dp
     get() = when (this) {
-        TableCell.Size.Small -> 8.dp
-        TableCell.Size.Medium -> 12.dp
-        TableCell.Size.Big -> 16.dp
+        CellSize.Small -> 8.dp
+        CellSize.Medium -> 12.dp
+        CellSize.Big -> 16.dp
     }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -74,14 +113,14 @@ private fun Table(
     horizontalScrollState: ScrollState = rememberScrollState(),
     columnCount: Int,
     rowCount: Int,
-    stickyHeader: (@Composable (columnIndex: Int) -> Unit)? = null,
+    stickyHeader: (@Composable TableRowScope.() -> Unit)? = null,
     beforeRow: (@Composable (rowIndex: Int) -> Unit)? = null,
     afterRow: (@Composable (rowIndex: Int) -> Unit)? = null,
-    cellContent: @Composable (columnIndex: Int, rowIndex: Int) -> Unit
+    cellContent: @Composable TableRowScope.() -> Unit
 ) {
     val columnWidths = remember { mutableStateMapOf<Int, Int>() }
 
-    Box(modifier = modifier.then(Modifier.horizontalScroll(horizontalScrollState))) {
+    Box(modifier = modifier.horizontalScroll(horizontalScrollState)) {
         LazyColumn(state = verticalLazyListState) {
             stickyHeader?.let {
                 stickyHeader {
@@ -90,8 +129,8 @@ private fun Table(
                         rowIndex = -1,
                         columnCount = columnCount,
                         columnWidths = columnWidths,
-                    ) { columnIndex, _ ->
-                        stickyHeader(columnIndex)
+                    ) {
+                        stickyHeader(this)
                     }
                 }
             }
@@ -118,8 +157,9 @@ private fun TableRow(
     rowIndex: Int,
     columnCount: Int,
     columnWidths: MutableMap<Int, Int>,
-    cellContent: @Composable (columnIndex: Int, rowIndex: Int) -> Unit,
+    cellContent: @Composable TableRowScope.() -> Unit,
 ) {
+    var currentMaxHeight by remember { mutableStateOf(0) }
     Row(modifier = rowModifier(rowIndex)) {
         (0 until columnCount).forEach { columnIndex ->
             Box(modifier = Modifier.layout { measurable, constraints ->
@@ -132,12 +172,50 @@ private fun TableRow(
                     columnWidths[columnIndex] = maxWidth
                 }
 
+                val maxHeight = maxOf(currentMaxHeight, placeable.height)
+                if (maxWidth > currentMaxHeight) {
+                    currentMaxHeight = maxHeight
+                }
+
                 layout(width = maxWidth, height = placeable.height) {
                     placeable.placeRelative(0, 0)
                 }
             }) {
-                cellContent(columnIndex, rowIndex)
+                cellContent(
+                    TableRowScope(
+                        columnIndex = columnIndex,
+                        rowIndex = rowIndex,
+                        width = (columnWidths[columnIndex] ?: 0).toDp(),
+                        height = currentMaxHeight.toDp(),
+                        boxScope = this,
+                    )
+                )
             }
         }
     }
 }
+
+private class TableRowScope(
+    val columnIndex: Int,
+    val rowIndex: Int,
+    private val width: Dp,
+    private val height: Dp,
+    private val boxScope: BoxScope,
+) : BoxScope by boxScope {
+
+    @Stable
+    fun Modifier.columnWidth(): Modifier = this.then(
+        width(width)
+    )
+
+    @Stable
+    fun Modifier.rowHeight(): Modifier = this.then(
+        defaultMinSize(minHeight = height)
+    )
+}
+
+@Composable
+private fun Int.toDp(): Dp =
+    with(LocalDensity.current) {
+        this@toDp.toDp()
+    }
