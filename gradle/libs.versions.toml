@@ -1,7 +1,7 @@
 [versions]
 ## Android consts
-android-compile = "32"
-android-target = "32"
+android-compile = "33"
+android-target = "33"
 android-min = "24"
 android-versionCode = "1"
 
@@ -27,9 +27,10 @@ appcompat = "1.4.2"
 coreKtx = "1.8.0"
 compose = "1.2.1"
 composeCompiler = "1.3.0"
+material3 = "1.0.0-beta03"
 activityCompose = "1.5.1"
 lifecycleRuntime = "2.5.1"
-coreLibraryDesugaring = "1.1.5"
+coreLibraryDesugaring = "1.1.6"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }
@@ -105,8 +106,9 @@ android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.re
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
-androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntime" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }

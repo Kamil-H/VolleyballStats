@@ -6,8 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
@@ -25,13 +25,13 @@ fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
         modifier = modifier,
         rowModifier = {
             if (it.rem(2) == 0) {
-                Modifier.background(color = MaterialTheme.colors.onBackground.copy(alpha = 0.04f))
+                Modifier.background(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f))
             } else {
                 Modifier
             }
         },
         stickyHeaderModifier = Modifier.background(
-            color = MaterialTheme.colors.primary,
+            color = MaterialTheme.colorScheme.primary,
             shape = RoundedCornerShape(8.dp),
         ),
         stickyHeader = tableContent.header?.let { stickyRow ->
@@ -79,7 +79,7 @@ private fun HeaderCellText(modifier: Modifier = Modifier, text: String) {
         text = text,
         maxLines = 1,
         modifier = modifier,
-        color = MaterialTheme.colors.onPrimary,
+        color = MaterialTheme.colorScheme.onPrimary,
     )
 }
 
