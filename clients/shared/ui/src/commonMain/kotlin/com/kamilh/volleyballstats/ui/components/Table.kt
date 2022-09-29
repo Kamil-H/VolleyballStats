@@ -1,11 +1,10 @@
-package com.kamilh.volleyballstats.clients.app.ui.components
+package com.kamilh.volleyballstats.ui.components
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -13,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.kamilh.volleyballstats.presentation.features.CellSize
 import com.kamilh.volleyballstats.presentation.features.DataRow
 import com.kamilh.volleyballstats.presentation.features.HeaderRow
 import com.kamilh.volleyballstats.presentation.features.TableContent
+import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
 fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
@@ -32,7 +31,6 @@ fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
         },
         stickyHeaderModifier = Modifier.background(
             color = MaterialTheme.colorScheme.primary,
-            shape = RoundedCornerShape(8.dp),
         ),
         stickyHeader = tableContent.header?.let { stickyRow ->
             { HeaderRow(row = stickyRow) }
@@ -86,21 +84,21 @@ private fun HeaderCellText(modifier: Modifier = Modifier, text: String) {
 @Composable
 private fun TableRow(modifier: Modifier = Modifier, horizontalSpacing: Dp, content: @Composable RowScope.() -> Unit) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Dimens.MarginSmall))
         Row {
             Spacer(modifier = Modifier.width(horizontalSpacing))
             content()
             Spacer(modifier = Modifier.width(horizontalSpacing))
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Dimens.MarginSmall))
     }
 }
 
 private val CellSize.horizontalSpacing: Dp
     get() = when (this) {
-        CellSize.Small -> 8.dp
-        CellSize.Medium -> 12.dp
-        CellSize.Big -> 16.dp
+        CellSize.Small -> Dimens.MarginSmall
+        CellSize.Medium -> Dimens.MarginMedium
+        CellSize.Large -> Dimens.MarginLarge
     }
 
 @OptIn(ExperimentalFoundationApi::class)

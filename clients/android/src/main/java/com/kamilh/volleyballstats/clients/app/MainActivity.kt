@@ -3,6 +3,8 @@ package com.kamilh.volleyballstats.clients.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -10,9 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.kamilh.volleyballstats.clients.app.di.AppModule
-import com.kamilh.volleyballstats.clients.app.ui.components.Table
-import com.kamilh.volleyballstats.clients.app.ui.theme.VolleyballStatsTheme
 import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
+import com.kamilh.volleyballstats.ui.components.SelectOption
+import com.kamilh.volleyballstats.ui.components.Table
+import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -26,7 +29,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Screen(appModule.playerStatsPresenter)
+                    Screen(
+                        modifier = Modifier.fillMaxSize(),
+                        playerStatsPresenter = appModule.playerStatsPresenter,
+                    )
                 }
             }
         }
@@ -34,7 +40,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun Screen(playerStatsPresenter: PlayerStatsPresenter) {
+private fun Screen(
+    modifier: Modifier = Modifier,
+    playerStatsPresenter: PlayerStatsPresenter
+) {
     val state = playerStatsPresenter.state.collectAsState()
-    Table(modifier = Modifier.fillMaxSize(), tableContent = state.value.tableContent)
+    Column(modifier = modifier) {
+        Table(
+            modifier = Modifier.weight(1f),
+            tableContent = state.value.tableContent,
+        )
+        SelectOption(
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.surface),
+            singleLine = true,
+            selectOptionState = state.value.selectSkillState,
+        )
+    }
 }

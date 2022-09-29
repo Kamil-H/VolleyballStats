@@ -38,5 +38,5 @@ data class HeaderCell(
 ) : TableCell
 
 enum class CellSize {
-    Small, Medium, Big
+    Small, Medium, Large
 }

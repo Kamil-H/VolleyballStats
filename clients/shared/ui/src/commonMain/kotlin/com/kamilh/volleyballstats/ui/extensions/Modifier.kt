@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app.ui.extensions
+package com.kamilh.volleyballstats.ui.extensions
 
 import androidx.compose.ui.Modifier
 

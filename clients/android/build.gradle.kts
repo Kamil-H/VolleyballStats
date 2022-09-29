@@ -61,6 +61,7 @@ dependencies {
     implementation(project(":shared:interactors"))
     implementation(project(":clients:shared:presentation"))
     implementation(project(":clients:shared:data"))
+    implementation(project(":clients:shared:ui"))
 
     ksp(libs.inject.compiler)
     implementation(libs.inject.runtime)
@@ -74,10 +75,10 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
-    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.jetbrains.compose.ui)
+    implementation(libs.jetbrains.compose.material3)
+    debugImplementation(libs.jetbrains.compose.ui.tooling)
 }

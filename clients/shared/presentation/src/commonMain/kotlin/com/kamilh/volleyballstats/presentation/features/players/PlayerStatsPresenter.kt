@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.presentation.features.players
 
+import com.kamilh.volleyballstats.domain.models.Skill
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.presentation.features.*
@@ -15,7 +16,17 @@ class PlayerStatsPresenter(
     private val coroutineScope: CoroutineScope,
 ) {
 
-    private val _state: MutableStateFlow<PlayerStatsState> = MutableStateFlow(PlayerStatsState())
+    private val _state: MutableStateFlow<PlayerStatsState> = MutableStateFlow(
+        PlayerStatsState(
+            selectSkillState = SelectOptionState(options = Skill.values().map { skill ->
+                SelectOptionState.Option(
+                    id = skill,
+                    label = skill.name,
+                    selected = skill == Skill.Attack,
+                )
+            }, onSelected = ::onSkillClicked)
+        )
+    )
     val state: StateFlow<PlayerStatsState> = _state.asStateFlow()
 
     private val _configuration: MutableStateFlow<AttackConfiguration> = MutableStateFlow(AttackConfiguration())
@@ -85,4 +96,10 @@ class PlayerStatsPresenter(
             .mapIndexed { index, s -> (if (index == 0) s else s.first() + ".") + " " }
             .joinToString(separator = "") { it }
             .trim()
+
+    private fun onSkillClicked(id: Skill) {
+        _state.update { state ->
+            state.copy(selectSkillState = state.selectSkillState.selectSingle(id))
+        }
+    }
 }
