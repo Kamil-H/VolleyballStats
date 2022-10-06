@@ -3,18 +3,15 @@ package com.kamilh.volleyballstats.clients.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.kamilh.volleyballstats.clients.app.di.AppModule
-import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
-import com.kamilh.volleyballstats.ui.components.SelectOption
-import com.kamilh.volleyballstats.ui.components.Table
 import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,31 +26,24 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Screen(
-                        modifier = Modifier.fillMaxSize(),
-                        playerStatsPresenter = appModule.playerStatsPresenter,
-                    )
+                    var showStatsScreen by remember { mutableStateOf(true) }
+                    if (showStatsScreen) {
+                        PlayerStatsScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            playerStatsPresenter = appModule.playerStatsPresenter,
+                        ) {
+                            showStatsScreen = false
+                        }
+                    } else {
+                        PlayerFiltersScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            playerFiltersPresenter = appModule.playerFiltersPresenter,
+                        ) {
+                            showStatsScreen = true
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun Screen(
-    modifier: Modifier = Modifier,
-    playerStatsPresenter: PlayerStatsPresenter
-) {
-    val state = playerStatsPresenter.state.collectAsState()
-    Column(modifier = modifier) {
-        Table(
-            modifier = Modifier.weight(1f),
-            tableContent = state.value.tableContent,
-        )
-        SelectOption(
-            modifier = Modifier.background(color = MaterialTheme.colorScheme.surface),
-            singleLine = true,
-            selectOptionState = state.value.selectSkillState,
-        )
     }
 }

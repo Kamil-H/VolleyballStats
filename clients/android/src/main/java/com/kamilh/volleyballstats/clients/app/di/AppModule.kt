@@ -6,11 +6,9 @@ import com.kamilh.volleyballstats.clients.app.BuildConfig
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildInfo
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildType
-import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
 import com.kamilh.volleyballstats.presentation.di.PresentationModule
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
+import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersPresenter
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -21,6 +19,7 @@ abstract class AppModule(
 ) : PresentationModule {
 
     abstract val playerStatsPresenter: PlayerStatsPresenter
+    abstract val playerFiltersPresenter: PlayerFiltersPresenter
 
     @Provides
     fun context(): Context = application

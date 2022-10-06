@@ -1,12 +1,20 @@
 package com.kamilh.volleyballstats.storage.stats
 
-import com.kamilh.volleyballstats.domain.models.TourId
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.models.Specialization
+import com.kamilh.volleyballstats.domain.models.TeamId
 
-interface StatsRequest {
+sealed interface StatsRequest {
 
     val groupBy: GroupBy
 
-    val tourId: TourId
+    val seasons: List<Season>
+
+    val specializations: List<Specialization>
+
+    val teams: List<TeamId>
+
+    val minAttempts: Long
 
     enum class GroupBy {
         Player, Team

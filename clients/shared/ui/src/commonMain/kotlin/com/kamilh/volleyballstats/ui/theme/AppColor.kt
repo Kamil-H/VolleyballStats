@@ -60,5 +60,4 @@ object AppColor {
     val DarkInverseSurface = Color(0xFFFFDBC7)
     val DarkInversePrimary = Color(0xFF96490B)
     val DarkSurfaceTint = Color(0xFFFFB68A)
-
 }

@@ -23,14 +23,44 @@ WHERE set_model.match_id IN (SELECT id FROM match_report_model WHERE tour_id = ?
 
 selectBlockStats:
 SELECT
-name,
+specialization, name, code,
 COUNT(*) AS attempts,
 SUM(effect_perfect) AS kill,
-ROUND(SUM(effect_perfect) / COUNT(*) * 100.0, 2) AS kill_per_attmept,
+ROUND(SUM(effect_perfect) / COUNT(*) * 100.0, 2) AS kill_per_attempt,
+
 SUM(effect_positive) AS rebound,
-ROUND(SUM(effect_positive) / COUNT(*) * 100.0, 2) AS rebound_per_attmept,
+ROUND(SUM(effect_positive) / COUNT(*) * 100.0, 2) AS rebound_per_attempt,
+
+SUM(effect_perfect) + SUM(effect_positive) AS kill_plus_rebound,
+ROUND((SUM(effect_perfect) + SUM(effect_positive)) / COUNT(*) * 100.0, 2) AS kill_plus_rebound_per_attempt,
+
+SUM(effect_error) AS error,
+ROUND(SUM(effect_error) / COUNT(*) * 100.0, 2) AS error_per_attempt,
+
 ROUND((SUM(point_win)) / COUNT(*) * 100.0, 2) AS point_win_percent
 FROM block_view
-WHERE tour_id = 2
-GROUP BY player_id
-ORDER BY kill DESC;
+WHERE
+CASE WHEN :seasonsIsEmpty THEN TRUE ELSE season IN :seasons END AND
+CASE WHEN :specializationsIsEmpty THEN TRUE ELSE specialization IN :specializations END AND
+CASE WHEN :teamIdsIsEmpty THEN TRUE ELSE player_team_id IN :teamIds END
+
+GROUP BY
+(CASE WHEN :group_by = 'player' THEN player_id ELSE
+(CASE WHEN :group_by = 'team' THEN player_team_id ELSE name
+END) END)
+
+HAVING COUNT(*) >= :min_attempts
+
+ORDER BY
+(CASE WHEN :sort_type = 'attempts' THEN attempts ELSE
+(CASE WHEN :sort_type = 'kill' THEN kill ELSE
+(CASE WHEN :sort_type = 'kill_per_attempt' THEN kill_per_attempt ELSE
+(CASE WHEN :sort_type = 'rebound' THEN rebound ELSE
+(CASE WHEN :sort_type = 'rebound_per_attempt' THEN rebound_per_attempt ELSE
+(CASE WHEN :sort_type = 'kill_plus_rebound' THEN kill_plus_rebound ELSE
+(CASE WHEN :sort_type = 'kill_plus_rebound_per_attempt' THEN kill_plus_rebound_per_attempt ELSE
+(CASE WHEN :sort_type = 'error' THEN error ELSE
+(CASE WHEN :sort_type = 'error_per_attempt' THEN error_per_attempt ELSE
+(CASE WHEN :sort_type = 'point_win_percent' THEN point_win_percent ELSE name
+END) END) END) END) END) END) END) END) END) END)
+DESC;

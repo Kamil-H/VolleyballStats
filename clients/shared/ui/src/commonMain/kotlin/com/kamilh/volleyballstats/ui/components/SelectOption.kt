@@ -19,11 +19,13 @@ import com.kamilh.volleyballstats.ui.theme.Dimens
 @Composable
 fun <T : Any> SelectOption(
     modifier: Modifier = Modifier,
-    singleLine: Boolean,
+    singleLine: Boolean = false,
     selectOptionState: SelectOptionState<T>,
 ) {
-    TitledContent(modifier = modifier, title = selectOptionState.title, contentMargin = !singleLine) {
-        ChipLayout(singleLine = singleLine, selectOptionState = selectOptionState)
+    if (selectOptionState.visible) {
+        TitledContent(modifier = modifier, title = selectOptionState.title, contentMargin = !singleLine) {
+            ChipLayout(singleLine = singleLine, selectOptionState = selectOptionState)
+        }
     }
 }
 

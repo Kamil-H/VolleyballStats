@@ -13,6 +13,7 @@ import com.kamilh.volleyballstats.storage.databse.TourTeamQueries
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
 
 interface TeamStorage {
@@ -22,6 +23,8 @@ interface TeamStorage {
     suspend fun getAllTeams(tourId: TourId): Flow<List<Team>>
 
     suspend fun getTeam(name: String, code: String, tourId: TourId): Team?
+
+    suspend fun getTeamSnapshots(seasons: List<Season>): Flow<Set<TeamSnapshot>>
 }
 
 typealias InsertTeamResult = Result<Unit, InsertTeamError>
@@ -90,12 +93,10 @@ class SqlTeamStorage(
         }
 
     override suspend fun getAllTeams(tourId: TourId): Flow<List<Team>> =
-        queryRunner.run {
-            tourTeamQueries.selectAllByTourYear(
-                tour_id = tourId,
-                mapper = mapper,
-            ).asFlow().mapToList(queryRunner.dispatcher)
-        }
+        tourTeamQueries.selectAllByTourYear(
+            tour_id = tourId,
+            mapper = mapper,
+        ).asFlow().mapToList(queryRunner.dispatcher)
 
     override suspend fun getTeam(name: String, code: String, tourId: TourId): Team? =
         queryRunner.run {
@@ -104,6 +105,21 @@ class SqlTeamStorage(
                 name = name,
                 code = code,
             ).executeAsOneOrNull()?.toTeam()
+        }
+
+    override suspend fun getTeamSnapshots(seasons: List<Season>): Flow<Set<TeamSnapshot>> =
+        tourTeamQueries.selectByTour(seasons).asFlow().mapToList(queryRunner.dispatcher).map {
+            it.mapNotNull { teamModel ->
+                val code = teamModel.code
+                if (code != null) {
+                    TeamSnapshot(
+                        teamId = teamModel.id,
+                        code = code,
+                    )
+                } else {
+                    null
+                }
+            }.toSet()
         }
 
     private fun SelectByTourYearAndName.toTeam(): Team =

@@ -19,7 +19,7 @@ data class TableContent(
     }
 }
 
-data class TableRow<T: TableCell>(
+data class TableRow<T : TableCell>(
     val cells: List<T> = emptyList(),
     val isSelected: Boolean = false,
 )
@@ -35,6 +35,8 @@ data class HeaderCell(
     val firstLine: String,
     val secondLine: String? = null,
     val size: CellSize,
+    val selected: Boolean,
+    val onClick: (() -> Unit)?,
 ) : TableCell
 
 enum class CellSize {

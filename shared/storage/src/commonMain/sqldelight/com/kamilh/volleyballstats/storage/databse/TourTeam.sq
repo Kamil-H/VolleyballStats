@@ -17,3 +17,10 @@ INNER JOIN
 team_model ON tour_team_model.team_id = team_model.id
 WHERE name = :name AND tour_id = :tour_id
 OR code = :code AND tour_id = :tour_id;
+
+selectByTour:
+SELECT team_model.id, team_model.code FROM tour_team_model
+INNER JOIN
+team_model ON tour_team_model.team_id = team_model.id,
+tour_model ON tour_team_model.tour_id = tour_model.id
+WHERE season IN ?;

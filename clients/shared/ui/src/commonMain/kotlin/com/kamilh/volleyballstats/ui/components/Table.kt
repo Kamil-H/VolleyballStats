@@ -5,23 +5,34 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.kamilh.volleyballstats.presentation.features.CellSize
 import com.kamilh.volleyballstats.presentation.features.DataRow
 import com.kamilh.volleyballstats.presentation.features.HeaderRow
 import com.kamilh.volleyballstats.presentation.features.TableContent
+import com.kamilh.volleyballstats.ui.extensions.ifNotNull
+import com.kamilh.volleyballstats.ui.extensions.toDp
 import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
-fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
+fun Table(
+    modifier: Modifier = Modifier,
+    tableContent: TableContent,
+    verticalLazyListState: LazyListState = rememberLazyListState(),
+) {
     Table(
         modifier = modifier,
+        verticalLazyListState = verticalLazyListState,
         rowModifier = {
             if (it.rem(2) == 0) {
                 Modifier.background(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f))
@@ -31,6 +42,7 @@ fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
         },
         stickyHeaderModifier = Modifier.background(
             color = MaterialTheme.colorScheme.primary,
+            shape = headerBackground(CornerSize(Dimens.CornerMedium)),
         ),
         stickyHeader = tableContent.header?.let { stickyRow ->
             { HeaderRow(row = stickyRow) }
@@ -42,6 +54,11 @@ fun Table(modifier: Modifier = Modifier, tableContent: TableContent) {
         TableRow(row = row)
     }
 }
+
+private fun headerBackground(size: CornerSize): CornerBasedShape =
+    RoundedCornerShape(
+        topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp), bottomStart = size, bottomEnd = size,
+    )
 
 @Composable
 private fun TableRowScope.TableRow(modifier: Modifier = Modifier, row: DataRow) {
@@ -62,22 +79,27 @@ private fun TableRowScope.HeaderRow(modifier: Modifier = Modifier, row: HeaderRo
         modifier = modifier.columnWidth().rowHeight(),
         horizontalSpacing = horizontalSpacing,
     ) {
-        Column {
-            HeaderCellText(text = cell.firstLine)
+        Column(
+            modifier = Modifier.ifNotNull(cell.onClick) { onClick ->
+                fillMaxSize().clickable { onClick() }
+            }
+        ) {
+            HeaderCellText(text = cell.firstLine, selected = cell.selected)
             cell.secondLine?.let {
-                HeaderCellText(text = it)
+                HeaderCellText(text = it, selected = cell.selected)
             }
         }
     }
 }
 
 @Composable
-private fun HeaderCellText(modifier: Modifier = Modifier, text: String) {
+private fun HeaderCellText(modifier: Modifier = Modifier, text: String, selected: Boolean) {
     Text(
         text = text,
         maxLines = 1,
         modifier = modifier,
         color = MaterialTheme.colorScheme.onPrimary,
+        fontWeight = if (selected) FontWeight.Bold else null,
     )
 }
 
@@ -211,9 +233,3 @@ private class TableRowScope(
         defaultMinSize(minHeight = height)
     )
 }
-
-@Composable
-private fun Int.toDp(): Dp =
-    with(LocalDensity.current) {
-        this@toDp.toDp()
-    }

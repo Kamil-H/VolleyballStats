@@ -6,6 +6,8 @@ data class SelectOptionState<T : Any>(
     val onSelected: (id: T) -> Unit,
 ) {
 
+    val visible: Boolean = options.isNotEmpty()
+
     data class Option<T : Any>(
         val id: T,
         val label: String,

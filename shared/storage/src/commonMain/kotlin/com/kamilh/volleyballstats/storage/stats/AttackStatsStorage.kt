@@ -1,8 +1,8 @@
 package com.kamilh.volleyballstats.storage.stats
 
+import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.Specialization
-import com.kamilh.volleyballstats.domain.models.TourId
-import com.kamilh.volleyballstats.domain.models.Url
+import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.databse.PlayAttackQueries
 import com.squareup.sqldelight.runtime.coroutines.asFlow
@@ -10,13 +10,16 @@ import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 
-interface AttackStats {
+interface AttackStatsStorage {
 
-    fun getAttackStats(request: Request): Flow<List<Model>>
+    fun getStats(request: Request): Flow<List<Model>>
 
     data class Request(
         override val groupBy: StatsRequest.GroupBy,
-        override val tourId: TourId,
+        override val seasons: List<Season>,
+        override val specializations: List<Specialization>,
+        override val teams: List<TeamId>,
+        override val minAttempts: Long,
         val sortBy: SortBy,
     ): StatsRequest {
 
@@ -41,43 +44,48 @@ interface AttackStats {
         val killSideOut: Double,
         val efficiencySideOut: Double,
         val errorSideOut: Double,
-    )
+    ) : StatsModel
 }
 
-private val AttackStats.Request.SortBy.fieldName: String
+private val AttackStatsStorage.Request.SortBy.fieldName: String
     get() = when (this) {
-        AttackStats.Request.SortBy.Attempts -> "attempts"
-        AttackStats.Request.SortBy.Kill -> "kill"
-        AttackStats.Request.SortBy.Efficiency -> "efficiency"
-        AttackStats.Request.SortBy.Error -> "error"
-        AttackStats.Request.SortBy.PointWinPercent -> "point_win_percent"
-        AttackStats.Request.SortBy.KillBreakPoint -> "kill_break_point"
-        AttackStats.Request.SortBy.EfficiencyBreakPoint -> "efficiency_break_point"
-        AttackStats.Request.SortBy.ErrorBreakPoint -> "error_break_point"
-        AttackStats.Request.SortBy.KillSideOut -> "kill_side_out"
-        AttackStats.Request.SortBy.EfficiencySideOut -> "efficiency_side_out"
-        AttackStats.Request.SortBy.ErrorSideOut -> "error_side_out"
+        AttackStatsStorage.Request.SortBy.Attempts -> "attempts"
+        AttackStatsStorage.Request.SortBy.Kill -> "kill"
+        AttackStatsStorage.Request.SortBy.Efficiency -> "efficiency"
+        AttackStatsStorage.Request.SortBy.Error -> "error"
+        AttackStatsStorage.Request.SortBy.PointWinPercent -> "point_win_percent"
+        AttackStatsStorage.Request.SortBy.KillBreakPoint -> "kill_break_point"
+        AttackStatsStorage.Request.SortBy.EfficiencyBreakPoint -> "efficiency_break_point"
+        AttackStatsStorage.Request.SortBy.ErrorBreakPoint -> "error_break_point"
+        AttackStatsStorage.Request.SortBy.KillSideOut -> "kill_side_out"
+        AttackStatsStorage.Request.SortBy.EfficiencySideOut -> "efficiency_side_out"
+        AttackStatsStorage.Request.SortBy.ErrorSideOut -> "error_side_out"
     }
 
 @Inject
 class SqlAttackStats(
     private val playAttackQueries: PlayAttackQueries,
     private val queryRunner: QueryRunner,
-): AttackStats {
+): AttackStatsStorage {
 
-    override fun getAttackStats(request: AttackStats.Request): Flow<List<AttackStats.Model>> =
+    override fun getStats(request: AttackStatsStorage.Request): Flow<List<AttackStatsStorage.Model>> =
         playAttackQueries.selectAttackStats(
-            tour_id = request.tourId,
+            seasons = request.seasons,
+            seasonsIsEmpty = request.seasons.isEmpty(),
+            specializations = request.specializations,
+            specializationsIsEmpty = request.specializations.isEmpty(),
+            teamIds = request.teams,
+            teamIdsIsEmpty = request.teams.isEmpty(),
             group_by = request.groupBy.fieldName,
             sort_type = request.sortBy.fieldName,
+            min_attempts = request.minAttempts,
             mapper = mapper,
         ).asFlow().mapToList(queryRunner.dispatcher)
 
+    @Suppress("LambdaParameterNaming")
     private val mapper: (
         specialization: Specialization,
-        team_name: String,
         name: String?,
-        image_url: Url?,
         code: String?,
         attempts: Long,
         kill: Double?,
@@ -90,11 +98,9 @@ class SqlAttackStats(
         kill_side_out: Double?,
         efficiency_side_out: Double?,
         error_side_out: Double?,
-    ) -> AttackStats.Model = {
+    ) -> AttackStatsStorage.Model = {
         specialization,
-        _,
         name,
-        _,
         code,
         attempts,
         kill,
@@ -107,7 +113,7 @@ class SqlAttackStats(
         kill_side_out,
         efficiency_side_out,
         error_side_out ->
-        AttackStats.Model(
+        AttackStatsStorage.Model(
             specialization = specialization,
             teamName = code.orEmpty(),
             name = name ?: "",

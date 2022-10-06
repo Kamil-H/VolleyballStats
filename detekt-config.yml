@@ -48,10 +48,11 @@ complexity:
   LongMethod:
     active: true
     threshold: 30
+    ignoreAnnotated: ['Composable']
   LongParameterList:
     active: false
-    threshold: 10
-    ignoreDefaultParameters: false
+    threshold: 20
+    ignoreDefaultParameters: true
   MethodOverloading:
     active: false
   NestedBlockDepth:
@@ -158,6 +159,7 @@ naming:
     active: true
     functionPattern: '^([a-z$][a-zA-Z$0-9]*)|(`.*`)$'
     excludeClassPattern: '$^'
+    ignoreAnnotated: ['Composable']
   MatchingDeclarationName:
     active: true
   MemberNameEqualsClassName:
@@ -244,7 +246,7 @@ style:
   ExpressionBodySyntax:
     active: false
   ForbiddenComment:
-    active: true
+    active: false
   ForbiddenImport:
     active: false
     imports: ''
@@ -317,6 +319,7 @@ style:
     active: true
   UnusedPrivateMember:
     active: true
+    ignoreAnnotated: ['Preview']
   UseDataClass:
     active: false
     excludeAnnotatedClasses: ""

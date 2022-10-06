@@ -8,23 +8,23 @@ import com.kamilh.volleyballstats.domain.models.buildinfo.BuildInfo
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildType
 import com.kamilh.volleyballstats.domain.utils.*
 import com.kamilh.volleyballstats.domain.utils.Logger
-import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
+import com.kamilh.volleyballstats.presentation.features.players.filter.MockPlayerFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.interactors.InteractorModule
 import com.kamilh.volleyballstats.presentation.utils.AccessTokenProvider
 import com.kamilh.volleyballstats.presentation.utils.AppInitializer
 import com.kamilh.volleyballstats.presentation.utils.ClientLogger
 import com.kamilh.volleyballstats.storage.SqlDriverFactory
-import com.kamilh.volleyballstats.storage.stats.AttackStats
 import com.squareup.sqldelight.db.SqlDriver
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
@@ -33,11 +33,7 @@ import io.ktor.client.HttpClient as Ktor
 @Component
 interface PresentationModule : InteractorModule, DataModule {
 
-    val synchronizer: Synchronizer
-
     val appInitializer: AppInitializer
-
-    val attackStats: AttackStats
 
     @Provides
     @Singleton
@@ -95,6 +91,10 @@ interface PresentationModule : InteractorModule, DataModule {
         @Provides get() = this
 
     val ClientLogger.bind: PlatformLogger
+        @Provides get() = this
+
+    // TODO: Move it to storage
+    val MockPlayerFiltersStorage.bind: PlayerFiltersStorage
         @Provides get() = this
 
     companion object {

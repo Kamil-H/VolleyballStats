@@ -6,8 +6,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+@Suppress("TopLevelPropertyNaming")
 expect val PoppinsFontFamily: FontFamily
 
+@Suppress("TopLevelPropertyNaming")
 internal val Typography = Typography(
     displayLarge = TextStyle(
         fontWeight = FontWeight.W400,

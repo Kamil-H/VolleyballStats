@@ -28,4 +28,7 @@ interface InteractorModule {
 
     val UpdateMatchReportInteractor.bind: UpdateMatchReports
         @Provides get() = this
+
+    val InitializeFiltersInteractor.bind: InitializeFilters
+        @Provides get() = this
 }
