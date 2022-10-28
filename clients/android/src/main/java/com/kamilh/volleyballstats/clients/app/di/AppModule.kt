@@ -9,6 +9,7 @@ import com.kamilh.volleyballstats.domain.models.buildinfo.BuildType
 import com.kamilh.volleyballstats.presentation.di.PresentationModule
 import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
 import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersPresenter
+import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -20,6 +21,7 @@ abstract class AppModule(
 
     abstract val playerStatsPresenter: PlayerStatsPresenter
     abstract val playerFiltersPresenter: PlayerFiltersPresenter
+    abstract val navigationEventReceiver: NavigationEventReceiver
 
     @Provides
     fun context(): Context = application

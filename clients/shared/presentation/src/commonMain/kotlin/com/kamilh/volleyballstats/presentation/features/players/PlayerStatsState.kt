@@ -7,4 +7,5 @@ import com.kamilh.volleyballstats.presentation.features.TableContent
 data class PlayerStatsState(
     val tableContent: TableContent = TableContent(),
     val selectSkillState: SelectOptionState<StatsSkill>,
+    val onFabButtonClicked: () -> Unit,
 )

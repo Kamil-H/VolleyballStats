@@ -3,6 +3,7 @@ import util.libs
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
+    id("kotlin-android-extensions")
 }
 
 kotlin {

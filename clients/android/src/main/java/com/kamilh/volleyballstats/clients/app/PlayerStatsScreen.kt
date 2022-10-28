@@ -27,9 +27,8 @@ import com.kamilh.volleyballstats.ui.extensions.toDp
 fun PlayerStatsScreen(
     modifier: Modifier = Modifier,
     playerStatsPresenter: PlayerStatsPresenter,
-    onFilterClicked: () -> Unit,
 ) {
-    val state = playerStatsPresenter.state.collectAsState()
+    val state by playerStatsPresenter.state.collectAsState()
     var optionViewHeight by remember { mutableStateOf(0) }
     val listState = rememberLazyListState()
 
@@ -49,7 +48,7 @@ fun PlayerStatsScreen(
                             contentDescription = "Localized description"
                         )
                     },
-                    onClick = { onFilterClicked() },
+                    onClick = { state.onFabButtonClicked() },
                 )
             }
         }
@@ -58,14 +57,14 @@ fun PlayerStatsScreen(
             Table(
                 modifier = Modifier.weight(1f),
                 verticalLazyListState = listState,
-                tableContent = state.value.tableContent,
+                tableContent = state.tableContent,
             )
             SelectOption(
                 modifier = Modifier
                     .background(color = MaterialTheme.colorScheme.surface)
                     .onGloballyPositioned { optionViewHeight = it.size.height },
                 singleLine = true,
-                selectOptionState = state.value.selectSkillState,
+                selectOptionState = state.selectSkillState,
             )
         }
     }

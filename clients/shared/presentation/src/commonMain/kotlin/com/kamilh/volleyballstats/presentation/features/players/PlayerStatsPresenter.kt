@@ -7,6 +7,8 @@ import com.kamilh.volleyballstats.presentation.features.SelectOptionState
 import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
 import com.kamilh.volleyballstats.presentation.features.selectSingle
+import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
+import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.storage.stats.StatsModel
 import com.kamilh.volleyballstats.storage.stats.StatsRequest
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +21,7 @@ class PlayerStatsPresenter(
     private val statsFlowFactory: StatsFlowFactory,
     private val coroutineScope: CoroutineScope,
     private val playerFiltersStorage: PlayerFiltersStorage,
+    private val navigationEventSender: NavigationEventSender,
 ) {
 
     private val chosenSkill = MutableStateFlow(StatsSkill.Attack)
@@ -30,7 +33,8 @@ class PlayerStatsPresenter(
                     label = skill.name,
                     selected = skill == chosenSkill.value,
                 )
-            }, onSelected = ::onSkillClicked)
+            }, onSelected = ::onSkillClicked),
+            onFabButtonClicked = ::onFabButtonClicked,
         )
     )
     val state: StateFlow<PlayerStatsState> = _state.asStateFlow()
@@ -91,6 +95,10 @@ class PlayerStatsPresenter(
             state.copy(selectSkillState = state.selectSkillState.selectSingle(id))
         }
         chosenSkill.value = id
+    }
+
+    private fun onFabButtonClicked() {
+        navigationEventSender.send(NavigationEvent.PlayerFiltersRequested(chosenSkill.value))
     }
 }
 

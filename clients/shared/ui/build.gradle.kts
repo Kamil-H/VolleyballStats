@@ -10,4 +10,5 @@ dependencies {
     commonMainImplementation(libs.jetbrains.compose.material3)
 
     androidMainImplementation(libs.accompanist.flowlayout)
+    androidMainImplementation(libs.androidx.lifecycle.runtime)
 }

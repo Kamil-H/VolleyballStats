@@ -4,6 +4,8 @@ import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.*
+import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
+import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.storage.TeamStorage
 import com.kamilh.volleyballstats.storage.TourStorage
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +19,7 @@ class PlayerFiltersPresenter(
     private val tourStorage: TourStorage,
     private val playerFiltersStorage: PlayerFiltersStorage,
     private val coroutineScope: CoroutineScope,
+    private val navigationEventSender: NavigationEventSender,
 ) {
 
     private val _state: MutableStateFlow<PlayerFiltersState> = MutableStateFlow(PlayerFilters().toPlayerFiltersState())
@@ -54,6 +57,7 @@ class PlayerFiltersPresenter(
         specializationSelectOption = selectedSpecializations.toSpecializationOptionState(allSpecializations),
         teamsSelectOption = selectedTeams.toTeamOptionState(allTeams),
         chooseIntState = selectedLimit.toChooseIntState(maxLimit),
+        onApplyButtonClicked = ::onApplyButtonClicked,
     )
 
     // PROPERTIES
@@ -154,5 +158,9 @@ class PlayerFiltersPresenter(
     private fun onValueSelected(value: Int) {
         _state.update { it.copy(chooseIntState = it.chooseIntState.setNewValue(value)) }
         playerFiltersStorage.setNewLimit(skill, value)
+    }
+
+    private fun onApplyButtonClicked() {
+        navigationEventSender.send(NavigationEvent.Close)
     }
 }

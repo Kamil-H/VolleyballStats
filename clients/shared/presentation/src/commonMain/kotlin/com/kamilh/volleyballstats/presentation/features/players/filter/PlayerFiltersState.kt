@@ -13,4 +13,5 @@ data class PlayerFiltersState(
     val specializationSelectOption: SelectOptionState<Specialization>,
     val teamsSelectOption: SelectOptionState<TeamId>,
     val chooseIntState: ChooseIntState,
+    val onApplyButtonClicked: () -> Unit,
 )

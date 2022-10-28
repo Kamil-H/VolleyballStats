@@ -19,7 +19,6 @@ import com.kamilh.volleyballstats.ui.components.SelectOption
 fun PlayerFiltersScreen(
     modifier: Modifier = Modifier,
     playerFiltersPresenter: PlayerFiltersPresenter,
-    onApplyClicked: () -> Unit,
 ) {
     val state by playerFiltersPresenter.state.collectAsState()
     val scrollState = rememberScrollState()
@@ -30,7 +29,7 @@ fun PlayerFiltersScreen(
             CenterAlignedTopAppBar(
                 title = { Text(text = "Adjust") },
                 actions = {
-                    Button(onClick = { onApplyClicked() }) {
+                    Button(onClick = { state.onApplyButtonClicked() }) {
                         Text(text = "Apply")
                     }
                 }
