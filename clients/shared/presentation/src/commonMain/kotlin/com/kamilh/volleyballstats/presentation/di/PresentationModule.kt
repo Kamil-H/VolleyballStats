@@ -10,6 +10,10 @@ import com.kamilh.volleyballstats.domain.utils.*
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
+import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactory
+import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactoryImpl
+import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapper
+import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapperImpl
 import com.kamilh.volleyballstats.presentation.features.players.filter.MockPlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.interactors.InteractorModule
@@ -95,6 +99,12 @@ interface PresentationModule : InteractorModule, DataModule {
 
     // TODO: Move it to storage
     val MockPlayerFiltersStorage.bind: PlayerFiltersStorage
+        @Provides get() = this
+
+    val StatsModelMapperImpl.bind: StatsModelMapper
+        @Provides get() = this
+
+    val StatsFlowFactoryImpl.bind: StatsFlowFactory
         @Provides get() = this
 
     companion object {
