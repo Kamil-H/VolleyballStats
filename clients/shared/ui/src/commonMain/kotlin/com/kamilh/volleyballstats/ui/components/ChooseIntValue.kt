@@ -14,8 +14,8 @@ import com.kamilh.volleyballstats.presentation.features.ChooseIntState
 
 @Composable
 fun ChooseIntValue(
-    modifier: Modifier = Modifier,
     chooseIntState: ChooseIntState,
+    modifier: Modifier = Modifier,
 ) {
     ChooseIntValue(
         modifier = modifier,
@@ -28,10 +28,10 @@ fun ChooseIntValue(
 
 @Composable
 private fun ChooseIntValue(
-    modifier: Modifier = Modifier,
     title: String,
     value: Int,
     maxValue: Int,
+    modifier: Modifier = Modifier,
     onValueSelected: (Int) -> Unit,
 ) {
 

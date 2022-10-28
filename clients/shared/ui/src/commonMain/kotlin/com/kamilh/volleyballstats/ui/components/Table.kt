@@ -26,8 +26,8 @@ import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
 fun Table(
-    modifier: Modifier = Modifier,
     tableContent: TableContent,
+    modifier: Modifier = Modifier,
     verticalLazyListState: LazyListState = rememberLazyListState(),
 ) {
     Table(
@@ -61,7 +61,7 @@ private fun headerBackground(size: CornerSize): CornerBasedShape =
     )
 
 @Composable
-private fun TableRowScope.TableRow(modifier: Modifier = Modifier, row: DataRow) {
+private fun TableRowScope.TableRow(row: DataRow, modifier: Modifier = Modifier) {
     val cell = row.cells[columnIndex]
     val horizontalSpacing = cell.size.horizontalSpacing
 
@@ -71,7 +71,7 @@ private fun TableRowScope.TableRow(modifier: Modifier = Modifier, row: DataRow) 
 }
 
 @Composable
-private fun TableRowScope.HeaderRow(modifier: Modifier = Modifier, row: HeaderRow) {
+private fun TableRowScope.HeaderRow(row: HeaderRow, modifier: Modifier = Modifier) {
     val cell = row.cells[columnIndex]
     val horizontalSpacing = cell.size.horizontalSpacing
 
@@ -93,7 +93,7 @@ private fun TableRowScope.HeaderRow(modifier: Modifier = Modifier, row: HeaderRo
 }
 
 @Composable
-private fun HeaderCellText(modifier: Modifier = Modifier, text: String, selected: Boolean) {
+private fun HeaderCellText(text: String, selected: Boolean, modifier: Modifier = Modifier) {
     Text(
         text = text,
         maxLines = 1,
@@ -104,7 +104,7 @@ private fun HeaderCellText(modifier: Modifier = Modifier, text: String, selected
 }
 
 @Composable
-private fun TableRow(modifier: Modifier = Modifier, horizontalSpacing: Dp, content: @Composable RowScope.() -> Unit) {
+private fun TableRow(horizontalSpacing: Dp, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         Spacer(modifier = Modifier.height(Dimens.MarginSmall))
         Row {
@@ -126,13 +126,13 @@ private val CellSize.horizontalSpacing: Dp
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Table(
-    modifier: Modifier = Modifier,
-    rowModifier: @Composable (rowIndex: Int) -> Modifier = { Modifier },
-    stickyHeaderModifier: Modifier = Modifier,
-    verticalLazyListState: LazyListState = rememberLazyListState(),
-    horizontalScrollState: ScrollState = rememberScrollState(),
     columnCount: Int,
     rowCount: Int,
+    modifier: Modifier = Modifier,
+    stickyHeaderModifier: Modifier = Modifier,
+    rowModifier: @Composable (rowIndex: Int) -> Modifier = { Modifier },
+    verticalLazyListState: LazyListState = rememberLazyListState(),
+    horizontalScrollState: ScrollState = rememberScrollState(),
     stickyHeader: (@Composable TableRowScope.() -> Unit)? = null,
     beforeRow: (@Composable (rowIndex: Int) -> Unit)? = null,
     afterRow: (@Composable (rowIndex: Int) -> Unit)? = null,
@@ -171,12 +171,13 @@ private fun Table(
     }
 }
 
+@Suppress("MutableParams")
 @Composable
 private fun TableRow(
-    rowModifier: @Composable (rowIndex: Int) -> Modifier = { Modifier },
     rowIndex: Int,
     columnCount: Int,
     columnWidths: MutableMap<Int, Int>,
+    rowModifier: @Composable (rowIndex: Int) -> Modifier = { Modifier },
     cellContent: @Composable TableRowScope.() -> Unit,
 ) {
     var currentMaxHeight by remember { mutableStateOf(0) }

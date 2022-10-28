@@ -10,9 +10,9 @@ import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
 fun TitledContent(
-    modifier: Modifier = Modifier,
     title: String?,
     contentMargin: Boolean,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     val margin = Dimens.MarginMedium

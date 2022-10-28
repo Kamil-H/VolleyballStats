@@ -33,6 +33,7 @@ material3 = "1.2.0-beta03"
 activityCompose = "1.5.1"
 lifecycleRuntime = "2.5.1"
 coreLibraryDesugaring = "1.1.6"
+detektComposeRules = "0.0.22"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }
@@ -47,6 +48,7 @@ plugin-kover = { module = "org.jetbrains.kotlinx:kover", version.ref = "kover" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
 plugin-jetbrains-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jebrainsCompose" }
+plugin-detekt-compose-rules = { module = "com.twitter.compose.rules:detekt", version.ref = "detektComposeRules" }
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 

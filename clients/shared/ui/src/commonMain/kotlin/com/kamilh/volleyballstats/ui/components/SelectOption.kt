@@ -18,9 +18,9 @@ import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
 fun <T : Any> SelectOption(
+    selectOptionState: SelectOptionState<T>,
     modifier: Modifier = Modifier,
     singleLine: Boolean = false,
-    selectOptionState: SelectOptionState<T>,
 ) {
     if (selectOptionState.visible) {
         TitledContent(modifier = modifier, title = selectOptionState.title, contentMargin = !singleLine) {
@@ -31,9 +31,9 @@ fun <T : Any> SelectOption(
 
 @Composable
 private fun <T : Any> ChipLayout(
-    modifier: Modifier = Modifier,
     singleLine: Boolean,
     selectOptionState: SelectOptionState<T>,
+    modifier: Modifier = Modifier,
 ) {
     val spacing = Dimens.MarginSmall
     if (singleLine) {
@@ -45,9 +45,9 @@ private fun <T : Any> ChipLayout(
 
 @Composable
 private fun <T: Any> LazyChipRow(
+    selectOptionState: SelectOptionState<T>,
     modifier: Modifier = Modifier,
     spacing: Dp = Dimens.MarginSmall,
-    selectOptionState: SelectOptionState<T>,
 ) {
     LazyRow(
         modifier = modifier,
@@ -69,9 +69,9 @@ private fun <T: Any> LazyChipRow(
 
 @Composable
 private fun <T: Any> ChipGroup(
+    selectOptionState: SelectOptionState<T>,
     modifier: Modifier = Modifier,
     spacing: Dp = Dimens.MarginSmall,
-    selectOptionState: SelectOptionState<T>,
 ) {
     ChipGroup(
         mainAxisSpacing = spacing,
@@ -87,8 +87,8 @@ private fun <T: Any> ChipGroup(
 
 @Composable
 private fun <T : Any> Chip(
-    modifier: Modifier = Modifier,
     option: SelectOptionState.Option<T>,
+    modifier: Modifier = Modifier,
     onClick: (T) -> Unit,
 ) {
     Chip(
@@ -102,10 +102,10 @@ private fun <T : Any> Chip(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun <T : Any> Chip(
-    modifier: Modifier = Modifier,
     id: T,
     label: String,
     selected: Boolean,
+    modifier: Modifier = Modifier,
     onClick: (T) -> Unit,
 ) {
     ElevatedFilterChip(

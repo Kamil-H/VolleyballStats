@@ -19,8 +19,8 @@ import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
 fun <T: Any> ChooseProperties(
-    modifier: Modifier = Modifier,
     choosePropertiesState: ChoosePropertiesState<T>,
+    modifier: Modifier = Modifier,
 ) {
     ChooseProperties(
         modifier = modifier,
@@ -31,27 +31,19 @@ fun <T: Any> ChooseProperties(
     )
 }
 
+@Suppress("UnstableCollections")
 @Composable
 private fun <T: Any> ChooseProperties(
-    modifier: Modifier = Modifier,
     title: String?,
     checkableProperties: List<CheckableProperty<T>>,
     visible: Boolean,
+    modifier: Modifier = Modifier,
     onChecked: (T) -> Unit,
 ) {
 
     if (visible) {
         TitledContent(modifier = modifier, title = title, contentMargin = true) {
-//            LazyColumn {
-//                items(checkableProperties, key = { it.id }) { item ->
-//                    CheckablePropertyItem(
-//                        modifier = Modifier,
-//                        property = item,
-//                    ) { onChecked(it) }
-//                }
-//            }
             Column(
-//                modifier = Modifier.padding(vertical = Dimens.MarginSmall)
                 verticalArrangement = Arrangement.spacedBy(space = Dimens.MarginSmall),
             ) {
                 checkableProperties.forEachIndexed { index, item ->
@@ -72,8 +64,8 @@ private fun <T: Any> ChooseProperties(
 @Suppress("MagicNumber")
 @Composable
 private fun <T: Any> CheckablePropertyItem(
-    modifier: Modifier = Modifier,
     property: CheckableProperty<T>,
+    modifier: Modifier = Modifier,
     onChecked: (T) -> Unit,
 ) {
     Row(

@@ -12,4 +12,5 @@ dependencies {
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
     implementation(libs.plugin.kotlin)
     implementation(libs.plugin.android)
+    implementation(libs.plugin.detekt)
 }
