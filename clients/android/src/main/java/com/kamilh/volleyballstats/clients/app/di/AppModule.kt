@@ -20,7 +20,7 @@ abstract class AppModule(
 ) : PresentationModule {
 
     abstract val playerStatsPresenter: PlayerStatsPresenter
-    abstract val playerFiltersPresenter: PlayerFiltersPresenter
+    abstract val playerFiltersPresenterFactory: PlayerFiltersPresenter.Factory
     abstract val navigationEventReceiver: NavigationEventReceiver
 
     @Provides

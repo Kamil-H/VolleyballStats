@@ -12,7 +12,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
-@Inject
 class PlayerFiltersPresenter(
     private val skill: StatsSkill = StatsSkill.Attack,
     private val teamStorage: TeamStorage,
@@ -162,5 +161,24 @@ class PlayerFiltersPresenter(
 
     private fun onApplyButtonClicked() {
         navigationEventSender.send(NavigationEvent.Close)
+    }
+
+    @Inject
+    class Factory(
+        private val teamStorage: TeamStorage,
+        private val tourStorage: TourStorage,
+        private val playerFiltersStorage: PlayerFiltersStorage,
+        private val coroutineScope: CoroutineScope,
+        private val navigationEventSender: NavigationEventSender,
+    ) {
+        fun create(skill: StatsSkill): PlayerFiltersPresenter =
+            PlayerFiltersPresenter(
+                skill = skill,
+                teamStorage = teamStorage,
+                tourStorage = tourStorage,
+                playerFiltersStorage = playerFiltersStorage,
+                coroutineScope = coroutineScope,
+                navigationEventSender = navigationEventSender,
+            )
     }
 }

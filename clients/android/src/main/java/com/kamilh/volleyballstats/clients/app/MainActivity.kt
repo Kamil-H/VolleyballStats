@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.kamilh.volleyballstats.clients.app.di.AppModule
+import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.ui.extensions.FlowCollector
 import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
@@ -28,16 +29,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    var showStatsScreen by remember { mutableStateOf(true) }
+                    var statsSkill: StatsSkill? by remember { mutableStateOf(null) }
 
                     FlowCollector(flow = appModule.navigationEventReceiver.receive()) {
-                        showStatsScreen = when (it) {
-                            NavigationEvent.Close -> true
-                            is NavigationEvent.PlayerFiltersRequested -> false
+                        statsSkill = when (it) {
+                            NavigationEvent.Close -> null
+                            is NavigationEvent.PlayerFiltersRequested -> it.skill
                         }
                     }
 
-                    if (showStatsScreen) {
+                    if (statsSkill == null) {
                         PlayerStatsScreen(
                             modifier = Modifier.fillMaxSize(),
                             playerStatsPresenter = appModule.playerStatsPresenter,
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     } else {
                         PlayerFiltersScreen(
                             modifier = Modifier.fillMaxSize(),
-                            playerFiltersPresenter = appModule.playerFiltersPresenter,
+                            playerFiltersPresenter = appModule.playerFiltersPresenterFactory.create(statsSkill!!),
                         )
                     }
                 }
