@@ -21,7 +21,7 @@ interface NavigationEventReceiver {
 
 @Inject
 @Singleton
-class NavigationEventManager(
+class NavigationEventHandler(
     private val coroutineScope: CoroutineScope,
     private val appDispatchers: AppDispatchers,
 ) : NavigationEventSender, NavigationEventReceiver {

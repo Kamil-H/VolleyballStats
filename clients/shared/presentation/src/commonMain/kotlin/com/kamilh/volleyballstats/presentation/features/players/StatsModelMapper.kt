@@ -55,9 +55,6 @@ class StatsModelMapperImpl : StatsModelMapper {
     private fun StatsModel.toRow(index: Int, properties: List<Property<String>>): DataRow =
         TableRow(cells = properties.map { toValueCell(index, it) })
 
-    private fun <T: Property<String>> Array<T>.find(property: Property<String>): T =
-        first { it.id == property.id }
-
     private fun StatsModel.toValueCell(index: Int, property: Property<String>): DataCell =
         when (this) {
             is AttackStatsStorage.Model -> findProperty<AttackProperty>(property).toValueCell(index, this)

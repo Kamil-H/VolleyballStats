@@ -18,7 +18,7 @@ import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapper
 import com.kamilh.volleyballstats.presentation.features.filter.MockPlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.interactors.InteractorModule
-import com.kamilh.volleyballstats.presentation.navigation.NavigationEventManager
+import com.kamilh.volleyballstats.presentation.navigation.NavigationEventHandler
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.presentation.utils.AccessTokenProvider
@@ -111,10 +111,10 @@ interface PresentationModule : InteractorModule, DataModule, PresentersModule {
     val StatsFlowFactoryImpl.bind: StatsFlowFactory
         @Provides get() = this
 
-    val NavigationEventManager.bindSender: NavigationEventSender
+    val NavigationEventHandler.bindSender: NavigationEventSender
         @Provides get() = this
 
-    val NavigationEventManager.bindReceiver: NavigationEventReceiver
+    val NavigationEventHandler.bindReceiver: NavigationEventReceiver
         @Provides get() = this
 
     companion object {
