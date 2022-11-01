@@ -2,11 +2,9 @@ package com.kamilh.volleyballstats.presentation.features.players
 
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
-import com.kamilh.volleyballstats.presentation.features.Property
-import com.kamilh.volleyballstats.presentation.features.SelectOptionState
+import com.kamilh.volleyballstats.presentation.features.*
 import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
-import com.kamilh.volleyballstats.presentation.features.selectSingle
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.storage.stats.StatsModel
@@ -15,14 +13,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
-@Inject
-class PlayerStatsPresenter(
+class PlayerStatsPresenter private constructor(
     private val statsModelMapper: StatsModelMapper,
     private val statsFlowFactory: StatsFlowFactory,
     private val coroutineScope: CoroutineScope,
     private val playerFiltersStorage: PlayerFiltersStorage,
     private val navigationEventSender: NavigationEventSender,
-) {
+) : Presenter {
 
     private val chosenSkill = MutableStateFlow(StatsSkill.Attack)
     private val _state: MutableStateFlow<PlayerStatsState> = MutableStateFlow(
@@ -99,6 +96,27 @@ class PlayerStatsPresenter(
 
     private fun onFabButtonClicked() {
         navigationEventSender.send(NavigationEvent.PlayerFiltersRequested(chosenSkill.value))
+    }
+
+    @Inject
+    class Factory(
+        private val statsModelMapper: StatsModelMapper,
+        private val statsFlowFactory: StatsFlowFactory,
+        private val playerFiltersStorage: PlayerFiltersStorage,
+        private val navigationEventSender: NavigationEventSender,
+    ) : Presenter.Factory<PlayerStatsPresenter, Unit> {
+
+        override fun create(
+            coroutineScope: CoroutineScope,
+            savableMap: SavableMap,
+            extras: Unit,
+        ): PlayerStatsPresenter = PlayerStatsPresenter(
+            statsModelMapper = statsModelMapper,
+            statsFlowFactory = statsFlowFactory,
+            coroutineScope = coroutineScope,
+            playerFiltersStorage = playerFiltersStorage,
+            navigationEventSender = navigationEventSender,
+        )
     }
 }
 

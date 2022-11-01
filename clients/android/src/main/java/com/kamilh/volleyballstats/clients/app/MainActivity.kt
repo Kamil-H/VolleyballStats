@@ -15,6 +15,7 @@ import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.ui.extensions.FlowCollector
+import com.kamilh.volleyballstats.ui.extensions.presenter
 import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,12 +42,12 @@ class MainActivity : ComponentActivity() {
                     if (statsSkill == null) {
                         PlayerStatsScreen(
                             modifier = Modifier.fillMaxSize(),
-                            playerStatsPresenter = appModule.playerStatsPresenter,
+                            playerStatsPresenter = appModule.presenter(),
                         )
                     } else {
                         PlayerFiltersScreen(
                             modifier = Modifier.fillMaxSize(),
-                            playerFiltersPresenter = appModule.playerFiltersPresenterFactory.create(statsSkill!!),
+                            playerFiltersPresenter = appModule.presenter(extras = statsSkill!!),
                         )
                     }
                 }

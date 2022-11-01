@@ -7,8 +7,6 @@ import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildInfo
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildType
 import com.kamilh.volleyballstats.presentation.di.PresentationModule
-import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
-import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersPresenter
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
@@ -19,8 +17,6 @@ abstract class AppModule(
     @get:Provides val application: Application,
 ) : PresentationModule {
 
-    abstract val playerStatsPresenter: PlayerStatsPresenter
-    abstract val playerFiltersPresenterFactory: PlayerFiltersPresenter.Factory
     abstract val navigationEventReceiver: NavigationEventReceiver
 
     @Provides

@@ -12,14 +12,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
-class PlayerFiltersPresenter(
+class PlayerFiltersPresenter private constructor(
     private val skill: StatsSkill = StatsSkill.Attack,
     private val teamStorage: TeamStorage,
     private val tourStorage: TourStorage,
     private val playerFiltersStorage: PlayerFiltersStorage,
     private val coroutineScope: CoroutineScope,
     private val navigationEventSender: NavigationEventSender,
-) {
+) : Presenter {
 
     private val _state: MutableStateFlow<PlayerFiltersState> = MutableStateFlow(PlayerFilters().toPlayerFiltersState())
     val state: StateFlow<PlayerFiltersState> = _state.asStateFlow()
@@ -168,17 +168,20 @@ class PlayerFiltersPresenter(
         private val teamStorage: TeamStorage,
         private val tourStorage: TourStorage,
         private val playerFiltersStorage: PlayerFiltersStorage,
-        private val coroutineScope: CoroutineScope,
         private val navigationEventSender: NavigationEventSender,
-    ) {
-        fun create(skill: StatsSkill): PlayerFiltersPresenter =
-            PlayerFiltersPresenter(
-                skill = skill,
-                teamStorage = teamStorage,
-                tourStorage = tourStorage,
-                playerFiltersStorage = playerFiltersStorage,
-                coroutineScope = coroutineScope,
-                navigationEventSender = navigationEventSender,
-            )
+    ) : Presenter.Factory<PlayerFiltersPresenter, StatsSkill> {
+
+        override fun create(
+            coroutineScope: CoroutineScope,
+            savableMap: SavableMap,
+            extras: StatsSkill,
+        ): PlayerFiltersPresenter = PlayerFiltersPresenter(
+            skill = extras,
+            teamStorage = teamStorage,
+            tourStorage = tourStorage,
+            playerFiltersStorage = playerFiltersStorage,
+            coroutineScope = coroutineScope,
+            navigationEventSender = navigationEventSender,
+        )
     }
 }

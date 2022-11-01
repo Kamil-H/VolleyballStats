@@ -10,6 +10,7 @@ import com.kamilh.volleyballstats.domain.utils.*
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
+import com.kamilh.volleyballstats.presentation.features.PresentersModule
 import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactory
 import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactoryImpl
 import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapper
@@ -38,7 +39,7 @@ import me.tatarka.inject.annotations.Provides
 import io.ktor.client.HttpClient as Ktor
 
 @Component
-interface PresentationModule : InteractorModule, DataModule {
+interface PresentationModule : InteractorModule, DataModule, PresentersModule {
 
     val appInitializer: AppInitializer
 
