@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.presentation.features
+package com.kamilh.volleyballstats.presentation.features.common
 
 interface Property<T : Any> {
     val id: T

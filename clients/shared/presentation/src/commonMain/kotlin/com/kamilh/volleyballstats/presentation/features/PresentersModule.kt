@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.presentation.features
 
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersPresenter
 import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
-import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersPresenter
 import kotlinx.coroutines.CoroutineScope
 import me.tatarka.inject.annotations.IntoMap
 import me.tatarka.inject.annotations.Provides

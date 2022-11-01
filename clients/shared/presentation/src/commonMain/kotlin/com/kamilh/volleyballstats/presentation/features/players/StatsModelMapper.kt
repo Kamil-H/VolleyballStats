@@ -2,7 +2,7 @@ package com.kamilh.volleyballstats.presentation.features.players
 
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.presentation.extensions.findProperty
-import com.kamilh.volleyballstats.presentation.features.*
+import com.kamilh.volleyballstats.presentation.features.common.*
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
 import com.kamilh.volleyballstats.storage.stats.*
 import me.tatarka.inject.annotations.Inject

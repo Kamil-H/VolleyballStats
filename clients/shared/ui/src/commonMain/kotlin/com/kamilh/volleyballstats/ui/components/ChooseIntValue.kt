@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.kamilh.volleyballstats.presentation.features.ChooseIntState
+import com.kamilh.volleyballstats.presentation.features.common.ChooseIntState
 
 @Composable
 fun ChooseIntValue(

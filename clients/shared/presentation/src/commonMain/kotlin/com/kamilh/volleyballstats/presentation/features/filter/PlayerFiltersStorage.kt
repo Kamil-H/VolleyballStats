@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.presentation.features.players.filter
+package com.kamilh.volleyballstats.presentation.features.filter
 
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.PlayerFilters

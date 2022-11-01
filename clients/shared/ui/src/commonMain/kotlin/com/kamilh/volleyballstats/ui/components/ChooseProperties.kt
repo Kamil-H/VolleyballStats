@@ -11,9 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import com.kamilh.volleyballstats.presentation.features.CheckableProperty
-import com.kamilh.volleyballstats.presentation.features.ChoosePropertiesState
-import com.kamilh.volleyballstats.presentation.features.title
+import com.kamilh.volleyballstats.presentation.features.common.CheckableProperty
+import com.kamilh.volleyballstats.presentation.features.common.ChoosePropertiesState
+import com.kamilh.volleyballstats.presentation.features.common.title
 import com.kamilh.volleyballstats.ui.extensions.conditional
 import com.kamilh.volleyballstats.ui.theme.Dimens
 

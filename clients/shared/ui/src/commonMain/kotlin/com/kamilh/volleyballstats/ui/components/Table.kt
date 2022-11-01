@@ -16,10 +16,10 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kamilh.volleyballstats.presentation.features.CellSize
-import com.kamilh.volleyballstats.presentation.features.DataRow
-import com.kamilh.volleyballstats.presentation.features.HeaderRow
-import com.kamilh.volleyballstats.presentation.features.TableContent
+import com.kamilh.volleyballstats.presentation.features.common.CellSize
+import com.kamilh.volleyballstats.presentation.features.common.DataRow
+import com.kamilh.volleyballstats.presentation.features.common.HeaderRow
+import com.kamilh.volleyballstats.presentation.features.common.TableContent
 import com.kamilh.volleyballstats.ui.extensions.ifNotNull
 import com.kamilh.volleyballstats.ui.extensions.toDp
 import com.kamilh.volleyballstats.ui.theme.Dimens

@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.presentation.features
+package com.kamilh.volleyballstats.presentation.features.common
 
 typealias ChooseIntState = ChooseValueState<Int>
 

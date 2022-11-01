@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.presentation.extensions
 
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
-import com.kamilh.volleyballstats.presentation.features.Property
+import com.kamilh.volleyballstats.presentation.features.common.Property
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
 
 val StatsSkill.allProperties: List<Property<String>>

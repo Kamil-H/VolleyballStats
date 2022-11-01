@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import com.kamilh.volleyballstats.presentation.features.SelectOptionState
+import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
 import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable

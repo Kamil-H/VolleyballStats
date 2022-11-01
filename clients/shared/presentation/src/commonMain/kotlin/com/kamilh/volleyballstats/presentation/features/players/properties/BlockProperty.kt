@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.presentation.features.players.properties
 
-import com.kamilh.volleyballstats.presentation.features.Property
+import com.kamilh.volleyballstats.presentation.features.common.Property
 
 enum class BlockProperty(
     override val shortName: String,

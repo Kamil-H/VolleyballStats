@@ -3,7 +3,7 @@ package com.kamilh.volleyballstats.presentation.features.players
 import com.kamilh.volleyballstats.domain.models.PlayerFilters
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.extensions.findProperty
-import com.kamilh.volleyballstats.presentation.features.Property
+import com.kamilh.volleyballstats.presentation.features.common.Property
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
 import com.kamilh.volleyballstats.storage.stats.*
 import kotlinx.coroutines.flow.Flow

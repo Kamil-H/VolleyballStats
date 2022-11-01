@@ -5,7 +5,7 @@ import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
-import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import me.tatarka.inject.annotations.Inject
 
 typealias InitializeFilters = NoInputInteractor<Unit>

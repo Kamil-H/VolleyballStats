@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.presentation.features
+package com.kamilh.volleyballstats.presentation.features.common
 
 data class SelectOptionState<T : Any>(
     val title: String? = null,

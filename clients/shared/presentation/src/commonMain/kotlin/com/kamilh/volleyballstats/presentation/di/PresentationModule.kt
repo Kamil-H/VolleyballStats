@@ -15,8 +15,8 @@ import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactory
 import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactoryImpl
 import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapper
 import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapperImpl
-import com.kamilh.volleyballstats.presentation.features.players.filter.MockPlayerFiltersStorage
-import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.filter.MockPlayerFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.interactors.InteractorModule
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventManager
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver

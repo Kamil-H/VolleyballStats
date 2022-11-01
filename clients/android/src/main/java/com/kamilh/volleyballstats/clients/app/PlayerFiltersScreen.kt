@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersPresenter
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersPresenter
 import com.kamilh.volleyballstats.ui.components.ChooseIntValue
 import com.kamilh.volleyballstats.ui.components.ChooseProperties
 import com.kamilh.volleyballstats.ui.components.SelectOption

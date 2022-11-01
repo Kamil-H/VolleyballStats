@@ -1,9 +1,10 @@
-package com.kamilh.volleyballstats.presentation.features.players.filter
+package com.kamilh.volleyballstats.presentation.features.filter
 
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.*
+import com.kamilh.volleyballstats.presentation.features.common.*
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.storage.TeamStorage

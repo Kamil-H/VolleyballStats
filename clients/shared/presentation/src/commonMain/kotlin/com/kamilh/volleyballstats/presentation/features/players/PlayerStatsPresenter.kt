@@ -3,7 +3,10 @@ package com.kamilh.volleyballstats.presentation.features.players
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.*
-import com.kamilh.volleyballstats.presentation.features.players.filter.PlayerFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.common.Property
+import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
+import com.kamilh.volleyballstats.presentation.features.common.selectSingle
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender

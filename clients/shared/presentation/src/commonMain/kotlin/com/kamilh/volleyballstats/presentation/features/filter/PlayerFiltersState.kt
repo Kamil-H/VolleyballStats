@@ -1,11 +1,11 @@
-package com.kamilh.volleyballstats.presentation.features.players.filter
+package com.kamilh.volleyballstats.presentation.features.filter
 
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.TeamId
-import com.kamilh.volleyballstats.presentation.features.ChooseIntState
-import com.kamilh.volleyballstats.presentation.features.ChoosePropertiesState
-import com.kamilh.volleyballstats.presentation.features.SelectOptionState
+import com.kamilh.volleyballstats.presentation.features.common.ChooseIntState
+import com.kamilh.volleyballstats.presentation.features.common.ChoosePropertiesState
+import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
 
 data class PlayerFiltersState(
     val properties: ChoosePropertiesState<String>,
