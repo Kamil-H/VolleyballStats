@@ -1,17 +1,13 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.domain.utils.Logger
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
 @Component
 interface InteractorModule {
 
-    @Provides
-    fun synchronizeScheduler(): SynchronizeScheduler =
-        SynchronizeScheduler {
-            Logger.i("Scheduling... $it")
-        }
+    val DelayedSynchronizeScheduler.bind: SynchronizeScheduler
+        @Provides get() = this
 
     val UpdateMatchesInteractor.bind: UpdateMatches
         @Provides get() = this

@@ -24,6 +24,7 @@ class InMemoryTourCache : TourCache {
     private val tours = listOf(
         Season.create(2020) to LocalDate.of(2020, 9, 11),
         Season.create(2021) to LocalDate.of(2021, 10, 1),
+        Season.create(2022) to LocalDate.of(2022, 9, 30),
     )
 
     override fun getAll(): List<Tour> =

@@ -1,11 +1,8 @@
 package com.kamilh.volleyballstats.datetime
 
-import io.islandtime.DateTime
-import io.islandtime.TimeZone
-import io.islandtime.at
+import io.islandtime.*
 import io.islandtime.clock.now
 import io.islandtime.parser.*
-import io.islandtime.toDateTime
 import kotlin.jvm.JvmInline
 import kotlin.time.Duration
 
@@ -23,6 +20,12 @@ value class LocalDateTime internal constructor(private val dateTime: DateTime) :
 
     fun minus(duration: Duration): LocalDateTime =
         LocalDateTime(dateTime.minus(duration))
+
+    fun minus(other: LocalDateTime): Duration =
+        toInstant().durationSinceUnixEpoch - other.toInstant().durationSinceUnixEpoch
+
+    private fun toInstant(): Instant =
+        Instant(dateTime.toInstantAt(UtcOffset.ZERO))
 
     override fun compareTo(other: LocalDateTime): Int =
         dateTime.compareTo(other.dateTime)

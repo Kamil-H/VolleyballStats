@@ -10,8 +10,8 @@ interface InteractorModule {
 
     @Provides
     fun synchronizeScheduler(): SynchronizeScheduler =
-        SynchronizeScheduler {
-            Logger.i("Scheduling... $it")
+        SynchronizeScheduler { dateTime, _ ->
+            Logger.i("Scheduling... $dateTime")
         }
 
     val UpdateMatchesInteractor.bind: UpdateMatches

@@ -1,6 +1,8 @@
 package com.kamilh.volleyballstats.datetime
 
 import io.islandtime.Date
+import io.islandtime.Time
+import io.islandtime.at
 import io.islandtime.clock.now
 import io.islandtime.parser.dateTimeParser
 import io.islandtime.parser.dayOfMonth
@@ -14,6 +16,9 @@ value class LocalDate internal constructor(private val date: Date) : Comparable<
 
     fun toIso8601String(): String =
         date.toString()
+
+    fun atMidnight(): LocalDateTime =
+        LocalDateTime(date.at(Time.MIDNIGHT))
 
     override fun compareTo(other: LocalDate): Int =
         date.compareTo(other.date)

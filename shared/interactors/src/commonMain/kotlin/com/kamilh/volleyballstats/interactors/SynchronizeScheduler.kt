@@ -1,7 +1,9 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.models.League
 
 fun interface SynchronizeScheduler {
-    suspend fun schedule(dateTime: LocalDateTime)
+
+    fun schedule(dateTime: LocalDateTime, league: League)
 }

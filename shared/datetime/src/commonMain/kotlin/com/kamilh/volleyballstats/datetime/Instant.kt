@@ -8,6 +8,9 @@ import io.islandtime.Instant as IslandInstant
 @JvmInline
 value class Instant internal constructor(internal val instant: IslandInstant) : Comparable<Instant> {
 
+    internal val durationSinceUnixEpoch: Duration
+        get() = instant.millisecondsSinceUnixEpoch.toKotlinDuration()
+
     fun plus(duration: Duration): Instant =
         Instant(instant.plus(duration))
 

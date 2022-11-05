@@ -36,17 +36,19 @@ class MatchResponseToMatchReportMapper {
             code = code,
             libero = libero,
             name = name,
-            players = players.map { it.toTeamPlayer() },
+            players = players.mapNotNull { it.toTeamPlayer() },
         )
 
-    private fun PlayerResponse.toTeamPlayer(): MatchReportPlayer =
-        MatchReportPlayer(
-            id = PlayerId(code.toLong()),
-            firstName = firstName,
-            isForeign = isForeign,
-            lastName = lastName,
-            shirtNumber = shirtNumber,
-        )
+    private fun PlayerResponse.toTeamPlayer(): MatchReportPlayer? =
+        code.toLongOrNull()?.let {
+            MatchReportPlayer(
+                id = PlayerId(it),
+                firstName = firstName,
+                isForeign = isForeign,
+                lastName = lastName,
+                shirtNumber = shirtNumber,
+            )
+        }
 
     private fun ScoutResponse.toScout(): Scout =
         Scout(

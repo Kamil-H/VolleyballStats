@@ -5,6 +5,7 @@ import com.kamilh.volleyballstats.authorization.headers
 import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.domain.utils.PlatformLogger
+import com.kamilh.volleyballstats.interactors.DelayedSynchronizeScheduler
 import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.models.config
 import com.kamilh.volleyballstats.routes.matches.MatchesController
@@ -26,7 +27,8 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
 import me.tatarka.inject.annotations.Inject
 import org.slf4j.event.Level
@@ -52,6 +54,7 @@ class ApplicationInitializer(
     private val toursController: ToursController,
     private val synchronizer: Synchronizer,
     private val platformLogger: PlatformLogger,
+    private val delayedSynchronizeScheduler: DelayedSynchronizeScheduler,
 ) {
 
     fun init(application: Application, inTest: Boolean) = with(application) {
@@ -112,7 +115,11 @@ class ApplicationInitializer(
     private fun Application.configureSynchronizer(inTest: Boolean) {
         if (!inTest) {
             val league = League.POLISH_LEAGUE
-            launch { synchronizer.synchronize(league) }
+            synchronizer.synchronize(league)
+
+            delayedSynchronizeScheduler.synchronizeSignal
+                .onEach { synchronizer.synchronize(it.league) }
+                .launchIn(this)
         }
     }
 }

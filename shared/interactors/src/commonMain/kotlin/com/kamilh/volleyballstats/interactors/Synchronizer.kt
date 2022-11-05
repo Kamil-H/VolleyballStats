@@ -6,7 +6,9 @@ import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.storage.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -21,15 +23,22 @@ class Synchronizer(
     private val updateTeams: UpdateTeams,
     private val updateTours: UpdateTours,
     private val scheduler: SynchronizeScheduler,
+    private val coroutineScope: CoroutineScope,
 ) {
 
     private val tag = this::class.simpleName!!
 
-    suspend fun synchronize(league: League) {
+    fun synchronize(league: League) {
+        coroutineScope.launch {
+            synchronizeInternal(league)
+        }
+    }
+
+    private suspend fun synchronizeInternal(league: League) {
         log("Synchronizing: $league")
-        val tours = tourStorage.getAllByLeague(League.POLISH_LEAGUE).first()
-        if (tours.isEmpty()) {
-            log("Tours are empty")
+        val tours = tourStorage.getAllByLeague(league).first()
+        if (tours.isEmpty() || tours.all { it.isFinished }) {
+            log("Tours are empty or are finished")
             initializeTours(league)
         } else {
             updateMatches(tours)
@@ -47,7 +56,7 @@ class Synchronizer(
                 .onSuccess {
                     when (it) {
                         UpdateMatchesSuccess.NothingToSchedule, UpdateMatchesSuccess.SeasonCompleted -> { }
-                        is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plus(3.hours))
+                        is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plus(3.hours), tour.league)
                     }
                 }
         }
@@ -60,7 +69,7 @@ class Synchronizer(
                 if (networkError is NetworkError.UnexpectedException) {
                     Logger.e(tag = tag, message = networkError.throwable.stackTraceToString())
                 }
-                schedule()
+                schedule(league = tour.league)
             }
             UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
             UpdateMatchesError.NoMatchesInTour -> { }
@@ -72,20 +81,20 @@ class Synchronizer(
         }
     }
 
-    private suspend fun schedule(duration: Duration = 1.hours) {
-        schedule(CurrentDate.localDateTime.plus(duration))
+    private fun schedule(duration: Duration = 1.hours, league: League) {
+        schedule(CurrentDate.localDateTime.plus(duration), league)
     }
 
-    private suspend fun schedule(dateTime: LocalDateTime) {
+    private fun schedule(dateTime: LocalDateTime, league: League) {
         log("Scheduling: $dateTime")
-        scheduler.schedule(dateTime)
+        scheduler.schedule(dateTime, league)
     }
 
     private suspend fun initializeTours(league: League) {
         log("Initializing tours for: $league")
         updateTours(UpdateToursParams(league))
             .onResult { log("Initializing tours result: $it") }
-            .onFailure { schedule() }
+            .onFailure { schedule(league = league) }
             .onSuccess { synchronize(league) }
     }
 
@@ -100,7 +109,7 @@ class Synchronizer(
             .onResult { log("Updating players result: $it") }
             .onFailure { error ->
                 when (error) {
-                    is UpdatePlayersError.Network -> schedule()
+                    is UpdatePlayersError.Network -> schedule(league = tour.league)
                     is UpdatePlayersError.Storage -> when (val insertPlayerError = error.insertPlayerError) {
                         is InsertPlayerError.Errors -> {
                             if (insertPlayerError.teamsNotFound.isNotEmpty()) {
@@ -124,7 +133,7 @@ class Synchronizer(
             .onResult { log("Updating teams result: $it") }
             .onFailure { error ->
                 when (error) {
-                    is UpdateTeamsError.Network -> schedule()
+                    is UpdateTeamsError.Network -> schedule(league = tour.league)
                     is UpdateTeamsError.Storage -> when (error.insertTeamError) {
                         is InsertTeamError.TourTeamAlreadyExists -> { }
                         InsertTeamError.TourNotFound -> initializeTours(tour.league)

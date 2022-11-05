@@ -24,8 +24,8 @@ class AppInitializer(
         if (buildInfo.buildType == BuildType.Debug) {
             Logger.setLogger(platformLogger)
         }
+        synchronizer.synchronize(League.POLISH_LEAGUE)
         coroutineScope.launch {
-            synchronizer.synchronize(League.POLISH_LEAGUE)
             initializeFilters()
         }
     }

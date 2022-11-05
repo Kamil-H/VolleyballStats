@@ -25,7 +25,7 @@ class TestApplicationInitializer(
     private val synchronizer: Synchronizer,
 ) {
 
-    suspend fun init() {
+    fun init() {
         Logger.setLogger(platformLogger)
         databaseFactory.connect()
         synchronizer.synchronize(League.POLISH_LEAGUE)

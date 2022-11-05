@@ -1,10 +1,9 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.interactor.Interactor
 import com.kamilh.volleyballstats.domain.leagueOf
-import com.kamilh.volleyballstats.domain.models.Player
-import com.kamilh.volleyballstats.domain.models.Team
-import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.player.playerOf
 import com.kamilh.volleyballstats.domain.teamIdOf
 import com.kamilh.volleyballstats.domain.teamOf
@@ -17,9 +16,11 @@ import com.kamilh.volleyballstats.storage.*
 import com.kamilh.volleyballstats.utils.localDateTime
 import com.kamilh.volleyballstats.utils.testClock
 import com.kamilh.volleyballstats.utils.zonedDateTime
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,25 +30,31 @@ import kotlin.time.Duration.Companion.hours
 
 class SynchronizerTest {
 
-    private fun interactor(
+    private suspend fun TestScope.testInteractor(
+        league: League = leagueOf(),
         tourStorage: TourStorage = tourStorageOf(),
         teamStorage: TeamStorage = teamStorageOf(),
         playerStorage: PlayerStorage = playerStorageOf(),
-        updateMatches: UpdateMatches = updateMatchesOf(),
-        updatePlayers: UpdatePlayers = updatePlayersOf(),
+        // Not using typealias, because it caused Unresolved reference
+        updateMatches: Interactor<UpdateMatchesParams, Result<UpdateMatchesSuccess, UpdateMatchesError>> = updateMatchesOf(),
+        updatePlayers: Interactor<UpdatePlayersParams, Result<Unit, UpdatePlayersError>> = updatePlayersOf(),
         updateTeams: UpdateTeams = updateTeamsOf(),
         updateTours: UpdateTours = updateToursOf(),
-        scheduler: SynchronizeScheduler = SynchronizeScheduler { },
-    ): Synchronizer = Synchronizer(
-        tourStorage = tourStorage,
-        teamStorage = teamStorage,
-        playerStorage = playerStorage,
-        updateMatches = updateMatches,
-        updatePlayers = updatePlayers,
-        updateTeams = updateTeams,
-        updateTours = updateTours,
-        scheduler = scheduler,
-    )
+        scheduler: SynchronizeScheduler = synchronizeSchedulerOf { },
+    ) {
+        Synchronizer(
+            tourStorage = tourStorage,
+            teamStorage = teamStorage,
+            playerStorage = playerStorage,
+            updateMatches = updateMatches,
+            updatePlayers = updatePlayers,
+            updateTeams = updateTeams,
+            updateTours = updateTours,
+            scheduler = scheduler,
+            coroutineScope = this,
+        ).synchronize(league)
+        yield()
+    }
 
     @BeforeTest
     fun setClock() {
@@ -65,40 +72,58 @@ class SynchronizerTest {
         var scheduleDate: LocalDateTime? = null
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(
                 getAllByLeague = flowOf(tours)
             ),
             updateTours = updateToursOf(
                 invoke = { UpdateToursResult.failure(updateToursError) }
             ),
-            scheduler = { scheduleDate = it }
-        ).synchronize(leagueOf())
+            scheduler = synchronizeSchedulerOf { scheduleDate = it.first }
+        )
 
         // THEN
         assertDate(scheduleDate)
     }
 
     @Test
-    fun `getAllByLeague called twice when tour successfully inserted`() = runTest {
+    fun `updateTours called when getAllByLeague returns empty list`() = runTest {
         // GIVEN
-        val tours: MutableList<List<Tour>> = mutableListOf(
-            emptyList(), listOf(tourOf())
-        )
-        val updateTours: UpdateToursResult = UpdateToursResult.success(Unit)
+        val tours = emptyList<Tour>()
+        var updateToursCalled = false
 
         // WHEN
-        interactor(
-            tourStorage = tourStorageOf(
-                getAllByLeague = flow { emit(tours.removeFirst()) }
-            ),
-            updateTours = updateToursOf(
-                invoke = { updateTours }
-            ),
-        ).synchronize(leagueOf())
+        testInteractor(
+            tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
+            updateTours = updateToursOf {
+                updateToursCalled = true
+                Result.success(Unit)
+            },
+        )
+        coroutineContext.cancelChildren()
 
         // THEN
-        assertTrue(tours.isEmpty())
+        assertTrue(updateToursCalled)
+    }
+
+    @Test
+    fun `updateTours called when getAllByLeague returns finished tours`() = runTest {
+        // GIVEN
+        val tours = listOf(tourOf(endDate = CurrentDate.localDate))
+        var updateToursCalled = false
+
+        // WHEN
+        testInteractor(
+            tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
+            updateTours = updateToursOf {
+                updateToursCalled = true
+                Result.success(Unit)
+            },
+        )
+        coroutineContext.cancelChildren()
+
+        // THEN
+        assertTrue(updateToursCalled)
     }
 
     @Test
@@ -109,14 +134,14 @@ class SynchronizerTest {
         var updateTeamCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTeams = updateTeamsOf {
                 updateTeamCalled = true
                 UpdateTeamsResult.success(Unit)
             },
             teamStorage = teamStorageOf(getAllTeams = getAllTeams)
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(!updateTeamCalled)
@@ -130,14 +155,14 @@ class SynchronizerTest {
         var updateTeamCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTeams = updateTeamsOf {
                 updateTeamCalled = true
                 UpdateTeamsResult.success(Unit)
             },
             teamStorage = teamStorageOf(getAllTeams = getAllTeams)
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateTeamCalled)
@@ -151,12 +176,12 @@ class SynchronizerTest {
         var scheduleDate: LocalDateTime? = null
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTeams = updateTeamsOf { UpdateTeamsResult.failure(UpdateTeamsError.Network(networkErrorOf())) },
             teamStorage = teamStorageOf(getAllTeams = getAllTeams),
-            scheduler = { scheduleDate = it }
-        ).synchronize(leagueOf())
+            scheduler = synchronizeSchedulerOf { scheduleDate = it.first }
+        )
 
         // THEN
         assertDate(scheduleDate)
@@ -170,7 +195,7 @@ class SynchronizerTest {
         var updateToursCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTeams = updateTeamsOf { UpdateTeamsResult.failure(UpdateTeamsError.Storage(InsertTeamError.TourNotFound)) },
             teamStorage = teamStorageOf(getAllTeams = getAllTeams),
@@ -178,7 +203,7 @@ class SynchronizerTest {
                 updateToursCalled = true
                 UpdateToursResult.failure(UpdateToursError.Network(networkErrorOf()))
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateToursCalled)
@@ -192,14 +217,14 @@ class SynchronizerTest {
         var updateTeamCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updatePlayers = updatePlayersOf {
                 updateTeamCalled = true
-                UpdatePlayersResult.success(Unit)
+                Result.success(Unit)
             },
             playerStorage = playerStorageOf(getAllPlayers = getAllPlayers)
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(!updateTeamCalled)
@@ -213,14 +238,14 @@ class SynchronizerTest {
         var updateTeamCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updatePlayers = updatePlayersOf {
                 updateTeamCalled = true
-                UpdatePlayersResult.success(Unit)
+                Result.success(Unit)
             },
             playerStorage = playerStorageOf(getAllPlayers = getAllPlayers)
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateTeamCalled)
@@ -234,12 +259,12 @@ class SynchronizerTest {
         var scheduleDate: LocalDateTime? = null
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
-            updatePlayers = updatePlayersOf { UpdatePlayersResult.failure(UpdatePlayersError.Network(networkErrorOf())) },
+            updatePlayers = updatePlayersOf { Result.failure(UpdatePlayersError.Network(networkErrorOf())) },
             playerStorage = playerStorageOf(getAllPlayers = getAllPlayers),
-            scheduler = { scheduleDate = it }
-        ).synchronize(leagueOf())
+            scheduler = synchronizeSchedulerOf { scheduleDate = it.first }
+        )
 
         // THEN
         assertDate(scheduleDate)
@@ -253,15 +278,15 @@ class SynchronizerTest {
         var updateToursCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
-            updatePlayers = updatePlayersOf { UpdatePlayersResult.failure(UpdatePlayersError.Storage(InsertPlayerError.TourNotFound)) },
+            updatePlayers = updatePlayersOf { Result.failure(UpdatePlayersError.Storage(InsertPlayerError.TourNotFound)) },
             playerStorage = playerStorageOf(getAllPlayers = getAllPlayers),
             updateTours = updateToursOf {
                 updateToursCalled = true
                 UpdateToursResult.failure(UpdateToursError.Network(networkErrorOf()))
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateToursCalled)
@@ -275,10 +300,10 @@ class SynchronizerTest {
         var updateTeamsCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updatePlayers = updatePlayersOf {
-                UpdatePlayersResult.failure(
+                Result.failure(
                     error = UpdatePlayersError.Storage(
                         InsertPlayerError.Errors(
                             teamsNotFound = listOf(teamIdOf()),
@@ -292,7 +317,7 @@ class SynchronizerTest {
                 updateTeamsCalled = true
                 UpdateTeamsResult.success(Unit)
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateTeamsCalled)
@@ -305,16 +330,16 @@ class SynchronizerTest {
         var updateTeamsCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.TeamNotFound(teamIdOf())))
+                Result.failure(UpdateMatchesError.Insert(InsertMatchReportError.TeamNotFound(teamIdOf())))
             },
             updateTeams = updateTeamsOf {
                 updateTeamsCalled = true
                 UpdateTeamsResult.success(Unit)
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateTeamsCalled)
@@ -327,16 +352,16 @@ class SynchronizerTest {
         var updateToursCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.TourNotFound))
+                Result.failure(UpdateMatchesError.Insert(InsertMatchReportError.TourNotFound))
             },
             updateTours = updateToursOf {
                 updateToursCalled = true
                 UpdateToursResult.failure(UpdateToursError.Network(networkErrorOf()))
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateToursCalled)
@@ -349,16 +374,16 @@ class SynchronizerTest {
         var updatePlayersCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Insert(InsertMatchReportError.NoPlayersInTeams))
+                Result.failure(UpdateMatchesError.Insert(InsertMatchReportError.NoPlayersInTeams))
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true
-                UpdatePlayersResult.success(Unit)
+                Result.success(Unit)
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updatePlayersCalled)
@@ -371,10 +396,10 @@ class SynchronizerTest {
         var updatePlayersCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(
+                Result.failure(
                     UpdateMatchesError.Insert(
                         InsertMatchReportError.PlayerNotFound(
                             emptyList()
@@ -384,9 +409,9 @@ class SynchronizerTest {
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true
-                UpdatePlayersResult.success(Unit)
+                Result.success(Unit)
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updatePlayersCalled)
@@ -399,16 +424,16 @@ class SynchronizerTest {
         var updateToursCalled = false
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.TourNotFound)
+                Result.failure(UpdateMatchesError.TourNotFound)
             },
             updateTours = updateToursOf {
                 updateToursCalled = true
                 UpdateToursResult.failure(UpdateToursError.Network(networkErrorOf()))
             },
-        ).synchronize(leagueOf())
+        )
 
         // THEN
         assertTrue(updateToursCalled)
@@ -421,13 +446,13 @@ class SynchronizerTest {
         var scheduleDate: LocalDateTime? = null
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.failure(UpdateMatchesError.Network(networkErrorOf()))
+                Result.failure(UpdateMatchesError.Network(networkErrorOf()))
             },
-            scheduler = { scheduleDate = it }
-        ).synchronize(leagueOf())
+            scheduler = synchronizeSchedulerOf { scheduleDate = it.first }
+        )
 
         // THEN
         assertDate(scheduleDate)
@@ -441,13 +466,13 @@ class SynchronizerTest {
         var scheduleDate: LocalDateTime? = null
 
         // WHEN
-        interactor(
+        testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                UpdateMatchesResult.success(UpdateMatchesSuccess.NextMatch(nextMatch))
+                Result.success(UpdateMatchesSuccess.NextMatch(nextMatch))
             },
-            scheduler = { scheduleDate = it }
-        ).synchronize(leagueOf())
+            scheduler = synchronizeSchedulerOf { scheduleDate = it.first }
+        )
 
         // THEN
         assertEquals(nextMatch.toLocalDateTime().plus(3.hours), scheduleDate)

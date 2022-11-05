@@ -1,5 +1,7 @@
 package com.kamilh.volleyballstats.repository.models.mappers
 
+import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.datetime.parsePolishLeagueDate
 import com.kamilh.volleyballstats.domain.assertSuccess
 import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.MatchInfo
@@ -162,6 +164,27 @@ class HtmlToMatchInfoMapperTest {
         // THEN
         mapped.assertSuccess {
             assert(this.isEmpty())
+        }
+    }
+
+    @Test
+    fun `correct date is returned when match date doesn't include a time`() {
+        // GIVEN
+        val dateString = "03.06.2021"
+        val expectedDateString = "03.06.2021, 00:00"
+
+        val html = html(
+            dateString = dateString,
+            idString = "1101312",
+            green = "1",
+        )
+
+        // WHEN
+        val mapped = mapper.map(html)
+
+        // THEN
+        mapped.assertSuccess {
+            assert(first().date == LocalDateTime.parsePolishLeagueDate(expectedDateString).atPolandZone())
         }
     }
 }
