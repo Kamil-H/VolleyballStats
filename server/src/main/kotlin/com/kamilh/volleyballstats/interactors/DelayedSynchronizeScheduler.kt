@@ -1,6 +1,7 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.domain.utils.Logger
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 @Inject
+@Singleton
 class DelayedSynchronizeScheduler(private val coroutineScope: CoroutineScope) : SynchronizeScheduler {
 
     private var waitJob: Job? = null
