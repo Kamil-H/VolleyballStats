@@ -24,6 +24,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 class SynchronizerTest {
 
@@ -563,6 +564,6 @@ class SynchronizerTest {
     }
 
     private fun assertDate(date: LocalDateTime?) {
-        assertEquals(localDateTime().plus(1.hours), date)
+        assertEquals(localDateTime().plus(5.minutes), date)
     }
 }

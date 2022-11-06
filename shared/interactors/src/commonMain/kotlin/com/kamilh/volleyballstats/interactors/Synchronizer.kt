@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 @Inject
 class Synchronizer(
@@ -94,7 +95,7 @@ class Synchronizer(
         }
     }
 
-    private fun schedule(duration: Duration = 1.hours, league: League) {
+    private fun schedule(duration: Duration = 10.minutes, league: League) {
         schedule(CurrentDate.localDateTime.plus(duration), league)
     }
 
