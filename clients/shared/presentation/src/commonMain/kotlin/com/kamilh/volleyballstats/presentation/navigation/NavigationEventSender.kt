@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
-interface NavigationEventSender {
+fun interface NavigationEventSender {
 
     fun send(navigationEvent: NavigationEvent)
 }
 
-interface NavigationEventReceiver {
+fun interface NavigationEventReceiver {
 
     fun receive(): Flow<NavigationEvent>
 }

@@ -1,13 +1,10 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.interactor.Interactor
-import com.kamilh.volleyballstats.domain.leagueOf
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.player.playerOf
-import com.kamilh.volleyballstats.domain.teamIdOf
-import com.kamilh.volleyballstats.domain.teamOf
-import com.kamilh.volleyballstats.domain.tourOf
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.domain.utils.Severity
@@ -16,7 +13,7 @@ import com.kamilh.volleyballstats.storage.*
 import com.kamilh.volleyballstats.utils.localDateTime
 import com.kamilh.volleyballstats.utils.testClock
 import com.kamilh.volleyballstats.utils.zonedDateTime
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -41,6 +38,7 @@ class SynchronizerTest {
         updateTeams: UpdateTeams = updateTeamsOf(),
         updateTours: UpdateTours = updateToursOf(),
         scheduler: SynchronizeScheduler = synchronizeSchedulerOf { },
+        synchronizeStateSender: SynchronizeStateSender = SynchronizeStateSender { },
     ) {
         Synchronizer(
             tourStorage = tourStorage,
@@ -52,6 +50,7 @@ class SynchronizerTest {
             updateTours = updateTours,
             scheduler = scheduler,
             coroutineScope = this,
+            synchronizeStateSender = synchronizeStateSender,
         ).synchronize(league)
         yield()
     }
@@ -97,13 +96,99 @@ class SynchronizerTest {
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTours = updateToursOf {
                 updateToursCalled = true
-                Result.success(Unit)
+                successOf(Unit)
             },
         )
-        coroutineContext.cancelChildren()
 
         // THEN
         assertTrue(updateToursCalled)
+    }
+
+    @Test
+    fun `getAllByLeague called twice when tour successfully inserted`() = runTest {
+        // GIVEN
+        val tours: MutableList<List<Tour>> = mutableListOf(emptyList(), listOf(tourOf()))
+        val updateTours: UpdateToursResult = successOf(Unit)
+
+        // WHEN
+        testInteractor(
+            tourStorage = tourStorageOf(
+                getAllByLeague = flow { emit(tours.removeFirst()) }
+            ),
+            updateTours = updateToursOf(
+                invoke = { updateTours }
+            ),
+        )
+
+        // THEN
+        assertTrue(tours.isEmpty())
+    }
+
+    @Test
+    fun `State emitted when initializing tours`() = runTest {
+        // GIVEN
+        val tours: MutableList<List<Tour>> = mutableListOf(emptyList(), listOf(tourOf()))
+        val updateTours: UpdateToursResult = successOf(Unit)
+        val states = mutableListOf<SynchronizeState>()
+
+        // WHEN
+        testInteractor(
+            tourStorage = tourStorageOf(
+                getAllByLeague = flow { emit(tours.removeFirst()) }
+            ),
+            updateTours = updateToursOf(
+                invoke = { updateTours }
+            ),
+            synchronizeStateSender = states::add
+        )
+
+        // THEN
+        assertTrue(states.isNotEmpty())
+    }
+
+    @Test
+    fun `Error is emitted when synchronizing after initializing tours`() = runTest {
+        // GIVEN
+        val tours: MutableList<List<Tour>> = mutableListOf(emptyList(), listOf(tourOf()))
+        val updateTours: UpdateToursResult = successOf(Unit)
+        val states = mutableListOf<SynchronizeState>()
+
+        // WHEN
+        testInteractor(
+            tourStorage = tourStorageOf(
+                getAllByLeague = flow { emit(tours.removeFirst()) }
+            ),
+            updateTours = updateToursOf(
+                invoke = { updateTours }
+            ),
+            updateMatches = updateMatchesOf {
+                failureOf(UpdateMatchesError.NoMatchesInTour)
+            },
+            synchronizeStateSender = states::add
+        )
+
+        // THEN
+        assertTrue(states.contains(SynchronizeState.Error))
+    }
+
+    @Test
+    fun `Error is emitted when UpdateMatches returns Error`() = runTest {
+        // GIVEN
+        val states = mutableListOf<SynchronizeState>()
+
+        // WHEN
+        testInteractor(
+            tourStorage = tourStorageOf(
+                getAllByLeague = flow { emit(listOf(tourOf())) }
+            ),
+            updateMatches = updateMatchesOf {
+                failureOf(UpdateMatchesError.NoMatchesInTour)
+            },
+            synchronizeStateSender = states::add
+        )
+
+        // THEN
+        assertTrue(states.contains(SynchronizeState.Error))
     }
 
     @Test
@@ -117,10 +202,9 @@ class SynchronizerTest {
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTours = updateToursOf {
                 updateToursCalled = true
-                Result.success(Unit)
+                successOf(Unit)
             },
         )
-        coroutineContext.cancelChildren()
 
         // THEN
         assertTrue(updateToursCalled)
@@ -138,7 +222,7 @@ class SynchronizerTest {
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTeams = updateTeamsOf {
                 updateTeamCalled = true
-                UpdateTeamsResult.success(Unit)
+                successOf(Unit)
             },
             teamStorage = teamStorageOf(getAllTeams = getAllTeams)
         )
@@ -159,7 +243,7 @@ class SynchronizerTest {
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateTeams = updateTeamsOf {
                 updateTeamCalled = true
-                UpdateTeamsResult.success(Unit)
+                successOf(Unit)
             },
             teamStorage = teamStorageOf(getAllTeams = getAllTeams)
         )
@@ -221,7 +305,7 @@ class SynchronizerTest {
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updatePlayers = updatePlayersOf {
                 updateTeamCalled = true
-                Result.success(Unit)
+                successOf(Unit)
             },
             playerStorage = playerStorageOf(getAllPlayers = getAllPlayers)
         )
@@ -242,7 +326,7 @@ class SynchronizerTest {
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updatePlayers = updatePlayersOf {
                 updateTeamCalled = true
-                Result.success(Unit)
+                successOf(Unit)
             },
             playerStorage = playerStorageOf(getAllPlayers = getAllPlayers)
         )
@@ -315,7 +399,7 @@ class SynchronizerTest {
             playerStorage = playerStorageOf(getAllPlayers = getAllPlayers),
             updateTeams = updateTeamsOf {
                 updateTeamsCalled = true
-                UpdateTeamsResult.success(Unit)
+                successOf(Unit)
             },
         )
 
@@ -337,7 +421,7 @@ class SynchronizerTest {
             },
             updateTeams = updateTeamsOf {
                 updateTeamsCalled = true
-                UpdateTeamsResult.success(Unit)
+                successOf(Unit)
             },
         )
 
@@ -381,7 +465,7 @@ class SynchronizerTest {
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true
-                Result.success(Unit)
+                successOf(Unit)
             },
         )
 
@@ -409,7 +493,7 @@ class SynchronizerTest {
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true
-                Result.success(Unit)
+                successOf(Unit)
             },
         )
 
@@ -469,7 +553,7 @@ class SynchronizerTest {
         testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                Result.success(UpdateMatchesSuccess.NextMatch(nextMatch))
+                successOf(UpdateMatchesSuccess.NextMatch(nextMatch))
             },
             scheduler = synchronizeSchedulerOf { scheduleDate = it.first }
         )

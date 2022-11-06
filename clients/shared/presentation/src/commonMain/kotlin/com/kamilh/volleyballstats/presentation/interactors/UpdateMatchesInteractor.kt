@@ -18,6 +18,7 @@ class UpdateMatchesInteractor(
     private val matchStorage: MatchStorage,
     private val tourStorage: TourStorage,
     private val updateMatchReports: UpdateMatchReports,
+    private val synchronizeStateSender: SynchronizeStateSender,
 ) : UpdateMatches(appDispatchers) {
 
     override suspend fun doWork(params: UpdateMatchesParams): UpdateMatchesResult {
@@ -39,6 +40,7 @@ class UpdateMatchesInteractor(
                             }
                         }
                         val matchesWithoutReport = savedMatches.filterNot { it.hasReport }.map { it.id }
+                        synchronizeStateSender.send(SynchronizeState.UpdatingMatches(tour = tour, matches = matchesWithoutReport))
                         updateMatchReports(UpdateMatchReportParams(tour, matchesWithoutReport))
                             .mapError { it.toUpdateMatchesError() }
                             .flatMap { createResult(tour) }

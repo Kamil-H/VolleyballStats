@@ -31,4 +31,10 @@ interface InteractorModule {
 
     val InitializeFiltersInteractor.bind: InitializeFilters
         @Provides get() = this
+
+    val SynchronizeStateHolder.bindSender: SynchronizeStateSender
+        @Provides get() = this
+
+    val SynchronizeStateHolder.bindReceiver: SynchronizeStateReceiver
+        @Provides get() = this
 }

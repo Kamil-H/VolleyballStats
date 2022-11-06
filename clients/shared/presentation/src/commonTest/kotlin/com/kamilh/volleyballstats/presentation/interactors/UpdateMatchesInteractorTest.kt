@@ -16,10 +16,7 @@ import com.kamilh.volleyballstats.utils.testAppDispatchers
 import com.kamilh.volleyballstats.utils.testClock
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 import kotlin.time.Duration.Companion.days
 
 class UpdateMatchesInteractorTest {
@@ -30,12 +27,14 @@ class UpdateMatchesInteractorTest {
         matchStorage: MatchStorage = matchStorageOf(),
         statsRepository: StatsRepository = statsRepositoryOf(),
         updateMatchReports: UpdateMatchReports = updateMatchReportsOf(),
+        synchronizeStateSender: SynchronizeStateSender = SynchronizeStateSender { }
     ): UpdateMatchesInteractor = UpdateMatchesInteractor(
         appDispatchers = appDispatchers,
         tourStorage = tourStorage,
         matchStorage = matchStorage,
         statsRepository = statsRepository,
         updateMatchReports = updateMatchReports,
+        synchronizeStateSender = synchronizeStateSender,
     )
 
     private fun paramsOf(
@@ -139,6 +138,7 @@ class UpdateMatchesInteractorTest {
         val tour = tourOf()
         val tours = listOf(tour)
         var updateMatchReportParams: UpdateMatchReportParams? = null
+        val states = mutableListOf<SynchronizeState>()
 
         // WHEN
         interactor(
@@ -153,11 +153,16 @@ class UpdateMatchesInteractorTest {
             updateMatchReports = updateMatchReportsOf {
                 updateMatchReportParams = it
                 UpdateMatchReportResult.success(Unit)
-            }
+            },
+            synchronizeStateSender = states::add
         )(paramsOf(tour = tour))
 
         // THEN
-        assertEquals(listOf(notSavedMatchId.id), updateMatchReportParams?.matches)
+        val notSavedMatchIds = listOf(notSavedMatchId.id)
+        assertEquals(notSavedMatchIds, updateMatchReportParams?.matches)
+        assertNotNull(
+            states.find { (it as SynchronizeState.UpdatingMatches).matches == notSavedMatchIds }
+        )
     }
 
     @Test

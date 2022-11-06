@@ -7,6 +7,7 @@ import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.storage.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -24,29 +25,42 @@ class Synchronizer(
     private val updateTours: UpdateTours,
     private val scheduler: SynchronizeScheduler,
     private val coroutineScope: CoroutineScope,
+    private val synchronizeStateSender: SynchronizeStateSender,
 ) {
 
+    private var job: Job? = null
     private val tag = this::class.simpleName!!
 
     fun synchronize(league: League) {
-        coroutineScope.launch {
-            synchronizeInternal(league)
+        if (job?.isActive == true) {
+            return
+        }
+        synchronizeStateSender.send(SynchronizeState.Started(league))
+        job = coroutineScope.launch {
+            val resultState = synchronizeInternal(league, isFirstCall = true)
+            synchronizeStateSender.send(resultState)
         }
     }
 
-    private suspend fun synchronizeInternal(league: League) {
+    private suspend fun synchronizeInternal(league: League, isFirstCall: Boolean): SynchronizeState {
         log("Synchronizing: $league")
         val tours = tourStorage.getAllByLeague(league).first()
-        if (tours.isEmpty() || tours.all { it.isFinished }) {
+        return if ((tours.isEmpty() || tours.all { it.isFinished }) && isFirstCall) {
             log("Tours are empty or are finished")
             initializeTours(league)
         } else {
-            updateMatches(tours)
+            updateMatches(tours).toSynchronizeState()
         }
     }
 
-    private suspend fun updateMatches(tours: List<Tour>) {
-        tours.forEach { tour ->
+    private fun Result<*, *>?.toSynchronizeState(): SynchronizeState =
+        when (this) {
+            is Result.Success -> SynchronizeState.Success
+            is Result.Failure, null -> SynchronizeState.Error
+        }
+
+    private suspend fun updateMatches(tours: List<Tour>): Result<UpdateMatchesSuccess, UpdateMatchesError>? =
+        tours.map { tour ->
             log("Updating matches ${tour.league}, ${tour.season}")
             updateTeams(tour)
             updatePlayers(tour)
@@ -59,8 +73,7 @@ class Synchronizer(
                         is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plus(3.hours), tour.league)
                     }
                 }
-        }
-    }
+        }.toResults().toResult()
 
     private suspend fun onUpdateMatchesFailure(error: UpdateMatchesError, tour: Tour) {
         when (error) {
@@ -90,12 +103,14 @@ class Synchronizer(
         scheduler.schedule(dateTime, league)
     }
 
-    private suspend fun initializeTours(league: League) {
+    private suspend fun initializeTours(league: League): SynchronizeState {
         log("Initializing tours for: $league")
-        updateTours(UpdateToursParams(league))
+        return updateTours(UpdateToursParams(league))
             .onResult { log("Initializing tours result: $it") }
             .onFailure { schedule(league = league) }
-            .onSuccess { synchronize(league) }
+            .map { synchronizeInternal(league, isFirstCall = false) }
+            .value
+            ?: SynchronizeState.Error
     }
 
     private suspend fun updatePlayers(tour: Tour) {

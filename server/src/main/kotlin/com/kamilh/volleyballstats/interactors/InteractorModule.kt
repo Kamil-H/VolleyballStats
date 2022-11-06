@@ -29,4 +29,10 @@ interface InteractorModule {
 
     val FixWrongPlayersInteractor.bind: FixWrongPlayers
         @Provides get() = this
+
+    val SynchronizeStateHolder.bindSender: SynchronizeStateSender
+        @Provides get() = this
+
+    val SynchronizeStateHolder.bindReceiver: SynchronizeStateReceiver
+        @Provides get() = this
 }
