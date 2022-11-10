@@ -11,4 +11,13 @@ sealed interface NavigationEvent : Parcelable {
 
     @Parcelize
     object Close : NavigationEvent
+
+    @Parcelize
+    object HomeTabRequested : NavigationEvent
+
+    @Parcelize
+    object PlayersTabRequested : NavigationEvent
+
+    @Parcelize
+    object TeamsTabRequested : NavigationEvent
 }
