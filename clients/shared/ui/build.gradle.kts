@@ -11,4 +11,5 @@ dependencies {
 
     androidMainImplementation(libs.accompanist.flowlayout)
     androidMainImplementation(libs.androidx.lifecycle.runtime)
+    androidMainImplementation(libs.androidx.core)
 }

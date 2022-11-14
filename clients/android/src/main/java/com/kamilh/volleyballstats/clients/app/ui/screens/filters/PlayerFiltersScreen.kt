@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app
+package com.kamilh.volleyballstats.clients.app.ui.screens.filters
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -10,19 +10,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersPresenter
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersState
 import com.kamilh.volleyballstats.ui.components.ChooseIntValue
 import com.kamilh.volleyballstats.ui.components.ChooseProperties
 import com.kamilh.volleyballstats.ui.components.SelectOption
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerFiltersScreen(
     modifier: Modifier = Modifier,
     playerFiltersPresenter: PlayerFiltersPresenter,
 ) {
     val state by playerFiltersPresenter.state.collectAsState()
-    val scrollState = rememberScrollState()
+    PlayerFiltersScreen(
+        modifier = modifier,
+        state = state,
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PlayerFiltersScreen(
+    modifier: Modifier = Modifier,
+    state: PlayerFiltersState,
+) {
+    val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -47,5 +58,4 @@ fun PlayerFiltersScreen(
             ChooseIntValue(chooseIntState = state.chooseIntState)
         }
     }
-
 }

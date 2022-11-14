@@ -71,6 +71,8 @@ dependencies {
     implementation(libs.ktor.client.jvm)
     implementation(libs.ktor.client.logging)
 
+    implementation(libs.appyx.core)
+
     coreLibraryDesugaring(libs.android.desugaring)
 
     implementation(libs.androidx.appcompat)

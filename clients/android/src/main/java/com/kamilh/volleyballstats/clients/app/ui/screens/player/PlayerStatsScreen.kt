@@ -1,6 +1,5 @@
-package com.kamilh.volleyballstats.clients.app
+package com.kamilh.volleyballstats.clients.app.ui.screens.player
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -18,19 +17,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.kamilh.volleyballstats.presentation.features.players.LoadingState
 import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
+import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsState
 import com.kamilh.volleyballstats.ui.components.SelectOption
 import com.kamilh.volleyballstats.ui.components.Table
 import com.kamilh.volleyballstats.ui.extensions.toDp
 import com.kamilh.volleyballstats.ui.theme.Dimens
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun PlayerStatsScreen(
     modifier: Modifier = Modifier,
     playerStatsPresenter: PlayerStatsPresenter,
 ) {
     val state by playerStatsPresenter.state.collectAsState()
+    PlayerStatsScreen(
+        state = state,
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@Composable
+private fun PlayerStatsScreen(
+    modifier: Modifier = Modifier,
+    state: PlayerStatsState,
+) {
     var optionViewHeight by remember { mutableStateOf(0) }
     val listState = rememberLazyListState()
 

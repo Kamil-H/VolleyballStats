@@ -34,6 +34,7 @@ activityCompose = "1.5.1"
 lifecycleRuntime = "2.5.1"
 coreLibraryDesugaring = "1.1.6"
 detektComposeRules = "0.0.22"
+appyx = "1.0.0"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }
@@ -113,6 +114,8 @@ androidx-core = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntime" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+
+appyx-core = { module = "com.bumble.appyx:core", version.ref = "appyx" }
 
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
 
