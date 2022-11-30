@@ -16,7 +16,7 @@ class TeamStatsNode(
     override fun View(modifier: Modifier) {
         EmptyScreen(
             modifier = modifier,
-            title = "Teams",
+            title = "Coming soon...",
         )
     }
 }

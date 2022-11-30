@@ -11,7 +11,6 @@ import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
 import com.kamilh.volleyballstats.presentation.navigation.TabTarget
 import com.kamilh.volleyballstats.ui.extensions.collectSafely
 
-@Suppress("")
 fun ComponentActivity.TabContainer(
     buildContext: BuildContext,
     appModule: AppModule,

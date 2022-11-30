@@ -16,7 +16,7 @@ class HomeNode(
     override fun View(modifier: Modifier) {
         EmptyScreen(
             modifier = modifier,
-            title = "Home",
+            title = "Coming soon...",
         )
     }
 }
