@@ -1,5 +1,7 @@
 package com.kamilh.volleyballstats.datetime
 
+import io.islandtime.Time
+import io.islandtime.at
 import io.islandtime.clock.now
 import io.islandtime.toZonedDateTime
 import kotlin.jvm.JvmInline
@@ -16,6 +18,9 @@ value class ZonedDateTime internal constructor(private val zonedDateTime: Island
     fun toIso8601String(): String =
         zonedDateTime.toString()
 
+    fun atMidnight(): LocalDateTime =
+        LocalDateTime(zonedDateTime.dateTime.date.at(Time.MIDNIGHT))
+
     fun plus(duration: Duration): ZonedDateTime =
         ZonedDateTime(zonedDateTime.plus(duration))
 
@@ -27,6 +32,9 @@ value class ZonedDateTime internal constructor(private val zonedDateTime: Island
 
     fun toLocalDate(): LocalDate =
         LocalDate(zonedDateTime.date)
+
+    fun timeString(): String =
+        zonedDateTime.dateTime.time.toString()
 
     override fun compareTo(other: ZonedDateTime): Int =
         zonedDateTime.compareTo(other.zonedDateTime)

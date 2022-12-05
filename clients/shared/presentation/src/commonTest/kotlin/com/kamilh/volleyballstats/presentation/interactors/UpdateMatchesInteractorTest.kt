@@ -143,7 +143,7 @@ class UpdateMatchesInteractorTest {
         // WHEN
         interactor(
             statsRepository = statsRepositoryOf(
-                getMatches = networkSuccessOf(listOf(matchOf())),
+                getMatches = networkSuccessOf(getAllMatches.map { it.copy(hasReport = true) }),
                 getTours = networkSuccessOf(tours),
             ),
             matchStorage = matchStorageOf(

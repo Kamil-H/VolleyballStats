@@ -5,18 +5,21 @@ import androidx.compose.ui.Modifier
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.node.Node
 import com.kamilh.volleyballstats.clients.app.di.AppModule
-import com.kamilh.volleyballstats.clients.app.ui.navigation.node.EmptyScreen
+import com.kamilh.volleyballstats.clients.app.ui.presenter
+import com.kamilh.volleyballstats.presentation.features.home.HomePresenter
 
 class HomeNode(
     buildContext: BuildContext,
-    private val appModule: AppModule,
+    appModule: AppModule,
 ) : Node(buildContext) {
+
+    private val presenter: HomePresenter = presenter(appModule.presenterMap)
 
     @Composable
     override fun View(modifier: Modifier) {
-        EmptyScreen(
+        HomeScreen(
             modifier = modifier,
-            title = "Coming soon...",
+            homePresenter = presenter,
         )
     }
 }

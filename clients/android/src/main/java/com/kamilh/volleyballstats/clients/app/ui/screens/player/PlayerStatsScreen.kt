@@ -6,7 +6,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -20,6 +19,7 @@ import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPrese
 import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsState
 import com.kamilh.volleyballstats.ui.components.SelectOption
 import com.kamilh.volleyballstats.ui.components.Table
+import com.kamilh.volleyballstats.ui.extensions.isScrollingUp
 import com.kamilh.volleyballstats.ui.extensions.toDp
 import com.kamilh.volleyballstats.ui.theme.Dimens
 
@@ -111,22 +111,4 @@ fun FullScreenLoadingView(
             LinearProgressIndicator()
         }
     }
-}
-
-@Composable
-private fun LazyListState.isScrollingUp(): Boolean {
-    var previousIndex by remember(this) { mutableStateOf(firstVisibleItemIndex) }
-    var previousScrollOffset by remember(this) { mutableStateOf(firstVisibleItemScrollOffset) }
-    return remember(this) {
-        derivedStateOf {
-            if (previousIndex != firstVisibleItemIndex) {
-                previousIndex > firstVisibleItemIndex
-            } else {
-                previousScrollOffset >= firstVisibleItemScrollOffset
-            }.also {
-                previousIndex = firstVisibleItemIndex
-                previousScrollOffset = firstVisibleItemScrollOffset
-            }
-        }
-    }.value
 }

@@ -24,6 +24,12 @@ value class LocalDateTime internal constructor(private val dateTime: DateTime) :
     fun minus(other: LocalDateTime): Duration =
         toInstant().durationSinceUnixEpoch - other.toInstant().durationSinceUnixEpoch
 
+    fun between(other: LocalDateTime): Int =
+        io.islandtime.measures.Duration.between(start = this.dateTime, endExclusive = other.dateTime)
+            .absoluteValue
+            .inDays
+            .toInt()
+
     private fun toInstant(): Instant =
         Instant(dateTime.toInstantAt(UtcOffset.ZERO))
 

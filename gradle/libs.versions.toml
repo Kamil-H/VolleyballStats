@@ -35,6 +35,7 @@ lifecycleRuntime = "2.5.1"
 coreLibraryDesugaring = "1.1.6"
 detektComposeRules = "0.0.22"
 appyx = "1.0.0"
+coil = "2.2.2"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }
@@ -118,6 +119,8 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 appyx-core = { module = "com.bumble.appyx:core", version.ref = "appyx" }
 
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist" }
+
+coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 #Jetbrains Compose
 jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jebrainsCompose" }

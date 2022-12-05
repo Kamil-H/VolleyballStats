@@ -29,24 +29,29 @@ class UpdateMatchesInteractor(
                 when {
                     matches.isEmpty() -> Result.failure(UpdateMatchesError.NoMatchesInTour)
                     matchStorage.insertOrUpdate(matches, tour.id).error != null -> Result.failure(UpdateMatchesError.TourNotFound)
-                    else -> {
-                        val savedMatches = matchStorage.getAllMatches(tour.id).first()
-                        val allWithReports = savedMatches.all { it.hasReport }
-                        if (allWithReports) {
-                            val tourEndDate = tourEndDate(tour)
-                            if (tourEndDate != null) {
-                                tourStorage.update(tour, tourEndDate)
-                                return Result.success(UpdateMatchesSuccess.SeasonCompleted)
-                            }
-                        }
-                        val matchesWithoutReport = savedMatches.filterNot { it.hasReport }.map { it.id }
-                        synchronizeStateSender.send(SynchronizeState.UpdatingMatches(tour = tour, matches = matchesWithoutReport))
-                        updateMatchReports(UpdateMatchReportParams(tour, matchesWithoutReport))
-                            .mapError { it.toUpdateMatchesError() }
-                            .flatMap { createResult(tour) }
-                    }
+                    else -> updateMatchReports(tour, matches)
                 }
             }
+    }
+
+    private suspend fun updateMatchReports(tour: Tour, matches: List<Match>): UpdateMatchesResult {
+        val savedMatches = matchStorage.getAllMatches(tour.id).first()
+        val allWithReports = savedMatches.all { it.hasReport }
+        if (allWithReports) {
+            val tourEndDate = tourEndDate(tour)
+            if (tourEndDate != null) {
+                tourStorage.update(tour, tourEndDate)
+                return Result.success(UpdateMatchesSuccess.SeasonCompleted)
+            }
+        }
+        val matchesWithoutReport = savedMatches
+            .filterNot { it.hasReport }
+            .filter { match -> matches.find { it.id == match.id }?.hasReport == true }
+            .map { it.id }
+        synchronizeStateSender.send(SynchronizeState.UpdatingMatches(tour = tour, matches = matchesWithoutReport))
+        return updateMatchReports(UpdateMatchReportParams(tour, matchesWithoutReport))
+            .mapError { it.toUpdateMatchesError() }
+            .flatMap { createResult(tour) }
     }
 
     private fun UpdateMatchReportError.toUpdateMatchesError(): UpdateMatchesError =

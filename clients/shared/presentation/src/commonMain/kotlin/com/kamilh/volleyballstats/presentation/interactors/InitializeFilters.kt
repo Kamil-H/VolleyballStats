@@ -6,6 +6,9 @@ import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
+import com.kamilh.volleyballstats.storage.TourStorage
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 
 typealias InitializeFilters = NoInputInteractor<Unit>
@@ -14,12 +17,13 @@ typealias InitializeFilters = NoInputInteractor<Unit>
 class InitializeFiltersInteractor(
     appDispatchers: AppDispatchers,
     private val playerFiltersStorage: PlayerFiltersStorage,
+    private val tourStorage: TourStorage,
 ) : InitializeFilters(appDispatchers) {
 
     @Suppress("MagicNumber")
     override suspend fun doWork() {
         playerFiltersStorage.setAllDefaults(
-            latestSeason = Season.create(2021), // TODO: CHANGE IT!
+            latestSeason = tourStorage.getLatestSeason().filterNotNull().first(),
             limit = 5, // TODO: CHANGE IT??
         )
     }

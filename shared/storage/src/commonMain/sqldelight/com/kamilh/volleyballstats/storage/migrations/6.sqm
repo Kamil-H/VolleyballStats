@@ -1,0 +1,39 @@
+CREATE VIEW IF NOT EXISTS match_snapshot_view AS
+SELECT match_model.*, match_report.*,
+match_model.id AS match_id,
+home_team.name AS home_name,
+home_team.logo_url AS home_logo,
+home_team.team_id AS home_team_id, 
+
+away_team.name AS away_name,
+away_team.logo_url AS away_logo,
+away_team.team_id AS away_team_id,
+
+player.name AS mvp_name,
+player.id AS mvp_id,
+
+tour.season AS season, 
+
+(SELECT 
+SUM((CASE WHEN home_score > away_score THEN 1 ELSE 0 END))
+FROM set_model
+WHERE match_id = match_report.id) AS home_result,
+
+(SELECT 
+SUM((CASE WHEN away_score > home_score THEN 1 ELSE 0 END))
+FROM set_model
+WHERE match_id = match_report.id) AS away_result
+
+FROM match_model
+
+INNER JOIN
+tour_team_model home_team ON home_team.id = match_model.home,
+tour_team_model away_team ON away_team.id = match_model.away,
+tour_model tour ON tour.id = match_model.tour_id
+
+LEFT JOIN
+match_report_model match_report ON match_report.id = match_model.id
+LEFT JOIN
+team_player_model team_player ON team_player.id = match_report.mvp
+LEFT JOIN
+player_model player ON player.id = team_player.player_id;

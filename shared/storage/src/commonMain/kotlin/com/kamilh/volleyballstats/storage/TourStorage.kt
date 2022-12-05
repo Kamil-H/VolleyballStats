@@ -21,6 +21,8 @@ interface TourStorage {
 
     fun getAll(): Flow<List<Tour>>
 
+    fun getLatestSeason(): Flow<Season?>
+
     suspend fun getAllByLeague(league: League): Flow<List<Tour>>
 
     suspend fun getByTourId(tourId: TourId): Flow<Tour?>
@@ -71,6 +73,9 @@ class SqlTourStorage(
 
     override fun getAll(): Flow<List<Tour>> =
         tourQueries.selectAllWithLeageue(mapper).asFlow().mapToList(queryRunner.dispatcher)
+
+    override fun getLatestSeason(): Flow<Season?> =
+        tourQueries.selectLatestSeason().asFlow().mapToOneOrNull(queryRunner.dispatcher)
 
     override suspend fun getAllByLeague(league: League): Flow<List<Tour>> =
         tourQueries.selectAllByLeague(league.country, league.division, mapper).asFlow().mapToList(queryRunner.dispatcher)

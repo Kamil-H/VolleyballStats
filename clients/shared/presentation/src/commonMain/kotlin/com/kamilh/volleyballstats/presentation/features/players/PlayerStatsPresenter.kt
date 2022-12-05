@@ -116,13 +116,6 @@ class PlayerStatsPresenter private constructor(
         navigationEventSender.send(NavigationEvent.PlayerFiltersRequested(chosenSkill.value))
     }
 
-    private fun SynchronizeState.toLoadingState(): LoadingState? =
-        when (this) {
-            is SynchronizeState.Started -> "Updating..."
-            is SynchronizeState.UpdatingMatches -> "Downloading ${this.matches.size} matches in ${tour.season.value} season"
-            SynchronizeState.Error, SynchronizeState.Idle, SynchronizeState.Success -> null
-        }?.let(::LoadingState)
-
     @Inject
     class Factory(
         private val statsModelMapper: StatsModelMapper,
@@ -159,3 +152,10 @@ private fun StatsSkill.getDefaultSort(): Property<String> =
 
 private fun StatsSkill.allProperties(selectedProperties: List<String>): List<Property<String>> =
     allProperties.filter { selectedProperties.contains(it.id) }
+
+fun SynchronizeState.toLoadingState(): LoadingState? =
+    when (this) {
+        is SynchronizeState.Started -> "Updating..."
+        is SynchronizeState.UpdatingMatches -> "Downloading ${this.matches.size} matches in ${tour.season.value} season"
+        SynchronizeState.Error, SynchronizeState.Idle, SynchronizeState.Success -> null
+    }?.let(::LoadingState)

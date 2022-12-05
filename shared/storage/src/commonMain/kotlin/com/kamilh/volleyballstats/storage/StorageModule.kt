@@ -10,6 +10,8 @@ import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.common.TransacterQueryRunner
 import com.kamilh.volleyballstats.storage.common.adapters.*
 import com.kamilh.volleyballstats.storage.databse.*
+import com.kamilh.volleyballstats.storage.match.MatchSnapshotStorage
+import com.kamilh.volleyballstats.storage.match.SqlMatchSnapshotStorage
 import com.squareup.sqldelight.ColumnAdapter
 import me.tatarka.inject.annotations.Provides
 import kotlin.time.Duration
@@ -188,5 +190,8 @@ interface StorageModule {
         @Provides get() = this
 
     val SqlTeamStorage.bind: TeamStorage
+        @Provides get() = this
+
+    val SqlMatchSnapshotStorage.bind: MatchSnapshotStorage
         @Provides get() = this
 }

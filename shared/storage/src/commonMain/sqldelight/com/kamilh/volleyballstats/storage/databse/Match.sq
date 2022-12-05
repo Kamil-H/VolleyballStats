@@ -20,3 +20,9 @@ tour_team_model home_team ON match_model.home = home_team.id
 INNER JOIN
 tour_team_model away_team ON match_model.away = away_team.id
 WHERE match_model.tour_id = :tour_id;
+
+selectMatchSnapshotBySeason:
+SELECT match_id, date, home_name, home_logo, home_result, away_name, away_logo, away_result, mvp_name
+FROM match_snapshot_view
+WHERE season = :season
+ORDER BY date;
