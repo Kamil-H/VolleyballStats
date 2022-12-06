@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
@@ -180,7 +181,7 @@ private fun TableRow(
     rowModifier: @Composable (rowIndex: Int) -> Modifier = { Modifier },
     cellContent: @Composable TableRowScope.() -> Unit,
 ) {
-    var currentMaxHeight by remember { mutableStateOf(0) }
+    var currentMaxHeight by rememberSaveable { mutableStateOf(0) }
     Row(modifier = rowModifier(rowIndex)) {
         (0 until columnCount).forEach { columnIndex ->
             Box(modifier = Modifier.layout { measurable, constraints ->
@@ -194,7 +195,7 @@ private fun TableRow(
                 }
 
                 val maxHeight = maxOf(currentMaxHeight, placeable.height)
-                if (maxWidth > currentMaxHeight) {
+                if (maxHeight > currentMaxHeight) {
                     currentMaxHeight = maxHeight
                 }
 

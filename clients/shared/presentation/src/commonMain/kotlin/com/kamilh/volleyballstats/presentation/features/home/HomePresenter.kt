@@ -67,7 +67,7 @@ class HomePresenter private constructor(
             val closestHeaderIndex = closestHeaderIndex(matchSnapshots)
             val scrollToItem = if (groupedItems.isNotEmpty() && groupedItems != currentState.matches) {
                 closestHeaderIndex
-            } else null
+            } else currentState.scrollToItem
             currentState.copy(
                 matches = groupedItems,
                 scrollToItem = scrollToItem,

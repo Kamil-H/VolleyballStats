@@ -61,7 +61,6 @@ fun MatchList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("MagicNumber")
 @Composable
 private fun MatchItem(

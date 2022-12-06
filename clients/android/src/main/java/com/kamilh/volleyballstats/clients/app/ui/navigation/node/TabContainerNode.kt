@@ -1,5 +1,7 @@
 package com.kamilh.volleyballstats.clients.app.ui.navigation.node
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +16,7 @@ import com.bumble.appyx.core.node.Node
 import com.bumble.appyx.core.node.ParentNode
 import com.bumble.appyx.navmodel.backstack.BackStack
 import com.bumble.appyx.navmodel.spotlight.Spotlight
+import com.bumble.appyx.navmodel.spotlight.transitionhandler.rememberSpotlightFader
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.screens.home.HomeNode
 import com.kamilh.volleyballstats.clients.app.ui.screens.player.PlayerStatsNode
@@ -33,6 +36,14 @@ class TabContainerNode(
         Children(
             modifier = modifier.fillMaxSize(),
             navModel = spotlight,
+            transitionHandler = rememberSpotlightFader(
+                transitionSpec = {
+                    tween(
+                        durationMillis = 300,
+                        easing = LinearEasing,
+                    )
+                }
+            ),
         )
     }
 

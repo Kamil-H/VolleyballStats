@@ -34,7 +34,7 @@ private fun HomeScreen(
 
     LaunchedEffect(state.scrollToItem) {
         state.scrollToItem?.let { scrollToItem ->
-            delay(200)
+            delay(1000)
             scrollState.animateScrollToItem(index = scrollToItem)
             state.onScrolledToItem(scrollToItem)
         }
