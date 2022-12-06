@@ -50,7 +50,7 @@ class Synchronizer(
             log("Tours are empty or are finished")
             initializeTours(league)
         } else {
-            updateMatches(tours).toSynchronizeState()
+            updateMatches(tours.reversed()).toSynchronizeState()
         }
     }
 
