@@ -2,6 +2,7 @@ package com.kamilh.volleyballstats.clients.app
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.core.view.WindowCompat
 import com.bumble.appyx.core.integration.NodeHost
 import com.bumble.appyx.core.integrationpoint.NodeComponentActivity
 import com.kamilh.volleyballstats.clients.app.di.AppModule
@@ -15,6 +16,10 @@ class MainActivity : NodeComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // This will lay out our app behind the system bars
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             App(mainPresenter = appModule.rememberPresenter()) {
                 NodeHost(integrationPoint = appyxIntegrationPoint) { buildContext ->

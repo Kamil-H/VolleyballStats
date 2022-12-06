@@ -1,15 +1,11 @@
 package com.kamilh.volleyballstats.presentation.features.players
 
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
-import com.kamilh.volleyballstats.interactors.SynchronizeState
 import com.kamilh.volleyballstats.interactors.SynchronizeStateReceiver
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
-import com.kamilh.volleyballstats.presentation.features.common.Property
-import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
-import com.kamilh.volleyballstats.presentation.features.common.TableContent
-import com.kamilh.volleyballstats.presentation.features.common.selectSingle
+import com.kamilh.volleyballstats.presentation.features.common.*
 import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
@@ -60,15 +56,11 @@ class PlayerStatsPresenter private constructor(
             }
             .combine(synchronizeStateReceiver.receive()) { tableContent, synchronizeState ->
                 _state.update { currentState ->
-                    val loadingState = synchronizeState.toLoadingState()
-                    val isLoading = loadingState != null
-                    val hasContent = tableContent.rows.isNotEmpty()
+                    val loadingState = synchronizeState.toLoadingState(hasContent = tableContent.rows.isNotEmpty())
                     currentState.copy(
                         tableContent = tableContent,
                         loadingState = loadingState,
-                        showFullScreenLoading = isLoading && !hasContent,
-                        showSmallLoading = isLoading && hasContent,
-                        showFab = !isLoading,
+                        actionButton = currentState.actionButton.copy(show = !synchronizeState.isLoading),
                     )
                 }
             }
@@ -152,10 +144,3 @@ private fun StatsSkill.getDefaultSort(): Property<String> =
 
 private fun StatsSkill.allProperties(selectedProperties: List<String>): List<Property<String>> =
     allProperties.filter { selectedProperties.contains(it.id) }
-
-fun SynchronizeState.toLoadingState(): LoadingState? =
-    when (this) {
-        is SynchronizeState.Started -> "Updating..."
-        is SynchronizeState.UpdatingMatches -> "Downloading ${this.matches.size} matches in ${tour.season.value} season"
-        SynchronizeState.Error, SynchronizeState.Idle, SynchronizeState.Success -> null
-    }?.let(::LoadingState)

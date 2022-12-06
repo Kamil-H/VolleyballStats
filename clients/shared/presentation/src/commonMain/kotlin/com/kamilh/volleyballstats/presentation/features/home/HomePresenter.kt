@@ -8,10 +8,8 @@ import com.kamilh.volleyballstats.interactors.SynchronizeStateReceiver
 import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
-import com.kamilh.volleyballstats.presentation.features.common.GroupedMatchItem
-import com.kamilh.volleyballstats.presentation.features.common.MatchItem
-import com.kamilh.volleyballstats.presentation.features.common.TextPair
-import com.kamilh.volleyballstats.presentation.features.players.toLoadingState
+import com.kamilh.volleyballstats.presentation.features.TopBarState
+import com.kamilh.volleyballstats.presentation.features.common.*
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.storage.TourStorage
 import com.kamilh.volleyballstats.storage.match.MatchSnapshotStorage
@@ -32,6 +30,11 @@ class HomePresenter private constructor(
         HomeState(
             onRefreshButtonClicked = ::refresh,
             onScrolledToItem = ::onScrolledToItem,
+            topBarState = TopBarState(
+                title = "Matches",
+                showToolbar = true,
+                actionButtonIcon = Icon.Refresh,
+            )
         )
     )
     val state: StateFlow<HomeState> = _state.asStateFlow()
@@ -60,9 +63,7 @@ class HomePresenter private constructor(
             )
         }
         _state.update { currentState ->
-            val loadingState = synchronizeState.toLoadingState()
-            val isLoading = loadingState != null
-            val hasContent = matchSnapshots.isNotEmpty()
+            val loadingState = synchronizeState.toLoadingState(hasContent = matchSnapshots.isNotEmpty())
             val closestHeaderIndex = closestHeaderIndex(matchSnapshots)
             val scrollToItem = if (groupedItems.isNotEmpty() && groupedItems != currentState.matches) {
                 closestHeaderIndex
@@ -72,8 +73,6 @@ class HomePresenter private constructor(
                 scrollToItem = scrollToItem,
                 loadingState = loadingState,
                 itemToSnapTo = closestHeaderIndex ?: 0,
-                showFullScreenLoading = isLoading && !hasContent,
-                showSmallLoading = isLoading && hasContent,
             )
         }
     }
@@ -151,3 +150,4 @@ class HomePresenter private constructor(
         )
     }
 }
+

@@ -29,7 +29,7 @@ compose = "1.2.1"
 jebrainsCompose = "1.2.1"
 accompanist = "0.26.4-beta"
 composeCompiler = "1.3.2"
-material3 = "1.2.1"
+material3 = "1.0.1"
 activityCompose = "1.5.1"
 lifecycleRuntime = "2.5.1"
 coreLibraryDesugaring = "1.1.6"
@@ -125,4 +125,5 @@ coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 #Jetbrains Compose
 jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jebrainsCompose" }
 jetbrains-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jebrainsCompose" }
-jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jebrainsCompose" }
+#Jetpack Compose using this to enable latest features from the material library
+jetbrains-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }

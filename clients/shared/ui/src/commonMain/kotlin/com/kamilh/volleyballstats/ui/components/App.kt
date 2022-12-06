@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.ui.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -16,7 +17,7 @@ import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
 fun App(
     mainPresenter: MainPresenter,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     VolleyballStatsTheme {
         val state by mainPresenter.state.collectAsState()
@@ -38,10 +39,10 @@ fun App(
             }
         ) { paddingValues ->
             Surface(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier.fillMaxSize().padding(bottom = paddingValues.calculateBottomPadding()),
                 color = MaterialTheme.colorScheme.background
             ) {
-                content()
+                content(PaddingValues())
             }
         }
     }
