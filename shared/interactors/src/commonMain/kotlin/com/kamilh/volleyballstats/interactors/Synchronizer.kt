@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.domain.utils.Logger
@@ -71,7 +71,7 @@ class Synchronizer(
                 .onSuccess {
                     when (it) {
                         UpdateMatchesSuccess.NothingToSchedule, UpdateMatchesSuccess.SeasonCompleted -> { }
-                        is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.toLocalDateTime().plus(3.hours), tour.league)
+                        is UpdateMatchesSuccess.NextMatch -> schedule(it.dateTime.plus(3.hours), tour.league)
                     }
                 }
         }.toResults().toResult()
@@ -96,10 +96,10 @@ class Synchronizer(
     }
 
     private fun schedule(duration: Duration = 10.minutes, league: League) {
-        schedule(CurrentDate.localDateTime.plus(duration), league)
+        schedule(CurrentDate.zonedDateTime.plus(duration), league)
     }
 
-    private fun schedule(dateTime: LocalDateTime, league: League) {
+    private fun schedule(dateTime: ZonedDateTime, league: League) {
         log("Scheduling: $dateTime")
         scheduler.schedule(dateTime, league)
     }

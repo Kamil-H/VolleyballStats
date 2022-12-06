@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.*
 import com.kamilh.volleyballstats.domain.interactor.Interactor
 import com.kamilh.volleyballstats.domain.models.*
@@ -10,7 +10,6 @@ import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.domain.utils.Severity
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
 import com.kamilh.volleyballstats.storage.*
-import com.kamilh.volleyballstats.utils.localDateTime
 import com.kamilh.volleyballstats.utils.testClock
 import com.kamilh.volleyballstats.utils.zonedDateTime
 import kotlinx.coroutines.flow.flow
@@ -69,7 +68,7 @@ class SynchronizerTest {
         // GIVEN
         val tours = emptyList<Tour>()
         val updateToursError = UpdateToursError.Network(networkErrorOf())
-        var scheduleDate: LocalDateTime? = null
+        var scheduleDate: ZonedDateTime? = null
 
         // WHEN
         testInteractor(
@@ -258,7 +257,7 @@ class SynchronizerTest {
         // GIVEN
         val tours = listOf(tourOf())
         val getAllTeams = flowOf(emptyList<Team>())
-        var scheduleDate: LocalDateTime? = null
+        var scheduleDate: ZonedDateTime? = null
 
         // WHEN
         testInteractor(
@@ -341,7 +340,7 @@ class SynchronizerTest {
         // GIVEN
         val tours = listOf(tourOf())
         val getAllPlayers = flowOf(emptyList<Player>())
-        var scheduleDate: LocalDateTime? = null
+        var scheduleDate: ZonedDateTime? = null
 
         // WHEN
         testInteractor(
@@ -528,7 +527,7 @@ class SynchronizerTest {
     fun `schedule called when updateMatches returns Network error`() = runTest {
         // GIVEN
         val tours = listOf(tourOf())
-        var scheduleDate: LocalDateTime? = null
+        var scheduleDate: ZonedDateTime? = null
 
         // WHEN
         testInteractor(
@@ -548,7 +547,7 @@ class SynchronizerTest {
         // GIVEN
         val tours = listOf(tourOf())
         val nextMatch = zonedDateTime().plus(2.days)
-        var scheduleDate: LocalDateTime? = null
+        var scheduleDate: ZonedDateTime? = null
 
         // WHEN
         testInteractor(
@@ -560,10 +559,10 @@ class SynchronizerTest {
         )
 
         // THEN
-        assertEquals(nextMatch.toLocalDateTime().plus(3.hours), scheduleDate)
+        assertEquals(nextMatch.plus(3.hours), scheduleDate)
     }
 
-    private fun assertDate(date: LocalDateTime?) {
-        assertEquals(localDateTime().plus(5.minutes), date)
+    private fun assertDate(date: ZonedDateTime?) {
+        assertEquals(zonedDateTime().plus(5.minutes), date)
     }
 }

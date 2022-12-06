@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.interactors
 
-import com.kamilh.volleyballstats.datetime.LocalDateTime
+import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
@@ -22,13 +22,13 @@ class DelayedSynchronizeScheduler(private val coroutineScope: CoroutineScope) : 
     private val _synchronizeSignal = Channel<SynchronizeSignal>()
     val synchronizeSignal = _synchronizeSignal.receiveAsFlow()
 
-    override fun schedule(dateTime: LocalDateTime, league: League) {
+    override fun schedule(dateTime: ZonedDateTime, league: League) {
         if (waitJob?.isActive == true) {
             waitJob?.cancel()
             waitJob = null
         }
         waitJob = coroutineScope.launch {
-            val between = dateTime.minus(CurrentDate.localDateTime)
+            val between = dateTime.minus(CurrentDate.zonedDateTime)
             Logger.i("Scheduling... delaying: $between")
             delay(between)
             Logger.i("Scheduling... delayed for: $between")
