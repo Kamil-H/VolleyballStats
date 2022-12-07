@@ -14,4 +14,5 @@ actual fun Icon.toPainter(): Painter =
         Icon.Person -> R.drawable.person_24
         Icon.Groups -> R.drawable.groups_24
         Icon.Refresh -> R.drawable.refresh_24
+        Icon.ArrowBack -> R.drawable.arrow_back_24
     }.let { painterResource(id = it) }

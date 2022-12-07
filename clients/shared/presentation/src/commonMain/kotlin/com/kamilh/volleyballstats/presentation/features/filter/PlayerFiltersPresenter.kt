@@ -3,7 +3,9 @@ package com.kamilh.volleyballstats.presentation.features.filter
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
-import com.kamilh.volleyballstats.presentation.features.*
+import com.kamilh.volleyballstats.presentation.features.Presenter
+import com.kamilh.volleyballstats.presentation.features.SavableMap
+import com.kamilh.volleyballstats.presentation.features.TopBarState
 import com.kamilh.volleyballstats.presentation.features.common.*
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
@@ -57,7 +59,12 @@ class PlayerFiltersPresenter private constructor(
         specializationSelectOption = selectedSpecializations.toSpecializationOptionState(allSpecializations),
         teamsSelectOption = selectedTeams.toTeamOptionState(allTeams),
         chooseIntState = selectedLimit.toChooseIntState(maxLimit),
-        onApplyButtonClicked = ::onApplyButtonClicked,
+        onBackButtonClicked = ::onBackButtonClicked,
+        topBarState = TopBarState(
+            title = "Adjust",
+            navigationButtonIcon = Icon.ArrowBack,
+            showToolbar = true,
+        )
     )
 
     // PROPERTIES
@@ -160,7 +167,7 @@ class PlayerFiltersPresenter private constructor(
         playerFiltersStorage.setNewLimit(skill, value)
     }
 
-    private fun onApplyButtonClicked() {
+    private fun onBackButtonClicked() {
         navigationEventSender.send(NavigationEvent.Close)
     }
 

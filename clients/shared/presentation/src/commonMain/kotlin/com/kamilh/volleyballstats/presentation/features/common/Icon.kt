@@ -6,4 +6,5 @@ enum class Icon {
     Person,
     Groups,
     Refresh,
+    ArrowBack,
 }
