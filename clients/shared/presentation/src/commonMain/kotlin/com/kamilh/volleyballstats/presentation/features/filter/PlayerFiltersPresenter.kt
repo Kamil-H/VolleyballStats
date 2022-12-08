@@ -24,7 +24,9 @@ class PlayerFiltersPresenter private constructor(
     private val navigationEventSender: NavigationEventSender,
 ) : Presenter {
 
-    private val _state: MutableStateFlow<PlayerFiltersState> = MutableStateFlow(PlayerFilters().toPlayerFiltersState())
+    private val selectedControlIndex: MutableStateFlow<Int> = MutableStateFlow(value = 0)
+    private val _state: MutableStateFlow<PlayerFiltersState> = MutableStateFlow(
+        PlayerFilters().toPlayerFiltersState(selectedControlIndex = selectedControlIndex.value))
     val state: StateFlow<PlayerFiltersState> = _state.asStateFlow()
 
     init {
@@ -40,10 +42,12 @@ class PlayerFiltersPresenter private constructor(
             playerFiltersStorage.getPlayerFilters(skill),
             teamStorage.getTeamSnapshots(seasons = this),
             tourStorage.getAll(),
-        ) { filters: PlayerFilters, teamSnapshots: Set<TeamSnapshot>, tours: List<Tour> ->
+            selectedControlIndex,
+        ) { filters: PlayerFilters, teamSnapshots: Set<TeamSnapshot>, tours: List<Tour>, selectedControlIndex ->
             filters.toPlayerFiltersState(
                 allSeasons = tours.map { tour -> tour.season },
                 allTeams = teamSnapshots,
+                selectedControlIndex = selectedControlIndex,
             )
         }
 
@@ -53,6 +57,7 @@ class PlayerFiltersPresenter private constructor(
         allSpecializations: List<Specialization> = Specialization.values().toList(),
         allTeams: Set<TeamSnapshot> = emptySet(),
         maxLimit: Int = 100,
+        selectedControlIndex: Int,
     ): PlayerFiltersState = PlayerFiltersState(
         properties = selectedProperties.toChoosePropertiesState(allProperties),
         seasonSelectOption = selectedSeasons.toSeasonOptionState(allSeasons),
@@ -64,7 +69,12 @@ class PlayerFiltersPresenter private constructor(
             title = "Adjust",
             navigationButtonIcon = Icon.ArrowBack,
             showToolbar = true,
-        )
+        ),
+        segmentedControlState = SegmentedControlState(
+            items = Control.values().map { it.itemName },
+            selectedIndex = selectedControlIndex,
+        ),
+        showControl = Control.values()[selectedControlIndex],
     )
 
     // PROPERTIES
@@ -169,6 +179,10 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onBackButtonClicked() {
         navigationEventSender.send(NavigationEvent.Close)
+    }
+
+    fun onControlItemSelected(selectedIndex: Int) {
+        selectedControlIndex.value = selectedIndex
     }
 
     @Inject

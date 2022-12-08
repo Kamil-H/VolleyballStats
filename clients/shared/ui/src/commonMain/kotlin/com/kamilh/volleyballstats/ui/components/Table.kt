@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
@@ -106,14 +107,13 @@ private fun HeaderCellText(text: String, selected: Boolean, modifier: Modifier =
 
 @Composable
 private fun TableRow(horizontalSpacing: Dp, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
-        Spacer(modifier = Modifier.height(Dimens.MarginSmall))
-        Row {
-            Spacer(modifier = Modifier.width(horizontalSpacing))
-            content()
-            Spacer(modifier = Modifier.width(horizontalSpacing))
-        }
-        Spacer(modifier = Modifier.height(Dimens.MarginSmall))
+    Row(
+        modifier.padding(vertical = Dimens.MarginSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.width(horizontalSpacing))
+        content()
+        Spacer(modifier = Modifier.width(horizontalSpacing))
     }
 }
 

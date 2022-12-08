@@ -9,6 +9,7 @@ import com.kamilh.volleyballstats.presentation.features.ScreenState
 import com.kamilh.volleyballstats.presentation.features.TopBarState
 import com.kamilh.volleyballstats.presentation.features.common.ChooseIntState
 import com.kamilh.volleyballstats.presentation.features.common.ChoosePropertiesState
+import com.kamilh.volleyballstats.presentation.features.common.SegmentedControlState
 import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
 
 data class PlayerFiltersState(
@@ -17,8 +18,15 @@ data class PlayerFiltersState(
     val specializationSelectOption: SelectOptionState<Specialization>,
     val teamsSelectOption: SelectOptionState<TeamId>,
     val chooseIntState: ChooseIntState,
+    val segmentedControlState: SegmentedControlState,
+    val showControl: Control,
     val onBackButtonClicked: () -> Unit,
     override val loadingState: LoadingState = LoadingState(),
     override val topBarState: TopBarState,
     override val actionButton: ActionButton = ActionButton(),
 ) : ScreenState
+
+enum class Control(val itemName: String) {
+    Filters("Filters"),
+    Properties("Properties"),
+}
