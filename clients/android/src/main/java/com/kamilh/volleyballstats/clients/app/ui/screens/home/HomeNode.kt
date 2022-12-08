@@ -19,7 +19,7 @@ class HomeNode(
     override fun View(modifier: Modifier) {
         HomeScreen(
             modifier = modifier,
-            homePresenter = presenter,
+            presenter = presenter,
         )
     }
 }

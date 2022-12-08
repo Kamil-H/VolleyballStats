@@ -14,9 +14,11 @@ fun interface SynchronizeStateSender {
     fun send(synchronizeState: SynchronizeState)
 }
 
-fun interface SynchronizeStateReceiver {
+interface SynchronizeStateReceiver {
 
     fun receive(): StateFlow<SynchronizeState>
+
+    fun errorConsumed()
 }
 
 @Inject
@@ -31,16 +33,24 @@ class SynchronizeStateHolder : SynchronizeStateSender, SynchronizeStateReceiver 
 
     override fun receive(): StateFlow<SynchronizeState> =
         state.asStateFlow()
+
+    override fun errorConsumed() {
+        state.value = SynchronizeState.Idle
+    }
 }
 
 sealed interface SynchronizeState {
 
     object Idle : SynchronizeState
     object Success : SynchronizeState
-    object Error : SynchronizeState
     data class Started(val league: League) : SynchronizeState
     data class UpdatingMatches(
         val tour: Tour,
         val matches: List<MatchId>,
     ) : SynchronizeState
+    data class Error(val type: Type) : SynchronizeState {
+        enum class Type {
+            Connection, Server, Unexpected
+        }
+    }
 }

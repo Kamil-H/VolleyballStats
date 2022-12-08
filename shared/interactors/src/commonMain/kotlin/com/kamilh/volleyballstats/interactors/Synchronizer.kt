@@ -54,10 +54,25 @@ class Synchronizer(
         }
     }
 
-    private fun Result<*, *>?.toSynchronizeState(): SynchronizeState =
+    private fun Result<UpdateMatchesSuccess, UpdateMatchesError>?.toSynchronizeState(): SynchronizeState =
         when (this) {
             is Result.Success -> SynchronizeState.Success
-            is Result.Failure, null -> SynchronizeState.Error
+            is Result.Failure -> SynchronizeState.Error(type = this.error.toSynchronizeError())
+            null -> SynchronizeState.Error(type = SynchronizeState.Error.Type.Unexpected)
+        }
+
+    private fun UpdateMatchesError.toSynchronizeError(): SynchronizeState.Error.Type =
+        when (this) {
+            is UpdateMatchesError.Network -> this.networkError.toSynchronizeErrorType()
+            is UpdateMatchesError.Insert, UpdateMatchesError.NoMatchesInTour,
+            UpdateMatchesError.TourNotFound -> SynchronizeState.Error.Type.Unexpected
+        }
+
+    private fun NetworkError.toSynchronizeErrorType(): SynchronizeState.Error.Type =
+        when (this) {
+            is NetworkError.ConnectionError -> SynchronizeState.Error.Type.Connection
+            is NetworkError.HttpError -> SynchronizeState.Error.Type.Server
+            is NetworkError.UnexpectedException -> SynchronizeState.Error.Type.Unexpected
         }
 
     private suspend fun updateMatches(tours: List<Tour>): Result<UpdateMatchesSuccess, UpdateMatchesError>? =
@@ -106,13 +121,20 @@ class Synchronizer(
 
     private suspend fun initializeTours(league: League): SynchronizeState {
         log("Initializing tours for: $league")
-        return updateTours(UpdateToursParams(league))
+        val result = updateTours(UpdateToursParams(league))
             .onResult { log("Initializing tours result: $it") }
             .onFailure { schedule(league = league) }
             .map { synchronizeInternal(league, isFirstCall = false) }
-            .value
-            ?: SynchronizeState.Error
+        return when (result) {
+            is Result.Failure -> SynchronizeState.Error(type = result.error.toSynchronizeError())
+            is Result.Success -> result.value
+        }
     }
+
+    private fun UpdateToursError.toSynchronizeError(): SynchronizeState.Error.Type =
+        when (this) {
+            is UpdateToursError.Network -> this.networkError.toSynchronizeErrorType()
+        }
 
     private suspend fun updatePlayers(tour: Tour) {
         log("Updating players for: ${tour.league}, ${tour.season}")

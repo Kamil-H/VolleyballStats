@@ -18,13 +18,13 @@ import com.kamilh.volleyballstats.ui.theme.Dimens
 @Composable
 fun PlayerFiltersScreen(
     modifier: Modifier = Modifier,
-    playerFiltersPresenter: PlayerFiltersPresenter,
+    presenter: PlayerFiltersPresenter,
 ) {
-    val state by playerFiltersPresenter.state.collectAsState()
+    val state by presenter.state.collectAsState()
     PlayerFiltersScreen(
         modifier = modifier,
         state = state,
-        onItemSelection = playerFiltersPresenter::onControlItemSelected,
+        onItemSelection = presenter::onControlItemSelected,
     )
 }
 

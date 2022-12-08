@@ -17,9 +17,9 @@ import com.kamilh.volleyballstats.ui.extensions.toDp
 @Composable
 fun PlayerStatsScreen(
     modifier: Modifier = Modifier,
-    playerStatsPresenter: PlayerStatsPresenter,
+    presenter: PlayerStatsPresenter,
 ) {
-    val state by playerStatsPresenter.state.collectAsState()
+    val state by presenter.state.collectAsState()
     PlayerStatsScreen(
         state = state,
         modifier = modifier,

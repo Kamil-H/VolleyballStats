@@ -19,7 +19,7 @@ class PlayerStatsNode(
     override fun View(modifier: Modifier) {
         PlayerStatsScreen(
             modifier = modifier,
-            playerStatsPresenter = presenter,
+            presenter = presenter,
         )
     }
 }

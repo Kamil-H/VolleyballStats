@@ -3,10 +3,7 @@ package com.kamilh.volleyballstats.presentation.features.filter
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.TeamId
-import com.kamilh.volleyballstats.presentation.features.ActionButton
-import com.kamilh.volleyballstats.presentation.features.LoadingState
-import com.kamilh.volleyballstats.presentation.features.ScreenState
-import com.kamilh.volleyballstats.presentation.features.TopBarState
+import com.kamilh.volleyballstats.presentation.features.*
 import com.kamilh.volleyballstats.presentation.features.common.ChooseIntState
 import com.kamilh.volleyballstats.presentation.features.common.ChoosePropertiesState
 import com.kamilh.volleyballstats.presentation.features.common.SegmentedControlState
@@ -24,6 +21,7 @@ data class PlayerFiltersState(
     override val loadingState: LoadingState = LoadingState(),
     override val topBarState: TopBarState,
     override val actionButton: ActionButton = ActionButton(),
+    override val message: Message? = null,
 ) : ScreenState
 
 enum class Control(val itemName: String) {

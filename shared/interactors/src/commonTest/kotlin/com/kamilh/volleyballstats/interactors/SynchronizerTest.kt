@@ -168,7 +168,7 @@ class SynchronizerTest {
         )
 
         // THEN
-        assertTrue(states.contains(SynchronizeState.Error))
+        assertTrue(states.contains(SynchronizeState.Error(type = SynchronizeState.Error.Type.Unexpected)))
     }
 
     @Test
@@ -188,7 +188,7 @@ class SynchronizerTest {
         )
 
         // THEN
-        assertTrue(states.contains(SynchronizeState.Error))
+        assertTrue(states.contains(SynchronizeState.Error(type = SynchronizeState.Error.Type.Unexpected)))
     }
 
     @Test

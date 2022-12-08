@@ -73,6 +73,7 @@ class HomePresenter private constructor(
                 scrollToItem = scrollToItem,
                 loadingState = loadingState,
                 itemToSnapTo = closestHeaderIndex ?: 0,
+                message = synchronizeState.toMessage(),
             )
         }
     }
@@ -125,6 +126,14 @@ class HomePresenter private constructor(
         val dateOfMin = models[indexOfMinDistance].date?.atMidnight()
         val daysToAdd = matchDays.indexOfFirst { it == dateOfMin }
         return indexOfMinDistance + daysToAdd
+    }
+
+    fun onMessageDismissed() {
+        synchronizeStateReceiver.errorConsumed()
+    }
+
+    fun onRetry() {
+        refresh()
     }
 
     @Inject

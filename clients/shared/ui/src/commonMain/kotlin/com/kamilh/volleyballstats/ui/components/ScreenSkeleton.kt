@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +37,8 @@ fun ScreenSkeleton(
     onFabButtonClicked: () -> Unit = {},
     onActionButtonClicked: () -> Unit = {},
     onNavigationButtonClicked: () -> Unit = {},
+    onMessageButtonClicked: () -> Unit = {},
+    onMessageDismissed: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     AdjustBarsColor(lightStatusBar = state.topBarState.background.lightStatusBar())
@@ -50,6 +54,8 @@ fun ScreenSkeleton(
             onFabButtonClicked = onFabButtonClicked,
             onActionButtonClicked = onActionButtonClicked,
             onNavigationButtonClicked = onNavigationButtonClicked,
+            onMessageButtonClicked = onMessageButtonClicked,
+            onMessageDismissed = onMessageDismissed,
         ) { paddingValues ->
             ScreenContent(
                 state = state,
@@ -70,10 +76,30 @@ private fun ScreenSkeleton(
     onFabButtonClicked: () -> Unit = {},
     onActionButtonClicked: () -> Unit = {},
     onNavigationButtonClicked: () -> Unit = {},
+    onMessageButtonClicked: () -> Unit = {},
+    onMessageDismissed: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state.message) {
+        state.message?.let { message ->
+            val result = snackbarHostState.showSnackbar(
+                message = message.text,
+                actionLabel = message.buttonText,
+                withDismissAction = false,
+                duration = SnackbarDuration.Short,
+            )
+            when (result) {
+                SnackbarResult.Dismissed -> onMessageDismissed()
+                SnackbarResult.ActionPerformed -> onMessageButtonClicked()
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             val topBarState = state.topBarState
             if (topBarState.showToolbar) {

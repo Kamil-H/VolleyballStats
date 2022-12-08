@@ -15,12 +15,14 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    homePresenter: HomePresenter,
+    presenter: HomePresenter,
 ) {
-    val state by homePresenter.state.collectAsState()
+    val state by presenter.state.collectAsState()
     HomeScreen(
         modifier = modifier,
         state = state,
+        onRetry = presenter::onRetry,
+        onMessageDismissed = presenter::onMessageDismissed,
     )
 }
 
@@ -28,6 +30,8 @@ fun HomeScreen(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeState,
+    onRetry: () -> Unit,
+    onMessageDismissed: () -> Unit,
 ) {
 
     val scrollState = rememberLazyListState()
@@ -43,7 +47,9 @@ private fun HomeScreen(
     ScreenSkeleton(
         modifier = modifier,
         state = state,
-        onActionButtonClicked = { state.onRefreshButtonClicked() }
+        onActionButtonClicked = { state.onRefreshButtonClicked() },
+        onMessageButtonClicked = onRetry,
+        onMessageDismissed = onMessageDismissed,
     ) {
         MatchList(
             groupedMatchItems = state.matches,

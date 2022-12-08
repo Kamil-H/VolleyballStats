@@ -21,7 +21,7 @@ class PlayerFiltersNode(
     override fun View(modifier: Modifier) {
         PlayerFiltersScreen(
             modifier = modifier,
-            playerFiltersPresenter = presenter,
+            presenter = presenter,
         )
     }
 }

@@ -9,6 +9,8 @@ interface ScreenState {
     val topBarState: TopBarState
 
     val actionButton: ActionButton
+
+    val message: Message?
 }
 
 data class LoadingState(
@@ -32,4 +34,9 @@ data class TopBarState(
 data class ActionButton(
     val show: Boolean = false,
     val icon: Icon? = null,
+)
+
+data class Message(
+    val text: String,
+    val buttonText: String? = null,
 )

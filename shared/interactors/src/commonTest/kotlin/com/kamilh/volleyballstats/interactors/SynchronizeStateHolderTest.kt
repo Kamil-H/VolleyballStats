@@ -18,7 +18,7 @@ class SynchronizeStateHolderTest {
     fun `SynchronizeStateHolder emits state correctly`() {
         // GIVEN
         val stateHolder = SynchronizeStateHolder()
-        val state = SynchronizeState.Error
+        val state = SynchronizeState.Error(type = SynchronizeState.Error.Type.Unexpected)
 
         // WHEN
         stateHolder.send(state)
