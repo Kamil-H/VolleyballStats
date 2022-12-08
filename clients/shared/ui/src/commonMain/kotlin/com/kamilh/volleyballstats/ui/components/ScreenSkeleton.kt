@@ -2,10 +2,6 @@ package com.kamilh.volleyballstats.ui.components
 
 import android.app.Activity
 import android.os.Build
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -64,7 +60,7 @@ fun ScreenSkeleton(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScreenSkeleton(
     state: ScreenState,
@@ -116,17 +112,12 @@ private fun ScreenSkeleton(
             }
         },
         floatingActionButton = {
-            AnimatedVisibility(
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = fabPadding),
+                onClick = { onFabButtonClicked() },
                 visible = listState.isScrollingUp() && state.actionButton.show,
-                enter = scaleIn(),
-                exit = scaleOut(),
             ) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = fabPadding),
-                    onClick = { onFabButtonClicked() },
-                ) {
-                    IconView(state.actionButton.icon)
-                }
+                IconView(state.actionButton.icon)
             }
         }
     ) { paddingValues ->
