@@ -4,6 +4,7 @@ import androidx.core.app.ComponentActivity
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.navmodel.backstack.BackStack
 import com.bumble.appyx.navmodel.spotlight.Spotlight
+import com.bumble.appyx.navmodel.spotlight.activeIndex
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.navigation.*
 import com.kamilh.volleyballstats.clients.app.ui.navigation.node.TabContainerNode
@@ -14,6 +15,7 @@ import com.kamilh.volleyballstats.ui.extensions.collectSafely
 fun ComponentActivity.TabContainer(
     buildContext: BuildContext,
     appModule: AppModule,
+    onTabSelected: (TabTarget) -> Unit = {},
 ): TabContainerNode {
     val backStack: () -> BackStack<BackStackTarget> = {
         BackStack(
@@ -38,6 +40,7 @@ fun ComponentActivity.TabContainer(
     )
     val resolver = NavigationEventResolver(appNavigator)
     collectSafely(appModule.navigationEventReceiver.receive(), resolver::resolve)
+    collectSafely(spotlight.activeIndex()) { onTabSelected(tabTargets[it]) }
     return TabContainerNode(
         buildContext = buildContext,
         spotlight = spotlight,
