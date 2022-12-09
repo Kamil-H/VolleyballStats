@@ -21,6 +21,17 @@ INNER JOIN
 tour_team_model away_team ON match_model.away = away_team.id
 WHERE match_model.tour_id = :tour_id;
 
+selectMatchesWithReportByTour:
+SELECT match_model.id
+FROM match_model
+LEFT JOIN
+match_report_model match_statistics ON match_model.id = match_statistics.id
+INNER JOIN
+tour_team_model home_team ON match_model.home = home_team.id
+INNER JOIN
+tour_team_model away_team ON match_model.away = away_team.id
+WHERE match_model.tour_id = :tour_id AND match_statistics.id IS NOT NULL;
+
 selectMatchSnapshotBySeason:
 SELECT match_id, date, home_name, home_logo, home_result, away_name, away_logo, away_result, mvp_name
 FROM match_snapshot_view

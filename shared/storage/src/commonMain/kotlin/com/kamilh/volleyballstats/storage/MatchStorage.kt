@@ -16,6 +16,8 @@ interface MatchStorage {
     suspend fun insertOrUpdate(matches: List<Match>, tourId: TourId): InsertMatchesResult
 
     suspend fun getAllMatches(tourId: TourId): Flow<List<Match>>
+
+    fun getMatchIdsWithReport(tourId: TourId): Flow<List<MatchId>>
 }
 
 typealias InsertMatchesResult = Result<Unit, InsertMatchesError>
@@ -54,6 +56,9 @@ class SqlMatchStorage(
 
     override suspend fun getAllMatches(tourId: TourId): Flow<List<Match>> =
         matchQueries.selectAllMatchesByTour(tourId, mapper).asFlow().mapToList()
+
+    override fun getMatchIdsWithReport(tourId: TourId): Flow<List<MatchId>> =
+        matchQueries.selectMatchesWithReportByTour(tourId).asFlow().mapToList()
 
     private val mapper: (
         id: MatchId, date: ZonedDateTime?, home_id: TeamId, away_id: TeamId, match_statistics_id: MatchId?,

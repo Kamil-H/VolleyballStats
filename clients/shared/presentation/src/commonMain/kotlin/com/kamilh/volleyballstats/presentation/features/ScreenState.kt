@@ -16,8 +16,13 @@ interface ScreenState {
 data class LoadingState(
     val text: String? = null,
     val showFullScreenLoading: Boolean = false,
-    val showSmallLoading: Boolean = false,
+    val linearProgressBar: LinearProgressBar? = null,
 )
+
+sealed interface LinearProgressBar {
+    object Indefinite : LinearProgressBar
+    data class Progress(val value: Float) : LinearProgressBar
+}
 
 data class TopBarState(
     val title: String? = null,

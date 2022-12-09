@@ -2,6 +2,7 @@ package com.kamilh.volleyballstats.ui.components
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import com.kamilh.volleyballstats.presentation.features.LinearProgressBar
 import com.kamilh.volleyballstats.presentation.features.ScreenState
 import com.kamilh.volleyballstats.presentation.features.TopBarState
 import com.kamilh.volleyballstats.presentation.features.common.Icon
@@ -174,22 +176,52 @@ private fun ScreenContent(
         }
         Box {
             content()
-            if (state.loadingState.showSmallLoading) {
-                LinearProgressIndicator(
+            state.loadingState.linearProgressBar?.let { linearProgressBar ->
+                LinearProgress(
+                    progress = (linearProgressBar as? LinearProgressBar.Progress)?.value,
+                    background = state.topBarState.background,
                     modifier = Modifier.fillMaxWidth(),
-                    trackColor = if (state.topBarState.background == TopBarState.Color.Default) {
-                        ProgressIndicatorDefaults.linearTrackColor
-                    } else {
-                        state.topBarState.background.linearTrackColor
-                    },
-                    color = if (state.topBarState.background == TopBarState.Color.Default) {
-                        ProgressIndicatorDefaults.linearColor
-                    } else {
-                        state.topBarState.background.linearColor
-                    },
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun LinearProgress(
+    modifier: Modifier = Modifier,
+    progress: Float? = null,
+    background: TopBarState.Color,
+) {
+    val animatedProgress = progress?.let {
+        animateFloatAsState(
+            targetValue = it,
+            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+        ).value
+    }
+    val trackColor = if (background == TopBarState.Color.Default) {
+        ProgressIndicatorDefaults.linearTrackColor
+    } else {
+        background.linearTrackColor
+    }
+    val color = if (background == TopBarState.Color.Default) {
+        ProgressIndicatorDefaults.linearColor
+    } else {
+        background.linearColor
+    }
+    if (animatedProgress != null) {
+        LinearProgressIndicator(
+            progress = animatedProgress,
+            modifier = modifier,
+            trackColor = trackColor,
+            color = color,
+        )
+    } else {
+        LinearProgressIndicator(
+            modifier = modifier,
+            trackColor = trackColor,
+            color = color,
+        )
     }
 }
 

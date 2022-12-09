@@ -1,22 +1,37 @@
 package com.kamilh.volleyballstats.presentation.features.common
 
 import com.kamilh.volleyballstats.interactors.SynchronizeState
+import com.kamilh.volleyballstats.presentation.features.LinearProgressBar
 import com.kamilh.volleyballstats.presentation.features.LoadingState
 import com.kamilh.volleyballstats.presentation.features.Message
 
 fun SynchronizeState.toLoadingState(hasContent: Boolean): LoadingState {
     val text = when (this) {
         is SynchronizeState.Started -> "Updating..."
-        is SynchronizeState.UpdatingMatches -> "Downloading ${this.matches.size} matches in ${tour.season.value} season"
+        is SynchronizeState.UpdatingMatches -> "Downloading ${downloadedMatches.size}/${matches.size} matches in ${tour.season.value} season"
         is SynchronizeState.Error, SynchronizeState.Idle, SynchronizeState.Success -> null
     }
     val isLoading = text != null
+    val linearProgressBar = when (this) {
+        is SynchronizeState.UpdatingMatches -> toLinearProgressBar()
+        is SynchronizeState.Started -> LinearProgressBar.Indefinite
+        is SynchronizeState.Error, SynchronizeState.Idle, SynchronizeState.Success -> null
+    }
     return LoadingState(
         text = text,
         showFullScreenLoading = isLoading && !hasContent,
-        showSmallLoading = isLoading && hasContent,
+        linearProgressBar = linearProgressBar.takeIf { hasContent },
     )
 }
+
+private fun SynchronizeState.UpdatingMatches.toLinearProgressBar(): LinearProgressBar =
+    if (matches.isEmpty()) {
+        LinearProgressBar.Indefinite
+    } else {
+        LinearProgressBar.Progress(
+            value = downloadedMatches.size.toFloat() / matches.size.toFloat()
+        )
+    }
 
 val SynchronizeState.isLoading: Boolean
     get() = this is SynchronizeState.Started || this is SynchronizeState.UpdatingMatches

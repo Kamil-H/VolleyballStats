@@ -21,7 +21,7 @@ class DelayedSynchronizeSchedulerTest {
         // GIVEN
         val scheduler = DelayedSynchronizeScheduler(coroutineScope = this)
         val duration = 1.seconds
-        val scheduleTime = CurrentDate.localDateTime.plus(duration)
+        val scheduleTime = CurrentDate.zonedDateTime.plus(duration)
         val league = leagueOf()
 
         // WHEN
