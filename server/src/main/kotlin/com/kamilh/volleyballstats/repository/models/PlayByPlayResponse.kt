@@ -25,7 +25,7 @@ class MatchResponse(
     val competition: String? = null,
     val createdAt: LocalDateTime,
     val division: String,
-    val hall: String,
+    val hall: String? = null,
     val matchId: Int,
     val matchNumber: String? = null,
     val officials: OfficialsResponse,

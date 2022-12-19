@@ -5,7 +5,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 selectAll:
 SELECT * FROM point_model;
 
-selectAllPointsByTourId:
+selectAllPointsByMatchId:
 SELECT point_model.*,
 home_p1.player_id AS home_p1, home_p2.player_id AS home_p2, home_p3.player_id AS home_p3, home_p4.player_id AS home_p4, home_p5.player_id AS home_p5, home_p6.player_id AS home_p6,
 away_p1.player_id AS away_p1, away_p2.player_id AS away_p2, away_p3.player_id AS away_p3, away_p4.player_id AS away_p4, away_p5.player_id AS away_p5, away_p6.player_id AS away_p6,
@@ -27,7 +27,7 @@ team_player_model away_p3 ON away_lineup.p3 = away_p3.id,
 team_player_model away_p4 ON away_lineup.p4 = away_p4.id,
 team_player_model away_p5 ON away_lineup.p5 = away_p5.id,
 team_player_model away_p6 ON away_lineup.p6 = away_p6.id
-WHERE set_model.match_id IN (SELECT id FROM match_report_model WHERE tour_id = ?)
+WHERE set_model.match_id = ?
 ORDER BY point_model.home_score AND point_model.away_score;
 
 lastInsertRowId:

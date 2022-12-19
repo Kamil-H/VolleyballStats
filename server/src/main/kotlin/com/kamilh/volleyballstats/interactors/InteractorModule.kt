@@ -35,4 +35,10 @@ interface InteractorModule {
 
     val SynchronizeStateHolder.bindReceiver: SynchronizeStateReceiver
         @Provides get() = this
+
+    val GetMatchReportInteractor.bindReceiver: GetMatchReport
+        @Provides get() = this
+
+    val CacheInvalidatorInteractor.bindReceiver: CacheInvalidator
+        @Provides get() = this
 }

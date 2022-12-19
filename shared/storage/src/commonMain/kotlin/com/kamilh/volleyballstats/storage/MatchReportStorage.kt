@@ -1,14 +1,9 @@
 package com.kamilh.volleyballstats.storage
 
 import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.domain.extensions.mapAsync
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.databse.*
-import com.squareup.sqldelight.Query
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
@@ -16,7 +11,7 @@ interface MatchReportStorage {
 
     suspend fun insert(matchReport: MatchReport, tourId: TourId): InsertMatchReportResult
 
-    fun getAllMatchReports(): Flow<List<MatchReport>>
+    suspend fun getMatchReport(matchId: MatchId): MatchReport?
 }
 
 typealias InsertMatchReportResult = Result<Unit, InsertMatchReportError>
@@ -52,7 +47,6 @@ class SqlMatchReportStorage(
     private val setQueries: SetQueries,
     private val matchAppearanceQueries: MatchAppearanceQueries,
     private val tourQueries: TourQueries,
-    private val coroutineScope: CoroutineScope,
 ) : MatchReportStorage {
 
     override suspend fun insert(matchReport: MatchReport, tourId: TourId): InsertMatchReportResult =
@@ -263,57 +257,16 @@ class SqlMatchReportStorage(
         }
     }
 
-    private fun <T : Any> Query<T>.mapQuery(): Flow<List<T>> = asFlow().mapToList().distinctUntilChanged()
+    private fun playActionFlow(matchId: MatchId): List<PlayActionWrapper> =
+        playAttackQueries.selectAllAttacksByMatchId(matchId).executeAsList().map { it.toPlayAction() } +
+        playBlockQueries.selectAllBlocksByMatchId(matchId).executeAsList().map { it.toPlayAction() } +
+        playDigQueries.selectAllDigsByMatchId(matchId).executeAsList().map { it.toPlayAction() } +
+        playFreeballQueries.selectAllFreeballsByMatchId(matchId).executeAsList().map { it.toPlayAction() } +
+        playServeQueries.selectAllServesByMatchId(matchId).executeAsList().map { it.toPlayAction() } +
+        playReceiveQueries.selectAllReceivesByMatchId(matchId).executeAsList().map { it.toPlayAction() } +
+        playSetQueries.selectAllSetsByMatchId(matchId).executeAsList().map { it.toPlayAction() }
 
-    private fun getAllMatchReports(tourId: TourId): Flow<List<MatchReport>> {
-        val statsFlow = matchReportQueries.selectAllReportsByTourId(tourId).mapQuery()
-        val matchAppearancesFlow = matchAppearanceQueries.selectAllAppearancesByTour(tourId).mapQuery()
-        val setsFlow = setQueries.selectAllBySetsTourId(tourId).mapQuery()
-        val pointsFlow = pointQueries.selectAllPointsByTourId(tourId).mapQuery()
-
-        val playActionsFlow = playActionFlow(tourId)
-        return combine(statsFlow, matchAppearancesFlow, setsFlow, pointsFlow, playActionsFlow) { stats, matchAppearances, sets, points, playActions ->
-            stats.mapAsync(coroutineScope) { selectAllStats ->
-                MatchReport(
-                    matchId = selectAllStats.id,
-                    sets = sets.toMatchSet(selectAllStats.id, points, playActions),
-                    home = matchAppearances.toMatchTeam(selectAllStats.home, selectAllStats.id),
-                    away = matchAppearances.toMatchTeam(selectAllStats.away, selectAllStats.id),
-                    mvp = selectAllStats.mvp,
-                    bestPlayer = selectAllStats.best_player,
-                    updatedAt = selectAllStats.updated_at,
-                    phase = selectAllStats.phase,
-                )
-            }
-        }
-    }
-
-    private fun playActionFlow(tourId: TourId): Flow<List<PlayActionWrapper>> {
-        val attacks = playAttackQueries.selectAllAttacksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val blocks = playBlockQueries.selectAllBlocksByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val digs = playDigQueries.selectAllDigsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val freeballs =
-            playFreeballQueries.selectAllFreeballsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val serves = playServeQueries.selectAllServesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val receives =
-            playReceiveQueries.selectAllReceivesByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-        val playSets = playSetQueries.selectAllSetsByTourId(tourId).mapQuery().map { it.map { it.toPlayAction() } }
-
-        return combine(attacks, blocks, digs, freeballs, receives, serves, playSets) { list -> list.flatMap { it } }
-    }
-
-    override fun getAllMatchReports(): Flow<List<MatchReport>> =
-        tourQueries.selectAllTourIds().mapQuery().flatMapLatest { tourIds ->
-            if (tourIds.isEmpty()) {
-                flowOf(emptyList())
-            } else {
-                combine(tourIds.map { getAllMatchReports(it) }) { matches ->
-                    matches.flatMap { it }
-                }
-            }
-        }
-
-    private fun List<SelectAllAppearancesByTour>.toMatchTeam(tourTeamId: Long, matchId: MatchId): MatchTeam =
+    private fun List<SelectAllAppearancesByMatchId>.toMatchTeam(tourTeamId: Long, matchId: MatchId): MatchTeam =
         filter { it.tour_team_id == tourTeamId && it.match_id == matchId }
             .let {
                 MatchTeam(
@@ -325,7 +278,7 @@ class SqlMatchReportStorage(
 
     private fun List<Set_model>.toMatchSet(
         matchId: MatchId,
-        points: List<SelectAllPointsByTourId>,
+        points: List<SelectAllPointsByMatchId>,
         playActions: List<PlayActionWrapper>,
     ): List<MatchSet> =
         filter { it.match_id == matchId }
@@ -356,7 +309,7 @@ class SqlMatchReportStorage(
                 )
             }
 
-    private fun SelectAllPointsByTourId.toHomeLineup(): Lineup =
+    private fun SelectAllPointsByMatchId.toHomeLineup(): Lineup =
         Lineup(
             p1 = home_p1,
             p2 = home_p2,
@@ -366,7 +319,7 @@ class SqlMatchReportStorage(
             p6 = home_p6,
         )
 
-    private fun SelectAllPointsByTourId.toAwayLineup(): Lineup =
+    private fun SelectAllPointsByMatchId.toAwayLineup(): Lineup =
         Lineup(
             p1 = away_p1,
             p2 = away_p2,
@@ -376,7 +329,7 @@ class SqlMatchReportStorage(
             p6 = away_p6,
         )
 
-    private fun SelectAllAttacksByTourId.toPlayAction(): PlayActionWrapper =
+    private fun SelectAllAttacksByMatchId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(
             pointId = point_id,
             playAction = PlayAction.Attack(
@@ -399,7 +352,7 @@ class SqlMatchReportStorage(
             )
         )
 
-    private fun SelectAllBlocksByTourId.toPlayAction(): PlayActionWrapper =
+    private fun SelectAllBlocksByMatchId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(
             pointId = point_id,
             playAction = PlayAction.Block(
@@ -418,7 +371,7 @@ class SqlMatchReportStorage(
             )
         )
 
-    private fun SelectAllDigsByTourId.toPlayAction(): PlayActionWrapper =
+    private fun SelectAllDigsByMatchId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(
             pointId = point_id,
             playAction = PlayAction.Dig(
@@ -437,7 +390,7 @@ class SqlMatchReportStorage(
             )
         )
 
-    private fun SelectAllFreeballsByTourId.toPlayAction(): PlayActionWrapper =
+    private fun SelectAllFreeballsByMatchId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(
             pointId = point_id,
             playAction = PlayAction.Freeball(
@@ -454,7 +407,7 @@ class SqlMatchReportStorage(
             )
         )
 
-    private fun SelectAllReceivesByTourId.toPlayAction(): PlayActionWrapper =
+    private fun SelectAllReceivesByMatchId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(
             pointId = point_id,
             playAction = PlayAction.Receive(
@@ -473,7 +426,7 @@ class SqlMatchReportStorage(
             )
         )
 
-    private fun SelectAllServesByTourId.toPlayAction(): PlayActionWrapper =
+    private fun SelectAllServesByMatchId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(
             pointId = point_id,
             playAction = PlayAction.Serve(
@@ -491,7 +444,7 @@ class SqlMatchReportStorage(
             )
         )
 
-    private fun SelectAllSetsByTourId.toPlayAction(): PlayActionWrapper =
+    private fun SelectAllSetsByMatchId.toPlayAction(): PlayActionWrapper =
         PlayActionWrapper(
             pointId = point_id,
             playAction = PlayAction.Set(
@@ -510,6 +463,25 @@ class SqlMatchReportStorage(
                 attackEffect = attack_effect,
             )
         )
+
+    override suspend fun getMatchReport(matchId: MatchId): MatchReport? = queryRunner.runTransaction {
+        matchReportQueries.selectAllReportsByMatchId(matchId).executeAsOneOrNull()?.let { selectAllStats ->
+            val sets = setQueries.selectAllBySetsMatchId(matchId).executeAsList()
+            val points = pointQueries.selectAllPointsByMatchId(matchId).executeAsList()
+            val matchAppearances = matchAppearanceQueries.selectAllAppearancesByMatchId(matchId).executeAsList()
+            val playActions = playActionFlow(matchId)
+            MatchReport(
+                matchId = selectAllStats.id,
+                sets = sets.toMatchSet(selectAllStats.id, points, playActions),
+                home = matchAppearances.toMatchTeam(selectAllStats.home, selectAllStats.id),
+                away = matchAppearances.toMatchTeam(selectAllStats.away, selectAllStats.id),
+                mvp = selectAllStats.mvp,
+                bestPlayer = selectAllStats.best_player,
+                updatedAt = selectAllStats.updated_at,
+                phase = selectAllStats.phase,
+            )
+        }
+    }
 
     private class PlayActionWrapper(
         val pointId: Long,

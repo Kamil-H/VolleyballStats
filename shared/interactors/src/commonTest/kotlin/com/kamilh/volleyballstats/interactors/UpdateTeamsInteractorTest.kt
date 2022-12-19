@@ -114,11 +114,3 @@ class UpdateTeamsInteractorTest {
         }
     }
 }
-
-fun updateTeamsOf(
-    appDispatchers: AppDispatchers = testAppDispatchers,
-    invoke: (params: UpdateTeamsParams) -> UpdateTeamsResult = { UpdateTeamsResult.success(Unit) },
-): UpdateTeams = object : UpdateTeams(appDispatchers) {
-
-    override suspend fun doWork(params: UpdateTeamsParams): UpdateTeamsResult = invoke(params)
-}

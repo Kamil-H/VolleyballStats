@@ -189,9 +189,9 @@ private fun ScreenContent(
 
 @Composable
 private fun LinearProgress(
+    background: TopBarState.Color,
     modifier: Modifier = Modifier,
     progress: Float? = null,
-    background: TopBarState.Color,
 ) {
     val animatedProgress = progress?.let {
         animateFloatAsState(

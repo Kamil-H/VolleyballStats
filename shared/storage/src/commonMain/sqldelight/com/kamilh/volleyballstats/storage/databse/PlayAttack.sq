@@ -5,7 +5,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 selectAll:
 SELECT * FROM play_attack_model;
 
-selectAllAttacksByTourId:
+selectAllAttacksByMatchId:
 SELECT attack.*, receive_player_id.player_id AS receive_player_id, setter_player_id.player_id AS setter_player_id,
 play_model.break_point, play_model.effect, play_model.position, team_player.player_id AS player_id, team.team_id AS team_id,
 point_model.id AS point_id, play_model.play_index AS play_index
@@ -20,7 +20,7 @@ LEFT JOIN
 team_player_model receive_player_id ON receive_player_id.id = attack.receive_id
 LEFT JOIN
 team_player_model setter_player_id ON setter_player_id.id = attack.setter_id
-WHERE set_model.match_id IN (SELECT id FROM match_report_model WHERE tour_id = ?);
+WHERE set_model.match_id = ?;
 
 selectAttackStats:
 SELECT

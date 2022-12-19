@@ -5,10 +5,9 @@ import com.kamilh.volleyballstats.api.match.MatchResponse
 import com.kamilh.volleyballstats.api.matchreport.MatchReportResponse
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.interactors.GetMatchReport
 import com.kamilh.volleyballstats.routes.*
-import com.kamilh.volleyballstats.storage.MatchReportStorage
 import com.kamilh.volleyballstats.storage.MatchStorage
-import com.kamilh.volleyballstats.utils.LazySuspend
 import com.kamilh.volleyballstats.utils.SafeMap
 import com.kamilh.volleyballstats.utils.safeMapOf
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +24,7 @@ interface MatchesController : CacheableController {
 @Inject
 @Singleton
 class MatchesControllerImpl(
-    matchReportStorage: MatchReportStorage,
+    private val getMatchReport: GetMatchReport,
     override val scope: CoroutineScope,
     private val tourIdCache: TourIdCache,
     private val matchStorage: MatchStorage,
@@ -34,7 +33,6 @@ class MatchesControllerImpl(
 ) : MatchesController {
 
     private val allMatchesCache: SafeMap<TourId, StateFlow<List<Match>>> = safeMapOf()
-    private val allMatchReportsCache = LazySuspend { matchReportStorage.getAllMatchReports().cache() }
 
     override suspend fun getMatches(tourId: String?): CallResult<List<MatchResponse>> =
         tourIdCache.tourIdFrom(tourId) {
@@ -43,7 +41,7 @@ class MatchesControllerImpl(
 
     override suspend fun getMatchReport(matchId: String?): CallResult<MatchReportResponse> =
         matchId.retrieveLongId { MatchId(it) }.flatMap { id ->
-            val matchReport = allMatchReportsCache().value.firstOrNull { it.matchId == id }
+            val matchReport = getMatchReport(id)
             if (matchReport != null) {
                 CallResult.success(matchReportMapper.to(matchReport))
             } else {

@@ -5,8 +5,7 @@ import com.kamilh.volleyballstats.authorization.headers
 import com.kamilh.volleyballstats.domain.models.League
 import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.domain.utils.PlatformLogger
-import com.kamilh.volleyballstats.interactors.DelayedSynchronizeScheduler
-import com.kamilh.volleyballstats.interactors.Synchronizer
+import com.kamilh.volleyballstats.interactors.*
 import com.kamilh.volleyballstats.models.config
 import com.kamilh.volleyballstats.routes.matches.MatchesController
 import com.kamilh.volleyballstats.routes.matches.matches
@@ -27,6 +26,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.json.Json
@@ -55,6 +55,8 @@ class ApplicationInitializer(
     private val synchronizer: Synchronizer,
     private val platformLogger: PlatformLogger,
     private val delayedSynchronizeScheduler: DelayedSynchronizeScheduler,
+    private val synchronizeStateHolder: SynchronizeStateHolder,
+    private val cacheInvalidator: CacheInvalidator,
 ) {
 
     fun init(application: Application, inTest: Boolean) = with(application) {
@@ -100,7 +102,8 @@ class ApplicationInitializer(
                 val remoteHost = call.request.local.remoteHost
                 val userAgent = call.request.headers["User-Agent"]
                 val path = call.request.path()
-                "$status [$httpMethod] $path | HOST: $remoteHost, $userAgent"
+                val queryString = call.request.queryString()
+                "$status [$httpMethod] $path$queryString | HOST: $remoteHost, $userAgent"
             }
         }
     }
@@ -119,6 +122,11 @@ class ApplicationInitializer(
 
             delayedSynchronizeScheduler.synchronizeSignal
                 .onEach { synchronizer.synchronize(it.league) }
+                .launchIn(this)
+
+            synchronizeStateHolder.receive()
+                .filterIsInstance<SynchronizeState.Success>()
+                .onEach { cacheInvalidator() }
                 .launchIn(this)
         }
     }

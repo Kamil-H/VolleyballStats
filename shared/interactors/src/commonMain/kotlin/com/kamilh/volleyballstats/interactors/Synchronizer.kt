@@ -116,7 +116,10 @@ class Synchronizer(
 
     private fun schedule(dateTime: ZonedDateTime, league: League) {
         log("Scheduling: $dateTime")
-        scheduler.schedule(dateTime, league)
+        val now = CurrentDate.zonedDateTime
+        if (dateTime > now) {
+            scheduler.schedule(dateTime, league)
+        }
     }
 
     private suspend fun initializeTours(league: League): SynchronizeState {

@@ -6,9 +6,6 @@ import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.MatchReport
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.player.playerOf
-import com.kamilh.volleyballstats.utils.testAppDispatchers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.first
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -34,7 +31,6 @@ abstract class ReportStorageTest : DatabaseTest() {
             setQueries = setQueries,
             matchAppearanceQueries = matchAppearanceQueries,
             tourQueries = tourQueries,
-            coroutineScope = CoroutineScope(testAppDispatchers.default),
         )
     }
 
@@ -88,7 +84,7 @@ abstract class ReportStorageTest : DatabaseTest() {
 
         // THEN
         val result = matchReportQueries.selectAll().executeAsList()
-        assertEquals(expected = matchStatistics, storage.getAllMatchReports().first().first())
+        assertEquals(expected = matchStatistics, storage.getMatchReport(matchId))
         assertTrue(result.isNotEmpty())
         insertResult.assertSuccess()
         return matchStatistics

@@ -5,7 +5,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 selectAll:
 SELECT * FROM match_report_model;
 
-selectAllReportsByTourId:
+selectAllReportsByMatchId:
 SELECT match_report_model.id, mvp_model.player_id AS mvp, best_player_model.player_id AS best_player,
 match_report_model.updated_at, phase, home, away
 FROM match_report_model
@@ -13,4 +13,4 @@ INNER JOIN
 team_player_model mvp_model ON mvp_model.id = mvp
 LEFT JOIN
 team_player_model best_player_model ON best_player_model.id = best_player
-WHERE tour_id = ?;
+WHERE match_report_model.id = ?;

@@ -15,4 +15,5 @@ dependencies {
     commonTestImplementation(project(":shared:storage:test"))
     commonTestImplementation(project(":shared:domain:test"))
     commonTestImplementation(project(":shared:network:test"))
+    commonTestImplementation(project(":shared:interactors:test"))
 }
