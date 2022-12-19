@@ -5,6 +5,6 @@ RUN gradle shadowJar --no-daemon
 
 FROM openjdk:11
 RUN mkdir /app
-COPY --from=build /home/gradle/src/server/build/libs/*.jar /app/server-application.jar
+COPY --from=build /home/gradle/src/server/build/libs/server-all.jar /app/server-application.jar
 COPY --from=build /home/gradle/src/application.conf /app/application.conf
 ENTRYPOINT ["java","-jar","/app/server-application.jar", "-config=/app/application.conf"]
