@@ -13,4 +13,5 @@ data class HomeState(
     override val topBarState: TopBarState = TopBarState(),
     override val actionButton: ActionButton = ActionButton(),
     override val message: Message? = null,
+    override val colorAccent: ColorAccent = ColorAccent.Default,
 ) : ScreenState

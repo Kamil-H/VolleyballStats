@@ -22,7 +22,7 @@ WHERE set_model.match_id = ?;
 
 selectSetStats:
 SELECT
-specialization, name, code,
+specialization, name, code, team_name,
 COUNT(*) AS attempts,
 ROUND(SUM(effect_perfect) / COUNT(*) * 100.0, 2) AS perfect,
 ROUND((SUM(effect_perfect) + SUM(effect_positive)) / COUNT(*) * 100.0, 2) AS perfect_positive,

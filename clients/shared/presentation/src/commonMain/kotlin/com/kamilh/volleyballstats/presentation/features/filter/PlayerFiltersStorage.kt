@@ -6,22 +6,23 @@ import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
 interface PlayerFiltersStorage {
 
-    fun getPlayerFilters(skill: StatsSkill): Flow<PlayerFilters>
+    fun getPlayerFilters(skill: StatsSkill, statsType: StatsType): Flow<PlayerFilters>
 
-    fun toggleProperty(skill: StatsSkill, value: String)
+    fun toggleProperty(skill: StatsSkill, statsType: StatsType, value: String)
 
-    fun toggleSeason(skill: StatsSkill, season: Season)
+    fun toggleSeason(skill: StatsSkill, statsType: StatsType, season: Season)
 
-    fun toggleSpecialization(skill: StatsSkill, specialization: Specialization)
+    fun toggleSpecialization(skill: StatsSkill, statsType: StatsType, specialization: Specialization)
 
-    fun toggleTeam(skill: StatsSkill, teamId: TeamId)
+    fun toggleTeam(skill: StatsSkill, statsType: StatsType, teamId: TeamId)
 
-    fun setNewLimit(skill: StatsSkill, limit: Int)
+    fun setNewLimit(skill: StatsSkill, statsType: StatsType, limit: Int)
 }
 
 @Inject
@@ -30,18 +31,21 @@ class MockPlayerFiltersStorage : PlayerFiltersStorage {
 
     private val filters = MutableStateFlow<List<FilterUnit>>(emptyList())
 
-    override fun getPlayerFilters(skill: StatsSkill): Flow<PlayerFilters> =
-        filters.asStateFlow()
-            .map {
-                val filterUnits = it.filter { unit -> unit.skill == skill }
-                PlayerFilters(
-                    selectedProperties = filterUnits.filterByType(FilterUnit.Type.Property).map { unit -> unit.value },
-                    selectedSeasons = filterUnits.filterByType(FilterUnit.Type.Season).map { unit -> unit.toSeason() },
-                    selectedSpecializations = filterUnits.filterByType(FilterUnit.Type.Specialization).map { unit -> unit.toSpecializations() },
-                    selectedTeams = filterUnits.filterByType(FilterUnit.Type.Team).map { unit -> unit.toTeams() },
-                    selectedLimit = filterUnits.filterByType(FilterUnit.Type.Limit).map { unit -> unit.toLimit() }.firstOrNull() ?: 0,
-                )
-            }
+    override fun getPlayerFilters(skill: StatsSkill, statsType: StatsType): Flow<PlayerFilters> =
+        filters.asStateFlow().map {
+            it.filter { unit ->
+                unit.skill == skill && unit.skillType == statsType
+            }.toPlayerFilters()
+        }
+
+    private fun List<FilterUnit>.toPlayerFilters(): PlayerFilters =
+        PlayerFilters(
+            selectedProperties = filterByType(FilterUnit.Type.Property) { unit -> unit.value },
+            selectedSeasons = filterByType(FilterUnit.Type.Season) { unit -> unit.toSeason() },
+            selectedSpecializations = filterByType(FilterUnit.Type.Specialization) { unit -> unit.toSpecializations() },
+            selectedTeams = filterByType(FilterUnit.Type.Team) { unit -> unit.toTeams() },
+            selectedLimit = filterByType(FilterUnit.Type.Limit) { unit -> unit.toLimit() }.firstOrNull() ?: 0,
+        )
 
     private fun FilterUnit.toSeason(): Season =
         Season.create(value.toInt())
@@ -55,26 +59,46 @@ class MockPlayerFiltersStorage : PlayerFiltersStorage {
     private fun FilterUnit.toLimit(): Int =
         value.toInt()
 
-    private fun List<FilterUnit>.filterByType(type: FilterUnit.Type): List<FilterUnit> =
-        filter { it.type == type }
+    private fun <T> List<FilterUnit>.filterByType(type: FilterUnit.Type, transform: (FilterUnit) -> T): List<T> =
+        filter { it.type == type }.map { transform(it) }
 
-    override fun toggleProperty(skill: StatsSkill, value: String) {
-        filters.toggle(skill, FilterUnit.Type.Property, value)
+    override fun toggleProperty(skill: StatsSkill, statsType: StatsType, value: String) {
+        filters.toggle(
+            skill = skill,
+            type = FilterUnit.Type.Property,
+            value = value,
+            statsType = statsType,
+        )
     }
 
-    override fun toggleSeason(skill: StatsSkill, season: Season) {
-        filters.toggle(skill, FilterUnit.Type.Season, season.value.toString())
+    override fun toggleSeason(skill: StatsSkill, statsType: StatsType, season: Season) {
+        filters.toggle(
+            skill = skill,
+            type = FilterUnit.Type.Season,
+            value = season.value.toString(),
+            statsType = statsType,
+        )
     }
 
-    override fun toggleSpecialization(skill: StatsSkill, specialization: Specialization) {
-        filters.toggle(skill, FilterUnit.Type.Specialization, specialization.name)
+    override fun toggleSpecialization(skill: StatsSkill, statsType: StatsType, specialization: Specialization) {
+        filters.toggle(
+            skill = skill,
+            type = FilterUnit.Type.Specialization,
+            value = specialization.name,
+            statsType = statsType,
+        )
     }
 
-    override fun toggleTeam(skill: StatsSkill, teamId: TeamId) {
-        filters.toggle(skill, FilterUnit.Type.Team, teamId.value.toString())
+    override fun toggleTeam(skill: StatsSkill, statsType: StatsType, teamId: TeamId) {
+        filters.toggle(
+            skill = skill,
+            type = FilterUnit.Type.Team,
+            value = teamId.value.toString(),
+            statsType = statsType,
+        )
     }
 
-    override fun setNewLimit(skill: StatsSkill, limit: Int) {
+    override fun setNewLimit(skill: StatsSkill, statsType: StatsType, limit: Int) {
         filters.update { filterUnits ->
             val type = FilterUnit.Type.Limit
             val unit = filterUnits.find { it.skill == skill && it.type == type }
@@ -82,16 +106,27 @@ class MockPlayerFiltersStorage : PlayerFiltersStorage {
                 skill = skill,
                 type = type,
                 value = limit.toString(),
+                skillType = statsType,
             )
         }
     }
 
-    private fun MutableStateFlow<List<FilterUnit>>.toggle(skill: StatsSkill, type: FilterUnit.Type, value: String) {
-        update { current -> current.toggle(skill, type, value) }
+    private fun MutableStateFlow<List<FilterUnit>>.toggle(
+        skill: StatsSkill,
+        type: FilterUnit.Type,
+        value: String,
+        statsType: StatsType,
+    ) {
+        update { current -> current.toggle(skill, type, value, statsType) }
     }
 
-    private fun List<FilterUnit>.toggle(skill: StatsSkill, type: FilterUnit.Type, value: String): List<FilterUnit> {
-        val unit = findUnit(skill, type, value)
+    private fun List<FilterUnit>.toggle(
+        skill: StatsSkill,
+        type: FilterUnit.Type,
+        value: String,
+        statsType: StatsType,
+    ): List<FilterUnit> {
+        val unit = findUnit(skill, type, value, statsType)
         return if (unit != null) {
             this - unit
         } else {
@@ -99,15 +134,23 @@ class MockPlayerFiltersStorage : PlayerFiltersStorage {
                 skill = skill,
                 type = type,
                 value = value,
+                skillType = statsType,
             )
         }
     }
 
-    private fun List<FilterUnit>.findUnit(skill: StatsSkill, type: FilterUnit.Type, value: String): FilterUnit? =
-        find { it.skill == skill && it.value == value && it.type == type }
+    private fun List<FilterUnit>.findUnit(
+        skill: StatsSkill,
+        type: FilterUnit.Type,
+        value: String,
+        statsType: StatsType,
+    ): FilterUnit? = find {
+        it.skill == skill && it.value == value && it.type == type && it.skillType == statsType
+    }
 
     private data class FilterUnit(
         val skill: StatsSkill,
+        val skillType: StatsType,
         val type: Type,
         val value: String,
     ) {

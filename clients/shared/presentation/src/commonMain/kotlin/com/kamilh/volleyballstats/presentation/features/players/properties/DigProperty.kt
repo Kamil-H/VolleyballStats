@@ -26,6 +26,11 @@ enum class DigProperty(
         description = "",
         filterable = false,
     ),
+    FullTeamName(
+        shortName = "Team",
+        description = "",
+        filterable = false,
+    ),
     Specialization(
         shortName = "Pos",
         description = "",

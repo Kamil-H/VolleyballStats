@@ -22,6 +22,7 @@ data class PlayerFiltersState(
     override val topBarState: TopBarState,
     override val actionButton: ActionButton = ActionButton(),
     override val message: Message? = null,
+    override val colorAccent: ColorAccent,
 ) : ScreenState
 
 enum class Control(val itemName: String) {

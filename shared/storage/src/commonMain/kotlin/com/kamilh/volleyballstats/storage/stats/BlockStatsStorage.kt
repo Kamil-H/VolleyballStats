@@ -32,6 +32,7 @@ interface BlockStatsStorage {
     data class Model(
         val specialization: Specialization,
         val teamName: String,
+        val fullTeamName: String,
         val name: String,
         val attempts: Double,
         val kill: Double,
@@ -85,6 +86,7 @@ class SqlBlockStatsStorage(
         specialization: Specialization,
         name: String?,
         code: String?,
+        team_name: String,
         attempts: Long,
         kill: Double?,
         kill_per_attempt: Double?,
@@ -99,6 +101,7 @@ class SqlBlockStatsStorage(
             specialization: Specialization,
             name: String?,
             code: String?,
+            team_name: String,
             attempts: Long,
             kill: Double?,
             kill_per_attempt: Double?,
@@ -112,6 +115,7 @@ class SqlBlockStatsStorage(
         BlockStatsStorage.Model(
             specialization = specialization,
             teamName = code.orEmpty(),
+            fullTeamName = team_name,
             name = name ?: "",
             attempts = attempts.toDouble(),
             kill = kill ?: 0.0,

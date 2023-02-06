@@ -32,6 +32,7 @@ interface ServeStatsStorage {
     data class Model(
         val specialization: Specialization,
         val teamName: String,
+        val fullTeamName: String,
         val name: String,
         val attempts: Double,
         val efficiency: Double,
@@ -87,6 +88,7 @@ class SqlServeStatsStorage(
         specialization: Specialization,
         name: String?,
         code: String?,
+        team_name: String,
         attempts: Long,
         efficiency: Double?,
         ace: Double?,
@@ -102,6 +104,7 @@ class SqlServeStatsStorage(
             specialization: Specialization,
             name: String?,
             code: String?,
+            team_name: String,
             attempts: Long,
             efficiency: Double?,
             ace: Double?,
@@ -116,6 +119,7 @@ class SqlServeStatsStorage(
         ServeStatsStorage.Model(
             specialization = specialization,
             teamName = code.orEmpty(),
+            fullTeamName = team_name,
             name = name ?: "",
             attempts = attempts.toDouble(),
             efficiency = efficiency ?: 0.0,

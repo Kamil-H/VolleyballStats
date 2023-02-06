@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.kamilh.volleyballstats.presentation.features.ColorAccent
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
 import com.kamilh.volleyballstats.ui.extensions.toPainter
 import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
@@ -19,7 +20,7 @@ fun App(
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    VolleyballStatsTheme {
+    VolleyballStatsTheme(colorAccent = ColorAccent.Default) {
         val state by mainPresenter.state.collectAsState()
         Scaffold(
             modifier = modifier,

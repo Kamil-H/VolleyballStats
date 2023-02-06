@@ -10,6 +10,7 @@ import com.bumble.appyx.core.node.ParentNode
 import com.bumble.appyx.navmodel.backstack.BackStack
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.screens.filters.PlayerFiltersNode
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersPresenter
 import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
 
 class TabNode(
@@ -30,7 +31,11 @@ class TabNode(
 
     override fun resolve(navTarget: BackStackTarget, buildContext: BuildContext): Node =
         when (navTarget) {
-            is BackStackTarget.PlayerFilters -> PlayerFiltersNode(buildContext, appModule, navTarget.skill)
+            is BackStackTarget.PlayerFilters -> PlayerFiltersNode(
+                buildContext = buildContext,
+                appModule = appModule,
+                args = PlayerFiltersPresenter.Args(skill = navTarget.skill, type = navTarget.type),
+            )
             BackStackTarget.Root -> rootNode(buildContext)
         }
 }

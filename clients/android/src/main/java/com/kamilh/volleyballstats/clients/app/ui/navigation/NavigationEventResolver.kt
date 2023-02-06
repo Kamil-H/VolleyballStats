@@ -17,7 +17,7 @@ private fun AppNavigator<TabTarget, BackStackTarget>.resolveInternal(navigationE
     when (navigationEvent) {
         NavigationEvent.Close -> pop()
         NavigationEvent.HomeTabRequested -> switchTab(TabTarget.Home)
-        is NavigationEvent.PlayerFiltersRequested -> push(BackStackTarget.PlayerFilters(navigationEvent.skill))
+        is NavigationEvent.PlayerFiltersRequested -> push(BackStackTarget.PlayerFilters(navigationEvent.skill, navigationEvent.type))
         NavigationEvent.PlayersTabRequested -> switchTab(TabTarget.PlayersStats)
         NavigationEvent.TeamsTabRequested -> switchTab(TabTarget.TeamsStats)
     }

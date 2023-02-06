@@ -60,4 +60,22 @@ object AppColor {
     val DarkInverseSurface = Color(0xFFFFDBC7)
     val DarkInversePrimary = Color(0xFF96490B)
     val DarkSurfaceTint = Color(0xFFFFB68A)
+
+    val TurquoiseLightPrimary = Color(0xFF006878)
+    val TurquoiseLightOnPrimary = Color(0xFFFFFFFF)
+    val TurquoiseLightPrimaryContainer = Color(0xFFA6EEFF)
+    val TurquoiseLightOnPrimaryContainer = Color(0xFF001F25)
+    val TurquoiseLightSecondary = Color(0xFF4B6268)
+    val TurquoiseLightOnSecondary = Color(0xFFFFFFFF)
+    val TurquoiseLightSecondaryContainer = Color(0xFFCDE7EE)
+    val TurquoiseLightOnSecondaryContainer = Color(0xFF051F24)
+
+    val TurquoiseDarkPrimary = Color(0xFF53D7F1)
+    val TurquoiseDarkOnPrimary = Color(0xFF00363F)
+    val TurquoiseDarkPrimaryContainer = Color(0xFF004E5B)
+    val TurquoiseDarkOnPrimaryContainer = Color(0xFFA6EEFF)
+    val TurquoiseDarkSecondary = Color(0xFFB2CBD1)
+    val TurquoiseDarkOnSecondary = Color(0xFF1C3439)
+    val TurquoiseDarkSecondaryContainer = Color(0xFF334A50)
+    val TurquoiseDarkOnSecondaryContainer = Color(0xFFCDE7EE)
 }

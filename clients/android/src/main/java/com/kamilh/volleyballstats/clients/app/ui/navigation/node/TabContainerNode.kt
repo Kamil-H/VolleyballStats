@@ -20,7 +20,7 @@ import com.bumble.appyx.navmodel.spotlight.transitionhandler.rememberSpotlightFa
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.screens.home.HomeNode
 import com.kamilh.volleyballstats.clients.app.ui.screens.player.PlayerStatsNode
-import com.kamilh.volleyballstats.clients.app.ui.screens.teams.TeamStatsNode
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
 import com.kamilh.volleyballstats.presentation.navigation.TabTarget
 
@@ -54,10 +54,10 @@ class TabContainerNode(
                 HomeNode(it, appModule)
             }
             TabTarget.PlayersStats -> tabNode(buildContext, backStack) {
-                PlayerStatsNode(buildContext, appModule)
+                PlayerStatsNode(buildContext, appModule, statsType = StatsType.Player)
             }
             TabTarget.TeamsStats -> tabNode(buildContext, backStack) {
-                TeamStatsNode(buildContext, appModule)
+                PlayerStatsNode(buildContext, appModule, statsType = StatsType.Team)
             }
         }
     }

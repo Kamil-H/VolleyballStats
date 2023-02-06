@@ -29,6 +29,7 @@ import com.kamilh.volleyballstats.presentation.features.common.Icon
 import com.kamilh.volleyballstats.ui.extensions.isScrollingUp
 import com.kamilh.volleyballstats.ui.extensions.toPainter
 import com.kamilh.volleyballstats.ui.theme.Dimens
+import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
 
 @Composable
 fun ScreenSkeleton(
@@ -99,57 +100,59 @@ private fun ScreenSkeleton(
         }
     }
 
-    Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            val topBarState = state.topBarState
-            if (topBarState.showToolbar) {
-                TopAppBar(
-                    title = {
-                        topBarState.title?.let { title ->
-                            Text(text = title)
-                        }
-                    },
-                    actions = {
-                        IconButtonView(
-                            icon = topBarState.actionButtonIcon,
-                            onClicked = onActionButtonClicked,
-                        )
-                    },
-                    navigationIcon = {
-                        IconButtonView(
-                            icon = topBarState.navigationButtonIcon,
-                            onClicked = onNavigationButtonClicked,
-                        )
-                    },
-                    colors = if (topBarState.background == TopBarState.Color.Default) {
-                        TopAppBarDefaults.smallTopAppBarColors()
-                    } else {
-                        with(topBarState.background) {
-                            TopAppBarDefaults.smallTopAppBarColors(
-                                containerColor = containerColor,
-                                scrolledContainerColor = containerColor,
-                                navigationIconContentColor = onContainerColor,
-                                titleContentColor = containerColor,
-                                actionIconContentColor = onContainerColor,
+    VolleyballStatsTheme(colorAccent = state.colorAccent) {
+        Scaffold(
+            modifier = modifier,
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            topBar = {
+                val topBarState = state.topBarState
+                if (topBarState.showToolbar) {
+                    TopAppBar(
+                        title = {
+                            topBarState.title?.let { title ->
+                                Text(text = title)
+                            }
+                        },
+                        actions = {
+                            IconButtonView(
+                                icon = topBarState.actionButtonIcon,
+                                onClicked = onActionButtonClicked,
                             )
-                        }
-                    },
-                )
+                        },
+                        navigationIcon = {
+                            IconButtonView(
+                                icon = topBarState.navigationButtonIcon,
+                                onClicked = onNavigationButtonClicked,
+                            )
+                        },
+                        colors = if (topBarState.background == TopBarState.Color.Default) {
+                            TopAppBarDefaults.smallTopAppBarColors()
+                        } else {
+                            with(topBarState.background) {
+                                TopAppBarDefaults.smallTopAppBarColors(
+                                    containerColor = containerColor,
+                                    scrolledContainerColor = containerColor,
+                                    navigationIconContentColor = onContainerColor,
+                                    titleContentColor = containerColor,
+                                    actionIconContentColor = onContainerColor,
+                                )
+                            }
+                        },
+                    )
+                }
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = fabPadding / 2),
+                    onClick = { onFabButtonClicked() },
+                    visible = listState.isScrollingUp() && state.actionButton.show,
+                ) {
+                    IconView(state.actionButton.icon)
+                }
             }
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(bottom = fabPadding),
-                onClick = { onFabButtonClicked() },
-                visible = listState.isScrollingUp() && state.actionButton.show,
-            ) {
-                IconView(state.actionButton.icon)
-            }
+        ) { paddingValues ->
+            content(paddingValues)
         }
-    ) { paddingValues ->
-        content(paddingValues)
     }
 }
 
@@ -251,7 +254,7 @@ private fun AdjustBarsColor(lightStatusBar: Boolean) {
 private fun TopBarState.Color.lightStatusBar(): Boolean {
     val darkMode = isSystemInDarkTheme()
     return when (this) {
-        TopBarState.Color.Primary, TopBarState.Color.Secondary -> true
+        TopBarState.Color.Primary, TopBarState.Color.Tertiary -> true
         TopBarState.Color.Default -> !darkMode
     }
 }
@@ -260,7 +263,7 @@ private val TopBarState.Color.containerColor: Color
     @Composable
     get() = when (this) {
         TopBarState.Color.Primary -> MaterialTheme.colorScheme.primary
-        TopBarState.Color.Secondary -> MaterialTheme.colorScheme.secondary
+        TopBarState.Color.Tertiary -> MaterialTheme.colorScheme.tertiary
         TopBarState.Color.Default -> primaryColorError()
     }
 
@@ -268,7 +271,7 @@ private val TopBarState.Color.onContainerColor: Color
     @Composable
     get() = when (this) {
         TopBarState.Color.Primary -> MaterialTheme.colorScheme.onPrimary
-        TopBarState.Color.Secondary -> MaterialTheme.colorScheme.onSecondary
+        TopBarState.Color.Tertiary -> MaterialTheme.colorScheme.onTertiary
         TopBarState.Color.Default -> primaryColorError()
     }
 
@@ -278,7 +281,7 @@ private val TopBarState.Color.linearColor: Color
     @Composable
     get() = when (this) {
         TopBarState.Color.Primary -> MaterialTheme.colorScheme.primaryContainer
-        TopBarState.Color.Secondary -> MaterialTheme.colorScheme.onSecondary
+        TopBarState.Color.Tertiary -> MaterialTheme.colorScheme.onTertiary
         TopBarState.Color.Default -> primaryColorError()
     }
 
@@ -286,7 +289,7 @@ private val TopBarState.Color.linearTrackColor: Color
     @Composable
     get() = when (this) {
         TopBarState.Color.Primary -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-        TopBarState.Color.Secondary -> MaterialTheme.colorScheme.primary
+        TopBarState.Color.Tertiary -> MaterialTheme.colorScheme.primary
         TopBarState.Color.Default -> primaryColorError()
     }
 

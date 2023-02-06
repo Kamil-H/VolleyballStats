@@ -3,6 +3,7 @@ package com.kamilh.volleyballstats.presentation.interactors
 import com.kamilh.volleyballstats.domain.interactor.NoInputInteractor
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
@@ -35,10 +36,12 @@ class InitializeFiltersInteractor(
     }
 
     private fun PlayerFiltersStorage.setDefaults(skill: StatsSkill, latestSeason: Season, limit: Int) {
-        skill.allProperties.map { it.id }.forEach {
-            toggleProperty(skill, it)
+        StatsType.values().forEach { type ->
+            skill.allProperties(type).map { it.id }.forEach {
+                toggleProperty(skill, type, it)
+            }
+            toggleSeason(skill, type, latestSeason)
+            setNewLimit(skill, type, limit)
         }
-        toggleSeason(skill, latestSeason)
-        setNewLimit(skill, limit)
     }
 }

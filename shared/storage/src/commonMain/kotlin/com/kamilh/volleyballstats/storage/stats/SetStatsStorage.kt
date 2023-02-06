@@ -31,6 +31,7 @@ interface SetStatsStorage {
     data class Model(
         val specialization: Specialization,
         val teamName: String,
+        val fullTeamName: String,
         val name: String,
         val attempts: Double,
         val perfect: Double,
@@ -78,6 +79,7 @@ class SqlSetStatsStorage(
         specialization: Specialization,
         name: String?,
         code: String?,
+        team_name: String,
         attempts: Long,
         perfect: Double?,
         perfect_positive: Double?,
@@ -89,6 +91,7 @@ class SqlSetStatsStorage(
             specialization: Specialization,
             name: String?,
             code: String?,
+            team_name: String,
             attempts: Long,
             perfect: Double?,
             perfect_positive: Double?,
@@ -99,6 +102,7 @@ class SqlSetStatsStorage(
         SetStatsStorage.Model(
             specialization = specialization,
             teamName = code.orEmpty(),
+            fullTeamName = team_name,
             name = name ?: "",
             attempts = attempts.toDouble(),
             perfect = perfect ?: 0.0,

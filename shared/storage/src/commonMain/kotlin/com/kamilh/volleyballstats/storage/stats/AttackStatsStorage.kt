@@ -32,6 +32,7 @@ interface AttackStatsStorage {
     data class Model(
         val specialization: Specialization,
         val teamName: String,
+        val fullTeamName: String,
         val name: String,
         val attempts: Long,
         val kill: Double,
@@ -87,6 +88,7 @@ class SqlAttackStats(
         specialization: Specialization,
         name: String?,
         code: String?,
+        team_name: String,
         attempts: Long,
         kill: Double?,
         efficiency: Double?,
@@ -102,6 +104,7 @@ class SqlAttackStats(
         specialization,
         name,
         code,
+        team_name,
         attempts,
         kill,
         efficiency,
@@ -116,6 +119,7 @@ class SqlAttackStats(
         AttackStatsStorage.Model(
             specialization = specialization,
             teamName = code.orEmpty(),
+            fullTeamName = team_name,
             name = name ?: "",
             attempts = attempts,
             kill = kill ?: 0.0,

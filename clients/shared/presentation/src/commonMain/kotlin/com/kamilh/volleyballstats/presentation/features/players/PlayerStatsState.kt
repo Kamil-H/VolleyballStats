@@ -11,7 +11,8 @@ data class PlayerStatsState(
     val selectSkillState: SelectOptionState<StatsSkill>,
     val onFabButtonClicked: () -> Unit,
     override val loadingState: LoadingState = LoadingState(),
-    override val topBarState: TopBarState = TopBarState(background = TopBarState.Color.Primary),
+    override val topBarState: TopBarState,
     override val actionButton: ActionButton = ActionButton(icon = Icon.Tune),
     override val message: Message? = null,
+    override val colorAccent: ColorAccent,
 ) : ScreenState

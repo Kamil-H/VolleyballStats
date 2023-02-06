@@ -31,6 +31,7 @@ interface DigStatsStorage {
     data class Model(
         val specialization: Specialization,
         val teamName: String,
+        val fullTeamName: String,
         val name: String,
         val attempts: Double,
         val digs: Double,
@@ -74,6 +75,7 @@ class SqlDigStatsStorage(
         specialization: Specialization,
         name: String?,
         code: String?,
+        team_name: String,
         attempts: Long,
         digs: Double?,
         success_percent: Double?,
@@ -83,6 +85,7 @@ class SqlDigStatsStorage(
             specialization: Specialization,
             name: String?,
             code: String?,
+            team_name: String,
             attempts: Long,
             digs: Double?,
             success_percent: Double?,
@@ -91,6 +94,7 @@ class SqlDigStatsStorage(
         DigStatsStorage.Model(
             specialization = specialization,
             teamName = code.orEmpty(),
+            fullTeamName = team_name,
             name = name ?: "",
             attempts = attempts.toDouble(),
             digs = digs ?: 0.0,

@@ -2,7 +2,9 @@ package com.kamilh.volleyballstats.presentation.features.filter
 
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
+import com.kamilh.volleyballstats.presentation.features.ColorAccent
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
 import com.kamilh.volleyballstats.presentation.features.TopBarState
@@ -16,7 +18,7 @@ import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
 class PlayerFiltersPresenter private constructor(
-    private val skill: StatsSkill = StatsSkill.Attack,
+    private val args: Args,
     private val teamStorage: TeamStorage,
     private val tourStorage: TourStorage,
     private val playerFiltersStorage: PlayerFiltersStorage,
@@ -31,7 +33,7 @@ class PlayerFiltersPresenter private constructor(
 
     init {
         playerFiltersStorage
-            .getPlayerFilters(skill)
+            .getPlayerFilters(args.skill, args.type)
             .flatMapLatest { it.selectedSeasons.toFiltersStateFlow() }
             .onEach { _state.value = it }
             .launchIn(coroutineScope)
@@ -39,7 +41,7 @@ class PlayerFiltersPresenter private constructor(
 
     private suspend fun List<Season>.toFiltersStateFlow(): Flow<PlayerFiltersState> =
         combine(
-            playerFiltersStorage.getPlayerFilters(skill),
+            playerFiltersStorage.getPlayerFilters(args.skill, args.type),
             teamStorage.getTeamSnapshots(seasons = this),
             tourStorage.getAll(),
             selectedControlIndex,
@@ -52,7 +54,7 @@ class PlayerFiltersPresenter private constructor(
         }
 
     private fun PlayerFilters.toPlayerFiltersState(
-        allProperties: List<Property<String>> = skill.allProperties,
+        allProperties: List<Property<String>> = args.skill.allProperties(args.type),
         allSeasons: List<Season> = emptyList(),
         allSpecializations: List<Specialization> = Specialization.values().toList(),
         allTeams: Set<TeamSnapshot> = emptySet(),
@@ -75,6 +77,10 @@ class PlayerFiltersPresenter private constructor(
             selectedIndex = selectedControlIndex,
         ),
         showControl = Control.values()[selectedControlIndex],
+        colorAccent = when (args.type) {
+            StatsType.Player -> ColorAccent.Primary
+            StatsType.Team -> ColorAccent.Tertiary
+        },
     )
 
     // PROPERTIES
@@ -96,7 +102,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onPropertyChecked(id: String) {
         _state.update { it.copy(properties = it.properties.check(id)) }
-        playerFiltersStorage.toggleProperty(skill, id)
+        playerFiltersStorage.toggleProperty(args.skill, args.type, id)
     }
 
     // SEASON
@@ -117,7 +123,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onSelected(value: Season) {
         _state.update { it.copy(seasonSelectOption = it.seasonSelectOption.select(value)) }
-        playerFiltersStorage.toggleSeason(skill, value)
+        playerFiltersStorage.toggleSeason(args.skill, args.type, value)
     }
 
     // SPECIALIZATION
@@ -138,7 +144,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onSelected(value: Specialization) {
         _state.update { it.copy(specializationSelectOption = it.specializationSelectOption.select(value)) }
-        playerFiltersStorage.toggleSpecialization(skill, value)
+        playerFiltersStorage.toggleSpecialization(args.skill, args.type, value)
     }
 
     // TEAMS
@@ -159,7 +165,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onSelected(value: TeamId) {
         _state.update { it.copy(teamsSelectOption = it.teamsSelectOption.select(value)) }
-        playerFiltersStorage.toggleTeam(skill, value)
+        playerFiltersStorage.toggleTeam(args.skill, args.type, value)
     }
 
     // LIMIT
@@ -174,7 +180,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onValueSelected(value: Int) {
         _state.update { it.copy(chooseIntState = it.chooseIntState.setNewValue(value)) }
-        playerFiltersStorage.setNewLimit(skill, value)
+        playerFiltersStorage.setNewLimit(args.skill, args.type, value)
     }
 
     private fun onBackButtonClicked() {
@@ -191,14 +197,14 @@ class PlayerFiltersPresenter private constructor(
         private val tourStorage: TourStorage,
         private val playerFiltersStorage: PlayerFiltersStorage,
         private val navigationEventSender: NavigationEventSender,
-    ) : Presenter.Factory<PlayerFiltersPresenter, StatsSkill> {
+    ) : Presenter.Factory<PlayerFiltersPresenter, Args> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
-            extras: StatsSkill,
+            extras: Args,
         ): PlayerFiltersPresenter = PlayerFiltersPresenter(
-            skill = extras,
+            args = extras,
             teamStorage = teamStorage,
             tourStorage = tourStorage,
             playerFiltersStorage = playerFiltersStorage,
@@ -206,4 +212,9 @@ class PlayerFiltersPresenter private constructor(
             navigationEventSender = navigationEventSender,
         )
     }
+
+    data class Args(
+        val skill: StatsSkill,
+        val type: StatsType,
+    )
 }

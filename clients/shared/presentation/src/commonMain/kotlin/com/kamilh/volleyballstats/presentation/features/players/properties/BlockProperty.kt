@@ -27,6 +27,11 @@ enum class BlockProperty(
         description = "",
         filterable = false,
     ),
+    FullTeamName(
+        shortName = "Team",
+        description = "",
+        filterable = false,
+    ),
     Specialization(
         shortName = "Pos",
         description = "",

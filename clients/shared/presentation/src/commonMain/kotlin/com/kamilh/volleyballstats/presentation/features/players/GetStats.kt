@@ -2,6 +2,7 @@ package com.kamilh.volleyballstats.presentation.features.players
 
 import com.kamilh.volleyballstats.domain.models.PlayerFilters
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.extensions.findProperty
 import com.kamilh.volleyballstats.presentation.features.common.Property
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
@@ -11,7 +12,12 @@ import me.tatarka.inject.annotations.Inject
 
 interface StatsFlowFactory {
 
-    fun createRequest(playerFilters: PlayerFilters, skill: StatsSkill, sortBy: Property<String>): StatsRequest
+    fun createRequest(
+        playerFilters: PlayerFilters,
+        skill: StatsSkill,
+        sortBy: Property<String>,
+        statsType: StatsType,
+    ): StatsRequest
 
     fun resolve(statsRequest: StatsRequest): Flow<List<StatsModel>>
 }
@@ -30,7 +36,8 @@ class StatsFlowFactoryImpl(
         playerFilters: PlayerFilters,
         skill: StatsSkill,
         sortBy: Property<String>,
-    ): StatsRequest = playerFilters.toRequest(skill, sortBy)
+        statsType: StatsType,
+    ): StatsRequest = playerFilters.toRequest(skill, sortBy, statsType)
 
     override fun resolve(statsRequest: StatsRequest): Flow<List<StatsModel>> =
         statsRequest.toModelFlow()
@@ -47,10 +54,14 @@ class StatsFlowFactoryImpl(
 }
 
 @Suppress("LongMethod")
-private fun PlayerFilters.toRequest(skill: StatsSkill, sortBy: Property<String>): StatsRequest =
+private fun PlayerFilters.toRequest(
+    skill: StatsSkill,
+    sortBy: Property<String>,
+    statsType: StatsType,
+): StatsRequest =
     when (skill) {
         StatsSkill.Attack -> AttackStatsStorage.Request(
-            groupBy = StatsRequest.GroupBy.Player,
+            groupBy = statsType.toGroupBy(),
             sortBy = findProperty<AttackProperty>(sortBy).toSortBy(),
             seasons = selectedSeasons,
             specializations = selectedSpecializations,
@@ -58,7 +69,7 @@ private fun PlayerFilters.toRequest(skill: StatsSkill, sortBy: Property<String>)
             minAttempts = selectedLimit.toLong(),
         )
         StatsSkill.Block -> BlockStatsStorage.Request(
-            groupBy = StatsRequest.GroupBy.Player,
+            groupBy = statsType.toGroupBy(),
             sortBy = findProperty<BlockProperty>(sortBy).toSortBy(),
             seasons = selectedSeasons,
             specializations = selectedSpecializations,
@@ -66,7 +77,7 @@ private fun PlayerFilters.toRequest(skill: StatsSkill, sortBy: Property<String>)
             minAttempts = selectedLimit.toLong(),
         )
         StatsSkill.Dig -> DigStatsStorage.Request(
-            groupBy = StatsRequest.GroupBy.Player,
+            groupBy = statsType.toGroupBy(),
             sortBy = findProperty<DigProperty>(sortBy).toSortBy(),
             seasons = selectedSeasons,
             specializations = selectedSpecializations,
@@ -74,7 +85,7 @@ private fun PlayerFilters.toRequest(skill: StatsSkill, sortBy: Property<String>)
             minAttempts = selectedLimit.toLong(),
         )
         StatsSkill.Set -> SetStatsStorage.Request(
-            groupBy = StatsRequest.GroupBy.Player,
+            groupBy = statsType.toGroupBy(),
             sortBy = findProperty<SetProperty>(sortBy).toSortBy(),
             seasons = selectedSeasons,
             specializations = selectedSpecializations,
@@ -82,7 +93,7 @@ private fun PlayerFilters.toRequest(skill: StatsSkill, sortBy: Property<String>)
             minAttempts = selectedLimit.toLong(),
         )
         StatsSkill.Receive -> ReceiveStatsStorage.Request(
-            groupBy = StatsRequest.GroupBy.Player,
+            groupBy = statsType.toGroupBy(),
             sortBy = findProperty<ReceiveProperty>(sortBy).toSortBy(),
             seasons = selectedSeasons,
             specializations = selectedSpecializations,
@@ -90,7 +101,7 @@ private fun PlayerFilters.toRequest(skill: StatsSkill, sortBy: Property<String>)
             minAttempts = selectedLimit.toLong(),
         )
         StatsSkill.Serve -> ServeStatsStorage.Request(
-            groupBy = StatsRequest.GroupBy.Player,
+            groupBy = statsType.toGroupBy(),
             sortBy = findProperty<ServeProperty>(sortBy).toSortBy(),
             seasons = selectedSeasons,
             specializations = selectedSpecializations,
@@ -102,7 +113,7 @@ private fun PlayerFilters.toRequest(skill: StatsSkill, sortBy: Property<String>)
 private fun AttackProperty.toSortBy(): AttackStatsStorage.Request.SortBy =
     when (this) {
         AttackProperty.Index, AttackProperty.Name, AttackProperty.TeamName,
-        AttackProperty.Specialization -> propertyError(this)
+        AttackProperty.Specialization, AttackProperty.FullTeamName -> propertyError(this)
         AttackProperty.Attempts -> AttackStatsStorage.Request.SortBy.Attempts
         AttackProperty.Kill -> AttackStatsStorage.Request.SortBy.Kill
         AttackProperty.Efficiency -> AttackStatsStorage.Request.SortBy.Efficiency
@@ -119,7 +130,7 @@ private fun AttackProperty.toSortBy(): AttackStatsStorage.Request.SortBy =
 private fun BlockProperty.toSortBy(): BlockStatsStorage.Request.SortBy =
     when (this) {
         BlockProperty.Index, BlockProperty.Name, BlockProperty.TeamName,
-        BlockProperty.Specialization -> propertyError(this)
+        BlockProperty.Specialization, BlockProperty.FullTeamName -> propertyError(this)
         BlockProperty.Attempts -> BlockStatsStorage.Request.SortBy.Attempts
         BlockProperty.Kill -> BlockStatsStorage.Request.SortBy.Kill
         BlockProperty.KillPerAttempt -> BlockStatsStorage.Request.SortBy.KillPerAttempt
@@ -135,7 +146,7 @@ private fun BlockProperty.toSortBy(): BlockStatsStorage.Request.SortBy =
 private fun DigProperty.toSortBy(): DigStatsStorage.Request.SortBy =
     when (this) {
         DigProperty.Index, DigProperty.Name, DigProperty.TeamName,
-        DigProperty.Specialization -> propertyError(this)
+        DigProperty.Specialization, DigProperty.FullTeamName -> propertyError(this)
         DigProperty.Attempts -> DigStatsStorage.Request.SortBy.Attempts
         DigProperty.Digs -> DigStatsStorage.Request.SortBy.Digs
         DigProperty.SuccessPercent -> DigStatsStorage.Request.SortBy.SuccessPercent
@@ -146,7 +157,7 @@ private fun DigProperty.toSortBy(): DigStatsStorage.Request.SortBy =
 private fun ReceiveProperty.toSortBy(): ReceiveStatsStorage.Request.SortBy =
     when (this) {
         ReceiveProperty.Index, ReceiveProperty.Name, ReceiveProperty.TeamName,
-        ReceiveProperty.Specialization -> propertyError(this)
+        ReceiveProperty.Specialization, ReceiveProperty.FullTeamName -> propertyError(this)
         ReceiveProperty.Attempts -> ReceiveStatsStorage.Request.SortBy.Attempts
         ReceiveProperty.Perfect -> ReceiveStatsStorage.Request.SortBy.Perfect
         ReceiveProperty.PerfectPositive -> ReceiveStatsStorage.Request.SortBy.PerfectPositive
@@ -160,7 +171,7 @@ private fun ReceiveProperty.toSortBy(): ReceiveStatsStorage.Request.SortBy =
 private fun ServeProperty.toSortBy(): ServeStatsStorage.Request.SortBy =
     when (this) {
         ServeProperty.Index, ServeProperty.Name, ServeProperty.TeamName,
-        ServeProperty.Specialization -> propertyError(this)
+        ServeProperty.Specialization, ServeProperty.FullTeamName -> propertyError(this)
         ServeProperty.Attempts -> ServeStatsStorage.Request.SortBy.Attempts
         ServeProperty.Efficiency -> ServeStatsStorage.Request.SortBy.Efficiency
         ServeProperty.Ace -> ServeStatsStorage.Request.SortBy.Ace
@@ -177,7 +188,7 @@ private fun ServeProperty.toSortBy(): ServeStatsStorage.Request.SortBy =
 private fun SetProperty.toSortBy(): SetStatsStorage.Request.SortBy =
     when (this) {
         SetProperty.Index, SetProperty.Name, SetProperty.TeamName,
-        SetProperty.Specialization -> propertyError(this)
+        SetProperty.Specialization, SetProperty.FullTeamName -> propertyError(this)
         SetProperty.Attempts -> SetStatsStorage.Request.SortBy.Attempts
         SetProperty.Perfect -> SetStatsStorage.Request.SortBy.Perfect
         SetProperty.PerfectPositive -> SetStatsStorage.Request.SortBy.PerfectPositive
@@ -185,6 +196,12 @@ private fun SetProperty.toSortBy(): SetStatsStorage.Request.SortBy =
         SetProperty.Errors -> SetStatsStorage.Request.SortBy.Errors
         SetProperty.ErrorsPercent -> SetStatsStorage.Request.SortBy.ErrorsPercent
         SetProperty.PointWinPercent -> SetStatsStorage.Request.SortBy.PointWinPercent
+    }
+
+private fun StatsType.toGroupBy(): StatsRequest.GroupBy =
+    when (this) {
+        StatsType.Player -> StatsRequest.GroupBy.Player
+        StatsType.Team -> StatsRequest.GroupBy.Team
     }
 
 private fun propertyError(property: Property<String>): Nothing {

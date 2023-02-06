@@ -1,10 +1,13 @@
 package com.kamilh.volleyballstats.presentation.features.players
 
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.interactors.SynchronizeStateReceiver
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
+import com.kamilh.volleyballstats.presentation.features.ColorAccent
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
+import com.kamilh.volleyballstats.presentation.features.TopBarState
 import com.kamilh.volleyballstats.presentation.features.common.*
 import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.players.properties.*
@@ -17,6 +20,7 @@ import kotlinx.coroutines.flow.*
 import me.tatarka.inject.annotations.Inject
 
 class PlayerStatsPresenter private constructor(
+    private val statsType: StatsType,
     private val statsModelMapper: StatsModelMapper,
     private val statsFlowFactory: StatsFlowFactory,
     private val coroutineScope: CoroutineScope,
@@ -36,6 +40,11 @@ class PlayerStatsPresenter private constructor(
                 )
             }, onSelected = ::onSkillClicked),
             onFabButtonClicked = ::onFabButtonClicked,
+            topBarState = TopBarState(background = TopBarState.Color.Primary),
+            colorAccent = when (statsType) {
+                StatsType.Player -> ColorAccent.Primary
+                StatsType.Team -> ColorAccent.Tertiary
+            },
         )
     )
     val state: StateFlow<PlayerStatsState> = _state.asStateFlow()
@@ -69,12 +78,13 @@ class PlayerStatsPresenter private constructor(
 
     private fun PlayerFiltersStorage.request(): Flow<Pair<StatsRequest, List<Property<String>>>> =
         chosenSkill.flatMapLatest { skill ->
-            getPlayerFilters(skill).combine(sortBy) { playerFilters, sortBy ->
+            getPlayerFilters(skill, statsType = statsType).combine(sortBy) { playerFilters, sortBy ->
                 statsFlowFactory.createRequest(
                     playerFilters = playerFilters,
                     skill = skill,
                     sortBy = sortBy[skill]!!,
-                ) to skill.allProperties(playerFilters.selectedProperties)
+                    statsType = statsType,
+                ) to skill.allProperties(statsType, playerFilters.selectedProperties)
             }
         }
 
@@ -105,7 +115,7 @@ class PlayerStatsPresenter private constructor(
     }
 
     private fun onFabButtonClicked() {
-        navigationEventSender.send(NavigationEvent.PlayerFiltersRequested(chosenSkill.value))
+        navigationEventSender.send(NavigationEvent.PlayerFiltersRequested(chosenSkill.value, statsType))
     }
 
     @Inject
@@ -115,13 +125,14 @@ class PlayerStatsPresenter private constructor(
         private val playerFiltersStorage: PlayerFiltersStorage,
         private val navigationEventSender: NavigationEventSender,
         private val synchronizeStateReceiver: SynchronizeStateReceiver,
-    ) : Presenter.Factory<PlayerStatsPresenter, Unit> {
+    ) : Presenter.Factory<PlayerStatsPresenter, StatsType> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
-            extras: Unit,
+            extras: StatsType,
         ): PlayerStatsPresenter = PlayerStatsPresenter(
+            statsType = extras,
             statsModelMapper = statsModelMapper,
             statsFlowFactory = statsFlowFactory,
             coroutineScope = coroutineScope,
@@ -142,5 +153,7 @@ private fun StatsSkill.getDefaultSort(): Property<String> =
         StatsSkill.Serve -> ServeProperty.Ace
     }
 
-private fun StatsSkill.allProperties(selectedProperties: List<String>): List<Property<String>> =
-    allProperties.filter { selectedProperties.contains(it.id) }
+private fun StatsSkill.allProperties(
+    type: StatsType,
+    selectedProperties: List<String>,
+): List<Property<String>> = allProperties(type).filter { selectedProperties.contains(it.id) }

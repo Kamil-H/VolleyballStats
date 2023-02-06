@@ -11,6 +11,8 @@ interface ScreenState {
     val actionButton: ActionButton
 
     val message: Message?
+
+    val colorAccent: ColorAccent
 }
 
 data class LoadingState(
@@ -32,7 +34,7 @@ data class TopBarState(
     val actionButtonIcon: Icon? = null,
 ) {
     enum class Color {
-        Primary, Secondary, Default
+        Primary, Tertiary, Default
     }
 }
 
@@ -45,3 +47,7 @@ data class Message(
     val text: String,
     val buttonText: String? = null,
 )
+
+enum class ColorAccent {
+    Primary, Tertiary, Default,
+}

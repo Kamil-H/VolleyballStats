@@ -21,7 +21,7 @@ WHERE set_model.match_id = ?;
 
 selectServeStats:
 SELECT
-specialization, name, code,
+specialization, name, code, team_name,
 COUNT(*) AS attempts,
 
 ROUND((SUM(effect_perfect) + SUM(effect_half) - SUM(effect_error)) / COUNT(*) * 100.0, 2) AS efficiency,
