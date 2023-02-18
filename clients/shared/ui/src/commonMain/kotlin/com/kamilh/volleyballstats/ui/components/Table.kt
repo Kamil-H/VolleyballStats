@@ -22,6 +22,7 @@ import com.kamilh.volleyballstats.presentation.features.common.CellSize
 import com.kamilh.volleyballstats.presentation.features.common.DataRow
 import com.kamilh.volleyballstats.presentation.features.common.HeaderRow
 import com.kamilh.volleyballstats.presentation.features.common.TableContent
+import com.kamilh.volleyballstats.ui.extensions.conditional
 import com.kamilh.volleyballstats.ui.extensions.ifNotNull
 import com.kamilh.volleyballstats.ui.extensions.toDp
 import com.kamilh.volleyballstats.ui.theme.Dimens
@@ -78,14 +79,18 @@ private fun TableRowScope.HeaderRow(row: HeaderRow, modifier: Modifier = Modifie
     val horizontalSpacing = cell.size.horizontalSpacing
 
     TableRow(
-        modifier = modifier.columnWidth().rowHeight(),
-        horizontalSpacing = horizontalSpacing,
-    ) {
-        Column(
-            modifier = Modifier.ifNotNull(cell.onClick) { onClick ->
+        modifier = modifier
+            .columnWidth()
+            .rowHeight()
+            .ifNotNull(cell.onClick) { onClick ->
                 fillMaxSize().clickable { onClick() }
             }
-        ) {
+            .conditional(cell.selected) {
+                background(color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+            },
+        horizontalSpacing = horizontalSpacing,
+    ) {
+        Column {
             HeaderCellText(text = cell.firstLine, selected = cell.selected)
             cell.secondLine?.let {
                 HeaderCellText(text = it, selected = cell.selected)
