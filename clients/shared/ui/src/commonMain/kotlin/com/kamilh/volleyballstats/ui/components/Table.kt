@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -37,16 +38,23 @@ fun Table(
         modifier = modifier,
         verticalLazyListState = verticalLazyListState,
         rowModifier = {
-            if (it.rem(2) == 0) {
+            if (rowIndex.rem(2) == 0) {
                 Modifier.background(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f))
             } else {
                 Modifier
             }
         },
-        stickyHeaderModifier = Modifier.background(
-            color = MaterialTheme.colorScheme.primary,
-            shape = headerBackground(CornerSize(Dimens.CornerMedium)),
-        ),
+        stickyRowItemsCount = tableContent.stickyRowItemsCount,
+        stickyHeaderModifier = {
+            Modifier.background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = headerBackground(
+                    size = CornerSize(Dimens.CornerMedium),
+                    roundStart = !scrollable || tableContent.stickyRowItemsCount == 0,
+                    roundEnd = scrollable,
+                ),
+            )
+        },
         stickyHeader = tableContent.header?.let { stickyRow ->
             { HeaderRow(row = stickyRow) }
         },
@@ -58,10 +66,16 @@ fun Table(
     }
 }
 
-private fun headerBackground(size: CornerSize): CornerBasedShape =
-    RoundedCornerShape(
-        topStart = CornerSize(0.dp), topEnd = CornerSize(0.dp), bottomStart = size, bottomEnd = size,
-    )
+private fun headerBackground(
+    size: CornerSize,
+    roundStart: Boolean = true,
+    roundEnd: Boolean = true,
+): CornerBasedShape = RoundedCornerShape(
+    topStart = CornerSize(0.dp),
+    topEnd = CornerSize(0.dp),
+    bottomStart = if (roundStart) size else CornerSize(0.dp),
+    bottomEnd = if (roundEnd) size else CornerSize(0.dp),
+)
 
 @Composable
 private fun TableRowScope.TableRow(row: DataRow, modifier: Modifier = Modifier) {
@@ -135,8 +149,9 @@ private fun Table(
     columnCount: Int,
     rowCount: Int,
     modifier: Modifier = Modifier,
-    stickyHeaderModifier: Modifier = Modifier,
-    rowModifier: @Composable (rowIndex: Int) -> Modifier = { Modifier },
+    stickyHeaderModifier: @Composable RowModifierScope.() -> Modifier = { Modifier },
+    stickyRowItemsCount: Int,
+    rowModifier: @Composable RowModifierScope.() -> Modifier = { Modifier },
     verticalLazyListState: LazyListState = rememberLazyListState(),
     horizontalScrollState: ScrollState = rememberScrollState(),
     stickyHeader: (@Composable TableRowScope.() -> Unit)? = null,
@@ -146,13 +161,15 @@ private fun Table(
 ) {
     val columnWidths = remember { mutableStateMapOf<Int, Int>() }
 
-    Box(modifier = modifier.horizontalScroll(horizontalScrollState)) {
+    Box(modifier = modifier) {
         LazyColumn(state = verticalLazyListState) {
             stickyHeader?.let {
                 stickyHeader {
                     TableRow(
-                        rowModifier = { stickyHeaderModifier },
+                        rowModifier = { stickyHeaderModifier() },
                         rowIndex = -1,
+                        stickyRowItemsCount = stickyRowItemsCount,
+                        horizontalScrollState = horizontalScrollState,
                         columnCount = columnCount,
                         columnWidths = columnWidths,
                     ) {
@@ -168,6 +185,8 @@ private fun Table(
                         rowIndex = rowIndex,
                         columnCount = columnCount,
                         columnWidths = columnWidths,
+                        stickyRowItemsCount = stickyRowItemsCount,
+                        horizontalScrollState = horizontalScrollState,
                         cellContent = cellContent,
                     )
                     afterRow?.invoke(rowIndex)
@@ -182,13 +201,79 @@ private fun Table(
 private fun TableRow(
     rowIndex: Int,
     columnCount: Int,
+    stickyRowItemsCount: Int,
     columnWidths: MutableMap<Int, Int>,
-    rowModifier: @Composable (rowIndex: Int) -> Modifier = { Modifier },
+    horizontalScrollState: ScrollState,
+    rowModifier: @Composable RowModifierScope.() -> Modifier = { Modifier },
     cellContent: @Composable TableRowScope.() -> Unit,
 ) {
-    var currentMaxHeight by rememberSaveable { mutableStateOf(0) }
-    Row(modifier = rowModifier(rowIndex)) {
-        (0 until columnCount).forEach { columnIndex ->
+    val currentMaxHeight = rememberSaveable { mutableStateOf(0) }
+    val indexes = remember { RowIndexes(columnCount = columnCount, stickyRowItemsCount = stickyRowItemsCount) }
+    Row {
+        Box {
+            TableRow(
+                rowIndex = rowIndex,
+                indexes = indexes.stickyIndexes,
+                columnWidths = columnWidths,
+                currentMaxHeight = currentMaxHeight,
+                horizontalScrollState = null,
+                rowModifier = rowModifier,
+                cellContent = cellContent,
+            )
+            if (horizontalScrollState.value > 0) {
+                VerticalDivider(
+                    minHeight = currentMaxHeight.value.toDp(),
+                    color = when (rowIndex) {
+                        -1 -> MaterialTheme.colorScheme.primaryContainer
+                        else -> MaterialTheme.colorScheme.onBackground
+                    }.copy(alpha = 0.2f)
+                )
+            }
+        }
+        TableRow(
+            rowIndex = rowIndex,
+            indexes = indexes.columnIndexes,
+            columnWidths = columnWidths,
+            currentMaxHeight = currentMaxHeight,
+            horizontalScrollState = horizontalScrollState,
+            rowModifier = rowModifier,
+            cellContent = cellContent,
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.VerticalDivider(
+    modifier: Modifier = Modifier,
+    minHeight: Dp,
+    color: Color,
+) {
+    Box(modifier = modifier.defaultMinSize(minHeight = minHeight)
+        .width(2.dp)
+        .background(color = color)
+        .align(Alignment.CenterEnd)
+    )
+}
+
+@Composable
+private fun TableRow(
+    rowIndex: Int,
+    indexes: IntRange,
+    columnWidths: MutableMap<Int, Int>,
+    currentMaxHeight: MutableState<Int>,
+    horizontalScrollState: ScrollState? = null,
+    rowModifier: @Composable RowModifierScope.() -> Modifier = { Modifier },
+    cellContent: @Composable TableRowScope.() -> Unit,
+) {
+    Row(modifier = Modifier.ifNotNull(horizontalScrollState, Modifier::horizontalScroll)
+        .then(
+            RowModifierScope(
+                rowIndex = rowIndex,
+                scrollable = horizontalScrollState != null,
+            ).rowModifier()
+        )
+    ) {
+        indexes.forEach { columnIndex ->
             Box(modifier = Modifier.layout { measurable, constraints ->
                 val placeable = measurable.measure(constraints)
 
@@ -199,9 +284,9 @@ private fun TableRow(
                     columnWidths[columnIndex] = maxWidth
                 }
 
-                val maxHeight = maxOf(currentMaxHeight, placeable.height)
-                if (maxHeight > currentMaxHeight) {
-                    currentMaxHeight = maxHeight
+                val maxHeight = maxOf(currentMaxHeight.value, placeable.height)
+                if (maxHeight > currentMaxHeight.value) {
+                    currentMaxHeight.value = maxHeight
                 }
 
                 layout(width = maxWidth, height = placeable.height) {
@@ -213,7 +298,7 @@ private fun TableRow(
                         columnIndex = columnIndex,
                         rowIndex = rowIndex,
                         width = (columnWidths[columnIndex] ?: 0).toDp(),
-                        height = currentMaxHeight.toDp(),
+                        height = currentMaxHeight.value.toDp(),
                         boxScope = this,
                     )
                 )
@@ -222,6 +307,11 @@ private fun TableRow(
     }
 }
 
+private class RowModifierScope(
+    val rowIndex: Int,
+    val scrollable: Boolean,
+)
+
 private class TableRowScope(
     val columnIndex: Int,
     val rowIndex: Int,
@@ -229,7 +319,6 @@ private class TableRowScope(
     private val height: Dp,
     private val boxScope: BoxScope,
 ) : BoxScope by boxScope {
-
     @Stable
     fun Modifier.columnWidth(): Modifier = this.then(
         width(width)
@@ -239,4 +328,28 @@ private class TableRowScope(
     fun Modifier.rowHeight(): Modifier = this.then(
         defaultMinSize(minHeight = height)
     )
+}
+
+private class RowIndexes(columnCount: Int, stickyRowItemsCount: Int) {
+    private val allIndexes: IntRange = 0 until columnCount
+
+    val stickyIndexes: IntRange = if (stickyRowItemsCount <= columnCount) {
+        when (stickyRowItemsCount) {
+            0 -> IntRange.EMPTY
+            columnCount -> allIndexes
+            else -> 0 until stickyRowItemsCount
+        }
+    } else {
+        error("stickyRowItemsCount ($stickyRowItemsCount) must be <= columnCount ($columnCount)")
+    }
+
+    val columnIndexes: IntRange = if (stickyRowItemsCount <= columnCount) {
+        when (stickyRowItemsCount) {
+            0 -> allIndexes
+            columnCount -> IntRange.EMPTY
+            else -> stickyRowItemsCount until columnCount
+        }
+    } else {
+        error("stickyRowItemsCount ($stickyRowItemsCount) must be <= columnCount ($columnCount)")
+    }
 }
