@@ -141,14 +141,14 @@ class UpdateMatchesInteractorTest {
             polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(
-                invoke = { UpdateMatchReportResult.failure(UpdateMatchReportError.Network(networkError)) }
+                invoke = { UpdateMatchReportResult.failure(UpdateMatchReportError(networkError)) }
             )
         )(paramsOf())
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchesError.Network)
-            assert(this.networkError == networkError)
+            require(this is UpdateMatchesError.UpdateMatchReportError)
+            assert(this.networkErrors.contains(networkError))
         }
     }
 
@@ -164,14 +164,14 @@ class UpdateMatchesInteractorTest {
             polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
             matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches)),
             updateMatchReports = updateMatchReportsOf(
-                invoke = { UpdateMatchReportResult.failure(UpdateMatchReportError.Insert(insertError)) }
+                invoke = { UpdateMatchReportResult.failure(UpdateMatchReportError(insertError)) }
             )
         )(paramsOf())
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchesError.Insert)
-            assert(this.error == insertError)
+            require(this is UpdateMatchesError.UpdateMatchReportError)
+            assert(this.insertErrors.contains(insertError))
         }
     }
 

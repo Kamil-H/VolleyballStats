@@ -29,6 +29,9 @@ android {
         debug {
             signingConfig = signingConfigs.getByName("customDebug")
         }
+        register("local") {
+            initWith(getByName("debug"))
+        }
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

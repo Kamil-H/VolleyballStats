@@ -8,6 +8,7 @@ import com.kamilh.volleyballstats.models.*
 import com.kamilh.volleyballstats.models.Set
 import com.kamilh.volleyballstats.repository.models.*
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration.Companion.minutes
 
 @Inject
 class MatchResponseToMatchReportMapper {
@@ -72,10 +73,10 @@ class MatchResponseToMatchReportMapper {
 
     private fun SetResponse.toSet(): Set =
         Set(
-            duration = duration,
-            endTime = endTime,
+            duration = duration ?: DEFAULT_SET_DURATION,
+            endTime = endTime ?: startTime.plus(DEFAULT_SET_DURATION.minutes),
             events = events.flatMap { it.toEvent() },
-            matchScore = score.toScore(),
+            matchScore = score?.toScore(),
             startTime = startTime,
             startingLineup = startingLineup.toStartingLineup(),
         )
@@ -109,7 +110,6 @@ class MatchResponseToMatchReportMapper {
             endTime = endTime ?: startTime,
             point = point?.toTeamTypeOrNull(),
             startTime = startTime,
-            verified = verified,
         )
 
     private fun SubstitutionResponse.toSubstitution(): Event.Substitution =
@@ -135,7 +135,7 @@ class MatchResponseToMatchReportMapper {
                 VIDEO_CHALLENGE_RESPONSE_RIGHT -> Event.VideoChallenge.Response.Right
                 VIDEO_CHALLENGE_RESPONSE_WRONG -> Event.VideoChallenge.Response.Wrong
                 VIDEO_CHALLENGE_RESPONSE_INCONCLUSIVE -> Event.VideoChallenge.Response.Inconclusive
-                else -> error("Wrong VideoChallenge.Response: $response")
+                else -> null
             },
             scoreChange = when (scoreChange) {
                 VIDEO_CHALLENGE_SCORE_CHANGE_ASSIGN_TO_OTHER -> Event.VideoChallenge.ScoreChange.AssignToOther
@@ -295,5 +295,7 @@ class MatchResponseToMatchReportMapper {
             "Play Out - Baraż"
         )
         private val PHASE_REGULAR_SEASON = listOf("FZ", "ZAS", "Faza Zasadnicza")
+
+        private const val DEFAULT_SET_DURATION = 25
     }
 }

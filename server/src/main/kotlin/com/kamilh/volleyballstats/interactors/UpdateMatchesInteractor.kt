@@ -27,7 +27,12 @@ class UpdateMatchesInteractor(
         val matchResult = polishLeagueRepository.getAllMatches(tour.season)
         val matchError = matchResult.error
         if (matchError != null) {
-            return Result.failure(UpdateMatchesError.Network(matchError))
+            return Result.failure(
+                UpdateMatchesError.UpdateMatchReportError(
+                    networkErrors = listOf(matchError),
+                    message = matchError.message,
+                )
+            )
         }
 
         val matches = matchResult.value!!
@@ -57,10 +62,11 @@ class UpdateMatchesInteractor(
             .map { it.id }
         if (potentiallyFinished.isNotEmpty()) {
             val error = updateMatchReports(UpdateMatchReportParams(tour, potentiallyFinished)).mapError {
-                when (it) {
-                    is UpdateMatchReportError.Network -> UpdateMatchesError.Network(it.networkError)
-                    is UpdateMatchReportError.Insert -> UpdateMatchesError.Insert(it.error)
-                }
+                UpdateMatchesError.UpdateMatchReportError(
+                    networkErrors = it.networkErrors,
+                    insertErrors = it.insertErrors,
+                    message = it.message,
+                )
             }.error
 
             if (error != null) {

@@ -16,7 +16,6 @@ import com.kamilh.volleyballstats.storage.*
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class UpdateMatchReportInteractorTest {
 
@@ -58,15 +57,16 @@ class UpdateMatchReportInteractorTest {
     fun `interactor returns Network error when getMatchReport returns error`() = runTest {
         // GIVEN
         val matches = listOf(matchIdOf())
+        val error = networkErrorOf()
 
         // WHEN
         val result = interactor(
-            statsRepository = statsRepositoryOf(getMatchReport = networkFailureOf(networkErrorOf()))
+            statsRepository = statsRepositoryOf(getMatchReport = networkFailureOf(error))
         )(params = paramsOf(matches = matches))
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Network)
+            require(networkErrors.contains(error))
         }
     }
 
@@ -86,8 +86,7 @@ class UpdateMatchReportInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Insert)
-            assertEquals(error, this.error)
+            require(insertErrors.contains(error))
         }
     }
 
@@ -128,7 +127,7 @@ class UpdateMatchReportInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Network && networkError == networkError)
+            require(networkErrors.contains(networkError))
         }
     }
 
@@ -151,7 +150,7 @@ class UpdateMatchReportInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Insert && error == insertError)
+            require(insertErrors.contains(insertError))
         }
     }
 
@@ -205,7 +204,7 @@ class UpdateMatchReportInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Network && networkError == networkError)
+            require(networkErrors.contains(networkError))
         }
     }
 
@@ -228,7 +227,7 @@ class UpdateMatchReportInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Insert && error == insertError)
+            require(insertErrors.contains(insertError))
         }
     }
 
@@ -282,7 +281,7 @@ class UpdateMatchReportInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Network && networkError == networkError)
+            require(networkErrors.contains(networkError))
         }
     }
 
@@ -305,7 +304,7 @@ class UpdateMatchReportInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Insert && error == insertError)
+            require(insertErrors.contains(insertError))
         }
     }
 

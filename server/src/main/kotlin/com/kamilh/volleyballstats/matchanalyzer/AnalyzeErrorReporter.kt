@@ -78,6 +78,11 @@ sealed class AnalyzeError {
         val matchReportId: MatchReportId,
         val set: Int,
     ) : AnalyzeError()
+
+    data class NoScoreForSetData(
+        val matchReportId: MatchReportId,
+        val set: Int,
+    ) : AnalyzeError()
 }
 
 interface AnalyzeErrorReporter {

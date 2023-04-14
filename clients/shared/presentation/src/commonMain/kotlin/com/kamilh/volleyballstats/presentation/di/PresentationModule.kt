@@ -11,12 +11,12 @@ import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
 import com.kamilh.volleyballstats.presentation.features.PresentersModule
+import com.kamilh.volleyballstats.presentation.features.filter.MockPlayerFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactory
 import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactoryImpl
 import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapper
 import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapperImpl
-import com.kamilh.volleyballstats.presentation.features.filter.MockPlayerFiltersStorage
-import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
 import com.kamilh.volleyballstats.presentation.interactors.InteractorModule
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventHandler
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
@@ -90,6 +90,7 @@ interface PresentationModule : InteractorModule, DataModule, PresentersModule {
         when (buildInfo.buildType) {
             BuildType.Debug -> ApiUrl.DEBUG
             BuildType.Release -> ApiUrl.RELEASE
+            BuildType.Local -> ApiUrl.LOCAL
         }
 
     val KtorHttpClient.bind: HttpClient

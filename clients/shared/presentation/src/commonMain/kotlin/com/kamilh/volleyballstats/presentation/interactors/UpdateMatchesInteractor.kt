@@ -24,7 +24,7 @@ class UpdateMatchesInteractor(
     override suspend fun doWork(params: UpdateMatchesParams): UpdateMatchesResult {
         val tour = params.tour
         return statsRepository.getMatches(tour)
-            .mapError { UpdateMatchesError.Network(it) }
+            .mapError(UpdateMatchesError::UpdateMatchReportError)
             .flatMap { matches ->
                 when {
                     matches.isEmpty() -> Result.failure(UpdateMatchesError.NoMatchesInTour)
@@ -55,10 +55,11 @@ class UpdateMatchesInteractor(
     }
 
     private fun UpdateMatchReportError.toUpdateMatchesError(): UpdateMatchesError =
-        when (this) {
-            is UpdateMatchReportError.Insert -> UpdateMatchesError.Insert(error)
-            is UpdateMatchReportError.Network -> UpdateMatchesError.Network(networkError)
-        }
+        UpdateMatchesError.UpdateMatchReportError(
+            networkErrors = networkErrors,
+            insertErrors = insertErrors,
+            message = message,
+        )
 
     private suspend fun createResult(tour: Tour): UpdateMatchesResult {
         val latestMatchDate = latestMatchDate(tour)

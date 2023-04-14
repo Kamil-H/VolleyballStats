@@ -63,8 +63,14 @@ class Synchronizer(
 
     private fun UpdateMatchesError.toSynchronizeError(): SynchronizeState.Error.Type =
         when (this) {
-            is UpdateMatchesError.Network -> this.networkError.toSynchronizeErrorType()
-            is UpdateMatchesError.Insert, UpdateMatchesError.NoMatchesInTour,
+            is UpdateMatchesError.UpdateMatchReportError -> {
+                if (networkErrors.isNotEmpty()) {
+                    networkErrors.first().toSynchronizeErrorType()
+                } else {
+                    SynchronizeState.Error.Type.Unexpected
+                }
+            }
+            UpdateMatchesError.NoMatchesInTour,
             UpdateMatchesError.TourNotFound -> SynchronizeState.Error.Type.Unexpected
         }
 
@@ -93,22 +99,39 @@ class Synchronizer(
 
     private suspend fun onUpdateMatchesFailure(error: UpdateMatchesError, tour: Tour) {
         when (error) {
-            is UpdateMatchesError.Network -> {
-                val networkError = error.networkError
-                if (networkError is NetworkError.UnexpectedException) {
-                    Logger.e(tag = tag, message = networkError.throwable.stackTraceToString())
-                }
-                schedule(league = tour.league)
-            }
             UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
             UpdateMatchesError.NoMatchesInTour -> { }
-            is UpdateMatchesError.Insert -> when (error.error) {
-                InsertMatchReportError.NoPlayersInTeams, is InsertMatchReportError.PlayerNotFound -> updatePlayers(tour)
-                is InsertMatchReportError.TeamNotFound -> updateTeams(tour)
-                InsertMatchReportError.TourNotFound -> initializeTours(league = tour.league)
+            is UpdateMatchesError.UpdateMatchReportError -> {
+                val networkErrors = error.networkErrors
+                if (networkErrors.isNotEmpty()) {
+                    networkErrors.forEach { networkError ->
+                        if (networkError is NetworkError.UnexpectedException) {
+                            Logger.e(tag = tag, message = networkError.throwable.stackTraceToString())
+                        }
+                    }
+                    schedule(league = tour.league)
+                } else {
+                    when {
+                        error.insertErrors.hasTourError() -> initializeTours(league = tour.league)
+                        error.insertErrors.hasTeamError() -> updateTeams(tour)
+                        error.insertErrors.hasPlayerError() -> updatePlayers(tour)
+                    }
+                }
             }
         }
     }
+
+    private inline fun <reified T: InsertMatchReportError> List<InsertMatchReportError>.hasError(): Boolean =
+        this.filterIsInstance<T>().isNotEmpty()
+
+    private fun List<InsertMatchReportError>.hasTeamError(): Boolean =
+        hasError<InsertMatchReportError.TeamNotFound>()
+
+    private fun List<InsertMatchReportError>.hasPlayerError(): Boolean =
+        hasError<InsertMatchReportError.NoPlayersInTeams>() || hasError<InsertMatchReportError.PlayerNotFound>()
+
+    private fun List<InsertMatchReportError>.hasTourError(): Boolean =
+        hasError<InsertMatchReportError.TourNotFound>()
 
     private fun schedule(duration: Duration = 10.minutes, league: League) {
         schedule(CurrentDate.zonedDateTime.plus(duration), league)

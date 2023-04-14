@@ -31,15 +31,22 @@ class UpdateMatchReportInteractor(
                 }
         }.toResults()
 
-        val firstFailure = callResults.firstFailure?.error
-        if (firstFailure != null) {
-            return Result.failure(UpdateMatchReportError.Network(firstFailure))
-        }
+        val matchReportResults = matchReportPreparer(
+            MatchReportPreparerParams(matches = callResults.values, tour = tour)
+        )
+        val callFailures = callResults.failures
 
-        return matchReportPreparer(MatchReportPreparerParams(matches = callResults.values, tour = tour)).mapError {
-            when (it) {
-                is MatchReportPreparerError.Insert -> UpdateMatchReportError.Insert(it.error)
-            }
+        return if (matchReportResults.error != null || callFailures.isNotEmpty()) {
+            Result.failure(
+                UpdateMatchReportError(
+                    networkErrors = callFailures.map { it.error },
+                    insertErrors = listOfNotNull(
+                        (matchReportResults.error as? MatchReportPreparerError.Insert)?.error
+                    ),
+                )
+            )
+        } else {
+            Result.success(Unit)
         }
     }
 }

@@ -16,7 +16,7 @@ data class RawMatchReport(
 
 data class Scout(
     val bestPlayer: BestPlayer?,
-    val ended: LocalDateTime,
+    val ended: LocalDateTime?,
     val mvp: Mvp,
     val sets: List<Set>
 )
@@ -47,7 +47,7 @@ data class Set(
     val duration: Int,
     val endTime: LocalDateTime,
     val events: List<Event>,
-    val matchScore: MatchScore,
+    val matchScore: MatchScore?,
     val startTime: LocalDateTime,
     val startingLineup: StartingLineup
 )
@@ -74,7 +74,6 @@ sealed class Event {
         val endTime: LocalDateTime,
         val point: TeamType?,
         val startTime: LocalDateTime,
-        val verified: Boolean?,
     ) : Event() {
         override val time: LocalDateTime = startTime
     }
@@ -96,7 +95,7 @@ sealed class Event {
         val atScore: AtScore,
         val endTime: LocalDateTime,
         val reason: String,
-        val response: Response,
+        val response: Response?,
         val scoreChange: ScoreChange?,
         val startTime: LocalDateTime,
         val team: TeamType

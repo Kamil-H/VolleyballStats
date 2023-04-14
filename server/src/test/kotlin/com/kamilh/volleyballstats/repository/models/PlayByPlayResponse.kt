@@ -9,13 +9,12 @@ fun playByPlayResponseOf(
     limit: Int = 0,
     skip: Int = 0,
     data: List<MatchResponse> = emptyList(),
-): PlayByPlayResponse =
-    PlayByPlayResponse(
-        total = total,
-        limit = limit,
-        skip = skip,
-        data = data,
-    )
+): PlayByPlayResponse = PlayByPlayResponse(
+    total = total,
+    limit = limit,
+    skip = skip,
+    data = data,
+)
 
 fun matchResponseOf(
     _id: String = "",
@@ -70,48 +69,44 @@ fun officialsResponseOf(
     scorer2: ScorerResponse? = null,
     lineJudge1: LineJudgeResponse? = null,
     lineJudge2: LineJudgeResponse? = null,
-): OfficialsResponse =
-    OfficialsResponse(
-        supervisor = supervisor,
-        commissioner = commissioner,
-        referee1 = referee1,
-        referee2 = referee2,
-        scorer1 = scorer1,
-        scorer2 = scorer2,
-        lineJudge1 = lineJudge1,
-        lineJudge2 = lineJudge2,
-    )
+): OfficialsResponse = OfficialsResponse(
+    supervisor = supervisor,
+    commissioner = commissioner,
+    referee1 = referee1,
+    referee2 = referee2,
+    scorer1 = scorer1,
+    scorer2 = scorer2,
+    lineJudge1 = lineJudge1,
+    lineJudge2 = lineJudge2,
+)
 
 fun commissionerResponseOf(
     firstName: String = "",
     lastName: String = "",
-): CommissionerResponse =
-    CommissionerResponse(
-        firstName = firstName,
-        lastName = lastName,
-    )
+): CommissionerResponse = CommissionerResponse(
+    firstName = firstName,
+    lastName = lastName,
+)
 
 fun refereeResponseOf(
     firstName: String = "",
     lastName: String = "",
     level: String = "",
-): RefereeResponse =
-    RefereeResponse(
-        firstName = firstName,
-        lastName = lastName,
-        level = level,
-    )
+): RefereeResponse = RefereeResponse(
+    firstName = firstName,
+    lastName = lastName,
+    level = level,
+)
 
 fun scorerResponseOf(
     firstName: String = "",
     lastName: String = "",
     level: String? = null,
-): ScorerResponse =
-    ScorerResponse(
-        firstName = firstName,
-        lastName = lastName,
-        level = level,
-    )
+): ScorerResponse = ScorerResponse(
+    firstName = firstName,
+    lastName = lastName,
+    level = level,
+)
 
 fun scoutResponseOf(
     bestPlayer: BestPlayerResponse? = null,
@@ -119,50 +114,45 @@ fun scoutResponseOf(
     ended: LocalDateTime = localDateTime(),
     mvp: MvpResponse = mvpResponseOf(),
     sets: List<SetResponse> = emptyList(),
-): ScoutResponse =
-    ScoutResponse(
-        bestPlayer = bestPlayer,
-        coinToss = coinToss,
-        ended = ended,
-        mvp = mvp,
-        sets = sets,
-    )
+): ScoutResponse = ScoutResponse(
+    bestPlayer = bestPlayer,
+    coinToss = coinToss,
+    ended = ended,
+    mvp = mvp,
+    sets = sets,
+)
 
 fun coinTossResponseOf(
     start: StartResponse = startResponseOf(),
     deciding: DecidingResponse? = null,
-): CoinTossResponse =
-    CoinTossResponse(
-        start = start,
-        deciding = deciding,
-    )
+): CoinTossResponse = CoinTossResponse(
+    start = start,
+    deciding = deciding,
+)
 
 fun startResponseOf(
     leftSide: String = "",
     serve: String = "",
-): StartResponse =
-    StartResponse(
-        leftSide = leftSide,
-        serve = serve,
-    )
+): StartResponse = StartResponse(
+    leftSide = leftSide,
+    serve = serve,
+)
 
 fun decidingResponseOf(
     leftSide: String = "",
     serve: String = "",
-): DecidingResponse =
-    DecidingResponse(
-        leftSide = leftSide,
-        serve = serve,
-    )
+): DecidingResponse = DecidingResponse(
+    leftSide = leftSide,
+    serve = serve,
+)
 
 fun mvpResponseOf(
     number: Int = 0,
     team: String = "home",
-): MvpResponse =
-    MvpResponse(
-        number = number,
-        team = team,
-    )
+): MvpResponse = MvpResponse(
+    number = number,
+    team = team,
+)
 
 fun setResponseOf(
     duration: Int = 0,
@@ -171,53 +161,48 @@ fun setResponseOf(
     score: ScoreResponse = scoreResponseOf(),
     startTime: LocalDateTime = localDateTime(),
     startingLineup: StartingLineupResponse = startingLineupResponseOf(),
-): SetResponse =
-    SetResponse(
-        duration = duration,
-        endTime = endTime,
-        events = events,
-        score = score,
-        startTime = startTime,
-        startingLineup = startingLineup,
-    )
+): SetResponse = SetResponse(
+    duration = duration,
+    endTime = endTime,
+    events = events,
+    score = score,
+    startTime = startTime,
+    startingLineup = startingLineup,
+)
 
 fun startingLineupResponseOf(
     away: List<Int> = emptyList(),
     home: List<Int> = emptyList(),
-): StartingLineupResponse =
-    StartingLineupResponse(
-        away = away,
-        home = home,
-    )
+): StartingLineupResponse = StartingLineupResponse(
+    away = away,
+    home = home,
+)
 
 fun scoreResponseOf(
     away: Int = 0,
     home: Int = 0,
-): ScoreResponse =
-    ScoreResponse(
-        away = away,
-        home = home,
-    )
+): ScoreResponse = ScoreResponse(
+    away = away,
+    home = home,
+)
 
 fun settingsResponseOf(
     decidingSetWin: Int = 0,
     regularSetWin: Int = 0,
     winningScore: Int = 0,
-): SettingsResponse =
-    SettingsResponse(
-        decidingSetWin = decidingSetWin,
-        regularSetWin = regularSetWin,
-        winningScore = winningScore,
-    )
+): SettingsResponse = SettingsResponse(
+    decidingSetWin = decidingSetWin,
+    regularSetWin = regularSetWin,
+    winningScore = winningScore,
+)
 
 fun teamsResponseOf(
     away: TeamResponse = teamResponseOf(),
     home: TeamResponse = teamResponseOf(),
-): TeamsResponse =
-    TeamsResponse(
-        away = away,
-        home = home,
-    )
+): TeamsResponse = TeamsResponse(
+    away = away,
+    home = home,
+)
 
 fun teamResponseOf(
     captain: Int = 0,
@@ -227,16 +212,15 @@ fun teamResponseOf(
     players: List<PlayerResponse> = emptyList(),
     shortName: String = "",
     staff: StaffResponse = staffResponseOf(),
-): TeamResponse =
-    TeamResponse(
-        captain = captain,
-        code = code,
-        libero = libero,
-        name = name,
-        players = players,
-        shortName = shortName,
-        staff = staff,
-    )
+): TeamResponse = TeamResponse(
+    captain = captain,
+    code = code,
+    libero = libero,
+    name = name,
+    players = players,
+    shortName = shortName,
+    staff = staff,
+)
 
 fun playerResponseOf(
     code: String = "",
@@ -244,14 +228,13 @@ fun playerResponseOf(
     isForeign: Boolean? = null,
     lastName: String = "",
     shirtNumber: Int = 0,
-): PlayerResponse =
-    PlayerResponse(
-        code = code,
-        firstName = firstName,
-        isForeign = isForeign,
-        lastName = lastName,
-        shirtNumber = shirtNumber,
-    )
+): PlayerResponse = PlayerResponse(
+    code = code,
+    firstName = firstName,
+    isForeign = isForeign,
+    lastName = lastName,
+    shirtNumber = shirtNumber,
+)
 
 fun staffResponseOf(
     assistant1: AssistantResponse? = null,
@@ -259,43 +242,39 @@ fun staffResponseOf(
     coach: CoachResponse = coachResponseOf(),
     medical1: MedicalResponse? = null,
     medical2: MedicalResponse? = null,
-): StaffResponse =
-    StaffResponse(
-        assistant1 = assistant1,
-        assistant2 = assistant2,
-        coach = coach,
-        medical1 = medical1,
-        medical2 = medical2,
-    )
+): StaffResponse = StaffResponse(
+    assistant1 = assistant1,
+    assistant2 = assistant2,
+    coach = coach,
+    medical1 = medical1,
+    medical2 = medical2,
+)
 
 fun assistantResponseOf(
     firstName: String = "",
     lastName: String = "",
-): AssistantResponse =
-    AssistantResponse(
-        firstName = firstName,
-        lastName = lastName,
-    )
+): AssistantResponse = AssistantResponse(
+    firstName = firstName,
+    lastName = lastName,
+)
 
 fun coachResponseOf(
     firstName: String = "",
     lastName: String = "",
-): CoachResponse =
-    CoachResponse(
-        firstName = firstName,
-        lastName = lastName,
-    )
+): CoachResponse = CoachResponse(
+    firstName = firstName,
+    lastName = lastName,
+)
 
 fun medicalResponseOf(
     firstName: String = "",
     lastName: String = "",
     type: String = "",
-): MedicalResponse =
-    MedicalResponse(
-        firstName = firstName,
-        lastName = lastName,
-        type = type,
-    )
+): MedicalResponse = MedicalResponse(
+    firstName = firstName,
+    lastName = lastName,
+    type = type,
+)
 
 @Serializable
 class MedicalResponse(
@@ -315,19 +294,18 @@ fun eventResponseOf(
     substitution: SubstitutionResponse? = null,
     timeout: TimeoutResponse? = null,
     videoChallenge: VideoChallengeResponse? = null,
-): EventResponse =
-    EventResponse(
-        libero = libero,
-        rally = rally,
-        sanction = sanction,
-        improperRequest = improperRequest,
-        delay = delay,
-        injury = injury,
-        newLibero = newLibero,
-        substitution = substitution,
-        timeout = timeout,
-        videoChallenge = videoChallenge,
-    )
+): EventResponse = EventResponse(
+    libero = libero,
+    rally = rally,
+    sanction = sanction,
+    improperRequest = improperRequest,
+    delay = delay,
+    injury = injury,
+    newLibero = newLibero,
+    substitution = substitution,
+    timeout = timeout,
+    videoChallenge = videoChallenge,
+)
 
 fun liberoResponseOf(
     enters: Boolean = false,
@@ -335,27 +313,23 @@ fun liberoResponseOf(
     player: Int = 0,
     team: String = "",
     time: LocalDateTime = localDateTime(),
-): LiberoResponse =
-    LiberoResponse(
-        enters = enters,
-        libero = libero,
-        player = player,
-        team = team,
-        time = time,
-    )
+): LiberoResponse = LiberoResponse(
+    enters = enters,
+    libero = libero,
+    player = player,
+    team = team,
+    time = time,
+)
 
 fun rallyResponseOf(
     endTime: LocalDateTime = localDateTime(),
     point: String? = null,
-    verified: Boolean? = null,
     startTime: LocalDateTime = localDateTime(),
-): RallyResponse =
-    RallyResponse(
-        endTime = endTime,
-        point = point,
-        verified = verified,
-        startTime = startTime,
-    )
+): RallyResponse = RallyResponse(
+    endTime = endTime,
+    point = point,
+    startTime = startTime,
+)
 
 fun sanctionResponseOf(
     team: String = "",
@@ -363,45 +337,41 @@ fun sanctionResponseOf(
     player: Int? = null,
     time: LocalDateTime = localDateTime(),
     staff: String? = null,
-): SanctionResponse =
-    SanctionResponse(
-        team = team,
-        type = type,
-        player = player,
-        time = time,
-        staff = staff,
-    )
+): SanctionResponse = SanctionResponse(
+    team = team,
+    type = type,
+    player = player,
+    time = time,
+    staff = staff,
+)
 
 fun delayResponseOf(
     team: String = "",
     time: LocalDateTime = localDateTime(),
-): DelayResponse =
-    DelayResponse(
-        team = team,
-        time = time,
-    )
+): DelayResponse = DelayResponse(
+    team = team,
+    time = time,
+)
 
 fun substitutionResponseOf(
     `in`: Int = 0,
     `out`: Int = 0,
     team: String = "",
     time: LocalDateTime = localDateTime(),
-): SubstitutionResponse =
-    SubstitutionResponse(
-        `in` = `in`,
-        `out` = `out`,
-        team = team,
-        time = time,
-    )
+): SubstitutionResponse = SubstitutionResponse(
+    `in` = `in`,
+    `out` = `out`,
+    team = team,
+    time = time,
+)
 
 fun timeoutResponseOf(
     team: String = "",
     time: LocalDateTime = localDateTime(),
-): TimeoutResponse =
-    TimeoutResponse(
-        team = team,
-        time = time,
-    )
+): TimeoutResponse = TimeoutResponse(
+    team = team,
+    time = time,
+)
 
 fun videoChallengeResponseOf(
     atScore: AtScoreResponse = atScoreResponseOf(),
@@ -411,25 +381,23 @@ fun videoChallengeResponseOf(
     scoreChange: String? = null,
     startTime: LocalDateTime = localDateTime(),
     team: String = "",
-): VideoChallengeResponse =
-    VideoChallengeResponse(
-        atScore = atScore,
-        endTime = endTime,
-        reason = reason,
-        response = response,
-        scoreChange = scoreChange,
-        startTime = startTime,
-        team = team,
-    )
+): VideoChallengeResponse = VideoChallengeResponse(
+    atScore = atScore,
+    endTime = endTime,
+    reason = reason,
+    response = response,
+    scoreChange = scoreChange,
+    startTime = startTime,
+    team = team,
+)
 
 fun atScoreResponseOf(
     away: Int = 0,
     home: Int = 0,
-): AtScoreResponse =
-    AtScoreResponse(
-        away = away,
-        home = home,
-    )
+): AtScoreResponse = AtScoreResponse(
+    away = away,
+    home = home,
+)
 
 fun playResponseOf(
     _id: String = "",
@@ -437,11 +405,10 @@ fun playResponseOf(
     player: Int = 0,
     skill: Char = Char.MIN_VALUE,
     team: String = "",
-): PlayResponse =
-    PlayResponse(
-        _id = _id,
-        effect = effect,
-        player = player,
-        skill = skill,
-        team = team,
-    )
+): PlayResponse = PlayResponse(
+    _id = _id,
+    effect = effect,
+    player = player,
+    skill = skill,
+    team = team,
+)

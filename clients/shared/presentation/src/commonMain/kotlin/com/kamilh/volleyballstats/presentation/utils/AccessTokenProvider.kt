@@ -12,6 +12,7 @@ class AccessTokenProvider(private val buildInfo: BuildInfo) {
         when (buildInfo.buildType) {
             BuildType.Debug -> AccessToken(DEBUG_ACCESS_TOKEN)
             BuildType.Release -> AccessToken(DEBUG_ACCESS_TOKEN)
+            BuildType.Local -> AccessToken(DEBUG_ACCESS_TOKEN)
         }
 
     companion object {

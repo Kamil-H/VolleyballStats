@@ -16,7 +16,7 @@ interface MatchReportStorage {
 
 typealias InsertMatchReportResult = Result<Unit, InsertMatchReportError>
 
-sealed class InsertMatchReportError(override val message: String?) : Error {
+sealed class InsertMatchReportError(override val message: String) : Error {
     object TourNotFound : InsertMatchReportError("TourNotFound")
     object NoPlayersInTeams : InsertMatchReportError("NoPlayersInTeams")
     class TeamNotFound(val teamId: TeamId) : InsertMatchReportError("TeamNotFound(teamId: $teamId)")

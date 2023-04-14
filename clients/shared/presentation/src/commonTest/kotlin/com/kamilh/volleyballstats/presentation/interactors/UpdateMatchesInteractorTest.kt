@@ -61,8 +61,7 @@ class UpdateMatchesInteractorTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchesError.Network)
-            assertEquals(error, this.networkError)
+            assertTrue((this as UpdateMatchesError.UpdateMatchReportError).networkErrors.contains(error))
         }
     }
 

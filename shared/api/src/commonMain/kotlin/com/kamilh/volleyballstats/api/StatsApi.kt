@@ -8,13 +8,22 @@ import com.kamilh.volleyballstats.api.tour.TourResponse
 import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.network.httprequest.Endpoint
+import io.ktor.http.*
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class StatsApi(private val apiUrl: ApiUrl) {
 
     private inline fun <reified T> create(path: String, queryParams: Map<String, Any?> = emptyMap()): Endpoint<T> =
-        Endpoint.create(baseUrl = apiUrl.value, path = path, queryParams = queryParams)
+        Endpoint.create(
+            baseUrl = apiUrl.value,
+            path = path,
+            queryParams = queryParams,
+            protocol = when (apiUrl.value) {
+                ApiUrl.LOCAL.value -> URLProtocol.HTTP
+                else -> URLProtocol.HTTPS
+            },
+        )
 
     fun getTours(): Endpoint<List<TourResponse>> =
         create(path = ApiConstants.PATH_SEGMENT_TOURS)

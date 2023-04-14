@@ -66,8 +66,7 @@ class UpdateMatchReportsTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Network)
-            assert(this.networkError == networkError)
+            assert(this.networkErrors.contains(networkError))
         }
     }
 
@@ -87,8 +86,7 @@ class UpdateMatchReportsTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Network)
-            assert(this.networkError == networkError)
+            assert(this.networkErrors.contains(networkError))
         }
     }
 
@@ -111,8 +109,7 @@ class UpdateMatchReportsTest {
 
         // THEN
         result.assertFailure {
-            require(this is UpdateMatchReportError.Insert)
-            assert(this.error == insertError)
+            assert(this.insertErrors.contains(insertError))
         }
     }
 

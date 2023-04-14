@@ -419,7 +419,7 @@ class SynchronizerTest {
         testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                Result.failure(UpdateMatchesError.Insert(InsertMatchReportError.TeamNotFound(teamIdOf())))
+                Result.failure(UpdateMatchesError.UpdateMatchReportError(InsertMatchReportError.TeamNotFound(teamIdOf())))
             },
             updateTeams = updateTeamsOf {
                 updateTeamsCalled = true
@@ -441,7 +441,7 @@ class SynchronizerTest {
         testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                Result.failure(UpdateMatchesError.Insert(InsertMatchReportError.TourNotFound))
+                Result.failure(UpdateMatchesError.UpdateMatchReportError(InsertMatchReportError.TourNotFound))
             },
             updateTours = updateToursOf {
                 updateToursCalled = true
@@ -463,7 +463,7 @@ class SynchronizerTest {
         testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                Result.failure(UpdateMatchesError.Insert(InsertMatchReportError.NoPlayersInTeams))
+                Result.failure(UpdateMatchesError.UpdateMatchReportError(InsertMatchReportError.NoPlayersInTeams))
             },
             updatePlayers = updatePlayersOf {
                 updatePlayersCalled = true
@@ -486,7 +486,7 @@ class SynchronizerTest {
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
                 Result.failure(
-                    UpdateMatchesError.Insert(
+                    UpdateMatchesError.UpdateMatchReportError(
                         InsertMatchReportError.PlayerNotFound(
                             emptyList()
                         )
@@ -535,7 +535,7 @@ class SynchronizerTest {
         testInteractor(
             tourStorage = tourStorageOf(getAllByLeague = flowOf(tours)),
             updateMatches = updateMatchesOf {
-                Result.failure(UpdateMatchesError.Network(networkErrorOf()))
+                Result.failure(UpdateMatchesError.UpdateMatchReportError(networkErrorOf()))
             },
             scheduler = synchronizeSchedulerOf { scheduleDate = it.first }
         )

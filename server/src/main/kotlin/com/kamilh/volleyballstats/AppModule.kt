@@ -40,6 +40,7 @@ abstract class AppModule(
     @Provides
     fun json(): Json =
         Json {
+            ignoreUnknownKeys = true
             prettyPrint = true
         }
 

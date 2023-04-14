@@ -58,7 +58,7 @@ class OfficialsResponse(
 class ScoutResponse(
     val bestPlayer: BestPlayerResponse? = null,
     val coinToss: CoinTossResponse,
-    val ended: LocalDateTime,
+    val ended: LocalDateTime? = null,
     val mvp: MvpResponse,
     val sets: List<SetResponse>,
 )
@@ -138,10 +138,10 @@ class MvpResponse(
 
 @Serializable
 class SetResponse(
-    val duration: Int,
-    val endTime: LocalDateTime,
+    val duration: Int? = null,
+    val endTime: LocalDateTime? = null,
     val events: List<EventResponse>,
-    val score: ScoreResponse,
+    val score: ScoreResponse? = null,
     val startTime: LocalDateTime,
     val startingLineup: StartingLineupResponse,
 )
@@ -219,7 +219,6 @@ class LiberoResponse(
 class RallyResponse(
     val endTime: LocalDateTime? = null,
     val point: String? = null,
-    val verified: Boolean? = null,
     val startTime: LocalDateTime,
 )
 
@@ -257,7 +256,7 @@ class VideoChallengeResponse(
     val atScore: AtScoreResponse,
     val endTime: LocalDateTime,
     val reason: String,
-    val response: String,
+    val response: String? = null,
     val scoreChange: String? = null,
     val startTime: LocalDateTime,
     val team: String,

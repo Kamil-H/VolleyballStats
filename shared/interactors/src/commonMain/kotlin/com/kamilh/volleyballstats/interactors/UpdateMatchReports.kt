@@ -17,7 +17,22 @@ data class UpdateMatchReportParams(
 
 typealias UpdateMatchReportResult = Result<Unit, UpdateMatchReportError>
 
-sealed class UpdateMatchReportError(override val message: String) : Error {
-    class Network(val networkError: NetworkError) : UpdateMatchReportError("Network(networkError=${networkError.message}")
-    class Insert(val error: InsertMatchReportError) : UpdateMatchReportError("Insert(error=${error.message}")
+class UpdateMatchReportError(
+    val networkErrors: List<NetworkError> = emptyList(),
+    val insertErrors: List<InsertMatchReportError> = emptyList(),
+) : Error {
+
+    constructor(error: InsertMatchReportError) : this(insertErrors = listOf(error))
+
+    constructor(error: NetworkError) : this(networkErrors = listOf(error))
+
+    override val message: String
+        get() = buildString {
+            if (networkErrors.isNotEmpty()) {
+                append("Network errors (${networkErrors.size}): ${networkErrors.joinToString { it.message }}")
+            }
+            if (insertErrors.isNotEmpty()) {
+                append("Insert errors (${insertErrors.size}): ${insertErrors.joinToString { it.message }}")
+            }
+        }
 }

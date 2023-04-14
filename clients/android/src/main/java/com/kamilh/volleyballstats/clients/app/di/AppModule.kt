@@ -28,6 +28,7 @@ abstract class AppModule(
             buildType = when (BuildConfig.BUILD_TYPE) {
                 "release" -> BuildType.Release
                 "debug" -> BuildType.Debug
+                "local" -> BuildType.Local
                 else -> throw IllegalStateException("Wrong build type: ${BuildConfig.BUILD_TYPE}")
             },
             versionName = BuildConfig.VERSION_NAME

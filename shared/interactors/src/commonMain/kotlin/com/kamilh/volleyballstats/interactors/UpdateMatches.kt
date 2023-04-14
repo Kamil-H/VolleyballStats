@@ -23,6 +23,14 @@ sealed class UpdateMatchesSuccess {
 sealed class UpdateMatchesError(override val message: String) : Error {
     object TourNotFound : UpdateMatchesError("TourNotFound")
     object NoMatchesInTour : UpdateMatchesError("NoMatchesInTour")
-    class Network(val networkError: NetworkError) : UpdateMatchesError("Network(networkError: ${networkError.message})")
-    class Insert(val error: InsertMatchReportError) : UpdateMatchesError("Insert(error: ${error.message})")
+    class UpdateMatchReportError(
+        val networkErrors: List<NetworkError> = emptyList(),
+        val insertErrors: List<InsertMatchReportError> = emptyList(),
+        override val message: String,
+    ) : UpdateMatchesError(message) {
+
+        constructor(error: InsertMatchReportError) : this(insertErrors = listOf(error), message = error.message)
+
+        constructor(error: NetworkError) : this(networkErrors = listOf(error), message = error.message)
+    }
 }

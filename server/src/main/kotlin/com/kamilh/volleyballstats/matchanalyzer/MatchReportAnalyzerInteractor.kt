@@ -260,12 +260,17 @@ class MatchReportAnalyzerInteractor(
     }
 
     private fun AnalyzeScope.validateScore() {
-        if (score.away != set.matchScore.away && score.home != set.matchScore.home) {
+        val matchScore = set.matchScore
+        if (matchScore == null) {
+            analyzeErrorReporter.report(
+                AnalyzeError.NoScoreForSetData(matchReportId, setIndex + 1)
+            )
+        } else if (score.away != matchScore.away && score.home != matchScore.home) {
             analyzeErrorReporter.report(
                 AnalyzeError.CalculatedScoreDifferentThanExpected(
                     matchReportId = matchReportId,
                     calculatedScore = score,
-                    expectedScore = Score(home = set.matchScore.home, away = set.matchScore.away),
+                    expectedScore = Score(home = matchScore.home, away = matchScore.away),
                     tour = tour.season
                 )
             )

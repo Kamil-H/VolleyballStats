@@ -25,7 +25,7 @@ class UpdateMatchReportInteractor(
 
     private suspend fun getMatchReport(tour: Tour, matchId: MatchId, shouldTryToFix: Boolean): UpdateMatchReportResult =
         statsRepository.getMatchReport(matchId)
-            .mapError(UpdateMatchReportError::Network)
+            .mapError(::UpdateMatchReportError)
             .flatMap { insert(it, tour, shouldTryToFix = shouldTryToFix) }
 
     private suspend fun insert(matchReport: MatchReport, tour: Tour, shouldTryToFix: Boolean): UpdateMatchReportResult =
@@ -54,16 +54,16 @@ class UpdateMatchReportInteractor(
     ): UpdateMatchReportResult =
         when (error) {
             InsertMatchReportError.TourNotFound ->
-                UpdateMatchReportResult.failure(UpdateMatchReportError.Insert(error))
+                UpdateMatchReportResult.failure(UpdateMatchReportError(error))
             is InsertMatchReportError.PlayerNotFound, InsertMatchReportError.NoPlayersInTeams -> if (shouldTryToFix) {
                 updatePlayersOnError(matchReport, tour, originalError = error)
             } else {
-                UpdateMatchReportResult.failure(UpdateMatchReportError.Insert(error))
+                UpdateMatchReportResult.failure(UpdateMatchReportError(error))
             }
             is InsertMatchReportError.TeamNotFound -> if (shouldTryToFix) {
                 updateTeamsOnError(matchReport, tour, originalError = error)
             } else {
-                UpdateMatchReportResult.failure(UpdateMatchReportError.Insert(error))
+                UpdateMatchReportResult.failure(UpdateMatchReportError(error))
             }
         }
 
@@ -75,8 +75,8 @@ class UpdateMatchReportInteractor(
         updatePlayers(UpdatePlayersParams(tour))
             .flatMapError {
                 val error = when (it) {
-                    is UpdatePlayersError.Network -> UpdateMatchReportError.Network(it.networkError)
-                    is UpdatePlayersError.Storage -> UpdateMatchReportError.Insert(originalError)
+                    is UpdatePlayersError.Network -> UpdateMatchReportError(it.networkError)
+                    is UpdatePlayersError.Storage -> UpdateMatchReportError(originalError)
                 }
                 UpdateMatchReportResult.failure(error)
             }
@@ -92,8 +92,8 @@ class UpdateMatchReportInteractor(
         updateTeams(UpdateTeamsParams(tour))
             .flatMapError {
                 val error = when (it) {
-                    is UpdateTeamsError.Network -> UpdateMatchReportError.Network(it.networkError)
-                    is UpdateTeamsError.Storage -> UpdateMatchReportError.Insert(originalError)
+                    is UpdateTeamsError.Network -> UpdateMatchReportError(it.networkError)
+                    is UpdateTeamsError.Storage -> UpdateMatchReportError(originalError)
                 }
                 UpdateMatchReportResult.failure(error)
             }

@@ -130,12 +130,10 @@ fun liberoOf(
 fun rallyOf(
     endTime: LocalDateTime = localDateTime(),
     point: TeamType? = null,
-    verified: Boolean? = null,
     startTime: LocalDateTime = localDateTime(),
 ): Event.Rally = Event.Rally(
     endTime = endTime,
     point = point,
-    verified = verified,
     startTime = startTime,
 )
 
