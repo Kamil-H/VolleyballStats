@@ -148,9 +148,9 @@ private val CellSize.horizontalSpacing: Dp
 private fun Table(
     columnCount: Int,
     rowCount: Int,
+    stickyRowItemsCount: Int,
     modifier: Modifier = Modifier,
     stickyHeaderModifier: @Composable RowModifierScope.() -> Modifier = { Modifier },
-    stickyRowItemsCount: Int,
     rowModifier: @Composable RowModifierScope.() -> Modifier = { Modifier },
     verticalLazyListState: LazyListState = rememberLazyListState(),
     horizontalScrollState: ScrollState = rememberScrollState(),
@@ -223,10 +223,7 @@ private fun TableRow(
             if (horizontalScrollState.value > 0) {
                 VerticalDivider(
                     minHeight = currentMaxHeight.value.toDp(),
-                    color = when (rowIndex) {
-                        -1 -> MaterialTheme.colorScheme.primaryContainer
-                        else -> MaterialTheme.colorScheme.onBackground
-                    }.copy(alpha = 0.2f)
+                    rowIndex = rowIndex,
                 )
             }
         }
@@ -244,9 +241,26 @@ private fun TableRow(
 
 @Composable
 private fun BoxScope.VerticalDivider(
+    minHeight: Dp,
+    rowIndex: Int,
     modifier: Modifier = Modifier,
+) {
+    VerticalDivider(
+        modifier = modifier,
+        minHeight = minHeight,
+        color = (if (rowIndex == -1) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.onBackground
+        }).copy(alpha = 0.2f)
+    )
+}
+
+@Composable
+private fun BoxScope.VerticalDivider(
     minHeight: Dp,
     color: Color,
+    modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.defaultMinSize(minHeight = minHeight)
         .width(2.dp)
@@ -256,6 +270,7 @@ private fun BoxScope.VerticalDivider(
 }
 
 @Composable
+@Suppress("MutableParams")
 private fun TableRow(
     rowIndex: Int,
     indexes: IntRange,

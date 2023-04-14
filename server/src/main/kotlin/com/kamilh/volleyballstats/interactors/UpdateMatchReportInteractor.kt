@@ -3,6 +3,7 @@ package com.kamilh.volleyballstats.interactors
 import com.kamilh.volleyballstats.domain.extensions.mapAsync
 import com.kamilh.volleyballstats.domain.models.*
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.network.NetworkError
 import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import kotlinx.coroutines.coroutineScope
 import me.tatarka.inject.annotations.Inject
@@ -31,22 +32,27 @@ class UpdateMatchReportInteractor(
                 }
         }.toResults()
 
-        val matchReportResults = matchReportPreparer(
-            MatchReportPreparerParams(matches = callResults.values, tour = tour)
+        return createResult(
+            matchReportResults = matchReportPreparer(
+                MatchReportPreparerParams(matches = callResults.values, tour = tour)
+            ),
+            callFailures = callResults.failures,
         )
-        val callFailures = callResults.failures
+    }
 
-        return if (matchReportResults.error != null || callFailures.isNotEmpty()) {
-            Result.failure(
-                UpdateMatchReportError(
-                    networkErrors = callFailures.map { it.error },
-                    insertErrors = listOfNotNull(
-                        (matchReportResults.error as? MatchReportPreparerError.Insert)?.error
-                    ),
-                )
+    private fun createResult(
+        matchReportResults: MatchReportPreparerResult,
+        callFailures: List<Result.Failure<NetworkError>>,
+    ): UpdateMatchReportResult = if (matchReportResults.error != null || callFailures.isNotEmpty()) {
+        Result.failure(
+            UpdateMatchReportError(
+                networkErrors = callFailures.map { it.error },
+                insertErrors = listOfNotNull(
+                    (matchReportResults.error as? MatchReportPreparerError.Insert)?.error
+                ),
             )
-        } else {
-            Result.success(Unit)
-        }
+        )
+    } else {
+        Result.success(Unit)
     }
 }

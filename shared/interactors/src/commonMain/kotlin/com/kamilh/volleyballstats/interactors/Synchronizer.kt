@@ -101,23 +101,29 @@ class Synchronizer(
         when (error) {
             UpdateMatchesError.TourNotFound -> initializeTours(tour.league)
             UpdateMatchesError.NoMatchesInTour -> { }
-            is UpdateMatchesError.UpdateMatchReportError -> {
-                val networkErrors = error.networkErrors
-                if (networkErrors.isNotEmpty()) {
-                    networkErrors.forEach { networkError ->
-                        if (networkError is NetworkError.UnexpectedException) {
-                            Logger.e(tag = tag, message = networkError.throwable.stackTraceToString())
-                        }
-                    }
-                    schedule(league = tour.league)
-                } else {
-                    when {
-                        error.insertErrors.hasTourError() -> initializeTours(league = tour.league)
-                        error.insertErrors.hasTeamError() -> updateTeams(tour)
-                        error.insertErrors.hasPlayerError() -> updatePlayers(tour)
-                    }
+            is UpdateMatchesError.UpdateMatchReportError -> error.handle(tour)
+        }
+    }
+
+    private suspend fun UpdateMatchesError.UpdateMatchReportError.handle(tour: Tour) {
+        val networkErrors = networkErrors
+        if (networkErrors.isNotEmpty()) {
+            networkErrors.forEach { networkError ->
+                if (networkError is NetworkError.UnexpectedException) {
+                    Logger.e(tag = tag, message = networkError.throwable.stackTraceToString())
                 }
             }
+            schedule(league = tour.league)
+        } else {
+            insertErrors.handle(tour)
+        }
+    }
+
+    private suspend fun List<InsertMatchReportError>.handle(tour: Tour) {
+        when {
+            hasTourError() -> initializeTours(league = tour.league)
+            hasTeamError() -> updateTeams(tour)
+            hasPlayerError() -> updatePlayers(tour)
         }
     }
 

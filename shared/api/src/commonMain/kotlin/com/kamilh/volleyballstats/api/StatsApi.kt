@@ -19,10 +19,7 @@ class StatsApi(private val apiUrl: ApiUrl) {
             baseUrl = apiUrl.value,
             path = path,
             queryParams = queryParams,
-            protocol = when (apiUrl.value) {
-                ApiUrl.LOCAL.value -> URLProtocol.HTTP
-                else -> URLProtocol.HTTPS
-            },
+            protocol = if (apiUrl.value == ApiUrl.LOCAL.value) URLProtocol.HTTP else URLProtocol.HTTPS,
         )
 
     fun getTours(): Endpoint<List<TourResponse>> =
