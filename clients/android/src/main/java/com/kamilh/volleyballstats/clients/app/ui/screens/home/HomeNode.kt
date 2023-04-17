@@ -7,6 +7,7 @@ import com.bumble.appyx.core.node.Node
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.presenter
 import com.kamilh.volleyballstats.presentation.features.home.HomePresenter
+import com.kamilh.volleyballstats.ui.screens.home.HomeScreen
 
 class HomeNode(
     buildContext: BuildContext,

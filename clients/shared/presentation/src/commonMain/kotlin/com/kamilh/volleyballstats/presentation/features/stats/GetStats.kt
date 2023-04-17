@@ -1,11 +1,11 @@
-package com.kamilh.volleyballstats.presentation.features.players
+package com.kamilh.volleyballstats.presentation.features.stats
 
-import com.kamilh.volleyballstats.domain.models.PlayerFilters
+import com.kamilh.volleyballstats.domain.models.StatsFilters
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.extensions.findProperty
 import com.kamilh.volleyballstats.presentation.features.common.Property
-import com.kamilh.volleyballstats.presentation.features.players.properties.*
+import com.kamilh.volleyballstats.presentation.features.stats.properties.*
 import com.kamilh.volleyballstats.storage.stats.*
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
@@ -13,7 +13,7 @@ import me.tatarka.inject.annotations.Inject
 interface StatsFlowFactory {
 
     fun createRequest(
-        playerFilters: PlayerFilters,
+        statsFilters: StatsFilters,
         skill: StatsSkill,
         sortBy: Property<String>,
         statsType: StatsType,
@@ -33,11 +33,11 @@ class StatsFlowFactoryImpl(
 ) : StatsFlowFactory {
 
     override fun createRequest(
-        playerFilters: PlayerFilters,
+        statsFilters: StatsFilters,
         skill: StatsSkill,
         sortBy: Property<String>,
         statsType: StatsType,
-    ): StatsRequest = playerFilters.toRequest(skill, sortBy, statsType)
+    ): StatsRequest = statsFilters.toRequest(skill, sortBy, statsType)
 
     override fun resolve(statsRequest: StatsRequest): Flow<List<StatsModel>> =
         statsRequest.toModelFlow()
@@ -54,7 +54,7 @@ class StatsFlowFactoryImpl(
 }
 
 @Suppress("LongMethod")
-private fun PlayerFilters.toRequest(
+private fun StatsFilters.toRequest(
     skill: StatsSkill,
     sortBy: Property<String>,
     statsType: StatsType,

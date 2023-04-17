@@ -1,6 +1,11 @@
 package com.kamilh.volleyballstats.presentation.features.filter
 
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.models.Specialization
+import com.kamilh.volleyballstats.domain.models.StatsFilters
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.TeamSnapshot
+import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
@@ -8,59 +13,76 @@ import com.kamilh.volleyballstats.presentation.features.ColorAccent
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
 import com.kamilh.volleyballstats.presentation.features.TopBarState
-import com.kamilh.volleyballstats.presentation.features.common.*
+import com.kamilh.volleyballstats.presentation.features.common.CheckableProperty
+import com.kamilh.volleyballstats.presentation.features.common.ChoosePropertiesState
+import com.kamilh.volleyballstats.presentation.features.common.ChooseValueState
+import com.kamilh.volleyballstats.presentation.features.common.Icon
+import com.kamilh.volleyballstats.presentation.features.common.Property
+import com.kamilh.volleyballstats.presentation.features.common.SegmentedControlState
+import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
+import com.kamilh.volleyballstats.presentation.features.common.check
+import com.kamilh.volleyballstats.presentation.features.common.select
+import com.kamilh.volleyballstats.presentation.features.common.setNewValue
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.storage.TeamStorage
 import com.kamilh.volleyballstats.storage.TourStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Inject
 
-class PlayerFiltersPresenter private constructor(
+class FiltersPresenter private constructor(
     private val args: Args,
     private val teamStorage: TeamStorage,
     private val tourStorage: TourStorage,
-    private val playerFiltersStorage: PlayerFiltersStorage,
+    private val statsFiltersStorage: StatsFiltersStorage,
     private val coroutineScope: CoroutineScope,
     private val navigationEventSender: NavigationEventSender,
 ) : Presenter {
 
     private val selectedControlIndex: MutableStateFlow<Int> = MutableStateFlow(value = 0)
-    private val _state: MutableStateFlow<PlayerFiltersState> = MutableStateFlow(
-        PlayerFilters().toPlayerFiltersState(selectedControlIndex = selectedControlIndex.value))
-    val state: StateFlow<PlayerFiltersState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<FiltersState> = MutableStateFlow(
+        StatsFilters().toFiltersState(selectedControlIndex = selectedControlIndex.value))
+    val state: StateFlow<FiltersState> = _state.asStateFlow()
 
     init {
-        playerFiltersStorage
-            .getPlayerFilters(args.skill, args.type)
+        statsFiltersStorage
+            .getStatsFilters(args.skill, args.type)
             .flatMapLatest { it.selectedSeasons.toFiltersStateFlow() }
             .onEach { _state.value = it }
             .launchIn(coroutineScope)
     }
 
-    private suspend fun List<Season>.toFiltersStateFlow(): Flow<PlayerFiltersState> =
+    private suspend fun List<Season>.toFiltersStateFlow(): Flow<FiltersState> =
         combine(
-            playerFiltersStorage.getPlayerFilters(args.skill, args.type),
+            statsFiltersStorage.getStatsFilters(args.skill, args.type),
             teamStorage.getTeamSnapshots(seasons = this),
             tourStorage.getAll(),
             selectedControlIndex,
-        ) { filters: PlayerFilters, teamSnapshots: Set<TeamSnapshot>, tours: List<Tour>, selectedControlIndex ->
-            filters.toPlayerFiltersState(
+        ) { filters: StatsFilters, teamSnapshots: Set<TeamSnapshot>, tours: List<Tour>, selectedControlIndex ->
+            filters.toFiltersState(
                 allSeasons = tours.map { tour -> tour.season },
                 allTeams = teamSnapshots,
                 selectedControlIndex = selectedControlIndex,
             )
         }
 
-    private fun PlayerFilters.toPlayerFiltersState(
+    private fun StatsFilters.toFiltersState(
         allProperties: List<Property<String>> = args.skill.allProperties(args.type),
         allSeasons: List<Season> = emptyList(),
         allSpecializations: List<Specialization> = Specialization.values().toList(),
         allTeams: Set<TeamSnapshot> = emptySet(),
         maxLimit: Int = 100,
         selectedControlIndex: Int,
-    ): PlayerFiltersState = PlayerFiltersState(
+    ): FiltersState = FiltersState(
         properties = selectedProperties.toChoosePropertiesState(allProperties),
         seasonSelectOption = selectedSeasons.toSeasonOptionState(allSeasons),
         specializationSelectOption = selectedSpecializations.toSpecializationOptionState(allSpecializations),
@@ -102,7 +124,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onPropertyChecked(id: String) {
         _state.update { it.copy(properties = it.properties.check(id)) }
-        playerFiltersStorage.toggleProperty(args.skill, args.type, id)
+        statsFiltersStorage.toggleProperty(args.skill, args.type, id)
     }
 
     // SEASON
@@ -123,7 +145,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onSelected(value: Season) {
         _state.update { it.copy(seasonSelectOption = it.seasonSelectOption.select(value)) }
-        playerFiltersStorage.toggleSeason(args.skill, args.type, value)
+        statsFiltersStorage.toggleSeason(args.skill, args.type, value)
     }
 
     // SPECIALIZATION
@@ -144,7 +166,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onSelected(value: Specialization) {
         _state.update { it.copy(specializationSelectOption = it.specializationSelectOption.select(value)) }
-        playerFiltersStorage.toggleSpecialization(args.skill, args.type, value)
+        statsFiltersStorage.toggleSpecialization(args.skill, args.type, value)
     }
 
     // TEAMS
@@ -165,7 +187,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onSelected(value: TeamId) {
         _state.update { it.copy(teamsSelectOption = it.teamsSelectOption.select(value)) }
-        playerFiltersStorage.toggleTeam(args.skill, args.type, value)
+        statsFiltersStorage.toggleTeam(args.skill, args.type, value)
     }
 
     // LIMIT
@@ -180,7 +202,7 @@ class PlayerFiltersPresenter private constructor(
 
     private fun onValueSelected(value: Int) {
         _state.update { it.copy(chooseIntState = it.chooseIntState.setNewValue(value)) }
-        playerFiltersStorage.setNewLimit(args.skill, args.type, value)
+        statsFiltersStorage.setNewLimit(args.skill, args.type, value)
     }
 
     private fun onBackButtonClicked() {
@@ -195,19 +217,19 @@ class PlayerFiltersPresenter private constructor(
     class Factory(
         private val teamStorage: TeamStorage,
         private val tourStorage: TourStorage,
-        private val playerFiltersStorage: PlayerFiltersStorage,
+        private val statsFiltersStorage: StatsFiltersStorage,
         private val navigationEventSender: NavigationEventSender,
-    ) : Presenter.Factory<PlayerFiltersPresenter, Args> {
+    ) : Presenter.Factory<FiltersPresenter, Args> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
             extras: Args,
-        ): PlayerFiltersPresenter = PlayerFiltersPresenter(
+        ): FiltersPresenter = FiltersPresenter(
             args = extras,
             teamStorage = teamStorage,
             tourStorage = tourStorage,
-            playerFiltersStorage = playerFiltersStorage,
+            statsFiltersStorage = statsFiltersStorage,
             coroutineScope = coroutineScope,
             navigationEventSender = navigationEventSender,
         )

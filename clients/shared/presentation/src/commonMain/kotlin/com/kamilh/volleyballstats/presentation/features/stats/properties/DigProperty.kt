@@ -1,8 +1,8 @@
-package com.kamilh.volleyballstats.presentation.features.players.properties
+package com.kamilh.volleyballstats.presentation.features.stats.properties
 
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
-enum class SetProperty(
+enum class DigProperty(
     override val shortName: String,
     override val additionalName: String? = null,
     override val description: String,
@@ -40,34 +40,22 @@ enum class SetProperty(
         shortName = "Att",
         description = "",
     ),
-    Perfect(
+    Digs(
+        shortName = "Kill",
+        description = "",
+    ),
+    SuccessPercent(
         shortName = "Kill",
         additionalName = "%",
         description = "",
     ),
-    PerfectPositive(
-        shortName = "Eff",
-        additionalName = "%",
-        description = "",
-    ),
-    Efficiency(
-        shortName = "Err",
-        additionalName = "%",
-        description = "",
-    ),
     Errors(
-        shortName = "Win",
-        additionalName = "%",
-        description = "",
-    ),
-    ErrorsPercent(
-        shortName = "BP",
-        additionalName = "Kill%",
+        shortName = "Reb",
         description = "",
     ),
     PointWinPercent(
-        shortName = "BP",
-        additionalName = "Eff%",
+        shortName = "Reb",
+        additionalName = "%",
         description = "",
     );
 

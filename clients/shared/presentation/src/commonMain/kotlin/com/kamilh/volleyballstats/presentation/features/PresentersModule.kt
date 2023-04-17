@@ -1,9 +1,9 @@
 package com.kamilh.volleyballstats.presentation.features
 
-import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersPresenter
+import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
 import com.kamilh.volleyballstats.presentation.features.home.HomePresenter
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
-import com.kamilh.volleyballstats.presentation.features.players.PlayerStatsPresenter
+import com.kamilh.volleyballstats.presentation.features.stats.StatsPresenter
 import kotlinx.coroutines.CoroutineScope
 import me.tatarka.inject.annotations.IntoMap
 import me.tatarka.inject.annotations.Provides
@@ -21,12 +21,12 @@ interface PresentersModule {
 
     @IntoMap
     @Provides
-    fun providePresenter(factory: PlayerFiltersPresenter.Factory): Pair<KClass<*>, Presenter.Factory<*, *>> =
+    fun providePresenter(factory: FiltersPresenter.Factory): Pair<KClass<*>, Presenter.Factory<*, *>> =
         factory.toPresenterMapEntry()
 
     @IntoMap
     @Provides
-    fun providePresenter(factory: PlayerStatsPresenter.Factory): Pair<KClass<*>, Presenter.Factory<*, *>> =
+    fun providePresenter(factory: StatsPresenter.Factory): Pair<KClass<*>, Presenter.Factory<*, *>> =
         factory.toPresenterMapEntry()
 
     @IntoMap

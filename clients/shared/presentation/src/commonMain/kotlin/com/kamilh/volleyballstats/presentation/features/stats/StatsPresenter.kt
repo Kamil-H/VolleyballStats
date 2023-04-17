@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.presentation.features.players
+package com.kamilh.volleyballstats.presentation.features.stats
 
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
@@ -8,30 +8,48 @@ import com.kamilh.volleyballstats.presentation.features.ColorAccent
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
 import com.kamilh.volleyballstats.presentation.features.TopBarState
-import com.kamilh.volleyballstats.presentation.features.common.*
-import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
-import com.kamilh.volleyballstats.presentation.features.players.properties.*
+import com.kamilh.volleyballstats.presentation.features.common.Property
+import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
+import com.kamilh.volleyballstats.presentation.features.common.TableContent
+import com.kamilh.volleyballstats.presentation.features.common.isLoading
+import com.kamilh.volleyballstats.presentation.features.common.selectSingle
+import com.kamilh.volleyballstats.presentation.features.common.toLoadingState
+import com.kamilh.volleyballstats.presentation.features.filter.StatsFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.stats.properties.AttackProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.BlockProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.DigProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.ReceiveProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.ServeProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.SetProperty
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
 import com.kamilh.volleyballstats.storage.stats.StatsModel
 import com.kamilh.volleyballstats.storage.stats.StatsRequest
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Inject
 
-class PlayerStatsPresenter private constructor(
+class StatsPresenter private constructor(
     private val statsType: StatsType,
     private val statsModelMapper: StatsModelMapper,
     private val statsFlowFactory: StatsFlowFactory,
     private val coroutineScope: CoroutineScope,
-    private val playerFiltersStorage: PlayerFiltersStorage,
+    private val statsFiltersStorage: StatsFiltersStorage,
     private val navigationEventSender: NavigationEventSender,
     private val synchronizeStateReceiver: SynchronizeStateReceiver,
 ) : Presenter {
 
     private val chosenSkill = MutableStateFlow(StatsSkill.Attack)
-    private val _state: MutableStateFlow<PlayerStatsState> = MutableStateFlow(
-        PlayerStatsState(
+    private val _state: MutableStateFlow<StatsState> = MutableStateFlow(
+        StatsState(
             selectSkillState = SelectOptionState(options = StatsSkill.values().map { skill ->
                 SelectOptionState.Option(
                     id = skill,
@@ -47,7 +65,7 @@ class PlayerStatsPresenter private constructor(
             },
         )
     )
-    val state: StateFlow<PlayerStatsState> = _state.asStateFlow()
+    val state: StateFlow<StatsState> = _state.asStateFlow()
 
     private val sortBy: MutableStateFlow<Map<StatsSkill, Property<String>>> = MutableStateFlow(
         StatsSkill.values().associateWith { it.getDefaultSort() }
@@ -55,7 +73,7 @@ class PlayerStatsPresenter private constructor(
 
     init {
         val sortByProperty = sortBy.combine(chosenSkill) { sortBy, skill -> sortBy[skill]!! }
-        playerFiltersStorage
+        statsFiltersStorage
             .request()
             .flatMapLatest { (statsRequest, properties)  ->
                 statsFlowFactory.resolve(statsRequest).map { it to properties }
@@ -76,15 +94,15 @@ class PlayerStatsPresenter private constructor(
             .launchIn(coroutineScope)
     }
 
-    private fun PlayerFiltersStorage.request(): Flow<Pair<StatsRequest, List<Property<String>>>> =
+    private fun StatsFiltersStorage.request(): Flow<Pair<StatsRequest, List<Property<String>>>> =
         chosenSkill.flatMapLatest { skill ->
-            getPlayerFilters(skill, statsType = statsType).combine(sortBy) { playerFilters, sortBy ->
+            getStatsFilters(skill, statsType = statsType).combine(sortBy) { statsFilters, sortBy ->
                 statsFlowFactory.createRequest(
-                    playerFilters = playerFilters,
+                    statsFilters = statsFilters,
                     skill = skill,
                     sortBy = sortBy[skill]!!,
                     statsType = statsType,
-                ) to skill.allProperties(statsType, playerFilters.selectedProperties)
+                ) to skill.allProperties(statsType, statsFilters.selectedProperties)
             }
         }
 
@@ -122,21 +140,21 @@ class PlayerStatsPresenter private constructor(
     class Factory(
         private val statsModelMapper: StatsModelMapper,
         private val statsFlowFactory: StatsFlowFactory,
-        private val playerFiltersStorage: PlayerFiltersStorage,
+        private val statsFiltersStorage: StatsFiltersStorage,
         private val navigationEventSender: NavigationEventSender,
         private val synchronizeStateReceiver: SynchronizeStateReceiver,
-    ) : Presenter.Factory<PlayerStatsPresenter, StatsType> {
+    ) : Presenter.Factory<StatsPresenter, StatsType> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
             extras: StatsType,
-        ): PlayerStatsPresenter = PlayerStatsPresenter(
+        ): StatsPresenter = StatsPresenter(
             statsType = extras,
             statsModelMapper = statsModelMapper,
             statsFlowFactory = statsFlowFactory,
             coroutineScope = coroutineScope,
-            playerFiltersStorage = playerFiltersStorage,
+            statsFiltersStorage = statsFiltersStorage,
             navigationEventSender = navigationEventSender,
             synchronizeStateReceiver = synchronizeStateReceiver,
         )

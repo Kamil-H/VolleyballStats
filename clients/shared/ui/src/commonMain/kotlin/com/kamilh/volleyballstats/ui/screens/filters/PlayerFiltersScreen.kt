@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app.ui.screens.filters
+package com.kamilh.volleyballstats.ui.screens.filters
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -10,15 +10,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kamilh.volleyballstats.presentation.features.filter.Control
-import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersPresenter
-import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersState
-import com.kamilh.volleyballstats.ui.components.*
+import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
+import com.kamilh.volleyballstats.presentation.features.filter.FiltersState
+import com.kamilh.volleyballstats.ui.components.ChooseIntValue
+import com.kamilh.volleyballstats.ui.components.ChooseProperties
+import com.kamilh.volleyballstats.ui.components.ScreenSkeleton
+import com.kamilh.volleyballstats.ui.components.SegmentedControl
+import com.kamilh.volleyballstats.ui.components.SelectOption
 import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
 fun PlayerFiltersScreen(
     modifier: Modifier = Modifier,
-    presenter: PlayerFiltersPresenter,
+    presenter: FiltersPresenter,
 ) {
     val state by presenter.state.collectAsState()
     PlayerFiltersScreen(
@@ -31,7 +35,7 @@ fun PlayerFiltersScreen(
 @Composable
 private fun PlayerFiltersScreen(
     modifier: Modifier = Modifier,
-    state: PlayerFiltersState,
+    state: FiltersState,
     onItemSelection: (selectedItemIndex: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()

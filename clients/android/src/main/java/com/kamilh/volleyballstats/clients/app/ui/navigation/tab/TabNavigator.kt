@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app.ui.navigation
+package com.kamilh.volleyballstats.clients.app.ui.navigation.tab
 
 import com.bumble.appyx.navmodel.spotlight.Spotlight
 import com.bumble.appyx.navmodel.spotlight.activeIndex

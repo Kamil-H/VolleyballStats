@@ -1,15 +1,14 @@
-package com.kamilh.volleyballstats.presentation.features.players.properties
+package com.kamilh.volleyballstats.presentation.features.stats.properties
 
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
-enum class BlockProperty(
+enum class ServeProperty(
     override val shortName: String,
     override val additionalName: String? = null,
     override val description: String,
     override val mandatory: Boolean = false,
     override val filterable: Boolean = true,
 ) : Property<String> {
-
     Index(
         shortName = "In.",
         description = "",
@@ -41,45 +40,54 @@ enum class BlockProperty(
         shortName = "Att",
         description = "",
     ),
-    Kill(
-        shortName = "Kill",
-        description = "",
-    ),
-    KillPerAttempt(
+    Efficiency(
         shortName = "Kill",
         additionalName = "%",
         description = "",
     ),
-    Rebound(
-        shortName = "Reb",
-        description = "",
-    ),
-    ReboundPerAttempt(
-        shortName = "Reb",
+    Ace(
+        shortName = "Eff",
         additionalName = "%",
         description = "",
     ),
-    KillPlusRebound(
-        shortName = "Kill+",
-        additionalName = "Reb",
-        description = "",
-    ),
-    KillPlusReboundPerAttempt(
-        shortName = "Kill+",
-        additionalName = "Reb%",
-        description = "",
-    ),
-    Error(
+    AcePercent(
         shortName = "Err",
+        additionalName = "%",
         description = "",
     ),
-    ErrorPerAttempt(
-        shortName = "Err",
-        description = "%",
-    ),
-    PointWinPercent(
+    Freeball(
         shortName = "Win",
         additionalName = "%",
+        description = "",
+    ),
+    FreeballPercent(
+        shortName = "BP",
+        additionalName = "Kill%",
+        description = "",
+    ),
+    AceFreeball(
+        shortName = "BP",
+        additionalName = "Eff%",
+        description = "",
+    ),
+    AceFreeballPercent(
+        shortName = "BP",
+        additionalName = "Err%",
+        description = "",
+    ),
+    Errors(
+        shortName = "BP",
+        additionalName = "Eff%",
+        description = "",
+    ),
+    ErrorsPercent(
+        shortName = "BP",
+        additionalName = "Eff%",
+        description = "",
+    ),
+    PointWinPercent(
+        shortName = "BP",
+        additionalName = "Eff%",
         description = "",
     );
 

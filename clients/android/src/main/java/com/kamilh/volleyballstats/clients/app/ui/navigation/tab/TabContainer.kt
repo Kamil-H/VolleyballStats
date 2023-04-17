@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app.ui
+package com.kamilh.volleyballstats.clients.app.ui.navigation.tab
 
 import androidx.core.app.ComponentActivity
 import com.bumble.appyx.core.modality.BuildContext

@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.domain.models
 
-data class PlayerFilters(
+data class StatsFilters(
     val selectedProperties: List<String> = emptyList(),
     val selectedSeasons: List<Season> = emptyList(),
     val selectedSpecializations: List<Specialization> = emptyList(),

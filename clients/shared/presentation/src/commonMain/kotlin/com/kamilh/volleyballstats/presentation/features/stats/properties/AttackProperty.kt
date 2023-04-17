@@ -1,8 +1,8 @@
-package com.kamilh.volleyballstats.presentation.features.players.properties
+package com.kamilh.volleyballstats.presentation.features.stats.properties
 
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
-enum class ReceiveProperty(
+enum class AttackProperty(
     override val shortName: String,
     override val additionalName: String? = null,
     override val description: String,
@@ -40,38 +40,53 @@ enum class ReceiveProperty(
         shortName = "Att",
         description = "",
     ),
-    Perfect(
+    Kill(
         shortName = "Kill",
         additionalName = "%",
         description = "",
     ),
-    PerfectPositive(
+    Efficiency(
         shortName = "Eff",
         additionalName = "%",
         description = "",
     ),
-    Efficiency(
+    Error(
         shortName = "Err",
         additionalName = "%",
         description = "",
     ),
-    Errors(
+    PointWinPercent(
         shortName = "Win",
         additionalName = "%",
         description = "",
     ),
-    ErrorsPercent(
+    KillBreakPoint(
         shortName = "BP",
         additionalName = "Kill%",
         description = "",
     ),
-    SideOut(
+    EfficiencyBreakPoint(
         shortName = "BP",
         additionalName = "Eff%",
         description = "",
     ),
-    PointWinPercent(
+    ErrorBreakPoint(
         shortName = "BP",
+        additionalName = "Err%",
+        description = "",
+    ),
+    KillSideOut(
+        shortName = "SOut",
+        additionalName = "Kill%",
+        description = "",
+    ),
+    EfficiencySideOut(
+        shortName = "SOut",
+        additionalName = "Eff%",
+        description = "",
+    ),
+    ErrorSideOut(
+        shortName = "SOut",
         additionalName = "Err%",
         description = "",
     );

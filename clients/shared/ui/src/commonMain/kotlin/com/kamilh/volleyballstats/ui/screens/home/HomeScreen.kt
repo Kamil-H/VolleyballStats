@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app.ui.screens.home
+package com.kamilh.volleyballstats.ui.screens.home
 
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable

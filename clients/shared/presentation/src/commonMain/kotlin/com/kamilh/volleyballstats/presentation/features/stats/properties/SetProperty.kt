@@ -1,8 +1,8 @@
-package com.kamilh.volleyballstats.presentation.features.players.properties
+package com.kamilh.volleyballstats.presentation.features.stats.properties
 
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
-enum class ServeProperty(
+enum class SetProperty(
     override val shortName: String,
     override val additionalName: String? = null,
     override val description: String,
@@ -40,49 +40,29 @@ enum class ServeProperty(
         shortName = "Att",
         description = "",
     ),
-    Efficiency(
+    Perfect(
         shortName = "Kill",
         additionalName = "%",
         description = "",
     ),
-    Ace(
+    PerfectPositive(
         shortName = "Eff",
         additionalName = "%",
         description = "",
     ),
-    AcePercent(
+    Efficiency(
         shortName = "Err",
         additionalName = "%",
         description = "",
     ),
-    Freeball(
+    Errors(
         shortName = "Win",
         additionalName = "%",
         description = "",
     ),
-    FreeballPercent(
-        shortName = "BP",
-        additionalName = "Kill%",
-        description = "",
-    ),
-    AceFreeball(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
-    ),
-    AceFreeballPercent(
-        shortName = "BP",
-        additionalName = "Err%",
-        description = "",
-    ),
-    Errors(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
-    ),
     ErrorsPercent(
         shortName = "BP",
-        additionalName = "Eff%",
+        additionalName = "Kill%",
         description = "",
     ),
     PointWinPercent(

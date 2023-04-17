@@ -9,7 +9,7 @@ import com.kamilh.volleyballstats.presentation.features.common.ChoosePropertiesS
 import com.kamilh.volleyballstats.presentation.features.common.SegmentedControlState
 import com.kamilh.volleyballstats.presentation.features.common.SelectOptionState
 
-data class PlayerFiltersState(
+data class FiltersState(
     val properties: ChoosePropertiesState<String>,
     val seasonSelectOption: SelectOptionState<Season>,
     val specializationSelectOption: SelectOptionState<Specialization>,

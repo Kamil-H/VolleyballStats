@@ -1,18 +1,22 @@
 package com.kamilh.volleyballstats.presentation.features.filter
 
 import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.domain.models.PlayerFilters
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.Specialization
+import com.kamilh.volleyballstats.domain.models.StatsFilters
 import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Inject
 
-interface PlayerFiltersStorage {
+interface StatsFiltersStorage {
 
-    fun getPlayerFilters(skill: StatsSkill, statsType: StatsType): Flow<PlayerFilters>
+    fun getStatsFilters(skill: StatsSkill, statsType: StatsType): Flow<StatsFilters>
 
     fun toggleProperty(skill: StatsSkill, statsType: StatsType, value: String)
 
@@ -27,19 +31,19 @@ interface PlayerFiltersStorage {
 
 @Inject
 @Singleton
-class MockPlayerFiltersStorage : PlayerFiltersStorage {
+class MockStatsFiltersStorage : StatsFiltersStorage {
 
     private val filters = MutableStateFlow<List<FilterUnit>>(emptyList())
 
-    override fun getPlayerFilters(skill: StatsSkill, statsType: StatsType): Flow<PlayerFilters> =
+    override fun getStatsFilters(skill: StatsSkill, statsType: StatsType): Flow<StatsFilters> =
         filters.asStateFlow().map {
             it.filter { unit ->
                 unit.skill == skill && unit.skillType == statsType
-            }.toPlayerFilters()
+            }.toFilters()
         }
 
-    private fun List<FilterUnit>.toPlayerFilters(): PlayerFilters =
-        PlayerFilters(
+    private fun List<FilterUnit>.toFilters(): StatsFilters =
+        StatsFilters(
             selectedProperties = filterByType(FilterUnit.Type.Property) { unit -> unit.value },
             selectedSeasons = filterByType(FilterUnit.Type.Season) { unit -> unit.toSeason() },
             selectedSpecializations = filterByType(FilterUnit.Type.Specialization) { unit -> unit.toSpecializations() },

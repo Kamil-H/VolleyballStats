@@ -11,12 +11,12 @@ import com.kamilh.volleyballstats.domain.utils.Logger
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
 import com.kamilh.volleyballstats.presentation.features.PresentersModule
-import com.kamilh.volleyballstats.presentation.features.filter.MockPlayerFiltersStorage
-import com.kamilh.volleyballstats.presentation.features.filter.PlayerFiltersStorage
-import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactory
-import com.kamilh.volleyballstats.presentation.features.players.StatsFlowFactoryImpl
-import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapper
-import com.kamilh.volleyballstats.presentation.features.players.StatsModelMapperImpl
+import com.kamilh.volleyballstats.presentation.features.filter.MockStatsFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.filter.StatsFiltersStorage
+import com.kamilh.volleyballstats.presentation.features.stats.StatsFlowFactory
+import com.kamilh.volleyballstats.presentation.features.stats.StatsFlowFactoryImpl
+import com.kamilh.volleyballstats.presentation.features.stats.StatsModelMapper
+import com.kamilh.volleyballstats.presentation.features.stats.StatsModelMapperImpl
 import com.kamilh.volleyballstats.presentation.interactors.InteractorModule
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventHandler
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
@@ -103,7 +103,7 @@ interface PresentationModule : InteractorModule, DataModule, PresentersModule {
         @Provides get() = this
 
     // TODO: Move it to storage
-    val MockPlayerFiltersStorage.bind: PlayerFiltersStorage
+    val MockStatsFiltersStorage.bind: StatsFiltersStorage
         @Provides get() = this
 
     val StatsModelMapperImpl.bind: StatsModelMapper

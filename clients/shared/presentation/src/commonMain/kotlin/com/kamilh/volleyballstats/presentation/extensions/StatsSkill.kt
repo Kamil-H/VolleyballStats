@@ -3,7 +3,7 @@ package com.kamilh.volleyballstats.presentation.extensions
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.features.common.Property
-import com.kamilh.volleyballstats.presentation.features.players.properties.*
+import com.kamilh.volleyballstats.presentation.features.stats.properties.*
 
 fun StatsSkill.allProperties(type: StatsType): List<Property<String>> = when (this) {
     StatsSkill.Attack -> AttackProperty.values()
