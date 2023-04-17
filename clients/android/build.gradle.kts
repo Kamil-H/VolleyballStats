@@ -5,6 +5,12 @@ plugins {
 }
 
 android {
+    namespace = "com.kamilh.volleyballstats.clients.app"
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileSdk = libs.versions.android.compile.get().toInt()
 
     defaultConfig {

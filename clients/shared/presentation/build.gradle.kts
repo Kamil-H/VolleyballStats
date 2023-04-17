@@ -2,6 +2,10 @@ plugins {
     `kmm-platform-plugin`
 }
 
+android {
+    namespace = "com.kamilh.volleyballstats.presentation"
+}
+
 dependencies {
     commonMainImplementation(project(":shared:domain"))
     commonMainImplementation(project(":shared:datetime"))

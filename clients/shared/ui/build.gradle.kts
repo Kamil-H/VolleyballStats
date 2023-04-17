@@ -3,6 +3,10 @@ plugins {
     id("org.jetbrains.compose")
 }
 
+android {
+    namespace = "com.kamilh.volleyballstats.ui"
+}
+
 dependencies {
     commonMainImplementation(project(":clients:shared:presentation"))
     commonMainImplementation(project(":shared:domain"))
