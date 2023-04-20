@@ -28,10 +28,6 @@ bin/
 gen/
 out/
 
-# Gradle files
-.gradle/
-build/
-
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -42,9 +38,7 @@ local.properties
 captures/
 
 # Intellij
-*.iml
 .idea
-.DS_Store
 
 # Fastlane
 fastlane/metadata/
@@ -53,3 +47,20 @@ fastlane/report.xml
 
 # Keystore file and secrets
 *.keystore
+
+## User settings
+xcuserdata/
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+.build/
+
+# cocoapods
+Pods/
+*.xcworkspace
