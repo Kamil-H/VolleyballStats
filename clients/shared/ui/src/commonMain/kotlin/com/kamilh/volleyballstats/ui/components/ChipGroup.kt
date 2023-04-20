@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.Dp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChipGroup(
-    modifier: Modifier,
     mainAxisSpacing: Dp,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
 

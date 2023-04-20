@@ -21,8 +21,8 @@ import com.kamilh.volleyballstats.ui.theme.Dimens
 
 @Composable
 fun PlayerFiltersScreen(
-    modifier: Modifier = Modifier,
     presenter: FiltersPresenter,
+    modifier: Modifier = Modifier,
 ) {
     val state by presenter.state.collectAsState()
     PlayerFiltersScreen(
@@ -34,8 +34,8 @@ fun PlayerFiltersScreen(
 
 @Composable
 private fun PlayerFiltersScreen(
-    modifier: Modifier = Modifier,
     state: FiltersState,
+    modifier: Modifier = Modifier,
     onItemSelection: (selectedItemIndex: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()

@@ -14,8 +14,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
     presenter: HomePresenter,
+    modifier: Modifier = Modifier,
 ) {
     val state by presenter.state.collectAsState()
     HomeScreen(
@@ -28,9 +28,9 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreen(
-    modifier: Modifier = Modifier,
     state: HomeState,
     onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
     onMessageDismissed: () -> Unit,
 ) {
 
@@ -38,7 +38,7 @@ private fun HomeScreen(
 
     LaunchedEffect(state.scrollToItem) {
         state.scrollToItem?.let { scrollToItem ->
-            delay(1000)
+            delay(SCROLL_TO_ITEM_DELAY_MS)
             scrollState.animateScrollToItem(index = scrollToItem)
             state.onScrolledToItem(scrollToItem)
         }
@@ -58,3 +58,5 @@ private fun HomeScreen(
         )
     }
 }
+
+private const val SCROLL_TO_ITEM_DELAY_MS = 1000L

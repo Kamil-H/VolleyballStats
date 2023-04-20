@@ -21,8 +21,8 @@ import com.kamilh.volleyballstats.ui.extensions.toDp
 
 @Composable
 fun StatsScreen(
-    modifier: Modifier = Modifier,
     presenter: StatsPresenter,
+    modifier: Modifier = Modifier,
 ) {
     val state by presenter.state.collectAsState()
     StatsScreen(
@@ -33,8 +33,8 @@ fun StatsScreen(
 
 @Composable
 private fun StatsScreen(
-    modifier: Modifier = Modifier,
     state: StatsState,
+    modifier: Modifier = Modifier,
 ) {
     var optionViewHeight by remember { mutableStateOf(0) }
     val listState = rememberLazyListState()
