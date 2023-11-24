@@ -24,7 +24,8 @@ dependencies {
     commonMainImplementation(libs.inject.runtime)
 
     jvmTestImplementation(libs.sqldelight.driver.jvm)
-    iosTestImplementation(libs.sqldelight.driver.ios)
+    iosArm64MainImplementation(libs.sqldelight.driver.ios)
+    iosSimulatorArm64MainImplementation(libs.sqldelight.driver.ios)
     commonTestImplementation(libs.kotlinx.coroutines.test)
     commonTestImplementation(libs.test.common)
     commonTestImplementation(libs.test.annotations.common)

@@ -15,7 +15,7 @@ fun Exception.createSqlError(tableName: String, columnName: String): SqlError? =
                 message.contains("SQLITE_ERROR") -> SqlError.Error
                 message.contains("SQLITE_CONSTRAINT_PRIMARYKEY") -> SqlError.PrimaryKey
                 message.contains("SQLITE_CONSTRAINT_UNIQUE") -> SqlError.Uniqueness
-                message.contains("SQLITE_CONSTRAINT_NOTNULL") -> SqlError.NotNull
+                message.contains("SQLITE_CONSTRAINT_NOTNULL") || message.contains("NOT NULL") -> SqlError.NotNull
                 else -> SqlError.Unexpected(this)
             }
         } else {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		573D6E16DDAE7D87FB8BF523 /* Pods_VolleyballStats_compose.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A18690326F65FC61F2B0F1 /* Pods_VolleyballStats_compose.framework */; };
 		80C20AD829F112A100B5EF82 /* VolleyballStats_composeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C20AD729F112A100B5EF82 /* VolleyballStats_composeApp.swift */; };
 		80C20ADA29F112A100B5EF82 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C20AD929F112A100B5EF82 /* ContentView.swift */; };
 		80C20ADC29F112A200B5EF82 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80C20ADB29F112A200B5EF82 /* Assets.xcassets */; };
@@ -14,11 +15,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		70E38A24349D2B8EB0822202 /* Pods-VolleyballStats-compose.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolleyballStats-compose.debug.xcconfig"; path = "Target Support Files/Pods-VolleyballStats-compose/Pods-VolleyballStats-compose.debug.xcconfig"; sourceTree = "<group>"; };
 		80C20AD429F112A100B5EF82 /* VolleyballStats-compose.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VolleyballStats-compose.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		80C20AD729F112A100B5EF82 /* VolleyballStats_composeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolleyballStats_composeApp.swift; sourceTree = "<group>"; };
 		80C20AD929F112A100B5EF82 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		80C20ADB29F112A200B5EF82 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		80C20ADE29F112A200B5EF82 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		89A18690326F65FC61F2B0F1 /* Pods_VolleyballStats_compose.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolleyballStats_compose.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA714DE8A8CB0EAA16BB4A1A /* Pods-VolleyballStats-compose.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolleyballStats-compose.release.xcconfig"; path = "Target Support Files/Pods-VolleyballStats-compose/Pods-VolleyballStats-compose.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,17 +30,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				573D6E16DDAE7D87FB8BF523 /* Pods_VolleyballStats_compose.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D72CD287EF49F323F517723 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				89A18690326F65FC61F2B0F1 /* Pods_VolleyballStats_compose.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		605E7730FE9FFA8FAA7F335C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				70E38A24349D2B8EB0822202 /* Pods-VolleyballStats-compose.debug.xcconfig */,
+				EA714DE8A8CB0EAA16BB4A1A /* Pods-VolleyballStats-compose.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		80C20ACB29F112A100B5EF82 = {
 			isa = PBXGroup;
 			children = (
 				80C20AD629F112A100B5EF82 /* VolleyballStats-compose */,
 				80C20AD529F112A100B5EF82 /* Products */,
+				605E7730FE9FFA8FAA7F335C /* Pods */,
+				2D72CD287EF49F323F517723 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,9 +98,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 80C20AE229F112A200B5EF82 /* Build configuration list for PBXNativeTarget "VolleyballStats-compose" */;
 			buildPhases = (
+				53B8174DEF8C9AF0A5E889C2 /* [CP] Check Pods Manifest.lock */,
 				80C20AD029F112A100B5EF82 /* Sources */,
 				80C20AD129F112A100B5EF82 /* Frameworks */,
 				80C20AD229F112A100B5EF82 /* Resources */,
+				A50A19A3F6CAF042E86AB975 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -131,6 +157,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		53B8174DEF8C9AF0A5E889C2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VolleyballStats-compose-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A50A19A3F6CAF042E86AB975 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VolleyballStats-compose/Pods-VolleyballStats-compose-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VolleyballStats-compose/Pods-VolleyballStats-compose-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VolleyballStats-compose/Pods-VolleyballStats-compose-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		80C20AD029F112A100B5EF82 /* Sources */ = {
@@ -199,6 +267,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-lsqlite3";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -252,6 +321,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-lsqlite3";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -261,6 +331,7 @@
 		};
 		80C20AE329F112A200B5EF82 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 70E38A24349D2B8EB0822202 /* Pods-VolleyballStats-compose.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -290,6 +361,7 @@
 		};
 		80C20AE429F112A200B5EF82 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA714DE8A8CB0EAA16BB4A1A /* Pods-VolleyballStats-compose.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

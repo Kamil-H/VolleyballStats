@@ -1,0 +1,16 @@
+PODS:
+  - ui (1.0.0)
+
+DEPENDENCIES:
+  - ui (from `../shared/ui`)
+
+EXTERNAL SOURCES:
+  ui:
+    :path: "../shared/ui"
+
+SPEC CHECKSUMS:
+  ui: 6ae57e5a915f4aa2482c2c651d517b65edf87769
+
+PODFILE CHECKSUM: 7cb2195699aa8254c0efd4abf471ff3d8b25a001
+
+COCOAPODS: 1.13.0

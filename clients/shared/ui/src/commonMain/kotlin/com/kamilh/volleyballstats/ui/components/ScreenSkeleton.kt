@@ -1,7 +1,5 @@
 package com.kamilh.volleyballstats.ui.components
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -32,17 +30,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
 import com.kamilh.volleyballstats.presentation.features.LinearProgressBar
 import com.kamilh.volleyballstats.presentation.features.ScreenState
 import com.kamilh.volleyballstats.presentation.features.TopBarState
@@ -246,28 +240,6 @@ private fun LinearProgress(
             trackColor = trackColor,
             color = color,
         )
-    }
-}
-
-@Composable
-private fun AdjustBarsColor(lightStatusBar: Boolean) {
-    val darkTheme: Boolean = isSystemInDarkTheme()
-    val view = LocalView.current
-
-    SideEffect {
-        val window = (view.context as Activity).window
-
-        window.statusBarColor = Color.Transparent.toArgb()
-        window.navigationBarColor = Color.Transparent.toArgb()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.isNavigationBarContrastEnforced = false
-        }
-
-        val windowsInsetsController = WindowCompat.getInsetsController(window, view)
-
-        windowsInsetsController.isAppearanceLightStatusBars = lightStatusBar
-        windowsInsetsController.isAppearanceLightNavigationBars = !darkTheme
     }
 }
 
