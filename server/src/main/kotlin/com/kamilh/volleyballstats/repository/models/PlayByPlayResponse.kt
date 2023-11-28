@@ -11,9 +11,9 @@ import kotlinx.serialization.json.JsonObject
 
 @Serializable
 class PlayByPlayResponse(
-    val total: Int,
-    val limit: Int,
-    val skip: Int,
+    val total: Int? = null,
+    val limit: Int? = null,
+    val skip: Int? = null,
     val data: List<MatchResponse>,
 )
 
@@ -23,7 +23,7 @@ class MatchResponse(
     val category: String,
     val city: String? = null,
     val competition: String? = null,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime? = null,
     val division: String,
     val hall: String? = null,
     val matchId: Int,
@@ -38,7 +38,7 @@ class MatchResponse(
     val spectators: Int,
     val startDate: String,
     val teams: TeamsResponse,
-    val updatedAt: String,
+    val updatedAt: String? = null,
     val fullScoutData: JsonObject? = null,
 )
 
@@ -65,7 +65,7 @@ class ScoutResponse(
 
 @Serializable
 class ScoutDataResponse(
-    val _id: String,
+    val _id: String? = null,
     val plays: List<PlayResponse>,
     val point: String,
     val score: ScoreResponse,
@@ -277,7 +277,7 @@ class AtScoreResponse(
 
 @Serializable
 class PlayResponse(
-    val _id: String,
+    val _id: String? = null,
     val effect: Char,
     val player: Int,
     val skill: Char,

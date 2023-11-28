@@ -10,9 +10,13 @@ import com.kamilh.volleyballstats.repository.models.MatchResponse
 import com.kamilh.volleyballstats.repository.models.PlayByPlayResponse
 import com.kamilh.volleyballstats.repository.parsing.ParseError
 import com.kamilh.volleyballstats.repository.parsing.ParseErrorHandler
-import io.ktor.client.*
-import io.ktor.client.plugins.websocket.*
-import io.ktor.websocket.*
+import com.kamilh.volleyballstats.repository.sockettoken.SocketToken
+import com.kamilh.volleyballstats.repository.sockettoken.SocketTokenProvider
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.websocket.ws
+import io.ktor.websocket.Frame
+import io.ktor.websocket.readText
+import io.ktor.websocket.send
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -29,23 +33,21 @@ class WebSocketMatchReportEndpoint(
     private val json: Json,
     private val httpClient: HttpClient,
     private val parseErrorHandler: ParseErrorHandler,
+    private val socketTokenProvider: SocketTokenProvider,
 ) : MatchReportEndpoint {
 
-    private val url = Url.create("wss://widgets.volleystation.com/api/socket.io/?EIO=3&transport=websocket")
-
     override suspend fun getMatchReport(matchReportId: MatchReportId, tour: Season): NetworkResult<MatchResponse> {
-        val message = "420[\"find\",\"widget/play-by-play\",{\"matchId\":\"${matchReportId.value}\",\"\$limit\":1}]"
+        val token = socketTokenProvider.getToken()
+            ?: return Result.failure(NetworkError.HttpError.UnauthorizedException)
+        val url =
+            Url.create("wss://api.widgets.volleystation.com/socket.io/?connectionPathName=%2Fplay-by-play%2F${matchReportId.value}&token=${token.value}&EIO=3&transport=websocket")
+        val message = "420[\"find\",\"widget/play-by-play\",{\"matchId\":${matchReportId.value},\"\$limit\":1}]"
 
         var result: NetworkResult<MatchResponse>? = null
         httpClient.ws(urlString = url.value) {
             val frame = incoming.receive()
 
-            val timeout: Long = if (frame is Frame.Text) {
-                val requestInformationResponseText = frame.text()?.dropBitsFromTheBeginning() ?: ""
-                getTimeout(requestInformationResponseText)
-            } else {
-                DEFAULT_TIMEOUT
-            }
+            val timeout = frame.text()?.dropBitsFromTheBeginning()?.let(::getTimeout) ?: DEFAULT_TIMEOUT
 
             delay(timeout)
             send(message)
@@ -54,9 +56,8 @@ class WebSocketMatchReportEndpoint(
             do {
                 text = incoming.receive().text()?.dropBitsFromTheBeginning()
             } while (text.isNullOrEmpty())
-
             val stringJson = text.dropUntilObjectDefinition()
-            result = createResult(stringJson)
+            result = createResult(stringJson, token)
         }
         return result!!
     }
@@ -66,16 +67,11 @@ class WebSocketMatchReportEndpoint(
             val requestInformationResponse = json.decodeFromString<WebSocketRequestInformationResponse>(requestInformationResponseText)
             requestInformationResponse.pingTimeout
         } catch (exception: Exception) {
-            parseErrorHandler.handle(
-                ParseError.Json(
-                    content = requestInformationResponseText,
-                    exception = exception,
-                )
-            )
+            handleException(exception, requestInformationResponseText)
             DEFAULT_TIMEOUT
         }
 
-    private fun createResult(stringJson: String): NetworkResult<MatchResponse>? =
+    private suspend fun createResult(stringJson: String, token: SocketToken): NetworkResult<MatchResponse>? =
         try {
             val playByPlayResponse = json.decodeFromString<PlayByPlayResponse>(stringJson)
             if (playByPlayResponse.data.isEmpty()) {
@@ -84,14 +80,25 @@ class WebSocketMatchReportEndpoint(
             val matchResponse = playByPlayResponse.data.first()
             Result.success(matchResponse)
         } catch (exception: Exception) {
-            parseErrorHandler.handle(
-                ParseError.Json(
-                    content = stringJson,
-                    exception = exception,
-                )
-            )
-            Result.failure(NetworkError.UnexpectedException(exception))
+            try {
+                json.decodeFromString<WebSocketErrorResponse>(stringJson)
+                socketTokenProvider.expireToken(token)
+                handleException(exception, stringJson)
+                Result.failure(NetworkError.HttpError.UnauthorizedException)
+            } catch (innerException: Exception) {
+                handleException(exception, stringJson)
+                Result.failure(NetworkError.UnexpectedException(exception))
+            }
         }
+
+    private fun handleException(exception: Exception, json: String) {
+        parseErrorHandler.handle(
+            ParseError.Json(
+                content = json,
+                exception = exception,
+            )
+        )
+    }
 
     private fun Frame.text(): String? =
         if (this is Frame.Text) {
@@ -117,4 +124,11 @@ private class WebSocketRequestInformationResponse(
     val upgrades: List<String>,
     val pingInterval: Long,
     val pingTimeout: Long,
+)
+
+@Serializable
+private class WebSocketErrorResponse(
+    val name: String?,
+    val message: String?,
+    val code: Int?,
 )

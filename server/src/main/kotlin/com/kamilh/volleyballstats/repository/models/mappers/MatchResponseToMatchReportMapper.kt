@@ -4,10 +4,49 @@ import com.kamilh.volleyballstats.domain.models.Effect
 import com.kamilh.volleyballstats.domain.models.Phase
 import com.kamilh.volleyballstats.domain.models.PlayerId
 import com.kamilh.volleyballstats.domain.models.Skill
-import com.kamilh.volleyballstats.models.*
+import com.kamilh.volleyballstats.models.AtScore
+import com.kamilh.volleyballstats.models.BestPlayer
+import com.kamilh.volleyballstats.models.Event
+import com.kamilh.volleyballstats.models.MatchReportId
+import com.kamilh.volleyballstats.models.MatchReportPlayer
+import com.kamilh.volleyballstats.models.MatchReportTeam
+import com.kamilh.volleyballstats.models.MatchScore
+import com.kamilh.volleyballstats.models.MatchTeams
+import com.kamilh.volleyballstats.models.Mvp
+import com.kamilh.volleyballstats.models.Play
+import com.kamilh.volleyballstats.models.RawMatchReport
+import com.kamilh.volleyballstats.models.Scout
+import com.kamilh.volleyballstats.models.ScoutData
 import com.kamilh.volleyballstats.models.Set
-import com.kamilh.volleyballstats.repository.models.*
+import com.kamilh.volleyballstats.models.StartingLineup
+import com.kamilh.volleyballstats.models.TeamType
+import com.kamilh.volleyballstats.repository.models.AtScoreResponse
+import com.kamilh.volleyballstats.repository.models.BestPlayerResponse
+import com.kamilh.volleyballstats.repository.models.DelayResponse
+import com.kamilh.volleyballstats.repository.models.EventResponse
+import com.kamilh.volleyballstats.repository.models.ImproperRequestResponse
+import com.kamilh.volleyballstats.repository.models.InjuryResponse
+import com.kamilh.volleyballstats.repository.models.LiberoResponse
+import com.kamilh.volleyballstats.repository.models.ManualChangeResponse
+import com.kamilh.volleyballstats.repository.models.MatchResponse
+import com.kamilh.volleyballstats.repository.models.MvpResponse
+import com.kamilh.volleyballstats.repository.models.NewLiberoResponse
+import com.kamilh.volleyballstats.repository.models.PlayResponse
+import com.kamilh.volleyballstats.repository.models.PlayerResponse
+import com.kamilh.volleyballstats.repository.models.RallyResponse
+import com.kamilh.volleyballstats.repository.models.SanctionResponse
+import com.kamilh.volleyballstats.repository.models.ScoreResponse
+import com.kamilh.volleyballstats.repository.models.ScoutDataResponse
+import com.kamilh.volleyballstats.repository.models.ScoutResponse
+import com.kamilh.volleyballstats.repository.models.SetResponse
+import com.kamilh.volleyballstats.repository.models.StartingLineupResponse
+import com.kamilh.volleyballstats.repository.models.SubstitutionResponse
+import com.kamilh.volleyballstats.repository.models.TeamResponse
+import com.kamilh.volleyballstats.repository.models.TeamsResponse
+import com.kamilh.volleyballstats.repository.models.TimeoutResponse
+import com.kamilh.volleyballstats.repository.models.VideoChallengeResponse
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 
 @Inject
@@ -219,7 +258,7 @@ class MatchResponseToMatchReportMapper {
 
     private fun PlayResponse.toPlay(): Play =
         Play(
-            id = _id,
+            id = _id ?: UUID.randomUUID().toString(),
             effect = effect.toEffect(),
             player = player,
             skill = skill.toSkill(),
@@ -292,7 +331,8 @@ class MatchResponseToMatchReportMapper {
             "o 11--12 miejsce", "PLAY OFF  - o miejsca 1-2", "PLAY OFF  - 1/2 finału", "Play Off 1/4 finału", "Mecz o 1-2 miejsce",
             "PLAY -OFF o miejsca 3-4", "PLAY-OFF,  o miejsca 3-4", "O miejsce 5-6", "Play Off - o 9-10 miejsce", "Play- Off - 1/2 Finału",
             "Play Off o 3 -- 4 miejsce", "Play off o miejsce 5", "O 3. miejsce", "Baraż", "Play-out", "Baraż o prawo gry w PlusLidze w sezonie 2022/2023",
-            "Play Out - Baraż"
+            "Play Out - Baraż", "PLAY-OFF", "Play off - 1/2 finału", "PLAY OFF  - finał", "o 3. miejsce", "Play off - o 3 miejsce", "o 13-14 miejsce",
+            "o 9--10 miejsce w klasyfikacji końcowej", "MECZ O 5 MIEJSCE", "Play off - o 7-8 miejsce"
         )
         private val PHASE_REGULAR_SEASON = listOf("FZ", "ZAS", "Faza Zasadnicza")
 

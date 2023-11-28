@@ -247,3 +247,12 @@ fun fileManagerOf(
     override suspend fun saveTextAsFile(content: String, fileMetadata: FileMetadata): Boolean = saveTextAsFile(content, fileMetadata)
     override suspend fun getTextContent(fileMetadata: FileMetadata): String? = getTextContent
 }
+
+fun fileManagerOf(
+    getTextContent: (FileMetadata) -> String?,
+    saveTextAsFile: (String, FileMetadata) -> Boolean = { _, _ -> false },
+): FileManager = object : FileManager {
+
+    override suspend fun saveTextAsFile(content: String, fileMetadata: FileMetadata): Boolean = saveTextAsFile(content, fileMetadata)
+    override suspend fun getTextContent(fileMetadata: FileMetadata): String? = getTextContent(fileMetadata)
+}

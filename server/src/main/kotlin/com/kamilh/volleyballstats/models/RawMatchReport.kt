@@ -22,7 +22,7 @@ data class Scout(
 )
 
 data class ScoutData(
-    val id: String,
+    val id: String?,
     val plays: List<Play>,
     val point: TeamType,
     val matchScore: MatchScore,
