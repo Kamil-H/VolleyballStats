@@ -1,6 +1,6 @@
 plugins {
     `kmm-domain-plugin`
-    id("com.squareup.sqldelight")
+    id("app.cash.sqldelight")
 }
 
 //sqldelight {

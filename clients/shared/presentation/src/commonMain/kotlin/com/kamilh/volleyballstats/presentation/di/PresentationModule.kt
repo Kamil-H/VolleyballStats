@@ -25,7 +25,7 @@ import com.kamilh.volleyballstats.presentation.utils.AccessTokenProvider
 import com.kamilh.volleyballstats.presentation.utils.AppInitializer
 import com.kamilh.volleyballstats.presentation.utils.ClientLogger
 import com.kamilh.volleyballstats.storage.SqlDriverFactory
-import com.squareup.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlDriver
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*

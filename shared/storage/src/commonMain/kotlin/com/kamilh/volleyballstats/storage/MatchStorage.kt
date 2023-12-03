@@ -1,13 +1,18 @@
 package com.kamilh.volleyballstats.storage
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.Error
+import com.kamilh.volleyballstats.domain.models.Match
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.Result
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.databse.MatchQueries
 import com.kamilh.volleyballstats.storage.databse.TourQueries
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 
@@ -55,10 +60,10 @@ class SqlMatchStorage(
         }
 
     override suspend fun getAllMatches(tourId: TourId): Flow<List<Match>> =
-        matchQueries.selectAllMatchesByTour(tourId, mapper).asFlow().mapToList()
+        matchQueries.selectAllMatchesByTour(tourId, mapper).asFlow().mapToList(queryRunner.dispatcher)
 
     override fun getMatchIdsWithReport(tourId: TourId): Flow<List<MatchId>> =
-        matchQueries.selectMatchesWithReportByTour(tourId).asFlow().mapToList()
+        matchQueries.selectMatchesWithReportByTour(tourId).asFlow().mapToList(queryRunner.dispatcher)
 
     private val mapper: (
         id: MatchId, date: ZonedDateTime?, home_id: TeamId, away_id: TeamId, match_statistics_id: MatchId?,

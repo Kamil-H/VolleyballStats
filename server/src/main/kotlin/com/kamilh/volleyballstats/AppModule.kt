@@ -1,5 +1,7 @@
 package com.kamilh.volleyballstats
 
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.kamilh.volleyballstats.api.MappersModule
 import com.kamilh.volleyballstats.authorization.AuthorizationModule
 import com.kamilh.volleyballstats.domain.di.Singleton
@@ -14,8 +16,6 @@ import com.kamilh.volleyballstats.routes.TourIdCacheImpl
 import com.kamilh.volleyballstats.storage.SqlDriverFactory
 import com.kamilh.volleyballstats.storage.StorageModule
 import com.kamilh.volleyballstats.utils.UtilModule
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json

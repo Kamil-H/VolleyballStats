@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.storage.common
 
+import app.cash.sqldelight.Transacter
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
-import com.squareup.sqldelight.Transacter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject

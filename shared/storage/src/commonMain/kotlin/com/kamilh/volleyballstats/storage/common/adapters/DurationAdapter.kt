@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.storage.common.adapters
 
-import com.squareup.sqldelight.ColumnAdapter
+import app.cash.sqldelight.ColumnAdapter
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds

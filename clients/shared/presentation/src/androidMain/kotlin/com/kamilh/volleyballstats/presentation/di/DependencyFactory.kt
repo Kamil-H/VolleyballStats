@@ -1,9 +1,9 @@
 package com.kamilh.volleyballstats.presentation.di
 
 import android.content.Context
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.kamilh.volleyballstats.storage.Database
-import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.android.AndroidSqliteDriver
 import me.tatarka.inject.annotations.Inject
 
 @Inject

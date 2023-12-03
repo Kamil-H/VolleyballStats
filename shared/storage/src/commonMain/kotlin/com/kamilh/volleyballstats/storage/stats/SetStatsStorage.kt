@@ -1,12 +1,12 @@
 package com.kamilh.volleyballstats.storage.stats
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.databse.PlaySetQueries
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 

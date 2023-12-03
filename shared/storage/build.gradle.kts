@@ -1,13 +1,15 @@
 plugins {
     `kmm-domain-plugin`
-    id("com.squareup.sqldelight")
+    id("app.cash.sqldelight")
 }
 
 sqldelight {
-    database(name = "Database") {
-        packageName = "com.kamilh.volleyballstats.storage"
-        dialect = "sqlite:3.25"
-        deriveSchemaFromMigrations = true
+    databases {
+        create(name = "Database") {
+            packageName.set("com.kamilh.volleyballstats.storage")
+            dialect(libs.sqldelight.dialect)
+            deriveSchemaFromMigrations.set(true)
+        }
     }
 }
 
@@ -19,6 +21,7 @@ dependencies {
 
     commonMainImplementation(libs.sqldelight.runtime)
     commonMainImplementation(libs.sqldelight.coroutines)
+    commonMainImplementation(libs.sqldelight.adapters)
 
     commonMainImplementation(libs.inject.runtime)
 

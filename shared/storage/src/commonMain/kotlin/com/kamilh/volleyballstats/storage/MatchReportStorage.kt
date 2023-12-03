@@ -1,10 +1,47 @@
 package com.kamilh.volleyballstats.storage
 
 import com.kamilh.volleyballstats.domain.di.Singleton
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.Error
+import com.kamilh.volleyballstats.domain.models.Lineup
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.MatchPoint
+import com.kamilh.volleyballstats.domain.models.MatchReport
+import com.kamilh.volleyballstats.domain.models.MatchSet
+import com.kamilh.volleyballstats.domain.models.MatchTeam
+import com.kamilh.volleyballstats.domain.models.PlayAction
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.Result
+import com.kamilh.volleyballstats.domain.models.Score
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.storage.common.QueryRunner
-import com.kamilh.volleyballstats.storage.databse.*
-import kotlinx.coroutines.flow.*
+import com.kamilh.volleyballstats.storage.databse.MatchAppearanceQueries
+import com.kamilh.volleyballstats.storage.databse.MatchReportQueries
+import com.kamilh.volleyballstats.storage.databse.PlayAttackQueries
+import com.kamilh.volleyballstats.storage.databse.PlayBlockQueries
+import com.kamilh.volleyballstats.storage.databse.PlayDigQueries
+import com.kamilh.volleyballstats.storage.databse.PlayFreeballQueries
+import com.kamilh.volleyballstats.storage.databse.PlayQueries
+import com.kamilh.volleyballstats.storage.databse.PlayReceiveQueries
+import com.kamilh.volleyballstats.storage.databse.PlayServeQueries
+import com.kamilh.volleyballstats.storage.databse.PlaySetQueries
+import com.kamilh.volleyballstats.storage.databse.PointLineupQueries
+import com.kamilh.volleyballstats.storage.databse.PointQueries
+import com.kamilh.volleyballstats.storage.databse.SelectAllAppearancesByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllAttacksByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllBlocksByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllDigsByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllFreeballsByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllPointsByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllReceivesByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllServesByMatchId
+import com.kamilh.volleyballstats.storage.databse.SelectAllSetsByMatchId
+import com.kamilh.volleyballstats.storage.databse.SetQueries
+import com.kamilh.volleyballstats.storage.databse.TeamPlayerQueries
+import com.kamilh.volleyballstats.storage.databse.TeamQueries
+import com.kamilh.volleyballstats.storage.databse.TourQueries
+import com.kamilh.volleyballstats.storage.databse.TourTeamQueries
+import com.kamilh.volleyballstats.storage.migrations.Set_model
 import me.tatarka.inject.annotations.Inject
 
 interface MatchReportStorage {
@@ -466,8 +503,8 @@ class SqlMatchReportStorage(
 
     override suspend fun getMatchReport(matchId: MatchId): MatchReport? = queryRunner.runTransaction {
         matchReportQueries.selectAllReportsByMatchId(matchId).executeAsOneOrNull()?.let { selectAllStats ->
-            val sets = setQueries.selectAllBySetsMatchId(matchId).executeAsList()
-            val points = pointQueries.selectAllPointsByMatchId(matchId).executeAsList()
+            val sets = setQueries.selectAllBySetsMatchId(matchId).executeAsList().sortedBy { it.number }
+            val points = pointQueries.selectAllPointsByMatchId(matchId).executeAsList().sortedBy { it.start_time }
             val matchAppearances = matchAppearanceQueries.selectAllAppearancesByMatchId(matchId).executeAsList()
             val playActions = playActionFlow(matchId)
             MatchReport(

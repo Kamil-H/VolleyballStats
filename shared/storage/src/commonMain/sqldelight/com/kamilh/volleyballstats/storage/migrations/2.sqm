@@ -4,8 +4,8 @@ SELECT player.*, team_player.*, player_team.name AS team_name, player_team.image
 (CASE WHEN player_team.id = match_report_model.home THEN match_report_model.away ELSE match_report_model.home END) AS opponent_team_id,
 (SELECT COUNT(*) FROM play_attack_model
  INNER JOIN
- play_model ON play_model.id = play_attack_model.play_id,
- team_player_model ON play_model.player_id = team_player_model.id,
+ play_model AS pm ON pm.id = play_attack_model.play_id,
+ team_player_model ON pm.player_id = team_player_model.id,
  tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
  WHERE tour_team_model.id = player_team.id) AS team_attack_count,
 attack.side_out,
@@ -58,8 +58,8 @@ SELECT player.*, team_player.*, player_team.name AS team_name, player_team.image
 (CASE WHEN player_team.id = match_report_model.home THEN match_report_model.away ELSE match_report_model.home END) AS opponent_team_id,
 (SELECT COUNT(*) FROM play_block_model
  INNER JOIN
- play_model ON play_model.id = play_block_model.play_id,
- team_player_model ON play_model.player_id = team_player_model.id,
+ play_model AS pm ON pm.id = play_block_model.play_id,
+ team_player_model ON pm.player_id = team_player_model.id,
  tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
  WHERE tour_team_model.id = player_team.id) AS team_block_count,
 block.attacker_id,
@@ -107,8 +107,8 @@ SELECT player.*, team_player.*, player_team.name AS team_name, player_team.image
 (CASE WHEN player_team.id = match_report_model.home THEN match_report_model.away ELSE match_report_model.home END) AS opponent_team_id,
 (SELECT COUNT(*) FROM play_dig_model
  INNER JOIN
- play_model ON play_model.id = play_dig_model.play_id,
- team_player_model ON play_model.player_id = team_player_model.id,
+ play_model AS pm ON pm.id = play_dig_model.play_id,
+ team_player_model ON pm.player_id = team_player_model.id,
  tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
  WHERE tour_team_model.id = player_team.id) AS team_dig_count,
 dig.attacker_id,
@@ -150,8 +150,8 @@ SELECT player.*, team_player.*, player_team.name AS team_name, player_team.image
 (CASE WHEN player_team.id = match_report_model.home THEN match_report_model.away ELSE match_report_model.home END) AS opponent_team_id,
 (SELECT COUNT(*) FROM play_receive_model
  INNER JOIN
- play_model ON play_model.id = play_receive_model.play_id,
- team_player_model ON play_model.player_id = team_player_model.id,
+ play_model AS pm ON pm.id = play_receive_model.play_id,
+ team_player_model ON pm.player_id = team_player_model.id,
  tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
  WHERE tour_team_model.id = player_team.id) AS team_receive_count,
 receive.server_id,
@@ -194,8 +194,8 @@ SELECT player.*, team_player.*, player_team.name AS team_name, player_team.image
 (CASE WHEN player_team.id = match_report_model.home THEN match_report_model.away ELSE match_report_model.home END) AS opponent_team_id,
 (SELECT COUNT(*) FROM play_serve_model
  INNER JOIN
- play_model ON play_model.id = play_serve_model.play_id,
- team_player_model ON play_model.player_id = team_player_model.id,
+ play_model AS pm ON pm.id = play_serve_model.play_id,
+ team_player_model ON pm.player_id = team_player_model.id,
  tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
  WHERE tour_team_model.id = player_team.id) AS team_serve_count,
 serve.receiver_id,
@@ -236,8 +236,8 @@ SELECT player.*, team_player.*, player_team.name AS team_name, player_team.image
 (CASE WHEN player_team.id = match_report_model.home THEN match_report_model.away ELSE match_report_model.home END) AS opponent_team_id,
 (SELECT COUNT(*) FROM play_set_model
  INNER JOIN
- play_model ON play_model.id = play_set_model.play_id,
- team_player_model ON play_model.player_id = team_player_model.id,
+ play_model AS pm ON pm.id = play_set_model.play_id,
+ team_player_model ON pm.player_id = team_player_model.id,
  tour_team_model ON tour_team_model.id = team_player_model.tour_team_id
  WHERE tour_team_model.id = player_team.id) AS team_set_count,
 set_play.attacker_id,

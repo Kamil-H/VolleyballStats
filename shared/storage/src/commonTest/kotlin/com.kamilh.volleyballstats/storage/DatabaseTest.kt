@@ -1,20 +1,69 @@
 package com.kamilh.volleyballstats.storage
 
+import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.db.QueryResult
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlSchema
 import com.kamilh.volleyballstats.datetime.Clock
 import com.kamilh.volleyballstats.datetime.LocalDate
 import com.kamilh.volleyballstats.datetime.LocalDateTime
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
-import com.kamilh.volleyballstats.domain.models.*
-import com.kamilh.volleyballstats.storage.common.adapters.*
-import com.kamilh.volleyballstats.storage.databse.*
+import com.kamilh.volleyballstats.domain.models.Country
+import com.kamilh.volleyballstats.domain.models.Effect
+import com.kamilh.volleyballstats.domain.models.League
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.Phase
+import com.kamilh.volleyballstats.domain.models.Player
+import com.kamilh.volleyballstats.domain.models.PlayerId
+import com.kamilh.volleyballstats.domain.models.PlayerPosition
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.models.Specialization
+import com.kamilh.volleyballstats.domain.models.Team
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.TourId
+import com.kamilh.volleyballstats.domain.models.Url
+import com.kamilh.volleyballstats.storage.common.adapters.CountryAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.DurationAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.EffectAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.LocalDateAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.LocalDateTimeAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.MatchIdAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.PhaseAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.PlayerIdAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.PositionAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.SeasonAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.SpecializationAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.TeamIdAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.TourIdAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.UrlAdapter
+import com.kamilh.volleyballstats.storage.common.adapters.ZonedDateTimeAdapter
+import com.kamilh.volleyballstats.storage.databse.LeagueQueries
+import com.kamilh.volleyballstats.storage.databse.MatchAppearanceQueries
+import com.kamilh.volleyballstats.storage.databse.MatchQueries
+import com.kamilh.volleyballstats.storage.databse.MatchReportQueries
+import com.kamilh.volleyballstats.storage.databse.PlayAttackQueries
+import com.kamilh.volleyballstats.storage.databse.PlayBlockQueries
+import com.kamilh.volleyballstats.storage.databse.PlayDigQueries
+import com.kamilh.volleyballstats.storage.databse.PlayFreeballQueries
+import com.kamilh.volleyballstats.storage.databse.PlayQueries
+import com.kamilh.volleyballstats.storage.databse.PlayReceiveQueries
+import com.kamilh.volleyballstats.storage.databse.PlayServeQueries
+import com.kamilh.volleyballstats.storage.databse.PlaySetQueries
+import com.kamilh.volleyballstats.storage.databse.PlayerQueries
+import com.kamilh.volleyballstats.storage.databse.PointLineupQueries
+import com.kamilh.volleyballstats.storage.databse.PointQueries
+import com.kamilh.volleyballstats.storage.databse.SetQueries
+import com.kamilh.volleyballstats.storage.databse.TeamPlayerQueries
+import com.kamilh.volleyballstats.storage.databse.TeamQueries
+import com.kamilh.volleyballstats.storage.databse.TourQueries
+import com.kamilh.volleyballstats.storage.databse.TourTeamQueries
 import com.kamilh.volleyballstats.utils.testClock
-import com.squareup.sqldelight.ColumnAdapter
-import com.squareup.sqldelight.db.SqlDriver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.time.Duration
 
-internal expect fun driver(schema: SqlDriver.Schema, name: String): SqlDriver
+internal expect fun <T : QueryResult.Value<Unit>> driver(schema: SqlSchema<T>, name: String): SqlDriver
 
 abstract class DatabaseTest(
     private val zonedDateTimeAdapter: ColumnAdapter<ZonedDateTime, String> = ZonedDateTimeAdapter(),

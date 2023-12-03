@@ -1,6 +1,6 @@
 package com.kamilh.volleyballstats.presentation.di
 
-import com.squareup.sqldelight.db.SqlDriver
+import app.cash.sqldelight.db.SqlDriver
 
 expect class DependencyFactory {
 

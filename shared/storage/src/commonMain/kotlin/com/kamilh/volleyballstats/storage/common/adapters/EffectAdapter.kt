@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.storage.common.adapters
 
 import com.kamilh.volleyballstats.domain.models.Effect
-import com.squareup.sqldelight.ColumnAdapter
+import app.cash.sqldelight.ColumnAdapter
 import me.tatarka.inject.annotations.Inject
 
 @Inject

@@ -1,8 +1,8 @@
 package com.kamilh.volleyballstats.models
 
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.kamilh.volleyballstats.api.AccessToken
-import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
 
 data class AppConfig(
     val serverConfig: ServerConfig,

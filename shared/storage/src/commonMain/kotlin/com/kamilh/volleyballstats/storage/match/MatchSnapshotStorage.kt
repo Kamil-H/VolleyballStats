@@ -1,13 +1,13 @@
 package com.kamilh.volleyballstats.storage.match
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
 import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.Season
 import com.kamilh.volleyballstats.domain.models.Url
 import com.kamilh.volleyballstats.storage.common.QueryRunner
 import com.kamilh.volleyballstats.storage.databse.MatchQueries
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 

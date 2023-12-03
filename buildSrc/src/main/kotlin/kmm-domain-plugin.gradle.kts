@@ -1,12 +1,13 @@
-import util.libs
-
 plugins {
     kotlin("multiplatform")
 }
 
 kotlin {
     jvm()
-    ios()
+    iosArm64()
+    iosSimulatorArm64()
+
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         val commonMain by getting
