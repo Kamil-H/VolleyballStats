@@ -1,9 +1,30 @@
 package com.kamilh.volleyballstats.storage
 
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
-import com.kamilh.volleyballstats.domain.*
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.assertFailure
+import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.leagueOf
+import com.kamilh.volleyballstats.domain.matchIdOf
+import com.kamilh.volleyballstats.domain.matchOf
+import com.kamilh.volleyballstats.domain.matchReportOf
+import com.kamilh.volleyballstats.domain.matchSetOf
+import com.kamilh.volleyballstats.domain.matchTeamOf
+import com.kamilh.volleyballstats.domain.models.League
+import com.kamilh.volleyballstats.domain.models.MatchId
+import com.kamilh.volleyballstats.domain.models.Phase
+import com.kamilh.volleyballstats.domain.models.Score
+import com.kamilh.volleyballstats.domain.models.Season
+import com.kamilh.volleyballstats.domain.models.TeamId
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.domain.player.playerOf
+import com.kamilh.volleyballstats.domain.playerIdOf
+import com.kamilh.volleyballstats.domain.seasonOf
+import com.kamilh.volleyballstats.domain.teamIdOf
+import com.kamilh.volleyballstats.domain.teamOf
+import com.kamilh.volleyballstats.domain.tourIdOf
+import com.kamilh.volleyballstats.domain.tourOf
+import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.storage.databse.SelectAllMatchesByTour
 import com.kamilh.volleyballstats.utils.localDateTime
 import com.kamilh.volleyballstats.utils.zonedDateTime
@@ -242,6 +263,33 @@ class SqlMatchStorageTest : ReportStorageTest() {
                 assertEquals(expected = selectAllMatchesByTourOf(id = matches[index].id), selectAllMatchesByTour)
             }
         }
+    }
+
+    @Test
+    fun `deleteInvalidMatches deletes week old matches whose time is set to midnight`() = runTest {
+        // GIVEN
+        val season = seasonOf()
+        val league = leagueOf()
+        val tour = configure(season, league)
+        val now = CurrentDate.zonedDateTime
+        val matches = listOf(
+            matchOf(id = MatchId(0), date = now.withMidnightTime()),
+            matchOf(id = MatchId(1), date = now.minus(7.days).withMidnightTime()), // should be removed
+            matchOf(id = MatchId(2), date = now.minus(7.days)),
+            matchOf(id = MatchId(3), date = now.minus(4.days).withMidnightTime()),
+            matchOf(id = MatchId(4), date = now.minus(4.days)),
+            matchOf(id = MatchId(5), date = now.minus(14.days).withMidnightTime()), // should be removed
+            matchOf(id = MatchId(6), date = now.minus(14.days)),
+        )
+        matchStorage.insertOrUpdate(matches, tour.id)
+
+        // WHEN
+        matchStorage.deleteInvalidMatches(tour.id)
+
+        // THEN
+        val value = matchQueries.selectAllMatchesByTour(tour.id).executeAsList()
+        val expectedIds = listOf(MatchId(0), MatchId(2), MatchId(3), MatchId(4), MatchId(6))
+        assertEquals(expected = expectedIds, value.map { it.id })
     }
 }
 

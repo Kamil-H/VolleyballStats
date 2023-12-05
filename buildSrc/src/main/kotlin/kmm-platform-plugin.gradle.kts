@@ -38,6 +38,7 @@ android {
     buildTypes {
         register("local") {
             initWith(getByName("debug"))
+            matchingFallbacks.add("debug")
         }
     }
 }

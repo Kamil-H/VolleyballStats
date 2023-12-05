@@ -2,21 +2,45 @@ package com.kamilh.volleyballstats.presentation.interactors
 
 import com.kamilh.volleyballstats.clients.data.StatsRepository
 import com.kamilh.volleyballstats.clients.data.statsRepositoryOf
-import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.assertFailure
+import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.matchIdOf
+import com.kamilh.volleyballstats.domain.matchOf
 import com.kamilh.volleyballstats.domain.models.Match
+import com.kamilh.volleyballstats.domain.models.MatchId
 import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.tourIdOf
+import com.kamilh.volleyballstats.domain.tourOf
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
-import com.kamilh.volleyballstats.interactors.*
+import com.kamilh.volleyballstats.interactors.SynchronizeState
+import com.kamilh.volleyballstats.interactors.SynchronizeStateSender
+import com.kamilh.volleyballstats.interactors.UpdateMatchReportParams
+import com.kamilh.volleyballstats.interactors.UpdateMatchReportResult
+import com.kamilh.volleyballstats.interactors.UpdateMatchReports
+import com.kamilh.volleyballstats.interactors.UpdateMatchesError
+import com.kamilh.volleyballstats.interactors.UpdateMatchesParams
+import com.kamilh.volleyballstats.interactors.UpdateMatchesSuccess
 import com.kamilh.volleyballstats.network.result.networkFailureOf
 import com.kamilh.volleyballstats.network.result.networkSuccessOf
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
-import com.kamilh.volleyballstats.storage.*
+import com.kamilh.volleyballstats.storage.InsertMatchesError
+import com.kamilh.volleyballstats.storage.InsertMatchesResult
+import com.kamilh.volleyballstats.storage.MatchStorage
+import com.kamilh.volleyballstats.storage.TourStorage
+import com.kamilh.volleyballstats.storage.matchStorageOf
+import com.kamilh.volleyballstats.storage.tourStorageOf
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import com.kamilh.volleyballstats.utils.testClock
+import com.kamilh.volleyballstats.utils.zonedDateTime
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 
 class UpdateMatchesInteractorTest {
@@ -125,6 +149,62 @@ class UpdateMatchesInteractorTest {
         // THEN
         result.assertSuccess {
             assertEquals(UpdateMatchesSuccess.SeasonCompleted, this)
+        }
+    }
+
+    @Test
+    fun `deleteAll is called`() = runTest {
+        // GIVEN
+        val downloaded = listOf(
+            matchOf(id = matchIdOf(1)),
+        )
+        val saved = listOf(
+            matchOf(id = matchIdOf(1)),
+            matchOf(id = matchIdOf(2)),
+        )
+        var deletedIds: List<MatchId>? = null
+
+        // WHEN
+        interactor(
+            statsRepository = statsRepositoryOf(getMatches = networkSuccessOf(downloaded)),
+            matchStorage = matchStorageOf(
+                insertOrUpdate = InsertMatchesResult.success(Unit),
+                getAllMatches = flowOf(saved),
+                deleteAll = { deletedIds = it },
+            )
+        )(paramsOf())
+
+        // THEN
+        assertEquals(expected = listOf(matchIdOf(2)), deletedIds)
+    }
+
+    @Test
+    fun `interactor returns SeasonCompleted success even when not all matches are finished`() = runTest {
+        // GIVEN
+        val getAllMatchInfos = listOf(matchOf())
+        val getAllMatches = listOf(
+            matchOf(date = zonedDateTime().minus(16.days), hasReport = false),
+            matchOf(date = zonedDateTime().minus(15.days), hasReport = true),
+        )
+        val tourId = tourIdOf(1)
+        val tour = tourOf(id = tourId)
+        val tours = listOf(tour.copy(endDate = CurrentDate.localDate))
+
+        // WHEN
+        val result = interactor(
+            statsRepository = statsRepositoryOf(
+                getMatches = networkSuccessOf(getAllMatchInfos),
+                getTours = networkSuccessOf(tours),
+            ),
+            matchStorage = matchStorageOf(
+                getAllMatches = flowOf(getAllMatches),
+                insertOrUpdate = InsertMatchesResult.success(Unit),
+            )
+        )(paramsOf(tour = tour))
+
+        // THEN
+        result.assertSuccess {
+            assertIs<UpdateMatchesSuccess.SeasonCompleted>(this)
         }
     }
 

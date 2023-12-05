@@ -2,9 +2,27 @@ package com.kamilh.volleyballstats.presentation.features.stats
 
 import com.kamilh.volleyballstats.domain.models.Specialization
 import com.kamilh.volleyballstats.presentation.extensions.findProperty
-import com.kamilh.volleyballstats.presentation.features.common.*
-import com.kamilh.volleyballstats.presentation.features.stats.properties.*
-import com.kamilh.volleyballstats.storage.stats.*
+import com.kamilh.volleyballstats.presentation.features.common.CellSize
+import com.kamilh.volleyballstats.presentation.features.common.DataCell
+import com.kamilh.volleyballstats.presentation.features.common.DataRow
+import com.kamilh.volleyballstats.presentation.features.common.HeaderCell
+import com.kamilh.volleyballstats.presentation.features.common.HeaderRow
+import com.kamilh.volleyballstats.presentation.features.common.Property
+import com.kamilh.volleyballstats.presentation.features.common.TableContent
+import com.kamilh.volleyballstats.presentation.features.common.TableRow
+import com.kamilh.volleyballstats.presentation.features.stats.properties.AttackProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.BlockProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.DigProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.ReceiveProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.ServeProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.SetProperty
+import com.kamilh.volleyballstats.storage.stats.AttackStatsStorage
+import com.kamilh.volleyballstats.storage.stats.BlockStatsStorage
+import com.kamilh.volleyballstats.storage.stats.DigStatsStorage
+import com.kamilh.volleyballstats.storage.stats.ReceiveStatsStorage
+import com.kamilh.volleyballstats.storage.stats.ServeStatsStorage
+import com.kamilh.volleyballstats.storage.stats.SetStatsStorage
+import com.kamilh.volleyballstats.storage.stats.StatsModel
 import me.tatarka.inject.annotations.Inject
 
 interface StatsModelMapper {
@@ -65,6 +83,7 @@ class StatsModelMapperImpl : StatsModelMapper {
             is ServeStatsStorage.Model -> findProperty<ServeProperty>(property).toValueCell(index, this)
         }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun AttackProperty.toValueCell(index: Int, model: AttackStatsStorage.Model): DataCell =
         when (this) {
             AttackProperty.Index -> (index + 1).toString().toDataCell(size = CellSize.Small)
@@ -85,6 +104,7 @@ class StatsModelMapperImpl : StatsModelMapper {
             AttackProperty.ErrorSideOut -> model.errorSideOut.toString().toDataCell()
         }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun BlockProperty.toValueCell(index: Int, model: BlockStatsStorage.Model): DataCell =
         when (this) {
             BlockProperty.Index -> (index + 1).toString().toDataCell(size = CellSize.Small)
@@ -119,6 +139,7 @@ class StatsModelMapperImpl : StatsModelMapper {
             DigProperty.PointWinPercent -> model.pointWinPercent.toString().toDataCell()
         }
 
+    @Suppress("CognitiveComplexMethod")
     private fun ReceiveProperty.toValueCell(index: Int, model: ReceiveStatsStorage.Model): DataCell =
         when (this) {
             ReceiveProperty.Index -> (index + 1).toString().toDataCell(size = CellSize.Small)
@@ -136,6 +157,7 @@ class StatsModelMapperImpl : StatsModelMapper {
             ReceiveProperty.PointWinPercent -> model.pointWinPercent.toString().toDataCell()
         }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun ServeProperty.toValueCell(index: Int, model: ServeStatsStorage.Model): DataCell =
         when (this) {
             ServeProperty.Index -> (index + 1).toString().toDataCell(size = CellSize.Small)

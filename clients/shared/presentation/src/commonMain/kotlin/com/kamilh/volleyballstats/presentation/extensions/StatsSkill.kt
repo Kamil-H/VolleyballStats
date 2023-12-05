@@ -3,7 +3,12 @@ package com.kamilh.volleyballstats.presentation.extensions
 import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.features.common.Property
-import com.kamilh.volleyballstats.presentation.features.stats.properties.*
+import com.kamilh.volleyballstats.presentation.features.stats.properties.AttackProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.BlockProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.DigProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.ReceiveProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.ServeProperty
+import com.kamilh.volleyballstats.presentation.features.stats.properties.SetProperty
 
 fun StatsSkill.allProperties(type: StatsType): List<Property<String>> = when (this) {
     StatsSkill.Attack -> AttackProperty.values()
@@ -14,6 +19,7 @@ fun StatsSkill.allProperties(type: StatsType): List<Property<String>> = when (th
     StatsSkill.Serve -> ServeProperty.values()
 }.toList() - propertiesToRemove(skill = this, type)
 
+@Suppress("CyclomaticComplexMethod")
 private fun propertiesToRemove(skill: StatsSkill, type: StatsType): Set<Property<String>> =
     when (skill) {
         StatsSkill.Attack -> when (type) {

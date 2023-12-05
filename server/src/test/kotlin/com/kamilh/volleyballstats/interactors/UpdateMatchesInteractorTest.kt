@@ -1,10 +1,18 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.LocalDate
-import com.kamilh.volleyballstats.domain.*
+import com.kamilh.volleyballstats.domain.assertFailure
+import com.kamilh.volleyballstats.domain.assertSuccess
+import com.kamilh.volleyballstats.domain.finishedOf
+import com.kamilh.volleyballstats.domain.matchOf
 import com.kamilh.volleyballstats.domain.models.MatchInfo
 import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.TourId
 import com.kamilh.volleyballstats.domain.models.onSuccess
+import com.kamilh.volleyballstats.domain.notScheduledOf
+import com.kamilh.volleyballstats.domain.potentiallyFinishedOf
+import com.kamilh.volleyballstats.domain.tourIdOf
+import com.kamilh.volleyballstats.domain.tourOf
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.network.result.networkFailureOf
@@ -12,7 +20,13 @@ import com.kamilh.volleyballstats.network.result.networkSuccessOf
 import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
 import com.kamilh.volleyballstats.repository.polishleague.networkErrorOf
 import com.kamilh.volleyballstats.repository.polishleague.plsRepositoryOf
-import com.kamilh.volleyballstats.storage.*
+import com.kamilh.volleyballstats.storage.InsertMatchReportError
+import com.kamilh.volleyballstats.storage.InsertMatchesError
+import com.kamilh.volleyballstats.storage.InsertMatchesResult
+import com.kamilh.volleyballstats.storage.MatchStorage
+import com.kamilh.volleyballstats.storage.TourStorage
+import com.kamilh.volleyballstats.storage.matchStorageOf
+import com.kamilh.volleyballstats.storage.tourStorageOf
 import com.kamilh.volleyballstats.utils.testAppDispatchers
 import com.kamilh.volleyballstats.utils.testClock
 import com.kamilh.volleyballstats.utils.zonedDateTime
@@ -20,6 +34,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.days
 
 class UpdateMatchesInteractorTest {
@@ -90,6 +105,48 @@ class UpdateMatchesInteractorTest {
         // GIVEN
         val getAllMatchInfos = listOf(finishedOf())
         val getAllMatches = listOf(matchOf(date = zonedDateTime().minus(15.days), hasReport = true))
+
+        // WHEN
+        val result = interactor(
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
+            matchStorage = matchStorageOf(getAllMatches = flowOf(getAllMatches))
+        )(paramsOf())
+
+        // THEN
+        result.assertSuccess {
+            assert(this is UpdateMatchesSuccess.SeasonCompleted)
+        }
+    }
+
+    @Test
+    fun `deleteInvalidMatches is called`() = runTest {
+        // GIVEN
+        val getAllMatchInfos = listOf(finishedOf())
+        val getAllMatches = listOf(matchOf())
+        var calledTourId: TourId? = null
+        val tourId = tourIdOf(5)
+
+        // WHEN
+        interactor(
+            polishLeagueRepository = plsRepositoryOf(getAllMatches = networkSuccessOf(getAllMatchInfos)),
+            matchStorage = matchStorageOf(
+                getAllMatches = flowOf(getAllMatches),
+                deleteInvalidMatches = { calledTourId = it },
+            )
+        )(paramsOf(tourOf(id = tourId)))
+
+        // THEN
+        assertEquals(expected = tourId, calledTourId)
+    }
+
+    @Test
+    fun `interactor returns SeasonCompleted success even when not all matches are finished`() = runTest {
+        // GIVEN
+        val getAllMatchInfos = listOf(finishedOf())
+        val getAllMatches = listOf(
+            matchOf(date = zonedDateTime().minus(16.days), hasReport = false),
+            matchOf(date = zonedDateTime().minus(15.days), hasReport = true),
+        )
 
         // WHEN
         val result = interactor(

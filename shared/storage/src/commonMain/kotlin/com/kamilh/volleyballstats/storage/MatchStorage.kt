@@ -23,6 +23,10 @@ interface MatchStorage {
     suspend fun getAllMatches(tourId: TourId): Flow<List<Match>>
 
     fun getMatchIdsWithReport(tourId: TourId): Flow<List<MatchId>>
+
+    suspend fun deleteInvalidMatches(tourId: TourId)
+
+    suspend fun deleteAll(matchIds: List<MatchId>)
 }
 
 typealias InsertMatchesResult = Result<Unit, InsertMatchesError>
@@ -64,6 +68,15 @@ class SqlMatchStorage(
 
     override fun getMatchIdsWithReport(tourId: TourId): Flow<List<MatchId>> =
         matchQueries.selectMatchesWithReportByTour(tourId).asFlow().mapToList(queryRunner.dispatcher)
+
+    override suspend fun deleteInvalidMatches(tourId: TourId) = queryRunner.runTransaction {
+        val invalidMatches = matchQueries.selectWeekOldNotScheduledMatches(tourId).executeAsList()
+        matchQueries.deleteById(invalidMatches.map { it.id })
+    }
+
+    override suspend fun deleteAll(matchIds: List<MatchId>) = queryRunner.run {
+        matchQueries.deleteById(matchIds)
+    }
 
     private val mapper: (
         id: MatchId, date: ZonedDateTime?, home_id: TeamId, away_id: TeamId, match_statistics_id: MatchId?,

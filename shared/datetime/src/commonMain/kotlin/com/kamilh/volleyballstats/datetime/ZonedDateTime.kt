@@ -22,6 +22,9 @@ value class ZonedDateTime internal constructor(private val zonedDateTime: Island
     fun atMidnight(): LocalDateTime =
         LocalDateTime(zonedDateTime.dateTime.date.at(Time.MIDNIGHT))
 
+    fun withMidnightTime(): ZonedDateTime =
+        ZonedDateTime(zonedDateTime.dateTime.date.at(Time.MIDNIGHT).at(zonedDateTime.zone))
+
     fun plus(duration: Duration): ZonedDateTime =
         ZonedDateTime(zonedDateTime.plus(duration))
 

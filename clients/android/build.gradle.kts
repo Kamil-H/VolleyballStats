@@ -37,6 +37,7 @@ android {
         }
         register("local") {
             initWith(getByName("debug"))
+            matchingFallbacks.add("debug")
         }
     }
     compileOptions {

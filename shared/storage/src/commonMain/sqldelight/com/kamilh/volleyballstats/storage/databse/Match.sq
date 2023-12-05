@@ -37,3 +37,30 @@ SELECT match_id, date, home_name, home_logo, home_result, away_name, away_logo, 
 FROM match_snapshot_view
 WHERE season = :season
 ORDER BY date;
+
+-- it doesn't work because SELECT returns "id" and "date_time" columns, while IN expects just "id"
+-- deleteWeekOldNotScheduledMatches:
+-- DELETE FROM match_model WHERE id IN
+-- (
+-- SELECT
+-- id, datetime(substr(date,1,16)) AS date_time
+-- FROM match_model
+-- WHERE
+-- tour_id = ? AND
+-- STRFTIME('%H', date_time) = '00' AND
+-- STRFTIME('%M', date_time) = '00' AND
+-- date_time <= DATETIME('now','-7 day')
+-- );
+
+selectWeekOldNotScheduledMatches:
+SELECT
+id, datetime(substr(date,1,16)) AS date_time
+FROM match_model
+WHERE
+tour_id = ? AND
+STRFTIME('%H', date_time) = '00' AND
+STRFTIME('%M', date_time) = '00' AND
+date_time <= DATETIME('now','-7 day');
+
+deleteById:
+DELETE FROM match_model WHERE id IN ?;

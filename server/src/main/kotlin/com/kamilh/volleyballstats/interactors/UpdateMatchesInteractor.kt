@@ -1,7 +1,13 @@
 package com.kamilh.volleyballstats.interactors
 
 import com.kamilh.volleyballstats.datetime.ZonedDateTime
-import com.kamilh.volleyballstats.domain.models.*
+import com.kamilh.volleyballstats.domain.models.Match
+import com.kamilh.volleyballstats.domain.models.MatchInfo
+import com.kamilh.volleyballstats.domain.models.Result
+import com.kamilh.volleyballstats.domain.models.Tour
+import com.kamilh.volleyballstats.domain.models.error
+import com.kamilh.volleyballstats.domain.models.mapError
+import com.kamilh.volleyballstats.domain.models.value
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.repository.polishleague.PlsRepository
@@ -46,11 +52,12 @@ class UpdateMatchesInteractor(
             return Result.failure(UpdateMatchesError.TourNotFound)
         }
 
+        matchStorage.deleteInvalidMatches(tour.id)
         val savedMatches = matchStorage.getAllMatches(tour.id).first()
         val allMatchesFinished = savedMatches.all { it.hasReport }
         val lastFinished = savedMatches.filter { it.date != null }.maxByOrNull { it.date!! }?.date
         val lastMatchOlderThanOffset = lastFinished?.plus(TOUR_CONSIDERED_FINISHED_OFFSET)?.let { CurrentDate.zonedDateTime > it } ?: false
-        if (savedMatches.isNotEmpty() && allMatchesFinished && lastMatchOlderThanOffset) {
+        if (savedMatches.isNotEmpty() && (allMatchesFinished || lastMatchOlderThanOffset)) {
             finishTour(tour, lastFinished!!)
             return Result.success(UpdateMatchesSuccess.SeasonCompleted)
         }

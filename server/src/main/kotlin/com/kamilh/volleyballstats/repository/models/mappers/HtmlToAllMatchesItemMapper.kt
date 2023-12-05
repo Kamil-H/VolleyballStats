@@ -15,7 +15,7 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class HtmlToAllMatchesItemMapper(private val htmlParser: HtmlParser) : HtmlMapper<List<MatchInfo>> {
 
-    @Suppress("ComplexMethod", "LongMethod", "MagicNumber")
+    @Suppress("ComplexMethod", "LongMethod", "MagicNumber", "CognitiveComplexMethod")
     override fun map(html: String): ParseResult<List<MatchInfo>> = htmlParser.parse(html) {
         getElementsByClass("row text-center gridtable games alter")
             .mapNotNull { element ->
