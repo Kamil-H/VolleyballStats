@@ -22,7 +22,7 @@ class MainPresenter private constructor(
     val state: StateFlow<MainState> = _state.asStateFlow()
 
     private fun bottomItems(selected: BottomMenuItem = BottomMenuItem.Home): List<BottomItemState> =
-        BottomMenuItem.values().map { item ->
+        BottomMenuItem.entries.map { item ->
             BottomItemState(
                 id = item,
                 icon = item.icon,

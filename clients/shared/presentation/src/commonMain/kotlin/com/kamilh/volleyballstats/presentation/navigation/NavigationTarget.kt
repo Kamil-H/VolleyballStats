@@ -13,7 +13,7 @@ enum class TabTarget : Parcelable {
 sealed interface BackStackTarget : Parcelable {
 
     @Parcelize
-    object Root : BackStackTarget
+    data object Root : BackStackTarget
 
     @Parcelize
     data class PlayerFilters(

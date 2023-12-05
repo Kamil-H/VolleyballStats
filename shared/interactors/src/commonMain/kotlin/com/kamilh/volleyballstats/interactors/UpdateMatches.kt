@@ -15,14 +15,14 @@ data class UpdateMatchesParams(val tour: Tour)
 typealias UpdateMatchesResult = Result<UpdateMatchesSuccess, UpdateMatchesError>
 
 sealed class UpdateMatchesSuccess {
-    object SeasonCompleted : UpdateMatchesSuccess()
-    object NothingToSchedule : UpdateMatchesSuccess()
+    data object SeasonCompleted : UpdateMatchesSuccess()
+    data object NothingToSchedule : UpdateMatchesSuccess()
     class NextMatch(val dateTime: ZonedDateTime) : UpdateMatchesSuccess()
 }
 
 sealed class UpdateMatchesError(override val message: String) : Error {
-    object TourNotFound : UpdateMatchesError("TourNotFound")
-    object NoMatchesInTour : UpdateMatchesError("NoMatchesInTour")
+    data object TourNotFound : UpdateMatchesError("TourNotFound")
+    data object NoMatchesInTour : UpdateMatchesError("NoMatchesInTour")
     class UpdateMatchReportError(
         val networkErrors: List<NetworkError> = emptyList(),
         val insertErrors: List<InsertMatchReportError> = emptyList(),

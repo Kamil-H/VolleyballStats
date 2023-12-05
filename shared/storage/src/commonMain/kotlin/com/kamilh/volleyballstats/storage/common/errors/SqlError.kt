@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.storage.common.errors
 
 sealed class SqlError {
-    object Uniqueness : SqlError()
+    data object Uniqueness : SqlError()
     object PrimaryKey : SqlError()
     object Error : SqlError()
     object NotNull : SqlError()

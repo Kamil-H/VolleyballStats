@@ -30,13 +30,13 @@ class InitializeFiltersInteractor(
     }
 
     private fun StatsFiltersStorage.setAllDefaults(latestSeason: Season, limit: Int) {
-        StatsSkill.values().forEach { skill ->
+        StatsSkill.entries.forEach { skill ->
             setDefaults(skill = skill, latestSeason = latestSeason, limit = limit)
         }
     }
 
     private fun StatsFiltersStorage.setDefaults(skill: StatsSkill, latestSeason: Season, limit: Int) {
-        StatsType.values().forEach { type ->
+        StatsType.entries.forEach { type ->
             skill.allProperties(type).map { it.id }.forEach {
                 toggleProperty(skill, type, it)
             }

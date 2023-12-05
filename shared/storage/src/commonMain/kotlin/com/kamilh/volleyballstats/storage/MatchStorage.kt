@@ -32,7 +32,7 @@ interface MatchStorage {
 typealias InsertMatchesResult = Result<Unit, InsertMatchesError>
 
 sealed class InsertMatchesError(override val message: String) : Error {
-    object TourNotFound : InsertMatchesError("TourNotFound")
+    data object TourNotFound : InsertMatchesError("TourNotFound")
 }
 
 @Inject

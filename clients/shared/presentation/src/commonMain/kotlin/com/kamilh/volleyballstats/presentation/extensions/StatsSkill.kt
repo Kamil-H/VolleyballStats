@@ -11,12 +11,12 @@ import com.kamilh.volleyballstats.presentation.features.stats.properties.ServePr
 import com.kamilh.volleyballstats.presentation.features.stats.properties.SetProperty
 
 fun StatsSkill.allProperties(type: StatsType): List<Property<String>> = when (this) {
-    StatsSkill.Attack -> AttackProperty.values()
-    StatsSkill.Block -> BlockProperty.values()
-    StatsSkill.Dig -> DigProperty.values()
-    StatsSkill.Set -> SetProperty.values()
-    StatsSkill.Receive -> ReceiveProperty.values()
-    StatsSkill.Serve -> ServeProperty.values()
+    StatsSkill.Attack -> AttackProperty.entries
+    StatsSkill.Block -> BlockProperty.entries
+    StatsSkill.Dig -> DigProperty.entries
+    StatsSkill.Set -> SetProperty.entries
+    StatsSkill.Receive -> ReceiveProperty.entries
+    StatsSkill.Serve -> ServeProperty.entries
 }.toList() - propertiesToRemove(skill = this, type)
 
 @Suppress("CyclomaticComplexMethod")

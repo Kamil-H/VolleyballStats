@@ -22,7 +22,7 @@ data class LoadingState(
 )
 
 sealed interface LinearProgressBar {
-    object Indefinite : LinearProgressBar
+    data object Indefinite : LinearProgressBar
     data class Progress(val value: Float) : LinearProgressBar
 }
 

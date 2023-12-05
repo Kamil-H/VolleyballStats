@@ -78,7 +78,7 @@ class FiltersPresenter private constructor(
     private fun StatsFilters.toFiltersState(
         allProperties: List<Property<String>> = args.skill.allProperties(args.type),
         allSeasons: List<Season> = emptyList(),
-        allSpecializations: List<Specialization> = Specialization.values().toList(),
+        allSpecializations: List<Specialization> = Specialization.entries.toList(),
         allTeams: Set<TeamSnapshot> = emptySet(),
         maxLimit: Int = 100,
         selectedControlIndex: Int,
@@ -95,10 +95,10 @@ class FiltersPresenter private constructor(
             showToolbar = true,
         ),
         segmentedControlState = SegmentedControlState(
-            items = Control.values().map { it.itemName },
+            items = Control.entries.map { it.itemName },
             selectedIndex = selectedControlIndex,
         ),
-        showControl = Control.values()[selectedControlIndex],
+        showControl = Control.entries[selectedControlIndex],
         colorAccent = when (args.type) {
             StatsType.Player -> ColorAccent.Primary
             StatsType.Team -> ColorAccent.Tertiary

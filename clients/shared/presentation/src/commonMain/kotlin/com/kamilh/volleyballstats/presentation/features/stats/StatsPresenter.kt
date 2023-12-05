@@ -50,7 +50,7 @@ class StatsPresenter private constructor(
     private val chosenSkill = MutableStateFlow(StatsSkill.Attack)
     private val _state: MutableStateFlow<StatsState> = MutableStateFlow(
         StatsState(
-            selectSkillState = SelectOptionState(options = StatsSkill.values().map { skill ->
+            selectSkillState = SelectOptionState(options = StatsSkill.entries.map { skill ->
                 SelectOptionState.Option(
                     id = skill,
                     label = skill.name,
@@ -68,7 +68,7 @@ class StatsPresenter private constructor(
     val state: StateFlow<StatsState> = _state.asStateFlow()
 
     private val sortBy: MutableStateFlow<Map<StatsSkill, Property<String>>> = MutableStateFlow(
-        StatsSkill.values().associateWith { it.getDefaultSort() }
+        StatsSkill.entries.associateWith { it.getDefaultSort() }
     )
 
     init {

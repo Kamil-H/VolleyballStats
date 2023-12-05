@@ -34,7 +34,7 @@ interface PlayerStorage {
 typealias InsertPlayerResult = Result<Unit, InsertPlayerError>
 
 sealed class InsertPlayerError(override val message: String) : Error {
-    object TourNotFound : InsertPlayerError("TourNotFound")
+    data object TourNotFound : InsertPlayerError("TourNotFound")
     class Errors(val teamsNotFound: List<TeamId>, val teamPlayersAlreadyExists: List<PlayerId>) : InsertPlayerError(
         "Errors(teamsNotFound: ${teamsNotFound.joinToString { it.toString() }}, teamPlayersAlreadyExists: ${teamPlayersAlreadyExists.joinToString { it.toString() }})"
     )

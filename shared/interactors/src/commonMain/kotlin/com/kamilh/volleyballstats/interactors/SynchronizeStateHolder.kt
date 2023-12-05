@@ -64,8 +64,8 @@ class SynchronizeStateHolder(
 
 sealed interface SynchronizeState {
 
-    object Idle : SynchronizeState
-    object Success : SynchronizeState
+    data object Idle : SynchronizeState
+    data object Success : SynchronizeState
     data class Started(val league: League) : SynchronizeState
     data class UpdatingMatches(
         val tour: Tour,

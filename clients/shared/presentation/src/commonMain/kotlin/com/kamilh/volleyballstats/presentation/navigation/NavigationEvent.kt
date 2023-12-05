@@ -11,14 +11,14 @@ sealed interface NavigationEvent : Parcelable {
     data class PlayerFiltersRequested(val skill: StatsSkill, val type: StatsType) : NavigationEvent
 
     @Parcelize
-    object Close : NavigationEvent
+    data object Close : NavigationEvent
 
     @Parcelize
-    object HomeTabRequested : NavigationEvent
+    data object HomeTabRequested : NavigationEvent
 
     @Parcelize
-    object PlayersTabRequested : NavigationEvent
+    data object PlayersTabRequested : NavigationEvent
 
     @Parcelize
-    object TeamsTabRequested : NavigationEvent
+    data object TeamsTabRequested : NavigationEvent
 }

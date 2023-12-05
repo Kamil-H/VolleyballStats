@@ -23,7 +23,7 @@ fun ComponentActivity.TabContainer(
             savedStateMap = buildContext.savedStateMap,
         )
     }
-    val tabTargets = TabTarget.values()
+    val tabTargets = TabTarget.entries
     val destinations = tabTargets.map { it to backStack() }
     val spotlight = Spotlight(
         items = destinations.map { it.first },
