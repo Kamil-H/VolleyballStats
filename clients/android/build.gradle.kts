@@ -94,7 +94,9 @@ dependencies {
     implementation(libs.ktor.client.jvm)
     implementation(libs.ktor.client.logging)
 
-    implementation(libs.appyx.core)
+    implementation(libs.appyx.navigation)
+    implementation(libs.appyx.backstack)
+    implementation(libs.appyx.spotlight)
 
     coreLibraryDesugaring(libs.android.desugaring)
 

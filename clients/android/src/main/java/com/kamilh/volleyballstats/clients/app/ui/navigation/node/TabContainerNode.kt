@@ -1,17 +1,14 @@
 package com.kamilh.volleyballstats.clients.app.ui.navigation.node
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.bumble.appyx.core.composable.Children
-import com.bumble.appyx.core.modality.BuildContext
-import com.bumble.appyx.core.node.Node
-import com.bumble.appyx.core.node.ParentNode
-import com.bumble.appyx.navmodel.backstack.BackStack
-import com.bumble.appyx.navmodel.spotlight.Spotlight
-import com.bumble.appyx.navmodel.spotlight.transitionhandler.rememberSpotlightFader
+import com.bumble.appyx.components.backstack.BackStack
+import com.bumble.appyx.components.spotlight.Spotlight
+import com.bumble.appyx.navigation.composable.AppyxComponent
+import com.bumble.appyx.navigation.modality.BuildContext
+import com.bumble.appyx.navigation.node.Node
+import com.bumble.appyx.navigation.node.ParentNode
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.screens.home.HomeNode
 import com.kamilh.volleyballstats.clients.app.ui.screens.stats.StatsNode
@@ -24,27 +21,19 @@ class TabContainerNode(
     private val spotlight: Spotlight<TabTarget>,
     private val tabDestinations: List<Pair<TabTarget, BackStack<BackStackTarget>>>,
     private val appModule: AppModule,
-) : ParentNode<TabTarget>(navModel = spotlight, buildContext = buildContext) {
+) : ParentNode<TabTarget>(appyxComponent = spotlight, buildContext = buildContext) {
 
     @Composable
     override fun View(modifier: Modifier) {
-        Children(
+        AppyxComponent(
             modifier = modifier.fillMaxSize(),
-            navModel = spotlight,
-            transitionHandler = rememberSpotlightFader(
-                transitionSpec = {
-                    tween(
-                        durationMillis = 300,
-                        easing = LinearEasing,
-                    )
-                }
-            ),
+            appyxComponent = spotlight,
         )
     }
 
-    override fun resolve(navTarget: TabTarget, buildContext: BuildContext): Node {
-        val backStack = getBackStackNavigator(navTarget)
-        return when (navTarget) {
+    override fun resolve(interactionTarget: TabTarget, buildContext: BuildContext): Node {
+        val backStack = getBackStackNavigator(interactionTarget)
+        return when (interactionTarget) {
             TabTarget.Home -> tabNode(buildContext, backStack) {
                 HomeNode(it, appModule)
             }
@@ -65,7 +54,8 @@ class TabContainerNode(
         buildContext = buildContext,
         appModule = appModule,
         backStack = backStack,
-    ) { rootNode(it) }
+        rootNode = rootNode,
+    )
 
     private fun getBackStackNavigator(navTarget: TabTarget): BackStack<BackStackTarget> =
         tabDestinations.find { (tabTarget, _) ->

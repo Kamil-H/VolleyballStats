@@ -2,8 +2,8 @@ package com.kamilh.volleyballstats.clients.app.ui.screens.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.bumble.appyx.core.modality.BuildContext
-import com.bumble.appyx.core.node.Node
+import com.bumble.appyx.navigation.modality.BuildContext
+import com.bumble.appyx.navigation.node.Node
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.presenter
 import com.kamilh.volleyballstats.presentation.features.home.HomePresenter

@@ -3,11 +3,11 @@ package com.kamilh.volleyballstats.clients.app.ui.navigation.node
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.bumble.appyx.core.composable.Children
-import com.bumble.appyx.core.modality.BuildContext
-import com.bumble.appyx.core.node.Node
-import com.bumble.appyx.core.node.ParentNode
-import com.bumble.appyx.navmodel.backstack.BackStack
+import com.bumble.appyx.components.backstack.BackStack
+import com.bumble.appyx.navigation.composable.AppyxComponent
+import com.bumble.appyx.navigation.modality.BuildContext
+import com.bumble.appyx.navigation.node.Node
+import com.bumble.appyx.navigation.node.ParentNode
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.clients.app.ui.screens.filters.PlayerFiltersNode
 import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
@@ -18,23 +18,22 @@ class TabNode(
     private val backStack: BackStack<BackStackTarget>,
     private val appModule: AppModule,
     private val rootNode: (buildContext: BuildContext) -> Node,
-) : ParentNode<BackStackTarget>(navModel = backStack, buildContext = buildContext) {
+) : ParentNode<BackStackTarget>(appyxComponent = backStack, buildContext = buildContext) {
 
     @Composable
     override fun View(modifier: Modifier) {
-        Children(
+        AppyxComponent(
             modifier = modifier.fillMaxSize(),
-            navModel = backStack,
-            transitionHandler = rememberBackstackSlider(),
+            appyxComponent = backStack,
         )
     }
 
-    override fun resolve(navTarget: BackStackTarget, buildContext: BuildContext): Node =
-        when (navTarget) {
+    override fun resolve(interactionTarget: BackStackTarget, buildContext: BuildContext): Node =
+        when (interactionTarget) {
             is BackStackTarget.PlayerFilters -> PlayerFiltersNode(
                 buildContext = buildContext,
                 appModule = appModule,
-                args = FiltersPresenter.Args(skill = navTarget.skill, type = navTarget.type),
+                args = FiltersPresenter.Args(skill = interactionTarget.skill, type = interactionTarget.type),
             )
             BackStackTarget.Root -> rootNode(buildContext)
         }

@@ -32,7 +32,7 @@ activityCompose = "1.8.1"
 lifecycleRuntime = "2.6.2"
 coreLibraryDesugaring = "2.0.4"
 detektComposeRules = "0.0.22"
-appyx = "1.2.0"
+appyx = "2.0.0-alpha09"
 coil = "2.2.2"
 
 [plugins]
@@ -100,6 +100,10 @@ jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 datetime = { module = "io.islandtime:core", version.ref = "dateTime" }
 
+appyx-navigation = { module = "com.bumble.appyx:appyx-navigation", version.ref = "appyx" }
+appyx-backstack = { module = "com.bumble.appyx:backstack", version.ref = "appyx" }
+appyx-spotlight = { module = "com.bumble.appyx:spotlight", version.ref = "appyx" }
+
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jUnit5" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jUnit5" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jUnit5" }
@@ -116,11 +120,9 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntime" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
-appyx-core = { module = "com.bumble.appyx:core", version.ref = "appyx" }
-
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
-#Jetbrains Compose
+# Jetbrains Compose
 jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jebrainsCompose" }
 jetbrains-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jebrainsCompose" }
 jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jebrainsCompose" }

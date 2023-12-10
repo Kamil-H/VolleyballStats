@@ -1,8 +1,8 @@
 package com.kamilh.volleyballstats.clients.app.ui.navigation
 
-import com.bumble.appyx.navmodel.backstack.BackStack
-import com.bumble.appyx.navmodel.backstack.operation.pop
-import com.bumble.appyx.navmodel.backstack.operation.push
+import com.bumble.appyx.components.backstack.BackStack
+import com.bumble.appyx.components.backstack.operation.pop
+import com.bumble.appyx.components.backstack.operation.push
 
 interface BackStackNavigator<T : Any> {
 
