@@ -1,9 +1,8 @@
-package com.kamilh.volleyballstats.clients.app.ui.navigation
+package com.kamilh.volleyballstats.ui.navigation
 
 import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.TabTarget
-import com.kamilh.volleyballstats.ui.navigation.AppNavigator
 
 class NavigationEventResolver(
     private val appNavigator: AppNavigator<TabTarget, BackStackTarget>

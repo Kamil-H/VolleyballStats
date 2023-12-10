@@ -1,21 +1,20 @@
-package com.kamilh.volleyballstats.clients.app.ui.screens.filters
+package com.kamilh.volleyballstats.ui.screens.filters
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.bumble.appyx.navigation.modality.BuildContext
 import com.bumble.appyx.navigation.node.Node
-import com.kamilh.volleyballstats.clients.app.di.AppModule
-import com.kamilh.volleyballstats.clients.app.ui.presenter
+import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
-import com.kamilh.volleyballstats.ui.screens.filters.PlayerFiltersScreen
+import com.kamilh.volleyballstats.ui.extensions.presenter
 
 class PlayerFiltersNode(
     buildContext: BuildContext,
-    appModule: AppModule,
+    presenterMap: PresenterMap,
     args: FiltersPresenter.Args,
 ) : Node(buildContext) {
 
-    private val presenter: FiltersPresenter = presenter(appModule.presenterMap, extras = args)
+    private val presenter: FiltersPresenter = presenter(presenterMap, extras = args)
 
     @Composable
     override fun View(modifier: Modifier) {

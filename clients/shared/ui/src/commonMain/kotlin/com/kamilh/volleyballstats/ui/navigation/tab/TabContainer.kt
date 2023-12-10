@@ -1,6 +1,5 @@
-package com.kamilh.volleyballstats.clients.app.ui.navigation.tab
+package com.kamilh.volleyballstats.ui.navigation.tab
 
-import androidx.core.app.ComponentActivity
 import com.bumble.appyx.components.backstack.BackStack
 import com.bumble.appyx.components.backstack.BackStackModel
 import com.bumble.appyx.components.backstack.ui.parallax.BackStackParallax
@@ -8,18 +7,25 @@ import com.bumble.appyx.components.spotlight.Spotlight
 import com.bumble.appyx.components.spotlight.SpotlightModel
 import com.bumble.appyx.components.spotlight.ui.fader.SpotlightFader
 import com.bumble.appyx.navigation.modality.BuildContext
-import com.kamilh.volleyballstats.clients.app.di.AppModule
-import com.kamilh.volleyballstats.clients.app.ui.navigation.AppAppyxNavigator
-import com.kamilh.volleyballstats.clients.app.ui.navigation.AppyxBackStackNavigator
-import com.kamilh.volleyballstats.clients.app.ui.navigation.NavigationEventResolver
-import com.kamilh.volleyballstats.clients.app.ui.navigation.node.TabContainerNode
+import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
+import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
 import com.kamilh.volleyballstats.presentation.navigation.TabTarget
-import com.kamilh.volleyballstats.ui.extensions.collectSafely
+import com.kamilh.volleyballstats.ui.navigation.AppAppyxNavigator
+import com.kamilh.volleyballstats.ui.navigation.AppyxBackStackNavigator
+import com.kamilh.volleyballstats.ui.navigation.NavigationEventResolver
+import com.kamilh.volleyballstats.ui.navigation.node.TabContainerNode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-fun ComponentActivity.TabContainer(
+@Suppress("FunctionNaming", "LongMethod")
+fun TabContainer(
+    coroutineScope: CoroutineScope,
     buildContext: BuildContext,
-    appModule: AppModule,
+    presenterMap: PresenterMap,
+    navigationEventReceiver: NavigationEventReceiver,
     onTabSelected: (TabTarget) -> Unit = {},
 ): TabContainerNode {
     val backStack: () -> BackStack<BackStackTarget> = {
@@ -51,12 +57,16 @@ fun ComponentActivity.TabContainer(
         tabNavigator = AppyxTabNavigator(spotlight, tabTargets.toList())
     )
     val resolver = NavigationEventResolver(appNavigator)
-    collectSafely(appModule.navigationEventReceiver.receive(), resolver::resolve)
-    collectSafely(spotlight.activeIndex) { onTabSelected(tabTargets[it.toInt()]) }
+    coroutineScope.collectSafely(navigationEventReceiver.receive(), resolver::resolve)
+    coroutineScope.collectSafely(spotlight.activeIndex) { onTabSelected(tabTargets[it.toInt()]) }
     return TabContainerNode(
         buildContext = buildContext,
         spotlight = spotlight,
         tabDestinations = destinations,
-        appModule = appModule,
+        presenterMap = presenterMap,
     )
+}
+
+private fun <T> CoroutineScope.collectSafely(flow: Flow<T>, collector: (T) -> Unit) {
+    flow.onEach(collector).launchIn(this)
 }

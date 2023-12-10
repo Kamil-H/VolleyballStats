@@ -30,6 +30,10 @@ dependencies {
     commonMainImplementation(libs.jetbrains.compose.ui)
     commonMainImplementation(libs.jetbrains.compose.material3)
 
+    commonMainImplementation(libs.appyx.navigation)
+    commonMainImplementation(libs.appyx.backstack)
+    commonMainImplementation(libs.appyx.spotlight)
+
     androidMainImplementation(libs.androidx.lifecycle.runtime)
     androidMainImplementation(libs.androidx.core)
     androidMainImplementation(libs.coil)

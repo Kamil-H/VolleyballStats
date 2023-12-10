@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app.ui.navigation
+package com.kamilh.volleyballstats.ui.navigation
 
 import com.bumble.appyx.components.backstack.BackStack
 import com.bumble.appyx.components.backstack.operation.pop

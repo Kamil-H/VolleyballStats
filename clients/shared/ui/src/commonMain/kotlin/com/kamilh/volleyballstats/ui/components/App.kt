@@ -3,7 +3,13 @@ package com.kamilh.volleyballstats.ui.components
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -13,7 +19,6 @@ import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
 import com.kamilh.volleyballstats.ui.extensions.toPainter
 import com.kamilh.volleyballstats.ui.theme.VolleyballStatsTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
     mainPresenter: MainPresenter,

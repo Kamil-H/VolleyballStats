@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.clients.app.ui.navigation.node
+package com.kamilh.volleyballstats.ui.navigation.node
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -8,15 +8,15 @@ import com.bumble.appyx.navigation.composable.AppyxComponent
 import com.bumble.appyx.navigation.modality.BuildContext
 import com.bumble.appyx.navigation.node.Node
 import com.bumble.appyx.navigation.node.ParentNode
-import com.kamilh.volleyballstats.clients.app.di.AppModule
-import com.kamilh.volleyballstats.clients.app.ui.screens.filters.PlayerFiltersNode
+import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
 import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
+import com.kamilh.volleyballstats.ui.screens.filters.PlayerFiltersNode
 
 class TabNode(
     buildContext: BuildContext,
     private val backStack: BackStack<BackStackTarget>,
-    private val appModule: AppModule,
+    private val presenterMap: PresenterMap,
     private val rootNode: (buildContext: BuildContext) -> Node,
 ) : ParentNode<BackStackTarget>(appyxComponent = backStack, buildContext = buildContext) {
 
@@ -32,7 +32,7 @@ class TabNode(
         when (interactionTarget) {
             is BackStackTarget.PlayerFilters -> PlayerFiltersNode(
                 buildContext = buildContext,
-                appModule = appModule,
+                presenterMap = presenterMap,
                 args = FiltersPresenter.Args(skill = interactionTarget.skill, type = interactionTarget.type),
             )
             BackStackTarget.Root -> rootNode(buildContext)
