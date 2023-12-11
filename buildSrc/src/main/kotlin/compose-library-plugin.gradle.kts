@@ -6,6 +6,7 @@ plugins {
 kotlin {
     targetsAndSourceSets {
         androidTarget()
+        jvm("desktop")
     }
 }
 

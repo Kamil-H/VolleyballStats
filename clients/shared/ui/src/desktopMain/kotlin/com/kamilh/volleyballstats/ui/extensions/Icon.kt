@@ -11,6 +11,7 @@ import com.kamilh.volleyballstats.presentation.features.common.Icon
 @Composable
 actual fun Icon.toPainter(): Painter = rememberVectorPainter(IconMenu)
 
+@Suppress("TopLevelPropertyNaming", "MagicNumber")
 private val IconMenu: ImageVector = materialIcon(name = "Filled.Menu") {
     materialPath {
         moveTo(3.0f, 18.0f)

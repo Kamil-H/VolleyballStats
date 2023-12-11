@@ -22,9 +22,14 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt> {
         "clients/shared/presentation/src/commonMain/kotlin",
         "clients/shared/presentation/src/iosMain/kotlin",
         "clients/shared/presentation/src/androidMain/kotlin",
-        "clients/android/src/commonMain/kotlin",
+        "clients/shared/presentation/src/androidMain/kotlin",
+        "clients/shared/presentation/src/desktopMain/kotlin",
         "clients/shared/ui/src/commonMain/kotlin",
         "clients/shared/ui/src/androidMain/kotlin",
+        "clients/shared/ui/src/desktopMain/kotlin",
+        "clients/shared/ui/src/iosMain/kotlin",
+        "clients/android/src/main/java",
+        "clients/jvm-desktop/src/main/kotlin",
     ).asFileTree
     allRules = true
 }

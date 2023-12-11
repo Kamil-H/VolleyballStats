@@ -20,12 +20,14 @@ dependencies {
     commonMainImplementation(libs.inject.runtime)
 
     androidMainImplementation(libs.sqldelight.driver.android)
+    desktopMainImplementation(libs.sqldelight.driver.jvm)
     iosMainImplementation(libs.sqldelight.driver.ios)
 
     commonMainImplementation(libs.ktor.client.core)
     commonMainImplementation(libs.ktor.serialization)
     commonMainImplementation(libs.ktor.client.contentNegotiate)
     commonMainImplementation(libs.ktor.client.logging)
+    desktopMainImplementation(libs.ktor.client.okhttp)
     androidMainImplementation(libs.ktor.client.okhttp)
     iosMainImplementation(libs.ktor.client.darwin)
 

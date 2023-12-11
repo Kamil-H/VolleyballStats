@@ -10,5 +10,5 @@ actual fun NetworkImage(
     modifier: Modifier,
     contentDescription: String?,
 ) {
-
+    // no-op
 }
