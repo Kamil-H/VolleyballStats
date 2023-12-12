@@ -34,9 +34,11 @@ dependencies {
     commonMainImplementation(libs.appyx.backstack)
     commonMainImplementation(libs.appyx.spotlight)
 
+    commonMainImplementation(libs.coil.compose)
+    commonMainImplementation(libs.coil.network)
+
     androidMainImplementation(libs.androidx.lifecycle.runtime)
     androidMainImplementation(libs.androidx.core)
-    androidMainImplementation(libs.coil)
 
     kspIosArm64(libs.inject.compiler)
     kspIosSimulatorArm64(libs.inject.compiler)
