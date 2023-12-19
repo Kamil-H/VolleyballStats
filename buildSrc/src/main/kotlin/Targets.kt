@@ -9,8 +9,14 @@ import util.libs
 
 fun KotlinMultiplatformExtension.targetsAndSourceSets(additionalTargets: KotlinMultiplatformExtension.() -> Unit) {
     additionalTargets()
-    iosArm64()
-    iosSimulatorArm64()
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { target ->
+        target.binaries.framework {
+            baseName = "shared"
+        }
+    }
 
     applyDefaultHierarchyTemplate()
 

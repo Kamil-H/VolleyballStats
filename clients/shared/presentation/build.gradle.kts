@@ -1,9 +1,21 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     `kmm-platform-plugin`
 }
 
 android {
     namespace = "com.kamilh.volleyballstats.presentation"
+}
+
+kotlin {
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.withType<Framework> {
+            isStatic = true
+            baseName = "shared"
+        }
+    }
 }
 
 dependencies {
