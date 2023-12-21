@@ -1,13 +1,17 @@
 package com.kamilh.volleyballstats.presentation.di
 
+import app.cash.sqldelight.db.SqlDriver
 import com.kamilh.volleyballstats.api.ApiConstants
 import com.kamilh.volleyballstats.api.ApiUrl
 import com.kamilh.volleyballstats.clients.data.DataModule
 import com.kamilh.volleyballstats.domain.di.Singleton
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildInfo
 import com.kamilh.volleyballstats.domain.models.buildinfo.BuildType
-import com.kamilh.volleyballstats.domain.utils.*
+import com.kamilh.volleyballstats.domain.utils.AppDispatchers
+import com.kamilh.volleyballstats.domain.utils.ConsoleExceptionLogger
+import com.kamilh.volleyballstats.domain.utils.ExceptionLogger
 import com.kamilh.volleyballstats.domain.utils.Logger
+import com.kamilh.volleyballstats.domain.utils.PlatformLogger
 import com.kamilh.volleyballstats.network.HttpClient
 import com.kamilh.volleyballstats.network.KtorHttpClient
 import com.kamilh.volleyballstats.presentation.features.PresentersModule
@@ -25,20 +29,18 @@ import com.kamilh.volleyballstats.presentation.utils.AccessTokenProvider
 import com.kamilh.volleyballstats.presentation.utils.AppInitializer
 import com.kamilh.volleyballstats.presentation.utils.ClientLogger
 import com.kamilh.volleyballstats.storage.SqlDriverFactory
-import app.cash.sqldelight.db.SqlDriver
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
-import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import io.ktor.client.HttpClient as Ktor
 
-@Component
 interface PresentationModule : InteractorModule, DataModule, PresentersModule {
 
     val appInitializer: AppInitializer

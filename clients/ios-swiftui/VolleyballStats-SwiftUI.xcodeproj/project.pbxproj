@@ -312,6 +312,7 @@
 					"$(inherited)",
 					"-framework",
 					shared,
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kamilh.VolleyballStats-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -348,6 +349,7 @@
 					"$(inherited)",
 					"-framework",
 					shared,
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kamilh.VolleyballStats-SwiftUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";

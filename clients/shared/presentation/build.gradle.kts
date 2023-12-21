@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     `kmm-platform-plugin`
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -42,6 +43,9 @@ dependencies {
     desktopMainImplementation(libs.ktor.client.okhttp)
     androidMainImplementation(libs.ktor.client.okhttp)
     iosMainImplementation(libs.ktor.client.darwin)
+
+    kspIosArm64(libs.inject.compiler)
+    kspIosSimulatorArm64(libs.inject.compiler)
 
     commonTestImplementation(libs.kotlinx.coroutines.test)
     commonTestImplementation(libs.test.common)
