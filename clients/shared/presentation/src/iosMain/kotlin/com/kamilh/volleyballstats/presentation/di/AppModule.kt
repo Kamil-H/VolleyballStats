@@ -7,7 +7,6 @@ import com.kamilh.volleyballstats.presentation.features.create
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
 import com.kamilh.volleyballstats.presentation.features.savableMapOf
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides

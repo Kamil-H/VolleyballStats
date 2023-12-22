@@ -17,8 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         appModule.appInitializer.initialize()
-        let mainPresenter: MainPresenter = appModule.createMainPresenter()
-        print(mainPresenter.state.value)
         return true
     }
 }
@@ -29,7 +27,7 @@ struct VolleyballStats_SwiftUIApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(mainViewModel: MainViewModel())
+            MainView(mainViewModel: MainViewModel(mainPresenter: appModule.createMainPresenter(), navigationEventReceiver: appModule.navigationEventReceiver))
         }
     }
 }

@@ -8,17 +8,27 @@
 
 /* Begin PBXBuildFile section */
 		803330E52B32301F002EA512 /* VolleyballStats_SwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803330E42B32301F002EA512 /* VolleyballStats_SwiftUIApp.swift */; };
-		803330E72B32301F002EA512 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803330E62B32301F002EA512 /* ContentView.swift */; };
+		803330E72B32301F002EA512 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803330E62B32301F002EA512 /* MainView.swift */; };
 		803330E92B323020002EA512 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 803330E82B323020002EA512 /* Assets.xcassets */; };
 		803330EC2B323020002EA512 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 803330EB2B323020002EA512 /* Preview Assets.xcassets */; };
+		807B34152B34CEA50095F818 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34142B34CEA50095F818 /* HomeScreen.swift */; };
+		807B34172B34CED80095F818 /* PlayersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34162B34CED80095F818 /* PlayersScreen.swift */; };
+		807B34192B34CEF30095F818 /* TeamsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34182B34CEF30095F818 /* TeamsScreen.swift */; };
+		807B34212B35A9D90095F818 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34202B35A9D90095F818 /* MainViewModel.swift */; };
+		807B34242B35AF5B0095F818 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34232B35AF5B0095F818 /* Icon.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		803330E12B32301F002EA512 /* VolleyballStats-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VolleyballStats-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		803330E42B32301F002EA512 /* VolleyballStats_SwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolleyballStats_SwiftUIApp.swift; sourceTree = "<group>"; };
-		803330E62B32301F002EA512 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		803330E62B32301F002EA512 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		803330E82B323020002EA512 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		803330EB2B323020002EA512 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		807B34142B34CEA50095F818 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
+		807B34162B34CED80095F818 /* PlayersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayersScreen.swift; sourceTree = "<group>"; };
+		807B34182B34CEF30095F818 /* TeamsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsScreen.swift; sourceTree = "<group>"; };
+		807B34202B35A9D90095F818 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		807B34232B35AF5B0095F818 /* Icon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +62,8 @@
 			isa = PBXGroup;
 			children = (
 				803330E42B32301F002EA512 /* VolleyballStats_SwiftUIApp.swift */,
-				803330E62B32301F002EA512 /* ContentView.swift */,
+				807B34132B34CE380095F818 /* screens */,
+				807B34222B35AF4E0095F818 /* design */,
 				803330E82B323020002EA512 /* Assets.xcassets */,
 				803330EA2B323020002EA512 /* Preview Content */,
 			);
@@ -65,6 +76,58 @@
 				803330EB2B323020002EA512 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		807B34132B34CE380095F818 /* screens */ = {
+			isa = PBXGroup;
+			children = (
+				807B341F2B35A9C40095F818 /* main */,
+				807B341E2B35A9B30095F818 /* teams */,
+				807B341D2B35A9AE0095F818 /* players */,
+				807B341C2B35A9A90095F818 /* home */,
+			);
+			path = screens;
+			sourceTree = "<group>";
+		};
+		807B341C2B35A9A90095F818 /* home */ = {
+			isa = PBXGroup;
+			children = (
+				807B34142B34CEA50095F818 /* HomeScreen.swift */,
+			);
+			path = home;
+			sourceTree = "<group>";
+		};
+		807B341D2B35A9AE0095F818 /* players */ = {
+			isa = PBXGroup;
+			children = (
+				807B34162B34CED80095F818 /* PlayersScreen.swift */,
+			);
+			path = players;
+			sourceTree = "<group>";
+		};
+		807B341E2B35A9B30095F818 /* teams */ = {
+			isa = PBXGroup;
+			children = (
+				807B34182B34CEF30095F818 /* TeamsScreen.swift */,
+			);
+			path = teams;
+			sourceTree = "<group>";
+		};
+		807B341F2B35A9C40095F818 /* main */ = {
+			isa = PBXGroup;
+			children = (
+				803330E62B32301F002EA512 /* MainView.swift */,
+				807B34202B35A9D90095F818 /* MainViewModel.swift */,
+			);
+			path = main;
+			sourceTree = "<group>";
+		};
+		807B34222B35AF4E0095F818 /* design */ = {
+			isa = PBXGroup;
+			children = (
+				807B34232B35AF5B0095F818 /* Icon.swift */,
+			);
+			path = design;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,8 +221,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				803330E72B32301F002EA512 /* ContentView.swift in Sources */,
+				803330E72B32301F002EA512 /* MainView.swift in Sources */,
+				807B34192B34CEF30095F818 /* TeamsScreen.swift in Sources */,
+				807B34242B35AF5B0095F818 /* Icon.swift in Sources */,
 				803330E52B32301F002EA512 /* VolleyballStats_SwiftUIApp.swift in Sources */,
+				807B34172B34CED80095F818 /* PlayersScreen.swift in Sources */,
+				807B34152B34CEA50095F818 /* HomeScreen.swift in Sources */,
+				807B34212B35A9D90095F818 /* MainViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

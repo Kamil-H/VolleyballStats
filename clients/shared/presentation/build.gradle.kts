@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     `kmm-platform-plugin`
     id("com.google.devtools.ksp")
+    id("co.touchlab.skie") version "0.6.0"
 }
 
 android {
