@@ -27,7 +27,12 @@ struct VolleyballStats_SwiftUIApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView(mainViewModel: MainViewModel(mainPresenter: appModule.createMainPresenter(), navigationEventReceiver: appModule.navigationEventReceiver))
+            RouterView(
+                presentersFactory: appModule.presentersFactory,
+                navigationEventReceiver: appModule.navigationEventReceiver
+            ) {
+                MainView(presentersFactory: appModule.presentersFactory)
+            }
         }
     }
 }

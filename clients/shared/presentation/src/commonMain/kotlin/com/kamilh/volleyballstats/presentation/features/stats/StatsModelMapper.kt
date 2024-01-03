@@ -45,6 +45,7 @@ class StatsModelMapperImpl : StatsModelMapper {
         callback: (Property<String>) -> Unit,
     ): TableContent = TableContent(
         rows = stats.mapIndexed { index, model -> model.toRow(index, properties) },
+        stickyRowItemsCount = if (properties.isEmpty()) 0 else 2,
         header = HeaderRow(
             cells = properties.mapIndexed { index, property ->
                 property.toHeaderCell(

@@ -6,7 +6,7 @@ typealias HeaderRow = TableRow<HeaderCell>
 data class TableContent(
     val rows: List<DataRow> = emptyList(),
     val header: HeaderRow? = null,
-    val stickyRowItemsCount: Int = 2,
+    val stickyRowItemsCount: Int = 0,
 ) {
     val rowCount: Int = rows.size
 
