@@ -6,15 +6,16 @@ import com.bumble.appyx.navigation.modality.BuildContext
 import com.bumble.appyx.navigation.node.Node
 import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.extensions.presenter
 
 class PlayerFiltersNode(
     buildContext: BuildContext,
     presenterMap: PresenterMap,
-    args: FiltersPresenter.Args,
+    filters: Screen.Filters,
 ) : Node(buildContext) {
 
-    private val presenter: FiltersPresenter = presenter(presenterMap, extras = args)
+    private val presenter: FiltersPresenter = presenter(presenterMap, screen = filters)
 
     @Composable
     override fun View(modifier: Modifier) {

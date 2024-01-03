@@ -6,7 +6,6 @@ import com.kamilh.volleyballstats.domain.models.StatsFilters
 import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.domain.models.TeamSnapshot
 import com.kamilh.volleyballstats.domain.models.Tour
-import com.kamilh.volleyballstats.domain.models.stats.StatsSkill
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.ColorAccent
@@ -25,6 +24,7 @@ import com.kamilh.volleyballstats.presentation.features.common.select
 import com.kamilh.volleyballstats.presentation.features.common.setNewValue
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.storage.TeamStorage
 import com.kamilh.volleyballstats.storage.TourStorage
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Inject
 
 class FiltersPresenter private constructor(
-    private val args: Args,
+    private val args: Screen.Filters,
     private val teamStorage: TeamStorage,
     private val tourStorage: TourStorage,
     private val statsFiltersStorage: StatsFiltersStorage,
@@ -219,14 +219,14 @@ class FiltersPresenter private constructor(
         private val tourStorage: TourStorage,
         private val statsFiltersStorage: StatsFiltersStorage,
         private val navigationEventSender: NavigationEventSender,
-    ) : Presenter.Factory<FiltersPresenter, Args> {
+    ) : Presenter.Factory<FiltersPresenter, Screen.Filters> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
-            extras: Args,
+            screen: Screen.Filters,
         ): FiltersPresenter = FiltersPresenter(
-            args = extras,
+            args = screen,
             teamStorage = teamStorage,
             tourStorage = tourStorage,
             statsFiltersStorage = statsFiltersStorage,
@@ -234,9 +234,4 @@ class FiltersPresenter private constructor(
             navigationEventSender = navigationEventSender,
         )
     }
-
-    data class Args(
-        val skill: StatsSkill,
-        val type: StatsType,
-    )
 }

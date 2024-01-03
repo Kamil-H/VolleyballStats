@@ -29,5 +29,5 @@ enum class BottomMenuItem(val icon: Icon, val label: String) {
     ),
 }
 
-fun List<BottomItemState>.select(id: BottomMenuItem): List<BottomItemState> =
-    map { item -> item.copy(selected = item.id == id) }
+fun List<BottomItemState>.select(tabIndex: Int): List<BottomItemState> =
+    map { item -> item.copy(selected = item.id == BottomMenuItem.entries[tabIndex]) }

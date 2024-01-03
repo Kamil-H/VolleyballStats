@@ -1,10 +1,11 @@
 package com.kamilh.volleyballstats.presentation.features.main
 
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
-import com.kamilh.volleyballstats.presentation.navigation.TabTarget
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,34 +34,29 @@ class MainPresenter private constructor(
         }
 
     private fun onMenuItemClicked(id: BottomMenuItem) {
-        val event = when (id) {
-            BottomMenuItem.Home -> NavigationEvent.HomeTabRequested
-            BottomMenuItem.Players -> NavigationEvent.PlayersTabRequested
-            BottomMenuItem.Teams -> NavigationEvent.TeamsTabRequested
+        val screen = when (id) {
+            BottomMenuItem.Home -> Screen.Home
+            BottomMenuItem.Players -> Screen.Stats(StatsType.Player)
+            BottomMenuItem.Teams -> Screen.Stats(StatsType.Team)
         }
-        navigationEventSender.send(event)
+        navigationEventSender.send(NavigationEvent.GoTo(screen))
     }
 
-    fun onTabShown(tabTarget: TabTarget) {
+    fun onTabShown(tabIndex: Int) {
         _state.update { state ->
-            val menuItem = when (tabTarget) {
-                TabTarget.Home -> BottomMenuItem.Home
-                TabTarget.PlayersStats -> BottomMenuItem.Players
-                TabTarget.TeamsStats -> BottomMenuItem.Teams
-            }
-            state.copy(bottomItems = state.bottomItems.select(menuItem))
+            state.copy(bottomItems = state.bottomItems.select(tabIndex))
         }
     }
 
     @Inject
     class Factory(
         private val navigationEventSender: NavigationEventSender,
-    ) : Presenter.Factory<MainPresenter, Unit> {
+    ) : Presenter.Factory<MainPresenter, Screen.Main> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
-            extras: Unit,
+            screen: Screen.Main,
         ): MainPresenter = MainPresenter(
             navigationEventSender = navigationEventSender,
         )

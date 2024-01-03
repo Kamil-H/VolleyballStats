@@ -21,8 +21,11 @@ class Router: ObservableObject {
     
     @ViewBuilder func view(for route: Route) -> some View {
         switch onEnum(of: route.target) {
-        case .playerFilters(let filters):
-            FiltersScreen(filtersPresenter: presentersFactory.createFiltersPresenter(args: FiltersPresenter.Args(skill: filters.skill, type: filters.type)))
+        case .filters(let filters):
+            FiltersScreen(
+                presentersFactory: presentersFactory,
+                screen: ScreenFilters(skill: filters.skill, type: filters.type)
+            )
         case .root:
             Text("error!")
         }
@@ -44,9 +47,9 @@ class Router: ObservableObject {
 // Wrapper class to implement Hashable protocol as Kotlin's sealed interface cannot implement a protocol in the Swift code
 struct Route : Hashable {
     
-    let target: BackStackTarget
+    let target: ScreenFull
     
-    init(target: BackStackTarget) {
+    init(target: ScreenFull) {
         self.target = target
     }
     

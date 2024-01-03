@@ -6,6 +6,7 @@ import com.bumble.appyx.navigation.modality.BuildContext
 import com.bumble.appyx.navigation.node.Node
 import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.features.home.HomePresenter
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.extensions.presenter
 
 class HomeNode(
@@ -13,7 +14,7 @@ class HomeNode(
     presenterMap: PresenterMap,
 ) : Node(buildContext) {
 
-    private val presenter: HomePresenter = presenter(presenterMap)
+    private val presenter: HomePresenter = presenter(presenterMap, screen = Screen.Home)
 
     @Composable
     override fun View(modifier: Modifier) {

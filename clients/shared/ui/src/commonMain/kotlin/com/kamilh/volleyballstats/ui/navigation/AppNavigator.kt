@@ -1,11 +1,10 @@
 package com.kamilh.volleyballstats.ui.navigation
 
-interface AppNavigator<TAB: Any, BACKSTACK: Any> {
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 
-    fun switchTab(target: TAB)
+interface AppNavigator {
 
-    fun push(target: BACKSTACK)
+    fun goTo(screen: Screen)
 
     fun pop()
 }
-

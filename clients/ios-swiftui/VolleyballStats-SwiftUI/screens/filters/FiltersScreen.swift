@@ -14,9 +14,9 @@ struct FiltersScreen: View {
     private let scope: Scope
     private let filtersPresenter: FiltersPresenter
     
-    init(presentersFactory: PresentersFactory, args: FiltersPresenter.Args) {
+    init(presentersFactory: PresentersFactory, screen: ScreenFilters) {
         self.scope = presentersFactory.createScope()
-        self.filtersPresenter = presentersFactory.createFiltersPresenter(scope: scope, args: args)
+        self.filtersPresenter = presentersFactory.createFiltersPresenter(scope: scope, screen: screen)
     }
     
     var body: some View {

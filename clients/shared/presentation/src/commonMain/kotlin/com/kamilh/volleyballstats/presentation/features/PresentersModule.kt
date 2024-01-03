@@ -4,6 +4,7 @@ import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
 import com.kamilh.volleyballstats.presentation.features.home.HomePresenter
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
 import com.kamilh.volleyballstats.presentation.features.stats.StatsPresenter
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import me.tatarka.inject.annotations.IntoMap
 import me.tatarka.inject.annotations.Provides
@@ -40,19 +41,19 @@ interface PresentersModule {
         factory.toPresenterMapEntry()
 }
 
-inline fun <reified T : Presenter, reified E : Any> create(
+inline fun <reified T : Presenter, reified E : Screen> create(
     presenterMap: PresenterMap,
     coroutineScope: CoroutineScope,
     savableMap: SavableMap,
-    extras: E,
+    screen: E,
 ): T {
     val key = presenterMap.keys.filterIsInstance<KClass<Presenter>>().find {
         it.simpleName == T::class.simpleName
     } ?: error("Factory for a given type ${T::class} not found")
-    val factory = presenterMap[key] as? Presenter.Factory<T, E> ?: error("Wrong extras type: ${E::class}")
+    val factory = presenterMap[key] as? Presenter.Factory<T, E> ?: error("Wrong screen type: ${E::class}")
     return factory.create(
         coroutineScope = coroutineScope,
         savableMap = savableMap,
-        extras = extras,
+        screen = screen,
     )
 }

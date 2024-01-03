@@ -9,12 +9,27 @@ import com.kamilh.volleyballstats.interactors.Synchronizer
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
 import com.kamilh.volleyballstats.presentation.features.TopBarState
-import com.kamilh.volleyballstats.presentation.features.common.*
+import com.kamilh.volleyballstats.presentation.features.common.GroupedMatchItem
+import com.kamilh.volleyballstats.presentation.features.common.Icon
+import com.kamilh.volleyballstats.presentation.features.common.MatchItem
+import com.kamilh.volleyballstats.presentation.features.common.TextPair
+import com.kamilh.volleyballstats.presentation.features.common.toLoadingState
+import com.kamilh.volleyballstats.presentation.features.common.toMessage
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.storage.TourStorage
 import com.kamilh.volleyballstats.storage.match.MatchSnapshotStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.update
 import me.tatarka.inject.annotations.Inject
 
 class HomePresenter private constructor(
@@ -143,12 +158,12 @@ class HomePresenter private constructor(
         private val synchronizeStateReceiver: SynchronizeStateReceiver,
         private val synchronizer: Synchronizer,
         private val tourStorage: TourStorage,
-    ) : Presenter.Factory<HomePresenter, Unit> {
+    ) : Presenter.Factory<HomePresenter, Screen.Home> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
-            extras: Unit,
+            screen: Screen.Home,
         ): HomePresenter = HomePresenter(
             coroutineScope = coroutineScope,
             matchSnapshotStorage = matchSnapshotStorage,

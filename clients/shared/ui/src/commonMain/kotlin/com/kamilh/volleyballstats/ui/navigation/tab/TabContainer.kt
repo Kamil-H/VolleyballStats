@@ -7,65 +7,63 @@ import com.bumble.appyx.components.spotlight.Spotlight
 import com.bumble.appyx.components.spotlight.SpotlightModel
 import com.bumble.appyx.components.spotlight.ui.fader.SpotlightFader
 import com.bumble.appyx.navigation.modality.BuildContext
+import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.features.PresenterMap
-import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventReceiver
-import com.kamilh.volleyballstats.presentation.navigation.TabTarget
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.navigation.AppAppyxNavigator
-import com.kamilh.volleyballstats.ui.navigation.AppyxBackStackNavigator
 import com.kamilh.volleyballstats.ui.navigation.NavigationEventResolver
 import com.kamilh.volleyballstats.ui.navigation.node.TabContainerNode
+import com.kamilh.volleyballstats.ui.navigation.node.TabTarget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-@Suppress("FunctionNaming", "LongMethod")
+@Suppress("FunctionNaming")
 fun TabContainer(
     coroutineScope: CoroutineScope,
     buildContext: BuildContext,
     presenterMap: PresenterMap,
     navigationEventReceiver: NavigationEventReceiver,
-    onTabSelected: (TabTarget) -> Unit = {},
+    onTabSelected: (Int) -> Unit = {},
 ): TabContainerNode {
-    val backStack: () -> BackStack<BackStackTarget> = {
-        BackStack(
-            model = BackStackModel(
-                initialTarget = BackStackTarget.Root,
-                savedStateMap = buildContext.savedStateMap,
-            ),
-            visualisation = ::BackStackParallax,
-            gestureFactory = { BackStackParallax.Gestures(it) },
-        )
+    val tabTargets = listOf(Screen.Home, Screen.Stats(StatsType.Player), Screen.Stats(StatsType.Team)).map {
+        it.toTabTarget(buildContext)
     }
-    val tabTargets = TabTarget.entries
-    val destinations = tabTargets.map { it to backStack() }
     val spotlight = Spotlight(
         model = SpotlightModel(
-            items = destinations.map { it.first },
+            items = tabTargets,
             savedStateMap = buildContext.savedStateMap,
         ),
         visualisation = ::SpotlightFader
     )
-    val appNavigator = AppAppyxNavigator(
-        targets = destinations.map { (tabTarget, backStack) ->
-            TabDestination(
-                tabTarget = tabTarget,
-                backStackNavigator = AppyxBackStackNavigator(backStack)
-            )
-        },
-        tabNavigator = AppyxTabNavigator(spotlight, tabTargets.toList())
-    )
+    val appNavigator = AppAppyxNavigator(spotlight = spotlight)
     val resolver = NavigationEventResolver(appNavigator)
     coroutineScope.collectSafely(navigationEventReceiver.receive(), resolver::resolve)
-    coroutineScope.collectSafely(spotlight.activeIndex) { onTabSelected(tabTargets[it.toInt()]) }
+    coroutineScope.collectSafely(spotlight.activeIndex) { onTabSelected(it.toInt()) }
     return TabContainerNode(
         buildContext = buildContext,
         spotlight = spotlight,
-        tabDestinations = destinations,
         presenterMap = presenterMap,
     )
 }
+
+private fun Screen.Tab.toTabTarget(buildContext: BuildContext): TabTarget =
+    TabTarget(
+        tabScreen = this,
+        backStack = backStack(buildContext),
+    )
+
+private fun backStack(buildContext: BuildContext): BackStack<Screen.Full> =
+    BackStack(
+        model = BackStackModel(
+            initialTarget = Screen.Full.Root,
+            savedStateMap = buildContext.savedStateMap,
+        ),
+        visualisation = ::BackStackParallax,
+        gestureFactory = { BackStackParallax.Gestures(it) },
+    )
 
 private fun <T> CoroutineScope.collectSafely(flow: Flow<T>, collector: (T) -> Unit) {
     flow.onEach(collector).launchIn(this)

@@ -1,11 +1,9 @@
 package com.kamilh.volleyballstats.ui.navigation
 
-import com.kamilh.volleyballstats.presentation.navigation.BackStackTarget
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
-import com.kamilh.volleyballstats.presentation.navigation.TabTarget
 
 class NavigationEventResolver(
-    private val appNavigator: AppNavigator<TabTarget, BackStackTarget>
+    private val appNavigator: AppNavigator
 ) {
 
     fun resolve(navigationEvent: NavigationEvent) {
@@ -13,12 +11,9 @@ class NavigationEventResolver(
     }
 }
 
-private fun AppNavigator<TabTarget, BackStackTarget>.resolveInternal(navigationEvent: NavigationEvent) {
+private fun AppNavigator.resolveInternal(navigationEvent: NavigationEvent) {
     when (navigationEvent) {
         NavigationEvent.Close -> pop()
-        NavigationEvent.HomeTabRequested -> switchTab(TabTarget.Home)
-        is NavigationEvent.PlayerFiltersRequested -> push(BackStackTarget.PlayerFilters(navigationEvent.skill, navigationEvent.type))
-        NavigationEvent.PlayersTabRequested -> switchTab(TabTarget.PlayersStats)
-        NavigationEvent.TeamsTabRequested -> switchTab(TabTarget.TeamsStats)
+        is NavigationEvent.GoTo -> goTo(navigationEvent.screen)
     }
 }

@@ -9,45 +9,33 @@ import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.features.SavableMap
 import com.kamilh.volleyballstats.presentation.features.create
 import com.kamilh.volleyballstats.presentation.features.savableMapOf
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 
 @Composable
-inline fun <reified T : Presenter> PresenterMap.rememberPresenter(): T =
-    rememberPresenter(extras = Unit)
-
-@Composable
-inline fun <reified T : Presenter, reified E : Any> PresenterMap.rememberPresenter(extras: E): T {
+inline fun <reified T : Presenter, reified E : Screen> PresenterMap.rememberPresenter(screen: E): T {
     val compositionScope = rememberCoroutineScope()
     val coroutineScope = remember(key1 = compositionScope) {
         CoroutineScope(
             compositionScope.coroutineContext + SupervisorJob(compositionScope.coroutineContext[Job])
         )
     }
-    return remember(key1 = extras) {
+    return remember(key1 = screen) {
         create(
             presenterMap = this,
             coroutineScope = coroutineScope,
             savableMap = savableMapOf(),
-            extras = extras,
+            screen = screen,
         )
     }
 }
 
-inline fun <reified T : Presenter> Node.presenter(
+inline fun <reified T : Presenter, reified E : Screen> Node.presenter(
     presenterMap: PresenterMap,
     savableMap: SavableMap = savableMapOf(),
-): T = presenter(
-    presenterMap = presenterMap,
-    savableMap = savableMap,
-    extras = Unit,
-)
-
-inline fun <reified T : Presenter, reified E : Any> Node.presenter(
-    presenterMap: PresenterMap,
-    savableMap: SavableMap = savableMapOf(),
-    extras: E,
+    screen: E,
 ): T {
     val compositionScope = lifecycleScope
     val coroutineScope = CoroutineScope(
@@ -57,7 +45,7 @@ inline fun <reified T : Presenter, reified E : Any> Node.presenter(
         presenterMap = presenterMap,
         coroutineScope = coroutineScope,
         savableMap = savableMap,
-        extras = extras,
+        screen = screen,
     )
 }
 

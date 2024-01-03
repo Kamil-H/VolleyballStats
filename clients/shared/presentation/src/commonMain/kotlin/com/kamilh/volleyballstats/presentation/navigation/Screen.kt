@@ -5,19 +5,27 @@ import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.presentation.parcelable.Parcelable
 import com.kamilh.volleyballstats.presentation.parcelable.Parcelize
 
-@Parcelize
-enum class TabTarget : Parcelable {
-    Home, PlayersStats, TeamsStats
-}
+sealed interface Screen : Parcelable {
 
-sealed interface BackStackTarget : Parcelable {
+    sealed interface Full : Screen {
+        @Parcelize
+        data object Root : Full
+    }
+
+    sealed interface Tab : Screen
 
     @Parcelize
-    data object Root : BackStackTarget
+    data object Home : Tab
 
     @Parcelize
-    data class PlayerFilters(
+    data class Stats(val type: StatsType) : Tab
+
+    @Parcelize
+    data class Filters(
         val skill: StatsSkill,
         val type: StatsType,
-    ) : BackStackTarget
+    ) : Full
+
+    @Parcelize
+    data object Main : Screen
 }

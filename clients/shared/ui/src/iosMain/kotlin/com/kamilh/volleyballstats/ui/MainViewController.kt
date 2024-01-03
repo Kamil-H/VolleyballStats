@@ -7,6 +7,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.bumble.appyx.navigation.integration.IosNodeHost
 import com.bumble.appyx.navigation.integration.MainIntegrationPoint
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.components.App
 import com.kamilh.volleyballstats.ui.di.AppModule
 import com.kamilh.volleyballstats.ui.extensions.rememberPresenter
@@ -24,7 +25,7 @@ fun MainViewController(): UIViewController {
             appModule.appInitializer.initialize()
         }
 
-        val mainPresenter: MainPresenter = appModule.presenterMap.rememberPresenter()
+        val mainPresenter: MainPresenter = appModule.presenterMap.rememberPresenter(screen = Screen.Main)
         App(mainPresenter = mainPresenter) {
             IosNodeHost(
                 onBackPressedEvents = emptyFlow(),

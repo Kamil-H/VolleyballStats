@@ -57,9 +57,9 @@ private struct Tab: View {
         case .home:
             HomeScreen(presentersFactory: presentersFactory)
         case .players:
-            StatsScreen(presentersFactory: presentersFactory, statsType: .player)
+            StatsScreen(presentersFactory: presentersFactory, screen: ScreenStats(type: .player))
         case .teams:
-            StatsScreen(presentersFactory: presentersFactory, statsType: .team)
+            StatsScreen(presentersFactory: presentersFactory, screen: ScreenStats(type: .team))
         }
     }
 }

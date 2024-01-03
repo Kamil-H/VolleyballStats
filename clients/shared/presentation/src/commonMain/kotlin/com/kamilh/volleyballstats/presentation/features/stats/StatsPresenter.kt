@@ -23,6 +23,7 @@ import com.kamilh.volleyballstats.presentation.features.stats.properties.ServePr
 import com.kamilh.volleyballstats.presentation.features.stats.properties.SetProperty
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEvent
 import com.kamilh.volleyballstats.presentation.navigation.NavigationEventSender
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.storage.stats.StatsModel
 import com.kamilh.volleyballstats.storage.stats.StatsRequest
 import kotlinx.coroutines.CoroutineScope
@@ -133,7 +134,7 @@ class StatsPresenter private constructor(
     }
 
     private fun onFabButtonClicked() {
-        navigationEventSender.send(NavigationEvent.PlayerFiltersRequested(chosenSkill.value, statsType))
+        navigationEventSender.send(NavigationEvent.GoTo(Screen.Filters(chosenSkill.value, statsType)))
     }
 
     @Inject
@@ -143,14 +144,14 @@ class StatsPresenter private constructor(
         private val statsFiltersStorage: StatsFiltersStorage,
         private val navigationEventSender: NavigationEventSender,
         private val synchronizeStateReceiver: SynchronizeStateReceiver,
-    ) : Presenter.Factory<StatsPresenter, StatsType> {
+    ) : Presenter.Factory<StatsPresenter, Screen.Stats> {
 
         override fun create(
             coroutineScope: CoroutineScope,
             savableMap: SavableMap,
-            extras: StatsType,
+            screen: Screen.Stats,
         ): StatsPresenter = StatsPresenter(
-            statsType = extras,
+            statsType = screen.type,
             statsModelMapper = statsModelMapper,
             statsFlowFactory = statsFlowFactory,
             coroutineScope = coroutineScope,

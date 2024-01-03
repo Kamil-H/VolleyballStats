@@ -36,11 +36,14 @@ struct RouterView<Content: View>: View {
                 switch onEnum(of: navigationEvent) {
                 case .close(_):
                     router.navigateBack()
-                case .playerFiltersRequested(let args):
-                    router.navigateTo(Route(target: BackStackTargetPlayerFilters(skill: args.skill, type: args.type)))
-                case .homeTabRequested(_), .playersTabRequested(_), .teamsTabRequested(_):
-                    // do nothing - it's handled by MainView
-                    return
+                case .goTo(let goTo):
+                    switch onEnum(of: goTo.screen) {
+                    case .full(let fullScreen):
+                        router.navigateTo(Route(target: fullScreen))
+                    case .tab(_), .main(_):
+                        // do nothing - it's handled by MainView
+                        return
+                    }
                 }
             }
         }

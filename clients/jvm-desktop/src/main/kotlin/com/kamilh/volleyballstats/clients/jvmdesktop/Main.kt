@@ -15,6 +15,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.bumble.appyx.navigation.integration.DesktopNodeHost
 import com.kamilh.volleyballstats.clients.jvmdesktop.di.AppModule
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.components.App
 import com.kamilh.volleyballstats.ui.extensions.rememberPresenter
 import com.kamilh.volleyballstats.ui.navigation.tab.TabContainer
@@ -34,7 +35,7 @@ fun main() = application {
     ) {
         val appModule = remember { AppModule.instance }
         val scope = rememberCoroutineScope()
-        val mainPresenter: MainPresenter = appModule.presenterMap.rememberPresenter()
+        val mainPresenter: MainPresenter = appModule.presenterMap.rememberPresenter(screen = Screen.Main)
         App(mainPresenter = mainPresenter) {
             DesktopNodeHost(
                 windowState = windowState,

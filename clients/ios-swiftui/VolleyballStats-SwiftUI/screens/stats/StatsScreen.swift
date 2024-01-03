@@ -14,9 +14,9 @@ struct StatsScreen: View {
     private let scope: Scope
     private let statsPresenter: StatsPresenter
     
-    init(presentersFactory: PresentersFactory, statsType: DomainStatsType) {
+    init(presentersFactory: PresentersFactory, screen: ScreenStats) {
         self.scope = presentersFactory.createScope()
-        self.statsPresenter = presentersFactory.createStatsPresenter(scope: scope, statsType: statsType)
+        self.statsPresenter = presentersFactory.createStatsPresenter(scope: scope, screen: screen)
     }
     
     var body: some View {

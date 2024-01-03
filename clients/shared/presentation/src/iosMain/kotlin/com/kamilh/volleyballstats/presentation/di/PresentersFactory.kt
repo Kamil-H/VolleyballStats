@@ -1,6 +1,5 @@
 package com.kamilh.volleyballstats.presentation.di
 
-import com.kamilh.volleyballstats.domain.models.stats.StatsType
 import com.kamilh.volleyballstats.domain.utils.AppDispatchers
 import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.features.create
@@ -9,6 +8,7 @@ import com.kamilh.volleyballstats.presentation.features.home.HomePresenter
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
 import com.kamilh.volleyballstats.presentation.features.savableMapOf
 import com.kamilh.volleyballstats.presentation.features.stats.StatsPresenter
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.presentation.utils.Scope
 
 class PresentersFactory(
@@ -22,27 +22,27 @@ class PresentersFactory(
         presenterMap = presenterMap,
         coroutineScope = scope.coroutineScope,
         savableMap = savableMapOf(),
-        extras = Unit,
+        screen = Screen.Main,
     )
 
     fun createHomePresenter(scope: Scope): HomePresenter = create(
         presenterMap = presenterMap,
         coroutineScope = scope.coroutineScope,
         savableMap = savableMapOf(),
-        extras = Unit,
+        screen = Screen.Home,
     )
 
-    fun createStatsPresenter(scope: Scope, statsType: StatsType): StatsPresenter = create(
+    fun createStatsPresenter(scope: Scope, screen: Screen.Stats): StatsPresenter = create(
         presenterMap = presenterMap,
         coroutineScope = scope.coroutineScope,
         savableMap = savableMapOf(),
-        extras = statsType,
+        screen = screen,
     )
 
-    fun createFiltersPresenter(scope: Scope, args: FiltersPresenter.Args): FiltersPresenter = create(
+    fun createFiltersPresenter(scope: Scope, screen: Screen.Filters): FiltersPresenter = create(
         presenterMap = presenterMap,
         coroutineScope = scope.coroutineScope,
         savableMap = savableMapOf(),
-        extras = args,
+        screen = screen,
     )
 }

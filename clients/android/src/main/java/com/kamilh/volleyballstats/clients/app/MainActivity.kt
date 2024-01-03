@@ -10,6 +10,7 @@ import com.bumble.appyx.navigation.integration.NodeHost
 import com.bumble.appyx.navigation.platform.AndroidLifecycle
 import com.kamilh.volleyballstats.clients.app.di.AppModule
 import com.kamilh.volleyballstats.presentation.features.main.MainPresenter
+import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.components.App
 import com.kamilh.volleyballstats.ui.extensions.rememberPresenter
 import com.kamilh.volleyballstats.ui.navigation.tab.TabContainer
@@ -25,7 +26,7 @@ class MainActivity : NodeComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            val mainPresenter: MainPresenter = appModule.presenterMap.rememberPresenter()
+            val mainPresenter: MainPresenter = appModule.presenterMap.rememberPresenter(screen = Screen.Main)
             App(mainPresenter = mainPresenter) {
                 NodeHost(
                     lifecycle = AndroidLifecycle(LocalLifecycleOwner.current.lifecycle),
