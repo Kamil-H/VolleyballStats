@@ -12,16 +12,20 @@ import shared
 struct StatsScreen: View {
     
     private let scope: Scope
-    private let statsPresenter: StatsPresenter
+    private let presenter: StatsPresenter
     
     init(presentersFactory: PresentersFactory, screen: ScreenStats) {
         self.scope = presentersFactory.createScope()
-        self.statsPresenter = presentersFactory.createStatsPresenter(scope: scope, screen: screen)
+        self.presenter = presentersFactory.createStatsPresenter(scope: scope, screen: screen)
     }
     
     var body: some View {
-        Button("BUTTON") {
-            print("BUTTON")
+        Screen(
+            stateFlow: presenter.state,
+            scope: scope,
+            onFabButtonClicked: { presenter.state.value.onFabButtonClicked() }
+        ) { state in
+            Spacer()
         }
     }
 }

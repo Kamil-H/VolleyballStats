@@ -11,14 +11,22 @@ import shared
 struct HomeScreen: View {
     
     private let scope: Scope
-    private let homePresenter: HomePresenter
+    private let presenter: HomePresenter
     
     init(presentersFactory: PresentersFactory) {
         self.scope = presentersFactory.createScope()
-        self.homePresenter = presentersFactory.createHomePresenter(scope: scope)
+        self.presenter = presentersFactory.createHomePresenter(scope: scope)
     }
     
     var body: some View {
-        Color.red
+        Screen(
+            stateFlow: presenter.state,
+            scope: scope,
+            onActionButtonClicked: { presenter.onRetry() },
+            onMessageButtonClicked: { presenter.onRetry() },
+            onMessageDismissed: { presenter.onMessageDismissed() }
+        ) { state in
+            MatchList(groupedMatchItems: state.matches)
+        }
     }
 }

@@ -12,14 +12,19 @@ import shared
 struct FiltersScreen: View {
     
     private let scope: Scope
-    private let filtersPresenter: FiltersPresenter
+    private let presenter: FiltersPresenter
     
     init(presentersFactory: PresentersFactory, screen: ScreenFilters) {
         self.scope = presentersFactory.createScope()
-        self.filtersPresenter = presentersFactory.createFiltersPresenter(scope: scope, screen: screen)
+        self.presenter = presentersFactory.createFiltersPresenter(scope: scope, screen: screen)
     }
     
     var body: some View {
-        Color.gray
+        Screen(
+            stateFlow: presenter.state,
+            scope: scope
+        ) { state in
+            Spacer()
+        }
     }
 }

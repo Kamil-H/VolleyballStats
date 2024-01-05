@@ -32,7 +32,7 @@ struct VolleyballStats_SwiftUIApp: App {
                 navigationEventReceiver: appModule.navigationEventReceiver
             ) {
                 MainView(presentersFactory: appModule.presentersFactory)
-            }
+            }.accentColor(Color.primary)
         }
     }
 }

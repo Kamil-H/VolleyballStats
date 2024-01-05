@@ -1,19 +1,16 @@
 package com.kamilh.volleyballstats.ui.theme
 
 import androidx.compose.ui.unit.dp
+import com.kamilh.volleyballstats.presentation.DimensValues
 
 object Dimens {
-    private val ExtraSmall = 4.dp
-    private val Small = 8.dp
-    private val Medium = 16.dp
+    val MarginExtraSmall = DimensValues.MarginExtraSmall.dp
+    val MarginSmall = DimensValues.MarginSmall.dp
+    val MarginMedium = DimensValues.MarginMedium.dp
+    val MarginLarge = DimensValues.MarginLarge.dp
+    val MarginExtraLarge = DimensValues.MarginExtraLarge.dp
 
-    val MarginExtraSmall = ExtraSmall
-    val MarginSmall = Small
-    val MarginMedium = Medium
-    val MarginLarge = 24.dp
-    val MarginExtraLarge = 32.dp
-
-    val CornerExtraSmall = ExtraSmall
-    val CornerSmall = Small
-    val CornerMedium = Medium
+    val CornerExtraSmall = DimensValues.CornerExtraSmall.dp
+    val CornerSmall = DimensValues.CornerSmall.dp
+    val CornerMedium = DimensValues.CornerMedium.dp
 }
