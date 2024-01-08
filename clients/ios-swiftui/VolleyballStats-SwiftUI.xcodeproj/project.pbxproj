@@ -18,6 +18,7 @@
 		80644C3B2B47183700BC17C0 /* MatchList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80644C3A2B47183700BC17C0 /* MatchList.swift */; };
 		80644C3D2B47414700BC17C0 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80644C3C2B47414700BC17C0 /* Color.swift */; };
 		80644C3F2B4751CB00BC17C0 /* Dimensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80644C3E2B4751CB00BC17C0 /* Dimensions.swift */; };
+		80644C422B489C9D00BC17C0 /* SimpleTable in Frameworks */ = {isa = PBXBuildFile; productRef = 80644C412B489C9D00BC17C0 /* SimpleTable */; };
 		807B34152B34CEA50095F818 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34142B34CEA50095F818 /* HomeScreen.swift */; };
 		807B34212B35A9D90095F818 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34202B35A9D90095F818 /* MainViewModel.swift */; };
 		807B34242B35AF5B0095F818 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34232B35AF5B0095F818 /* Icon.swift */; };
@@ -52,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80644C422B489C9D00BC17C0 /* SimpleTable in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +181,9 @@
 			dependencies = (
 			);
 			name = "VolleyballStats-SwiftUI";
+			packageProductDependencies = (
+				80644C412B489C9D00BC17C0 /* SimpleTable */,
+			);
 			productName = "VolleyballStats-SwiftUI";
 			productReference = 803330E12B32301F002EA512 /* VolleyballStats-SwiftUI.app */;
 			productType = "com.apple.product-type.application";
@@ -207,6 +212,9 @@
 				Base,
 			);
 			mainGroup = 803330D82B32301F002EA512;
+			packageReferences = (
+				80644C402B489C9D00BC17C0 /* XCRemoteSwiftPackageReference "swiftui-simple-table" */,
+			);
 			productRefGroup = 803330E22B32301F002EA512 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -489,6 +497,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		80644C402B489C9D00BC17C0 /* XCRemoteSwiftPackageReference "swiftui-simple-table" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/darrarski/swiftui-simple-table";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		80644C412B489C9D00BC17C0 /* SimpleTable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80644C402B489C9D00BC17C0 /* XCRemoteSwiftPackageReference "swiftui-simple-table" */;
+			productName = SimpleTable;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 803330D92B32301F002EA512 /* Project object */;
 }

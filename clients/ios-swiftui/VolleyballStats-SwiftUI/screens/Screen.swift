@@ -90,21 +90,25 @@ private struct ScreenView<Content: View>: View {
             }
             .navigationTitle(state.topBarState.title ?? "")
             .navigationBarTitleDisplayMode(state.topBarState.showToolbar ? .automatic : .inline)
+            .toolbar(state.topBarState.showToolbar ? .visible : .hidden)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    if let actionButtonIcon = state.actionButton.icon, state.actionButton.show {
-                        Button(action: { onFabButtonClicked() }) {
-                            Label("", systemImage: getIconName(icon: actionButtonIcon))
-                        }
-                    }
                     if let actionButtonIcon = state.topBarState.actionButtonIcon {
                         Button(action: { onActionButtonClicked() }) {
                             Label("", systemImage: getIconName(icon: actionButtonIcon))
                         }
                     }
                 }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    if let actionButtonIcon = state.actionButton.icon, state.actionButton.show {
+                        Spacer()
+                        Button(action: { onFabButtonClicked() }) {
+                            Label("", systemImage: getIconName(icon: actionButtonIcon))
+                        }
+                    }
+                }
             }
-        }
+        }.accentColor(color(for: state.colorAccent))
     }
 }
 
@@ -132,6 +136,17 @@ private struct ScreenContent<Content: View>: View {
                 onButtonClicked: onMessageButtonClicked
             )
         }
+    }
+}
+
+private func color(for colorAccent: ColorAccent) -> Color {
+    switch colorAccent {
+    case .primary:
+        return Color.primary
+    case .tertiary:
+        return Color.tertiary
+    case .default:
+        return Color.primary
     }
 }
 

@@ -1,7 +1,7 @@
 package com.kamilh.volleyballstats.ui.theme
 
 import androidx.compose.ui.unit.dp
-import com.kamilh.volleyballstats.presentation.DimensValues
+import com.kamilh.volleyballstats.presentation.resources.DimensValues
 
 object Dimens {
     val MarginExtraSmall = DimensValues.MarginExtraSmall.dp

@@ -27,6 +27,7 @@ fun StatsScreen(
     val state by presenter.state.collectAsState()
     StatsScreen(
         state = state,
+        onFabButtonClicked = presenter::onFabButtonClicked,
         modifier = modifier,
     )
 }
@@ -34,6 +35,7 @@ fun StatsScreen(
 @Composable
 private fun StatsScreen(
     state: StatsState,
+    onFabButtonClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var optionViewHeight by remember { mutableStateOf(0) }
@@ -44,7 +46,7 @@ private fun StatsScreen(
         state = state,
         fabPadding = optionViewHeight.toDp(),
         listState = listState,
-        onFabButtonClicked = state.onFabButtonClicked,
+        onFabButtonClicked = onFabButtonClicked,
     ) {
         Column {
             Table(

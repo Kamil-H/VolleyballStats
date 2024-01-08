@@ -42,7 +42,7 @@ struct RouterView<Content: View>: View {
                         router.navigateTo(Route(target: fullScreen))
                     case .tab(_), .main(_):
                         // do nothing - it's handled by MainView
-                        return
+                        break
                     }
                 }
             }

@@ -58,7 +58,6 @@ class StatsPresenter private constructor(
                     selected = skill == chosenSkill.value,
                 )
             }, onSelected = ::onSkillClicked),
-            onFabButtonClicked = ::onFabButtonClicked,
             topBarState = TopBarState(background = TopBarState.Color.Primary),
             colorAccent = when (statsType) {
                 StatsType.Player -> ColorAccent.Primary
@@ -133,7 +132,7 @@ class StatsPresenter private constructor(
         chosenSkill.value = id
     }
 
-    private fun onFabButtonClicked() {
+    fun onFabButtonClicked() {
         navigationEventSender.send(NavigationEvent.GoTo(Screen.Filters(chosenSkill.value, statsType)))
     }
 

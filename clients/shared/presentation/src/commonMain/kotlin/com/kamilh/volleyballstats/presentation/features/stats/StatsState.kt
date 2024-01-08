@@ -14,7 +14,6 @@ import com.kamilh.volleyballstats.presentation.features.common.TableContent
 data class StatsState(
     val tableContent: TableContent = TableContent(),
     val selectSkillState: SelectOptionState<StatsSkill>,
-    val onFabButtonClicked: () -> Unit,
     override val loadingState: LoadingState = LoadingState(),
     override val topBarState: TopBarState,
     override val actionButton: ActionButton = ActionButton(icon = Icon.Tune),

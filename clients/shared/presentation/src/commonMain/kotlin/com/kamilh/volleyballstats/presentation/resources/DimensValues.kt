@@ -1,4 +1,4 @@
-package com.kamilh.volleyballstats.presentation
+package com.kamilh.volleyballstats.presentation.resources
 
 object DimensValues {
     private const val ExtraSmall = 4

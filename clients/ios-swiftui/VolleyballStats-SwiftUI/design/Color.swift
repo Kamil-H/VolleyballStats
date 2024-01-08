@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import shared
 
 extension Color {
-    init(
+    private init(
         light lightModeColor: @escaping @autoclosure () -> Color,
         dark darkModeColor: @escaping @autoclosure () -> Color
     ) {
@@ -20,7 +21,7 @@ extension Color {
         )
     }
     
-    init(hex: UInt, alpha: Double = 1) {
+    private init(hex: Int64, alpha: Double = 1) {
         self.init(
             .sRGB,
             red: Double((hex >> 16) & 0xff) / 255,
@@ -33,7 +34,7 @@ extension Color {
     static var surface: Self {
         Self(
             light: Color(white: 0.95),
-            dark: Color(hex: 0xFF2A3038)
+            dark: Color(hex: ColorValues.shared.Grey)
         )
     }
     
@@ -46,21 +47,42 @@ extension Color {
     
     static var primary: Self {
         Self(
-            light: Color(hex: 0xFF96490B),
-            dark: Color(hex: 0xFFFFB68A)
+            light: Color(hex: ColorValues.shared.LightPrimary),
+            dark: Color(hex: ColorValues.shared.DarkPrimary)
+        )
+    }
+    
+    static var primaryContainer: Self {
+        Self(
+            light: Color(hex: ColorValues.shared.LightPrimaryContainer),
+            dark: Color(hex: ColorValues.shared.DarkPrimaryContainer)
         )
     }
     
     static var tertiary: Self {
         Self(
-            light: Color(hex: 0xFF006878),
-            dark: Color(hex: 0xFF53D7F1)
+            light: Color(hex: ColorValues.shared.LightTertiary),
+            dark: Color(hex: ColorValues.shared.DarkTertiary)
+        )
+    }
+    
+    static var tertiaryContainer: Self {
+        Self(
+            light: Color(hex: ColorValues.shared.LightTertiaryContainer),
+            dark: Color(hex: ColorValues.shared.DarkTertiaryContainer)
+        )
+    }
+    
+    static var onBackground: Self {
+        Self(
+            light: Color(hex: ColorValues.shared.LightOnBackground),
+            dark: Color.white
         )
     }
 }
 
 extension UIColor {
-    convenience init(
+    fileprivate convenience init(
         light lightModeColor: @escaping @autoclosure () -> UIColor,
         dark darkModeColor: @escaping @autoclosure () -> UIColor
      ) {
