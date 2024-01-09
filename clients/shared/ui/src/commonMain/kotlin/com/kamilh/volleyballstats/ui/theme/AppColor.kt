@@ -28,7 +28,7 @@ object AppColor {
     val LightOnErrorContainer = Color(0xFF410002)
     val LightBackground = Color(0xFFFFFBFF)
     val LightOnBackground = Color(ColorValues.LightOnBackground)
-    val LightSurface = Color(0xFFFFFBFF)
+    val LightSurface = Color(0x0D000000)
     val LightOnSurface = Color(0xFF311300)
     val LightSurfaceVariant = Color(0xFFF4DED3)
     val LightOnSurfaceVariant = Color(0xFF52443C)

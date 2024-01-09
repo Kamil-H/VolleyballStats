@@ -8,7 +8,11 @@ import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.features.filter.FiltersPresenter
 import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.extensions.presenter
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 class PlayerFiltersNode(
     buildContext: BuildContext,
     presenterMap: PresenterMap,

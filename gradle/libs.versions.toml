@@ -17,7 +17,7 @@ kotlinInject = "0.5.1"
 turbine = "0.8.0"
 sqliteDriver = "3.44.1.0"
 jsoup = "1.13.1"
-dateTime = "0.7.0-SNAPSHOT" # remove url from RepositoryHandler.kt after updating this to newer version
+dateTime = "0.7.0"
 jUnit5 = "5.8.2"
 shadow = "7.1.2"
 kover = "0.5.1"
@@ -33,7 +33,7 @@ lifecycleRuntime = "2.6.2"
 coreLibraryDesugaring = "2.0.4"
 detektComposeRules = "0.0.22"
 appyx = "2.0.0-alpha09"
-coil = "3.0.0-SNAPSHOT"
+coil = "3.0.0-alpha01"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }

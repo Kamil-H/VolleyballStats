@@ -32,7 +32,7 @@ inline fun <reified T : Presenter, reified E : Screen> PresenterMap.rememberPres
     }
 }
 
-inline fun <reified T : Presenter, reified E : Screen> Node.presenter(
+internal inline fun <reified T : Presenter, reified E : Screen> Node.presenter(
     presenterMap: PresenterMap,
     savableMap: SavableMap = savableMapOf(),
     screen: E,

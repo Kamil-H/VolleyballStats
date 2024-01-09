@@ -13,7 +13,11 @@ import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.screens.home.HomeNode
 import com.kamilh.volleyballstats.ui.screens.stats.StatsNode
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 class TabContainerNode(
     buildContext: BuildContext,
     private val spotlight: Spotlight<TabTarget>,

@@ -11,7 +11,11 @@ import com.bumble.appyx.navigation.node.ParentNode
 import com.kamilh.volleyballstats.presentation.features.PresenterMap
 import com.kamilh.volleyballstats.presentation.navigation.Screen
 import com.kamilh.volleyballstats.ui.screens.filters.PlayerFiltersNode
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 class TabNode(
     buildContext: BuildContext,
     private val backStack: BackStack<Screen.Full>,
