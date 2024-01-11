@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.clients.jvmdesktop
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.input.key.Key
@@ -27,13 +28,16 @@ import kotlinx.coroutines.flow.receiveAsFlow
 fun main() = application {
     val events: Channel<Events> = Channel()
     val windowState = rememberWindowState(size = DpSize(480.dp, 658.dp))
+    val appModule = remember { AppModule.instance }
+    LaunchedEffect(appModule) {
+        appModule.appInitializer.initialize()
+    }
     Window(
         title = "Volleyball stats",
         state = windowState,
         onCloseRequest = ::exitApplication,
         onKeyEvent = { onKeyEvent(it, events) },
     ) {
-        val appModule = remember { AppModule.instance }
         val scope = rememberCoroutineScope()
         val mainPresenter: MainPresenter = appModule.presenterMap.rememberPresenter(screen = Screen.Main)
         App(mainPresenter = mainPresenter) {
