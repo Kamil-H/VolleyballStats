@@ -1,6 +1,7 @@
 package com.kamilh.volleyballstats.presentation.features.stats
 
 import com.kamilh.volleyballstats.domain.models.Specialization
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.extensions.findProperty
 import com.kamilh.volleyballstats.presentation.features.common.CellSize
 import com.kamilh.volleyballstats.presentation.features.common.DataCell
@@ -200,11 +201,11 @@ class StatsModelMapperImpl : StatsModelMapper {
 
     private val Specialization.shortName: String
         get() = when (this) {
-            Specialization.Setter -> "S"
-            Specialization.Libero -> "L"
-            Specialization.MiddleBlocker -> "MB"
-            Specialization.OutsideHitter -> "OH"
-            Specialization.OppositeHitter -> "OP"
+            Specialization.Setter -> Resources.string.specialization_setter_short_name
+            Specialization.Libero -> Resources.string.specialization_libero_short_name
+            Specialization.MiddleBlocker -> Resources.string.specialization_middle_short_name
+            Specialization.OutsideHitter -> Resources.string.specialization_outside_short_name
+            Specialization.OppositeHitter -> Resources.string.specialization_opposite_short_name
         }
 
     private fun String.shorterName(): String =

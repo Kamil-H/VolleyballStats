@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.presentation.features.stats.properties
 
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
 enum class ReceiveProperty(
@@ -10,70 +11,70 @@ enum class ReceiveProperty(
     override val filterable: Boolean = true,
 ) : Property<String> {
     Index(
-        shortName = "In.",
-        description = "",
+        shortName = Resources.string.receive_index_short_name,
+        description = Resources.string.receive_index_description,
         mandatory = true,
         filterable = false,
     ),
     Name(
-        shortName = "Name",
-        description = "",
+        shortName = Resources.string.receive_name_short_name,
+        description = Resources.string.receive_name_description,
         mandatory = true,
         filterable = false,
     ),
     TeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.receive_team_name_short_name,
+        description = Resources.string.receive_team_name_description,
         filterable = false,
     ),
     FullTeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.receive_full_team_name_short_name,
+        description = Resources.string.receive_full_team_name_description,
         filterable = false,
     ),
     Specialization(
-        shortName = "Pos",
-        description = "",
+        shortName = Resources.string.receive_specialization_short_name,
+        description = Resources.string.receive_specialization_description,
         filterable = false,
     ),
     Attempts(
-        shortName = "Att",
-        description = "",
+        shortName = Resources.string.receive_attempts_short_name,
+        description = Resources.string.receive_attempts_description,
     ),
     Perfect(
-        shortName = "Kill",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.receive_perfect_short_name,
+        additionalName = Resources.string.receive_perfect_additional_name,
+        description = Resources.string.receive_perfect_description,
     ),
     PerfectPositive(
-        shortName = "Eff",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.receive_perfect_positive_short_name,
+        additionalName = Resources.string.receive_perfect_positive_additional_name,
+        description = Resources.string.receive_perfect_positive_description,
     ),
     Efficiency(
-        shortName = "Err",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.receive_efficiency_short_name,
+        additionalName = Resources.string.receive_efficiency_additional_name,
+        description = Resources.string.receive_efficiency_description,
     ),
     Errors(
-        shortName = "Win",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.receive_errors_short_name,
+        additionalName = Resources.string.receive_errors_additional_name,
+        description = Resources.string.receive_errors_description,
     ),
     ErrorsPercent(
-        shortName = "BP",
-        additionalName = "Kill%",
-        description = "",
+        shortName = Resources.string.receive_errors_percent_short_name,
+        additionalName = Resources.string.receive_errors_percent_additional_name,
+        description = Resources.string.receive_errors_percent_description,
     ),
     SideOut(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
+        shortName = Resources.string.receive_side_out_short_name,
+        additionalName = Resources.string.receive_side_out_additional_name,
+        description = Resources.string.receive_side_out_description,
     ),
     PointWinPercent(
-        shortName = "BP",
-        additionalName = "Err%",
-        description = "",
+        shortName = Resources.string.receive_point_win_percent_short_name,
+        additionalName = Resources.string.receive_point_win_percent_additional_name,
+        description = Resources.string.receive_point_win_percent_description,
     );
 
     override val id: String

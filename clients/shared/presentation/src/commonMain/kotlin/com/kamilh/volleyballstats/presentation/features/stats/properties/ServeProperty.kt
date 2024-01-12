@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.presentation.features.stats.properties
 
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
 enum class ServeProperty(
@@ -10,85 +11,85 @@ enum class ServeProperty(
     override val filterable: Boolean = true,
 ) : Property<String> {
     Index(
-        shortName = "In.",
-        description = "",
+        shortName = Resources.string.serve_index_short_name,
+        description = Resources.string.serve_index_description,
         mandatory = true,
         filterable = false,
     ),
     Name(
-        shortName = "Name",
-        description = "",
+        shortName = Resources.string.serve_name_short_name,
+        description = Resources.string.serve_name_description,
         mandatory = true,
         filterable = false,
     ),
     TeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.serve_team_name_short_name,
+        description = Resources.string.serve_team_name_description,
         filterable = false,
     ),
     FullTeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.serve_full_team_name_short_name,
+        description = Resources.string.serve_full_team_name_description,
         filterable = false,
     ),
     Specialization(
-        shortName = "Pos",
-        description = "",
+        shortName = Resources.string.serve_specialization_short_name,
+        description = Resources.string.serve_specialization_description,
         filterable = false,
     ),
     Attempts(
-        shortName = "Att",
-        description = "",
+        shortName = Resources.string.serve_attempts_short_name,
+        description = Resources.string.serve_attempts_description,
     ),
     Efficiency(
-        shortName = "Kill",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.serve_efficiency_short_name,
+        additionalName = Resources.string.serve_efficiency_additional_name,
+        description = Resources.string.serve_efficiency_description,
     ),
     Ace(
-        shortName = "Eff",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.serve_ace_short_name,
+        additionalName = Resources.string.serve_ace_additional_name,
+        description = Resources.string.serve_ace_description,
     ),
     AcePercent(
-        shortName = "Err",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.serve_ace_percent_short_name,
+        additionalName = Resources.string.serve_ace_percent_additional_name,
+        description = Resources.string.serve_ace_percent_description,
     ),
     Freeball(
-        shortName = "Win",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.serve_freeball_short_name,
+        additionalName = Resources.string.serve_freeball_additional_name,
+        description = Resources.string.serve_freeball_description,
     ),
     FreeballPercent(
-        shortName = "BP",
-        additionalName = "Kill%",
-        description = "",
+        shortName = Resources.string.serve_freeball_percent_short_name,
+        additionalName = Resources.string.serve_freeball_percent_additional_name,
+        description = Resources.string.serve_freeball_percent_description,
     ),
     AceFreeball(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
+        shortName = Resources.string.serve_ace_freeball_short_name,
+        additionalName = Resources.string.serve_ace_freeball_additional_name,
+        description = Resources.string.serve_ace_freeball_description,
     ),
     AceFreeballPercent(
-        shortName = "BP",
-        additionalName = "Err%",
-        description = "",
+        shortName = Resources.string.serve_ace_freeball_percent_short_name,
+        additionalName = Resources.string.serve_ace_freeball_percent_additional_name,
+        description = Resources.string.serve_ace_freeball_percent_description,
     ),
     Errors(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
+        shortName = Resources.string.serve_errors_short_name,
+        additionalName = Resources.string.serve_errors_additional_name,
+        description = Resources.string.serve_errors_description,
     ),
     ErrorsPercent(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
+        shortName = Resources.string.serve_errors_percent_short_name,
+        additionalName = Resources.string.serve_errors_percent_additional_name,
+        description = Resources.string.serve_errors_percent_description,
     ),
     PointWinPercent(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
+        shortName = Resources.string.serve_point_win_percent_short_name,
+        additionalName = Resources.string.serve_point_win_percent_additional_name,
+        description = Resources.string.serve_point_win_percent_description,
     );
 
     override val id: String

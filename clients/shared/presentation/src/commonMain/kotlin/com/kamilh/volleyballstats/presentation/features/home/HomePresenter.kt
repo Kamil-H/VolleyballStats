@@ -6,6 +6,7 @@ import com.kamilh.volleyballstats.domain.utils.CurrentDate
 import com.kamilh.volleyballstats.interactors.SynchronizeState
 import com.kamilh.volleyballstats.interactors.SynchronizeStateReceiver
 import com.kamilh.volleyballstats.interactors.Synchronizer
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.features.Presenter
 import com.kamilh.volleyballstats.presentation.features.SavableMap
 import com.kamilh.volleyballstats.presentation.features.TopBarState
@@ -46,7 +47,7 @@ class HomePresenter private constructor(
             onRefreshButtonClicked = ::refresh,
             onScrolledToItem = ::onScrolledToItem,
             topBarState = TopBarState(
-                title = "Matches",
+                title = Resources.string.home_screen_title,
                 showToolbar = true,
                 actionButtonIcon = Icon.Refresh,
             )
@@ -73,7 +74,7 @@ class HomePresenter private constructor(
             it.date?.toLocalDate()
         }.map { (localDate, matches) ->
             GroupedMatchItem(
-                title = localDate?.toIso8601String() ?: "Unspecified date",
+                title = localDate?.toIso8601String() ?: Resources.string.home_date_default_value,
                 items = matches.map { it.toMatchState() }
             )
         }
@@ -105,7 +106,7 @@ class HomePresenter private constructor(
                 imageUrl = away.logo,
             ),
             centerText = centerText(),
-            bottomText = mvpName?.let { TextPair(first = "MVP", second = it) },
+            bottomText = mvpName?.let { TextPair(first = Resources.string.home_mvp_label, second = it) },
         )
 
     private fun MatchSnapshotStorage.Model.centerText(): String {
@@ -114,7 +115,7 @@ class HomePresenter private constructor(
         val time = date?.timeString()
         return if (homeResult != null && awayResult != null) {
             "$homeResult - $awayResult"
-        } else time ?: "00:00"
+        } else time ?: Resources.string.home_time_default_value
     }
 
     private fun refresh() {

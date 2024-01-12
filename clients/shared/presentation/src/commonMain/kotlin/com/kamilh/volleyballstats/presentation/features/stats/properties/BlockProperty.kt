@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.presentation.features.stats.properties
 
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
 enum class BlockProperty(
@@ -11,76 +12,77 @@ enum class BlockProperty(
 ) : Property<String> {
 
     Index(
-        shortName = "In.",
-        description = "",
+        shortName = Resources.string.block_index_short_name,
+        description = Resources.string.block_index_description,
         mandatory = true,
         filterable = false,
     ),
     Name(
-        shortName = "Name",
-        description = "",
+        shortName = Resources.string.block_name_short_name,
+        description = Resources.string.block_name_description,
         mandatory = true,
         filterable = false,
     ),
     TeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.block_team_name_short_name,
+        description = Resources.string.block_team_name_description,
         filterable = false,
     ),
     FullTeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.block_full_team_name_short_name,
+        description = Resources.string.block_full_team_name_description,
         filterable = false,
     ),
     Specialization(
-        shortName = "Pos",
-        description = "",
+        shortName = Resources.string.block_specialization_short_name,
+        description = Resources.string.block_specialization_description,
         filterable = false,
     ),
     Attempts(
-        shortName = "Att",
-        description = "",
+        shortName = Resources.string.block_attempts_short_name,
+        description = Resources.string.block_attempts_description,
     ),
     Kill(
-        shortName = "Kill",
-        description = "",
+        shortName = Resources.string.block_kill_short_name,
+        description = Resources.string.block_kill_description,
     ),
     KillPerAttempt(
-        shortName = "Kill",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.block_kill_per_attempt_short_name,
+        additionalName = Resources.string.block_kill_per_attempt_additional_name,
+        description = Resources.string.block_kill_per_attempt_description,
     ),
     Rebound(
-        shortName = "Reb",
-        description = "",
+        shortName = Resources.string.block_rebound_short_name,
+        description = Resources.string.block_rebound_description,
     ),
     ReboundPerAttempt(
-        shortName = "Reb",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.block_rebound_per_attempt_short_name,
+        additionalName = Resources.string.block_rebound_per_attempt_additional_name,
+        description = Resources.string.block_rebound_per_attempt_description,
     ),
     KillPlusRebound(
-        shortName = "Kill+",
-        additionalName = "Reb",
-        description = "",
+        shortName = Resources.string.block_kill_plus_rebound_short_name,
+        additionalName = Resources.string.block_kill_plus_rebound_additional_name,
+        description = Resources.string.block_kill_plus_rebound_description,
     ),
     KillPlusReboundPerAttempt(
-        shortName = "Kill+",
-        additionalName = "Reb%",
-        description = "",
+        shortName = Resources.string.block_kill_plus_rebound_per_attempt_short_name,
+        additionalName = Resources.string.block_kill_plus_rebound_per_attempt_additional_name,
+        description = Resources.string.block_kill_plus_rebound_per_attempt_description,
     ),
     Error(
-        shortName = "Err",
-        description = "",
+        shortName = Resources.string.block_error_short_name,
+        description = Resources.string.block_error_description,
     ),
     ErrorPerAttempt(
-        shortName = "Err",
-        description = "%",
+        shortName = Resources.string.block_error_per_attempt_short_name,
+        additionalName = Resources.string.block_error_per_attempt_additional_name,
+        description = Resources.string.block_error_per_attempt_description,
     ),
     PointWinPercent(
-        shortName = "Win",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.block_point_win_percent_short_name,
+        additionalName = Resources.string.block_point_win_percent_additional_name,
+        description = Resources.string.block_point_win_percent_description,
     );
 
     override val id: String

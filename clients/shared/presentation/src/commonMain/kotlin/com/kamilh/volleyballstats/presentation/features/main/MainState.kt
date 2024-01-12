@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.presentation.features.main
 
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.features.common.Icon
 
 data class MainState(
@@ -17,15 +18,15 @@ data class BottomItemState(
 enum class BottomMenuItem(val icon: Icon, val label: String) {
     Home(
         icon = Icon.Scoreboard,
-        label = "Home",
+        label = Resources.string.main_bottom_menu_home_label,
     ),
     Players(
         icon = Icon.Person,
-        label = "Players",
+        label = Resources.string.main_bottom_menu_players_label,
     ),
     Teams(
         icon = Icon.Groups,
-        label = "Teams",
+        label = Resources.string.main_bottom_menu_teams_label,
     ),
 }
 

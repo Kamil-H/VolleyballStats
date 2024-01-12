@@ -7,6 +7,7 @@ import com.kamilh.volleyballstats.domain.models.TeamId
 import com.kamilh.volleyballstats.domain.models.TeamSnapshot
 import com.kamilh.volleyballstats.domain.models.Tour
 import com.kamilh.volleyballstats.domain.models.stats.StatsType
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.extensions.allProperties
 import com.kamilh.volleyballstats.presentation.features.ColorAccent
 import com.kamilh.volleyballstats.presentation.features.Presenter
@@ -90,7 +91,7 @@ class FiltersPresenter private constructor(
         chooseIntState = selectedLimit.toChooseIntState(maxLimit),
         onBackButtonClicked = ::onBackButtonClicked,
         topBarState = TopBarState(
-            title = "Adjust",
+            title = Resources.string.filters_screen_title,
             navigationButtonIcon = Icon.ArrowBack,
             showToolbar = true,
         ),
@@ -109,7 +110,7 @@ class FiltersPresenter private constructor(
 
     private fun List<String>.toChoosePropertiesState(allProperties: List<Property<String>>): ChoosePropertiesState<String> =
         ChoosePropertiesState(
-            title = "Choose properties",
+            title = Resources.string.filters_choose_properties_title,
             checkableProperties = allProperties.map {
                 it.toCheckableProperty(selectedProperties = this)
             },
@@ -131,7 +132,7 @@ class FiltersPresenter private constructor(
 
     private fun List<Season>.toSeasonOptionState(allValues: List<Season>): SelectOptionState<Season> =
         SelectOptionState(
-            title = "Choose seasons",
+            title = Resources.string.filters_choose_season_title,
             options = allValues.map { it.toOption(this) },
             onSelected = ::onSelected,
         )
@@ -152,7 +153,7 @@ class FiltersPresenter private constructor(
 
     private fun List<Specialization>.toSpecializationOptionState(allValues: List<Specialization>): SelectOptionState<Specialization> =
         SelectOptionState(
-            title = "Choose specializations",
+            title = Resources.string.filters_choose_specializations_title,
             options = allValues.map { it.toOption(this) },
             onSelected = ::onSelected,
         )
@@ -173,7 +174,7 @@ class FiltersPresenter private constructor(
 
     private fun List<TeamId>.toTeamOptionState(allValues: Set<TeamSnapshot>): SelectOptionState<TeamId> =
         SelectOptionState(
-            title = "Choose teams",
+            title = Resources.string.filters_choose_teams_title,
             options = allValues.map { it.toOption(this) },
             onSelected = ::onSelected,
         )
@@ -194,7 +195,7 @@ class FiltersPresenter private constructor(
 
     private fun Int.toChooseIntState(maxLimit: Int): ChooseValueState<Int> =
         ChooseValueState(
-            title = "Choose limit",
+            title = Resources.string.filters_choose_limit_title,
             value = this,
             maxValue = maxLimit,
             onValueSelected = ::onValueSelected,

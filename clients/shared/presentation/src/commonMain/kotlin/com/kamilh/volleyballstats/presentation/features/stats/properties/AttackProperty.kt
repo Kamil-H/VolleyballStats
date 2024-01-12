@@ -1,5 +1,6 @@
 package com.kamilh.volleyballstats.presentation.features.stats.properties
 
+import com.kamilh.volleyballstats.presentation.Resources
 import com.kamilh.volleyballstats.presentation.features.common.Property
 
 enum class AttackProperty(
@@ -10,85 +11,85 @@ enum class AttackProperty(
     override val filterable: Boolean = true,
 ) : Property<String> {
     Index(
-        shortName = "In.",
-        description = "",
+        shortName = Resources.string.attack_index_short_name,
+        description = Resources.string.attack_index_description,
         mandatory = true,
         filterable = false,
     ),
     Name(
-        shortName = "Name",
-        description = "",
+        shortName = Resources.string.attack_name_short_name,
+        description = Resources.string.attack_name_description,
         mandatory = true,
         filterable = false,
     ),
     TeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.attack_team_name_short_name,
+        description = Resources.string.attack_team_name_description,
         filterable = false,
     ),
     FullTeamName(
-        shortName = "Team",
-        description = "",
+        shortName = Resources.string.attack_full_team_name_short_name,
+        description = Resources.string.attack_full_team_name_description,
         filterable = false,
     ),
     Specialization(
-        shortName = "Pos",
-        description = "",
+        shortName = Resources.string.attack_specialization_short_name,
+        description = Resources.string.attack_specialization_description,
         filterable = false,
     ),
     Attempts(
-        shortName = "Att",
-        description = "",
+        shortName = Resources.string.attack_attempts_short_name,
+        description = Resources.string.attack_attempts_description,
     ),
     Kill(
-        shortName = "Kill",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.attack_kill_short_name,
+        additionalName = Resources.string.attack_kill_additional_name,
+        description = Resources.string.attack_kill_description,
     ),
     Efficiency(
-        shortName = "Eff",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.attack_efficiency_short_name,
+        additionalName = Resources.string.attack_efficiency_additional_name,
+        description = Resources.string.attack_efficiency_description,
     ),
     Error(
-        shortName = "Err",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.attack_error_short_name,
+        additionalName = Resources.string.attack_error_additional_name,
+        description = Resources.string.attack_error_description,
     ),
     PointWinPercent(
-        shortName = "Win",
-        additionalName = "%",
-        description = "",
+        shortName = Resources.string.attack_point_win_percent_short_name,
+        additionalName = Resources.string.attack_point_win_percent_additional_name,
+        description = Resources.string.attack_point_win_percent_description,
     ),
     KillBreakPoint(
-        shortName = "BP",
-        additionalName = "Kill%",
-        description = "",
+        shortName = Resources.string.attack_kill_break_point_short_name,
+        additionalName = Resources.string.attack_kill_break_point_additional_name,
+        description = Resources.string.attack_kill_break_point_description,
     ),
     EfficiencyBreakPoint(
-        shortName = "BP",
-        additionalName = "Eff%",
-        description = "",
+        shortName = Resources.string.attack_efficiency_break_point_short_name,
+        additionalName = Resources.string.attack_efficiency_break_point_additional_name,
+        description = Resources.string.attack_efficiency_break_point_description,
     ),
     ErrorBreakPoint(
-        shortName = "BP",
-        additionalName = "Err%",
-        description = "",
+        shortName = Resources.string.attack_error_break_point_short_name,
+        additionalName = Resources.string.attack_error_break_point_additional_name,
+        description = Resources.string.attack_error_break_point_description,
     ),
     KillSideOut(
-        shortName = "SOut",
-        additionalName = "Kill%",
-        description = "",
+        shortName = Resources.string.attack_kill_side_out_short_name,
+        additionalName = Resources.string.attack_kill_side_out_additional_name,
+        description = Resources.string.attack_kill_side_out_description,
     ),
     EfficiencySideOut(
-        shortName = "SOut",
-        additionalName = "Eff%",
-        description = "",
+        shortName = Resources.string.attack_efficiency_side_out_short_name,
+        additionalName = Resources.string.attack_efficiency_side_out_additional_name,
+        description = Resources.string.attack_efficiency_side_out_description,
     ),
     ErrorSideOut(
-        shortName = "SOut",
-        additionalName = "Err%",
-        description = "",
+        shortName = Resources.string.attack_error_side_out_short_name,
+        additionalName = Resources.string.attack_error_side_out_additional_name,
+        description = Resources.string.attack_error_side_out_description,
     );
 
     override val id: String
