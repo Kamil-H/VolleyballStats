@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.compose")
     kotlin("native.cocoapods")
     id("com.google.devtools.ksp")
+    id("io.github.skeptick.libres")
 }
 
 kotlin {
@@ -17,6 +18,11 @@ kotlin {
             isStatic = true
         }
     }
+}
+
+libres {
+    generatedClassName = "Resources"
+    generateNamedArguments = true
 }
 
 android {
@@ -36,6 +42,8 @@ dependencies {
 
     commonMainImplementation(libs.coil.compose)
     commonMainImplementation(libs.coil.network)
+
+    commonMainImplementation(libs.libres.compose)
 
     androidMainImplementation(libs.androidx.lifecycle.runtime)
     androidMainImplementation(libs.androidx.core)

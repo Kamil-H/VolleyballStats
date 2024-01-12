@@ -1,14 +1,22 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
     id("com.google.devtools.ksp")
 }
 
+// to run the desktop app: "./gradlew :clients:jvm-desktop:run"
 compose.desktop {
     application {
         mainClass = "com.kamilh.volleyballstats.clients.jvmdesktop.MainKt"
         buildTypes.release.proguard {
             configurationFiles.from(project.file("proguard-rules.pro"))
+        }
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "desktop"
+            packageVersion = "1.0.0"
         }
     }
 }

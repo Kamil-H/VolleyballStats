@@ -7,5 +7,5 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 actual class DependencyFactory {
     actual fun createSqlDriver(databaseName: String): SqlDriver =
-        JdbcSqliteDriver(url = "jdbc:sqlite:data_files/database.db")
+        JdbcSqliteDriver(url = "jdbc:sqlite:../../data_files/database.db")
 }

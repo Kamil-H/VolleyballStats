@@ -5,6 +5,7 @@ plugins {
     `kmm-platform-plugin`
     id("com.google.devtools.ksp")
     id("co.touchlab.skie") version "0.6.0"
+    id("io.github.skeptick.libres")
 }
 
 android {
@@ -18,6 +19,11 @@ kotlin {
             baseName = "shared"
         }
     }
+}
+
+libres {
+    generatedClassName = "Resources"
+    generateNamedArguments = true
 }
 
 dependencies {

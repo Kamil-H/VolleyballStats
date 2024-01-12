@@ -21,4 +21,5 @@ dependencies {
     implementation(libs.plugin.kover)
     implementation(libs.plugin.detekt)
     implementation(libs.plugin.jetbrains.compose)
+    implementation(libs.plugin.libres)
 }

@@ -34,6 +34,7 @@ coreLibraryDesugaring = "2.0.4"
 detektComposeRules = "0.0.22"
 appyx = "2.0.0-alpha09"
 coil = "3.0.0-alpha01"
+libres = "1.2.2"
 
 [plugins]
 application-package = { id = "com.kamilh.volleyballstats" }
@@ -49,6 +50,7 @@ plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", v
 plugin-android = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
 plugin-jetbrains-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "jebrainsCompose" }
 plugin-detekt-compose-rules = { module = "com.twitter.compose.rules:detekt", version.ref = "detektComposeRules" }
+plugin-libres = { module = "io.github.skeptick.libres:gradle-plugin", version.ref = "libres" }
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 
@@ -102,6 +104,8 @@ datetime = { module = "io.islandtime:core", version.ref = "dateTime" }
 appyx-navigation = { module = "com.bumble.appyx:appyx-navigation", version.ref = "appyx" }
 appyx-backstack = { module = "com.bumble.appyx:backstack", version.ref = "appyx" }
 appyx-spotlight = { module = "com.bumble.appyx:spotlight", version.ref = "appyx" }
+
+libres-compose = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
 
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jUnit5" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jUnit5" }
