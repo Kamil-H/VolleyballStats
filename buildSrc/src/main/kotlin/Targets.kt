@@ -35,7 +35,7 @@ fun Project.androidConfiguration() {
 
         defaultConfig {
             minSdk = libs.versions.android.min.get().toInt()
-            targetSdk = libs.versions.android.target.get().toInt()
+            testOptions.targetSdk = libs.versions.android.target.get().toInt()
         }
 
         compileOptions {
@@ -46,6 +46,7 @@ fun Project.androidConfiguration() {
         buildTypes {
             register("local") {
                 initWith(getByName("debug"))
+                matchingFallbacks.add("debug")
             }
         }
     }

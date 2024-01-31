@@ -22,4 +22,5 @@ dependencies {
     implementation(libs.plugin.detekt)
     implementation(libs.plugin.jetbrains.compose)
     implementation(libs.plugin.libres)
+    implementation(libs.plugin.dependency.graph)
 }
