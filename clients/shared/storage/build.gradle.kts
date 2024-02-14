@@ -1,6 +1,6 @@
 plugins {
     `kmm-domain-plugin`
-    id("app.cash.sqldelight")
+//    id("app.cash.sqldelight")
 }
 
 //sqldelight {

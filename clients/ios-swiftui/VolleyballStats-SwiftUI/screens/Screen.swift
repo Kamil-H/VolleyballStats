@@ -101,7 +101,6 @@ private struct ScreenView<Content: View>: View {
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
                     if let actionButtonIcon = state.actionButton.icon, state.actionButton.show {
-                        Spacer()
                         Button(action: { onFabButtonClicked() }) {
                             Label("", systemImage: getIconName(icon: actionButtonIcon))
                         }

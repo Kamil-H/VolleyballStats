@@ -22,9 +22,12 @@
 		807B34152B34CEA50095F818 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34142B34CEA50095F818 /* HomeScreen.swift */; };
 		807B34212B35A9D90095F818 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34202B35A9D90095F818 /* MainViewModel.swift */; };
 		807B34242B35AF5B0095F818 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 807B34232B35AF5B0095F818 /* Icon.swift */; };
+		8085D28B2B75738100A9F205 /* SelectOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8085D28A2B75738100A9F205 /* SelectOptionView.swift */; };
+		8085D28D2B7A850E00A9F205 /* ChooseProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8085D28C2B7A850E00A9F205 /* ChooseProperties.swift */; };
 		80CF09752B3F6D350046C91F /* RouterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CF09742B3F6D350046C91F /* RouterView.swift */; };
 		80CF09772B3F6D650046C91F /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CF09762B3F6D650046C91F /* Router.swift */; };
 		80CF097A2B4419670046C91F /* FiltersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CF09792B4419670046C91F /* FiltersScreen.swift */; };
+		80E96F4E2B58750C00A9AF34 /* TitledContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E96F4D2B58750C00A9AF34 /* TitledContent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,9 +46,12 @@
 		807B34142B34CEA50095F818 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
 		807B34202B35A9D90095F818 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		807B34232B35AF5B0095F818 /* Icon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
+		8085D28A2B75738100A9F205 /* SelectOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectOptionView.swift; sourceTree = "<group>"; };
+		8085D28C2B7A850E00A9F205 /* ChooseProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseProperties.swift; sourceTree = "<group>"; };
 		80CF09742B3F6D350046C91F /* RouterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouterView.swift; sourceTree = "<group>"; };
 		80CF09762B3F6D650046C91F /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		80CF09792B4419670046C91F /* FiltersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersScreen.swift; sourceTree = "<group>"; };
+		80E96F4D2B58750C00A9AF34 /* TitledContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitledContent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +149,9 @@
 				80644C382B46FD3C00BC17C0 /* Banner.swift */,
 				80644C3C2B47414700BC17C0 /* Color.swift */,
 				80644C3E2B4751CB00BC17C0 /* Dimensions.swift */,
+				80E96F4D2B58750C00A9AF34 /* TitledContent.swift */,
+				8085D28A2B75738100A9F205 /* SelectOptionView.swift */,
+				8085D28C2B7A850E00A9F205 /* ChooseProperties.swift */,
 			);
 			path = design;
 			sourceTree = "<group>";
@@ -262,10 +271,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				80CF09752B3F6D350046C91F /* RouterView.swift in Sources */,
+				8085D28D2B7A850E00A9F205 /* ChooseProperties.swift in Sources */,
 				80644C372B46F61E00BC17C0 /* Screen.swift in Sources */,
 				80644C3B2B47183700BC17C0 /* MatchList.swift in Sources */,
 				803330E72B32301F002EA512 /* MainView.swift in Sources */,
 				807B34242B35AF5B0095F818 /* Icon.swift in Sources */,
+				8085D28B2B75738100A9F205 /* SelectOptionView.swift in Sources */,
 				80CF097A2B4419670046C91F /* FiltersScreen.swift in Sources */,
 				80644C392B46FD3C00BC17C0 /* Banner.swift in Sources */,
 				80CF09772B3F6D650046C91F /* Router.swift in Sources */,
@@ -276,6 +287,7 @@
 				80644C312B44335300BC17C0 /* StatsScreen.swift in Sources */,
 				807B34152B34CEA50095F818 /* HomeScreen.swift in Sources */,
 				807B34212B35A9D90095F818 /* MainViewModel.swift in Sources */,
+				80E96F4E2B58750C00A9AF34 /* TitledContent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

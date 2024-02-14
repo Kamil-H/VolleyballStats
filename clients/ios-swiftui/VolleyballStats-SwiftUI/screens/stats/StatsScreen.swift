@@ -36,7 +36,14 @@ struct StatsScreen: View {
             Text("Nothing to show...")
                 .font(.largeTitle)
         } else {
-            tableContent(tableContent: state.tableContent, color: state.colorAccent)
+            VStack {
+                tableContent(tableContent: state.tableContent, color: state.colorAccent)
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .status) {
+                    SelectOptionView(selectOption: state.selectSkillState)
+                }
+            }
         }
     }
     
