@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "xcode-app",
+            "name": "Xcode-app configuration",
+            "buildTarget": {
+                "project": "VolleyballStats-compose",
+                "target": "VolleyballStats-compose",
+            },
+            "configuration": "Debug",
+            "destination": "iPhone 15 | iOS 17.2",
+        },
+        {
+            "name": "clients.android",
+            "type": "android-app",
+            "workingDir": "$PROJECT_DIR$",
+            "allowParallelRun": true,
+            "module": "volleyball-stats.clients.android.main",
+            "destination": "Pixel 6 API 31 (no GPS)"
+        }
+    ]
+}
